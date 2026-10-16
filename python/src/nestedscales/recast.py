@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import functools
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 import pyarrow as pa
@@ -58,6 +58,13 @@ _SKIP_NULLS = pc.ScalarAggregateOptions(skip_nulls=True, min_count=1)
 _COUNT_ALL = pc.CountOptions(mode="all")
 _COUNT_VALID = pc.CountOptions(mode="only_valid")
 _NULL = pa.scalar(None, pa.float64())
+
+#: What to do with atoms that have no code at the source or target frame.
+NaAction = Literal["drop", "error", "keep"]
+#: Whether to run the checks that scan the data.
+Diagnostics = Literal["auto", "on", "off"]
+#: What a partly supplied target becomes.
+MissingSources = Literal["na", "ignore"]
 
 
 # -----------------------------------------------------------------------------
@@ -176,7 +183,7 @@ def _infer_from(x: NestedScale, schema: pa.Schema, key: str | None) -> str:
     hit = [f for f in fr if f in schema.names]
     if len(hit) != 1:
         _stop("cannot infer the source %s from the data's columns (found: %s); "
-              "pass `from=`", scale_vocab(x)["frame"],
+              "pass `source=`", scale_vocab(x)["frame"],
               "none" if not hit else _preview(hit))
     return hit[0]
 
@@ -356,7 +363,7 @@ def _pipeline(t: pa.Table, jmap: pa.Table, key: str, values: Sequence[str],
     return res.select([*grp, *values])
 
 
-def _widen_maps(maps: dict[str, pa.Table], from_: str, to: str, key: str,
+def _widen_maps(maps: dict[str, pa.Table], source: str, target: str, key: str,
                 wt_of: Mapping[str, str],
                 residual_targets: Sequence[str] = ()) -> tuple[pa.Table, dict]:
     """Fold the per-weight crosswalks into one, a split factor per weight."""
@@ -369,7 +376,7 @@ def _widen_maps(maps: dict[str, pa.Table], from_: str, to: str, key: str,
                   "structure; this should be impossible for derived maps, so a "
                   "registered map is likely malformed")
     jmap = _rename(base.select(shared), {
-        from_: key, to: "__ms_to", "n_from": "__ms_n_from",
+        source: key, target: "__ms_to", "n_from": "__ms_n_from",
         "n_overlap": "__ms_n_overlap"})
 
     # A declared residual is not a destination for allocation: the split
@@ -398,7 +405,7 @@ def _widen_maps(maps: dict[str, pa.Table], from_: str, to: str, key: str,
             if dead:
                 _stop("every target of `%s` is a declared residual, so a figure "
                       "at `%s` has nowhere allocable to go: %s",
-                      from_, from_, _preview(dead))
+                      source, source, _preview(dead))
             f = [0.0 if r else (a / w_tot[gk] if w_tot[gk] > 0 else b / n_tot[gk])
                  for r, a, b, gk in zip(is_res, w_ok, n_ok, grp, strict=True)]
             f = pa.array(f, pa.float64())
@@ -418,60 +425,116 @@ def _widen_maps(maps: dict[str, pa.Table], from_: str, to: str, key: str,
 # recast_scale()
 # -----------------------------------------------------------------------------
 
-def recast_scale(data: Any, x: NestedScale, from_: str | None = None,
-                 to: str | NestedScale | None = None, key: str | None = None,
+def recast_scale(data: Any, x: NestedScale, source: str | None = None,
+                 target: str | NestedScale | None = None, key: str | None = None,
                  values: str | Sequence[str] | None = None,
                  rule: str | Mapping[str, str] | None = None,
                  weight: str | Mapping[str, str] | None = None,
-                 na_action: str = "drop", parent: str | None = None,
-                 collect: bool | None = None, diagnostics: str = "auto",
-                 missing_sources: str = "na", batch: int | None = None,
+                 na_action: NaAction = "drop", parent: str | None = None,
+                 collect: bool | None = None, diagnostics: Diagnostics = "auto",
+                 missing_sources: MissingSources = "na",
+                 batch: int | None = None,
                  batch_by: str | None = None, **kwargs: Any) -> Any:
     """Recast values from one resolution to another.
 
-    Takes a table keyed by unit code at frame `from_` and returns one keyed at
-    `to` -- a frame of the same scale, or another (named) scale whose atom
-    layer is the target. Columns that are neither the key nor a value column
-    are identifiers and are preserved as groups; columns named like the
-    scale's frames are dropped.
+    The central conversion verb. Takes a table keyed by unit code at frame
+    `source` and returns one keyed at `target`, aggregating (fine to coarse)
+    or disaggregating (coarse to fine) with one rule per value column. Frames
+    that cross-cut work too: the route always goes through the atoms. A
+    crosswalk registered with `register_scale_map()` short-circuits it.
 
-    `rule` is one of `SCALE_RULES` for every value column, or a mapping per
-    column; `None` looks each column up in the rule registry, and a column
-    with no rule anywhere is an error. See the R documentation of
-    `recast_scale()` for the full argument reference.
+    Columns that are neither the key nor a value column are identifiers (a
+    year, a technology) and are preserved as groups, so panel data recasts in
+    one call. Columns named like the scale's frames are dropped.
+
+    Parameters
+    ----------
+    data
+        The table: pyarrow, pandas, polars, a dict of columns, or a lazy
+        pyarrow Dataset / polars LazyFrame. Returned in the same type.
+    x
+        The scale the codes in `data` belong to.
+    source
+        Frame of the codes. None infers it: `key` when that is a frame, else
+        the single frame name among the data's columns.
+    target
+        Target frame of `x`, or another named scale (its atom layer is the
+        target, matched on shared atom keys).
+    key
+        The code column of `data`. Defaults to `source` when that column
+        exists, else the scale's key.
+    values
+        Value columns. Default: every numeric column other than the key and
+        the frame columns; numeric identifiers (`year`) must be excluded by
+        naming the values.
+    rule
+        One of `SCALE_RULES` for every value column, or a dict per column.
+        None looks each column up with `get_scale_rule()`; a column with no
+        rule anywhere is an error.
+    weight
+        Weight column for `sum` splits and `weighted_mean`; one name or a dict
+        per column. None uses the registered weight, else the scale's default;
+        with no declared weights every atom weighs 1.
+    na_action
+        Atoms with no code at `source` or `target`: "drop" (with a warning),
+        "error", or "keep" (an explicit null row, so totals conserve).
+    parent
+        Rule "share" only: the frame the shares are taken within. Default:
+        `target` when it differs from `source`, else the frame above.
+    collect
+        Lazy inputs: True materialises and completes the result; otherwise
+        only the observed target units are returned.
+    diagnostics
+        The checks that scan the data (unknown codes, dropped shares, missing
+        sources): "auto" runs them on eager inputs only; "on"/"off" force.
+    missing_sources
+        "na": a target whose sources are only partly present is null.
+        "ignore": aggregate whatever is there (faster, opt-in).
+    batch, batch_by
+        Process in chunks of at most `batch` values of the identifier column
+        `batch_by` (default: the first identifier). Chunking by an identifier
+        leaves the numbers unchanged.
+    **kwargs
+        Passed to `scale_map()`.
+
+    Returns
+    -------
+    The recast table in the input's type, columns `target`, identifiers,
+    values. Rule "share" keeps the `source` key and returns each value as a
+    share of its parent-group total.
     """
     na_action = _match_choice(na_action, ("drop", "error", "keep"), "na_action")
     diagnostics = _match_choice(diagnostics, ("auto", "on", "off"), "diagnostics")
     missing_sources = _match_choice(missing_sources, ("na", "ignore"),
                                     "missing_sources")
     _check_scale(x, "x")
-    if to is None:
-        _stop("`to` is required")
+    if target is None:
+        _stop("`target` is required")
     v = scale_vocab(x)
     bk = backend_of(data, "data")
     schema = schema_of(data, bk)
     _check_ms_cols(schema)
 
-    if from_ is None:
-        from_ = _infer_from(x, schema, key)
-    _check_frame(x, from_, "from")
+    if source is None:
+        source = _infer_from(x, schema, key)
+    _check_frame(x, source, "source")
     if key is None:
-        key = from_ if from_ in schema.names else scale_key(x)
+        key = source if source in schema.names else scale_key(x)
     if key not in schema.names:
         _stop("the data has no column named `%s`; pass `key=`", key)
 
-    # cross-object route: `to` is another scale
-    if isinstance(to, NestedScale):
+    # cross-object route: `target` is another scale
+    if isinstance(target, NestedScale):
         rule_vals = (list(rule.values()) if isinstance(rule, Mapping)
                      else list(_as_str_tuple(rule)))
         if any(r in _SHARE_RULES for r in rule_vals):
             _stop('rule "share" needs a parent frame of the same scale; it cannot '
                   "recast across objects")
-        g = recast_to_atoms(data, x, from_=from_, key=key, values=values,
+        g = recast_to_atoms(data, x, source=source, key=key, values=values,
                             rule=rule, weight=weight, collect=collect)
-        return recast_from_atoms(g, to, to=_atom_level(to), values=values,
+        return recast_from_atoms(g, target, target=_atom_level(target), values=values,
                                  rule=rule, na_action=na_action, collect=collect)
-    _check_frame(x, to, "to")
+    _check_frame(x, target, "target")
 
     frames_all = list(x.frames)
     values = _values_for(schema, key, frames_all, values)
@@ -497,7 +560,7 @@ def recast_scale(data: Any, x: NestedScale, from_: str | None = None,
                   "aggregation groups and change the numbers",
                   ", ".join(id_cols), batch_by)
         return _recast_batched(data, bk, batch, batch_by, dict(
-            x=x, from_=from_, to=to, key=key, values=values, rule=rule,
+            x=x, source=source, target=target, key=key, values=values, rule=rule,
             weight=weight, na_action=na_action, parent=parent,
             diagnostics=diagnostics, missing_sources=missing_sources, **kwargs))
 
@@ -508,80 +571,80 @@ def recast_scale(data: Any, x: NestedScale, from_: str | None = None,
     src_keys = None
     if do_diag:
         src_keys = [k for k in pc.unique(t[key]).to_pylist() if k is not None]
-        known = {k for k in _strings(lt, from_) if k is not None}
+        known = {k for k in _strings(lt, source) if k is not None}
         unknown = [k for k in src_keys if k not in known]
         if unknown:
             _warn("%d code(s) in the `%s` column are not present at %s `%s` and "
-                  "were dropped: %s", len(unknown), key, v["frame"], from_,
+                  "were dropped: %s", len(unknown), key, v["frame"], source,
                   _preview(unknown))
         if not any(k in known for k in src_keys):
-            _stop("no rows matched %s `%s`; check `from=` and the `%s` column",
-                  v["frame"], from_, key)
+            _stop("no rows matched %s `%s`; check `source=` and the `%s` column",
+                  v["frame"], source, key)
 
-    # share within parent: result keyed at `from`, one rule for all
+    # share within parent: result keyed at `source`, one rule for all
     is_share = [r["rule"] in _SHARE_RULES for r in rules.values()]
     if any(is_share):
         if not all(is_share):
-            _stop('rule "share" changes the output key to `from` and cannot be '
+            _stop('rule "share" changes the output key to `source` and cannot be '
                   "mixed with other rules in one call; recast the columns "
                   "separately")
         if weight is not None:
             _warn('`weight` is ignored by rule "share": the values are the weights')
-        return _recast_share(t, bk, x, from_, to, key, values, id_cols, parent,
+        return _recast_share(t, bk, x, source, target, key, values, id_cols, parent,
                              na_action, collect)
     if parent is not None:
         _stop('`parent` applies to rule "share" only')
 
     if na_action == "error":
         n_bad = sum(a is None or b is None
-                    for a, b in zip(_strings(lt, from_), _strings(lt, to),
+                    for a, b in zip(_strings(lt, source), _strings(lt, target),
                                     strict=True))
         if n_bad > 0:
             _stop('%d atom(s) have no code at %s `%s` or `%s`; use na_action = '
-                  '"drop" or "keep"', n_bad, v["frame"], from_, to)
+                  '"drop" or "keep"', n_bad, v["frame"], source, target)
 
     wt_of = {c: (r["weight"] or "") for c, r in rules.items()}
     need_split = any(r["rule"] in ("sum", "weighted_mean") for r in rules.values())
     if (not scale_weights(x) and weight is None and need_split
-            and scale_rank(x, to) > scale_rank(x, from_)):
+            and scale_rank(x, target) > scale_rank(x, source)):
         _warn("no weight column declared; splitting `%s` equally across the "
               "atoms of each `%s`. Declare a weight for a size-proportional "
-              "split.", to, from_)
+              "split.", target, source)
 
-    maps = {wt: scale_map(x, from_, to, weight=wt or None, **kwargs)
+    maps = {wt: scale_map(x, source, target, weight=wt or None, **kwargs)
             for wt in dict.fromkeys(wt_of.values())}
     m0 = maps[next(iter(maps))]
     map_by = [c for c in m0.column_names
-              if c not in (from_, to, "n_from", "n_overlap", "w", "w_from")]
+              if c not in (source, target, "n_from", "n_overlap", "w", "w_from")]
 
-    uncovered = pc.is_null(m0[to])
+    uncovered = pc.is_null(m0[target])
     uncovered_any = pc.any(uncovered).as_py() or False
     if uncovered_any and na_action == "drop":
         if do_diag:
             unc = m0.filter(uncovered)
             src_set = set(src_keys)
-            affected = [k for k in dict.fromkeys(_strings(unc, from_))
+            affected = [k for k in dict.fromkeys(_strings(unc, source))
                         if k in src_set]
             if affected:
                 _warn('%d atom(s) have no code at %s `%s`; the share of %d source '
                       "unit(s) falling in them is dropped (%s). Use na_action = "
                       '"keep" to conserve totals.',
-                      pc.sum(unc["n_overlap"]).as_py(), v["frame"], to,
+                      pc.sum(unc["n_overlap"]).as_py(), v["frame"], target,
                       len(affected), _preview(affected))
         keep = pc.invert(uncovered)
         maps = {w: m.filter(keep) for w, m in maps.items()}
-    retained_from = list(dict.fromkeys(_strings(maps[next(iter(maps))], from_)))
+    retained_from = list(dict.fromkeys(_strings(maps[next(iter(maps))], source)))
 
-    res_targets = (scale_residuals(x, to)
-                   if scale_rank(x, to) > scale_rank(x, from_) else [])
-    jmap, sfx = _widen_maps(maps, from_, to, key, wt_of, res_targets)
+    res_targets = (scale_residuals(x, target)
+                   if scale_rank(x, target) > scale_rank(x, source) else [])
+    jmap, sfx = _widen_maps(maps, source, target, key, wt_of, res_targets)
     lazy_out = bk.lazy and not collect
     res = _pipeline(t, jmap, key, values, rules, id_cols, map_by, missing_sources,
                     sfx, unit=v["unit"], check_copy=not lazy_out)
-    res = _rename(res, {"__ms_to": to})
+    res = _rename(res, {"__ms_to": target})
 
     if lazy_out:
-        return _restore(res.select([to, *id_cols, *values]), bk, collect)
+        return _restore(res.select([target, *id_cols, *values]), bk, collect)
 
     if do_diag:
         if id_cols:
@@ -601,10 +664,10 @@ def recast_scale(data: Any, x: NestedScale, from_: str | None = None,
                   _preview_total(shown, len(all_missing)))
 
     idc = distinct_rows(t, id_cols) if id_cols else pa.table({})
-    out_keys = list(x.members[to])
+    out_keys = list(x.members[target])
     if na_action == "keep" and uncovered_any:
         out_keys.append(None)
-    out = _recast_complete(res, idc, out_keys, to, id_cols, values)
+    out = _recast_complete(res, idc, out_keys, target, id_cols, values)
     return _restore(out, bk, collect)
 
 
@@ -680,43 +743,43 @@ def _recast_batched(data: Any, bk: Backend, batch: int, batch_by: str,
     return _restore(bind_rows(parts), bk, collect=True)
 
 
-def _share_parent(x: NestedScale, from_: str, to: str, parent: str | None) -> str:
-    """Explicit `parent`, else `to` when it differs, else the frame above."""
+def _share_parent(x: NestedScale, source: str, target: str, parent: str | None) -> str:
+    """Explicit `parent`, else `target` when it differs, else the frame above."""
     if parent is not None:
         _check_frame(x, parent, "parent")
-        if to != from_ and to != parent:
-            _stop('conflicting parents: `to = "%s"` vs `parent = "%s"`; for rule '
-                  '"share" pass the parent once', to, parent)
-    elif to != from_:
-        parent = to
+        if target != source and target != parent:
+            _stop('conflicting parents: `target = "%s"` vs `parent = "%s"`; for rule '
+                  '"share" pass the parent once', target, parent)
+    elif target != source:
+        parent = target
     else:
         fr = list(x.frames)
-        i = fr.index(from_) if from_ in fr else -1
+        i = fr.index(source) if source in fr else -1
         if i <= 0:
-            _stop("`%s` has no coarser frame; pass `parent=`", from_)
+            _stop("`%s` has no coarser frame; pass `parent=`", source)
         parent = fr[i - 1]
-    if scale_rank(x, parent) >= scale_rank(x, from_):
-        _stop('rule "share": parent `%s` must be coarser than `from = "%s"`',
-              parent, from_)
+    if scale_rank(x, parent) >= scale_rank(x, source):
+        _stop('rule "share": parent `%s` must be coarser than `source = "%s"`',
+              parent, source)
     return parent
 
 
-def _recast_share(t: pa.Table, bk: Backend, x: NestedScale, from_: str, to: str,
+def _recast_share(t: pa.Table, bk: Backend, x: NestedScale, source: str, target: str,
                   key: str, values: Sequence[str], id_cols: Sequence[str],
                   parent: str | None, na_action: str, collect: bool | None) -> Any:
-    """Each source unit's value over its parent-group total, keyed at `from`."""
-    parent = _share_parent(x, from_, to, parent)
-    m = scale_map(x, from_, parent)
-    mem = distinct_rows(m, [from_, parent])
+    """Each source unit's value over its parent-group total, keyed at `source`."""
+    parent = _share_parent(x, source, target, parent)
+    m = scale_map(x, source, parent)
+    mem = distinct_rows(m, [source, parent])
 
     n_par: dict = {}
-    for a, b in zip(_strings(mem, from_), _strings(mem, parent), strict=True):
+    for a, b in zip(_strings(mem, source), _strings(mem, parent), strict=True):
         if b is not None:
             n_par[a] = n_par.get(a, 0) + 1
     split_codes = sorted(k for k, n in n_par.items() if n > 1)
     if split_codes:
         _stop('rule "share": %d unit(s) of `%s` straddle more than one `%s` (%s); '
-              "`from` must nest within the parent", len(split_codes), from_,
+              "`source` must nest within the parent", len(split_codes), source,
               parent, _preview(split_codes))
 
     orphan = pc.is_null(mem[parent])
@@ -724,12 +787,12 @@ def _recast_share(t: pa.Table, bk: Backend, x: NestedScale, from_: str, to: str,
     if n_orphan:
         if na_action == "error":
             _stop('%d unit(s) of `%s` have no code at parent `%s`; use na_action = '
-                  '"drop" or "keep"', n_orphan, from_, parent)
+                  '"drop" or "keep"', n_orphan, source, parent)
         if na_action == "drop":
             _warn('%d unit(s) of `%s` have no code at parent `%s` and get NA '
                   'shares (%s). Use na_action = "keep" to treat them as one group.',
-                  n_orphan, from_, parent,
-                  _preview(_strings(mem.filter(orphan), from_)))
+                  n_orphan, source, parent,
+                  _preview(_strings(mem.filter(orphan), source)))
             mem = mem.filter(pc.invert(orphan))
 
     jmem = mem.rename_columns([key, "__ms_parent"])
@@ -746,12 +809,12 @@ def _recast_share(t: pa.Table, bk: Backend, x: NestedScale, from_: str, to: str,
         tt = _f64(res[tn])
         res = _set(res, vv, pc.if_else(pc.not_equal(tt, 0),
                                         pc.divide(_f64(res[vv]), tt), _NULL))
-    res = _rename(res.select([key, *id_cols, *values]), {key: from_})
+    res = _rename(res.select([key, *id_cols, *values]), {key: source})
 
     if bk.lazy and not collect:
-        return _restore(res.select([from_, *id_cols, *values]), bk, collect)
+        return _restore(res.select([source, *id_cols, *values]), bk, collect)
     idc = distinct_rows(t, id_cols) if id_cols else pa.table({})
-    out = _recast_complete(res, idc, list(x.members[from_]), from_, id_cols,
+    out = _recast_complete(res, idc, list(x.members[source]), source, id_cols,
                            values)
     return _restore(out, bk, collect)
 
@@ -760,18 +823,18 @@ def _recast_share(t: pa.Table, bk: Backend, x: NestedScale, from_: str, to: str,
 # recast_crosswalk()
 # -----------------------------------------------------------------------------
 
-def recast_crosswalk(data: Any, map: Any, from_: str, to: str,
+def recast_crosswalk(data: Any, map: Any, source: str, target: str,
                      key: str | None = None,
                      values: str | Sequence[str] | None = None,
                      rule: str | Mapping[str, str] | None = None,
                      ids: Sequence[str] | None = None, by: Sequence[str] = (),
                      targets: Sequence[str | None] | None = None,
-                     missing_sources: str = "na", unit: str = "unit",
+                     missing_sources: MissingSources = "na", unit: str = "unit",
                      collect: bool | None = None) -> Any:
     """Recast values through a given crosswalk.
 
-    `map` has one row per (source, target) pair: the codes in columns `from_`
-    and `to`, `n_from`, `n_overlap`, optionally `w` (weighted-mean weight;
+    `map` has one row per (source, target) pair: the codes in columns `source`
+    and `target`, `n_from`, `n_overlap`, optionally `w` (weighted-mean weight;
     default `n_overlap`) and `w_from` (with both, `sum` splits by
     `w / w_from`; otherwise by `n_overlap / n_from`), and any `by` columns.
     """
@@ -780,7 +843,7 @@ def recast_crosswalk(data: Any, map: Any, from_: str, to: str,
     missing_sources = _match_choice(missing_sources, ("na", "ignore"),
                                     "missing_sources")
     if key is None:
-        key = from_
+        key = source
     bk = backend_of(data, "data")
     schema = schema_of(data, bk)
     _check_ms_cols(schema)
@@ -788,7 +851,7 @@ def recast_crosswalk(data: Any, map: Any, from_: str, to: str,
         _stop("`map` must be a data.frame")
     mp = as_table(map, "map")
     by = list(_as_str_tuple(by))
-    absent = [c for c in [from_, to, "n_from", "n_overlap", *by]
+    absent = [c for c in [source, target, "n_from", "n_overlap", *by]
               if c not in mp.column_names]
     if absent:
         _stop("`map` is missing column(s): %s", _preview(absent))
@@ -807,8 +870,8 @@ def recast_crosswalk(data: Any, map: Any, from_: str, to: str,
     _no_share(rules, "recast_crosswalk")
 
     jmap = pa.table({
-        key: pc.cast(mp[from_], pa.string()),
-        "__ms_to": pc.cast(mp[to], pa.string()),
+        key: pc.cast(mp[source], pa.string()),
+        "__ms_to": pc.cast(mp[target], pa.string()),
         "__ms_n_from": mp["n_from"], "__ms_n_overlap": mp["n_overlap"],
         **{c: mp[c] for c in by}})
     n_ov, n_fr = _f64(mp["n_overlap"]), _f64(mp["n_from"])
@@ -828,14 +891,14 @@ def recast_crosswalk(data: Any, map: Any, from_: str, to: str,
     res = _pipeline(t, jmap, key, values, rules, ids, map_by=by,
                     missing_sources=missing_sources, unit=unit,
                     check_copy=not lazy_out)
-    res = _rename(res, {"__ms_to": to})
+    res = _rename(res, {"__ms_to": target})
     if lazy_out:
-        return _restore(res.select([to, *ids, *values]), bk, collect)
+        return _restore(res.select([target, *ids, *values]), bk, collect)
     if targets is None:
-        out = res.select([to, *ids, *values])
+        out = res.select([target, *ids, *values])
     else:
         idc = distinct_rows(t, ids) if ids else pa.table({})
-        out = _recast_complete(res, idc, list(targets), to, ids, values)
+        out = _recast_complete(res, idc, list(targets), target, ids, values)
     return _restore(out, bk, collect)
 
 
@@ -843,7 +906,7 @@ def recast_crosswalk(data: Any, map: Any, from_: str, to: str,
 # the route halves
 # -----------------------------------------------------------------------------
 
-def recast_to_atoms(data: Any, x: NestedScale, from_: str | None = None,
+def recast_to_atoms(data: Any, x: NestedScale, source: str | None = None,
                     key: str | None = None,
                     values: str | Sequence[str] | None = None,
                     rule: str | Mapping[str, str] | None = None,
@@ -859,11 +922,11 @@ def recast_to_atoms(data: Any, x: NestedScale, from_: str | None = None,
     bk = backend_of(data, "data")
     schema = schema_of(data, bk)
     _check_ms_cols(schema)
-    if from_ is None:
-        from_ = _infer_from(x, schema, key)
-    _check_frame(x, from_, "from")
+    if source is None:
+        source = _infer_from(x, schema, key)
+    _check_frame(x, source, "source")
     if key is None:
-        key = from_ if from_ in schema.names else scale_key(x)
+        key = source if source in schema.names else scale_key(x)
     if key not in schema.names:
         _stop("the data has no column named `%s`; pass `key=`", key)
 
@@ -879,7 +942,7 @@ def recast_to_atoms(data: Any, x: NestedScale, from_: str | None = None,
     lt = x.leaftable
     wcol = _map_weight(x, weight if isinstance(weight, str) or weight is None
                        else None)
-    frm = _strings(lt, from_)
+    frm = _strings(lt, source)
     atom = _strings(lt, akey)
     w = ([1.0] * lt.num_rows if wcol is None else
          [0.0 if z is None else float(z) for z in lt[wcol].to_pylist()])
@@ -954,12 +1017,13 @@ def _group_result(rule: str, g: dict, na_rm: bool) -> pa.ChunkedArray:
     return r
 
 
-def recast_from_atoms(data: Any, x: NestedScale, to: str, key: str | None = None,
+def recast_from_atoms(data: Any, x: NestedScale, target: str, key: str | None = None,
                       values: str | Sequence[str] | None = None,
                       rule: str | Mapping[str, str] | None = None,
                       weight: str | None = None, na_rm: bool = False,
-                      na_action: str = "drop", collect: bool | None = None) -> Any:
-    """Aggregate atom-keyed data UP into the units of frame `to`.
+                      na_action: NaAction = "drop",
+                      collect: bool | None = None) -> Any:
+    """Aggregate atom-keyed data UP into the units of frame `target`.
 
     `weight` names a column of the data to weight by (so it may vary by
     identifier); None uses a `weight` column if present, else the scale's
@@ -969,7 +1033,7 @@ def recast_from_atoms(data: Any, x: NestedScale, to: str, key: str | None = None
     """
     na_action = _match_choice(na_action, ("drop", "error", "keep"), "na_action")
     _check_scale(x, "x")
-    _check_frame(x, to, "to")
+    _check_frame(x, target, "target")
     bk = backend_of(data, "data")
     schema = schema_of(data, bk)
     _check_ms_cols(schema)
@@ -994,16 +1058,16 @@ def recast_from_atoms(data: Any, x: NestedScale, to: str, key: str | None = None
     _no_share(rules, "recast_from_atoms")
 
     lt = x.leaftable
-    ks, ts = _strings(lt, akey), _strings(lt, to)
+    ks, ts = _strings(lt, akey), _strings(lt, target)
     n_unc = sum(z is None for z in ts)
     uncovered_any = n_unc > 0
     pairs = list(zip(ks, ts, strict=True))
     if uncovered_any:
         if na_action == "error":
             _stop('%d atom(s) have no code at `%s`; use na_action = "drop" or '
-                  '"keep"', n_unc, to)
+                  '"keep"', n_unc, target)
         if na_action == "drop":
-            _warn("%d atom(s) have no code at `%s` and were dropped", n_unc, to)
+            _warn("%d atom(s) have no code at `%s` and were dropped", n_unc, target)
             pairs = [p for p in pairs if p[1] is not None]
     jmem = pa.table({key: pa.array([p[0] for p in pairs], pa.string()),
                      "__ms_to": pa.array([p[1] for p in pairs], pa.string())})
@@ -1044,15 +1108,15 @@ def recast_from_atoms(data: Any, x: NestedScale, to: str, key: str | None = None
     lazy_out = bk.lazy and not collect
     if copy_cols and not lazy_out:
         _check_copy_result(res, copy_cols, scale_vocab(x)["unit"])
-    res = _rename(res.select([*grp, *values]), {"__ms_to": to})
+    res = _rename(res.select([*grp, *values]), {"__ms_to": target})
     if lazy_out:
-        return _restore(res.select([to, *id_cols, *values]), bk, collect)
+        return _restore(res.select([target, *id_cols, *values]), bk, collect)
 
     idc = distinct_rows(t, id_cols) if id_cols else pa.table({})
-    out_keys = list(x.members[to])
+    out_keys = list(x.members[target])
     if na_action == "keep" and uncovered_any:
         out_keys.append(None)
-    out = _recast_complete(res, idc, out_keys, to, id_cols, values)
+    out = _recast_complete(res, idc, out_keys, target, id_cols, values)
     return _restore(out, bk, collect)
 
 
@@ -1061,24 +1125,25 @@ def recast_from_atoms(data: Any, x: NestedScale, to: str, key: str | None = None
 # -----------------------------------------------------------------------------
 
 @functools.singledispatch
-def _recast_method(from_: object, x: Any, *args: Any, **kwargs: Any) -> Any:
-    _stop("no recast() method for a `%s`", type(from_).__name__)
+def _recast_method(scale: object, x: Any, *args: Any, **kwargs: Any) -> Any:
+    _stop("no recast() method for a `%s`", type(scale).__name__)
 
 
 @_recast_method.register
-def _(from_: NestedScale, x: Any, to: Any = None, from_frame: str | None = None,
+def _(scale: NestedScale, x: Any, target: Any = None, source: str | None = None,
       **kwargs: Any) -> Any:
-    return recast_scale(x, from_, from_=from_frame, to=to, **kwargs)
+    return recast_scale(x, scale, source=source, target=target, **kwargs)
 
 
-def recast(x: Any, from_: Any, *args: Any, **kwargs: Any) -> Any:
-    """Recast data `x` through the scale `from_` (dispatches on the scale).
+def recast(x: Any, scale: Any, *args: Any, **kwargs: Any) -> Any:
+    """Recast data `x` through `scale`, dispatching on the scale's class.
 
-    For a NestedScale the arguments are those of `recast_scale()`, with `to`
-    the target frame and `from_frame` the source frame. Dimension packages
-    register methods with `recast.register(TheirClass)`.
+    For a NestedScale the arguments are those of `recast_scale()`: `target`
+    is the target frame (or scale) and `source` the source frame, inferred
+    when omitted. Dimension packages register methods with
+    `recast.register(TheirClass)`.
     """
-    return _recast_method(from_, x, *args, **kwargs)
+    return _recast_method(scale, x, *args, **kwargs)
 
 
 recast.register = _recast_method.register  # type: ignore[attr-defined]

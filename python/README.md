@@ -16,10 +16,10 @@ print(s)
 
 d = pa.table({"unit": ["U1", "U2", "U3", "U4", "U5", "U6"],
               "capacity": [1.0, 2, 3, 4, 5, 6]})
-ns.recast_scale(d, s, from_="unit", to="sector", rule="sum")       # aggregate
+ns.recast_scale(d, s, source="unit", target="sector", rule="sum")  # aggregate
 y = pa.table({"sector": ["P", "S"], "capacity": [10.0, 20]})
-ns.recast_scale(y, s, from_="sector", to="class", rule="sum",
-                weight="size")                                    # split by weight
+ns.recast_scale(y, s, source="sector", target="class", rule="sum",
+                weight="size")                                     # split by weight
 ns.join_scale(d, s, attach=True)                                  # attach labels
 ```
 
@@ -29,12 +29,14 @@ Every function has the **same name and argument order** as in R, and is a
 free function (`ns.scale_frames(s)`, not `s.frames()`). `API.md` at the
 repository root is the shared specification. Python-specific spellings:
 
-* R's `from` argument is `from_` (a reserved word in Python);
+* the source/target arguments are `source` and `target`, the agreed names
+  for every binding; R still spells them `from`/`to` until 0.2.0;
 * R's `summary(x)` is `scale_summary(x)`;
 * a logical with an `offenders`/`sizes` attribute is a `Verdict`, which is
   truthy and compares equal to a bool.
 
-Error and warning messages are the R package's, verbatim. Correctness is
+Error and warning messages are the R package's, verbatim apart from the
+argument names. Correctness is
 checked against R: `specs/goldens/generate.R` writes several hundred cases
 from the R source, and the test suite replays every one.
 
@@ -47,13 +49,18 @@ columns are scanned, `batch=`/`batch_by=` push a filter into the scan, and
 without `collect=True` the result holds the observed target units only, as in
 R.
 
+Dimension packages build on the public `backend_*` functions
+(`backend_of`, `backend_scan`, `backend_restore`, ...) to accept the same
+inputs and return the caller's type.
+
 ## Stores shared with R
 
 `write_scale_dataset()` / `open_scale_dataset()` read and write the R
 package's store -- hive-partitioned Arrow IPC data plus a YAML manifest and
 Arrow leaftables -- so data and its scales move between R and Python
-unchanged. Scales written by R's timescales and geoscales can be viewed with
-their own vocabulary via `ns.twins.as_calendar()` / `ns.twins.as_geoscale()`.
+unchanged. Scales written by R's timescales and geoscales are restored as
+Calendars and GeoScales by the Python timescales and geoscales packages
+(`as_calendar()`, `as_geoscale()`).
 
 ## Scope
 

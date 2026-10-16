@@ -83,9 +83,9 @@ def test_python_round_trip(tmp_path):
 def test_stored_data_recasts_without_redeclaring(tmp_path):
     ns.write_scale_dataset(single_data(), single_scale(), tmp_path / "s")
     sd = ns.open_scale_dataset(tmp_path / "s")
-    got = ns.recast_scale(sd.data, sd.scale, from_="unit", to="class", rule="sum",
+    got = ns.recast_scale(sd.data, sd.scale, source="unit", target="class", rule="sum",
                           values="cap", collect=True)
-    ref = ns.recast_scale(single_data(), single_scale(), from_="unit", to="class",
+    ref = ns.recast_scale(single_data(), single_scale(), source="unit", target="class",
                           rule="sum", values="cap")
     assert sorted(rows(got), key=repr) == sorted(rows(ref), key=repr)
 

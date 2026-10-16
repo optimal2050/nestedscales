@@ -7,6 +7,7 @@ from conftest import (
     golden_table,
     load_golden,
     norm,
+    r_message,
     replay,
     rows,
 )
@@ -69,7 +70,7 @@ def replay_ignoring_warnings(run, c, compare):
         if c["error"]:
             with pytest.raises(ns.NestedScalesError) as e:
                 run()
-            assert str(e.value) == c["message"]
+            assert str(e.value) == r_message(c["message"])
             return
         compare(run())
 

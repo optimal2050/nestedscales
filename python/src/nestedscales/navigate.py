@@ -179,60 +179,60 @@ def _level_index(x: NestedScale, frame: str) -> tuple[list[str], int]:
 
 
 def scale_children(x: NestedScale, frame: str, unit: str | Sequence[str],
-                   to: str | None = None) -> list[str]:
-    """Codes one frame down (or at `to`) sharing an atom with `unit`."""
+                   target: str | None = None) -> list[str]:
+    """Codes one frame down (or at `target`) sharing an atom with `unit`."""
     _check_scale(x)
     _check_frame(x, frame)
     fr, i = _level_index(x, frame)
-    if to is None:
+    if target is None:
         if i == len(fr) - 1:
             _stop("`%s` is the finest %s; it has no children", frame,
                   scale_vocab(x)["frame"])
-        to = fr[i + 1]
-    _check_frame(x, to, "to")
-    return _related(x, frame, unit, to)
+        target = fr[i + 1]
+    _check_frame(x, target, "target")
+    return _related(x, frame, unit, target)
 
 
 def scale_parents(x: NestedScale, frame: str, unit: str | Sequence[str],
-                  to: str | None = None) -> list[str]:
-    """Codes one frame up (or at `to`) sharing an atom with `unit`."""
+                  target: str | None = None) -> list[str]:
+    """Codes one frame up (or at `target`) sharing an atom with `unit`."""
     _check_scale(x)
     _check_frame(x, frame)
     fr, i = _level_index(x, frame)
-    if to is None:
+    if target is None:
         if i == 0:
             _stop("`%s` is the coarsest %s; it has no parents", frame,
                   scale_vocab(x)["frame"])
-        to = fr[i - 1]
-    _check_frame(x, to, "to")
-    return _related(x, frame, unit, to)
+        target = fr[i - 1]
+    _check_frame(x, target, "target")
+    return _related(x, frame, unit, target)
 
 
 def scale_descendants(x: NestedScale, frame: str, unit: str | Sequence[str],
-                      to: str | None = None) -> pa.Table:
-    """Related codes at every finer frame (or `to`): columns `frame`, `unit`."""
+                      target: str | None = None) -> pa.Table:
+    """Related codes at every finer frame (or `target`): columns `frame`, `unit`."""
     _check_scale(x)
     _check_frame(x, frame)
     fr, i = _level_index(x, frame)
-    if to is None:
+    if target is None:
         targets = fr[i + 1:]
     else:
-        _check_frame(x, to, "to")
-        targets = [to]
+        _check_frame(x, target, "target")
+        targets = [target]
     return _related_table(x, frame, unit, targets)
 
 
 def scale_ancestors(x: NestedScale, frame: str, unit: str | Sequence[str],
-                    to: str | None = None) -> pa.Table:
-    """Related codes at every coarser frame (or `to`): columns `frame`, `unit`."""
+                    target: str | None = None) -> pa.Table:
+    """Related codes at every coarser frame (or `target`): columns `frame`, `unit`."""
     _check_scale(x)
     _check_frame(x, frame)
     fr, i = _level_index(x, frame)
-    if to is None:
+    if target is None:
         targets = fr[:i]
     else:
-        _check_frame(x, to, "to")
-        targets = [to]
+        _check_frame(x, target, "target")
+        targets = [target]
     return _related_table(x, frame, unit, targets)
 
 
@@ -249,8 +249,8 @@ def _related_table(x: NestedScale, frame: str, unit: str | Sequence[str],
 
 
 def _related(x: NestedScale, frame: str, unit: str | Sequence[str],
-             to: str) -> list[str]:
-    """Codes at `to` that share at least one atom with `unit` at `frame`."""
+             target: str) -> list[str]:
+    """Codes at `target` that share at least one atom with `unit` at `frame`."""
     asked = _as_str_tuple(unit)
     known = set(scale_units(x, frame))
     unknown = [u for u in dict.fromkeys(asked) if u not in known]
@@ -259,9 +259,9 @@ def _related(x: NestedScale, frame: str, unit: str | Sequence[str],
         _stop("code(s) not found at %s `%s`: %s", scale_vocab(x)["frame"],
               frame, _preview(unknown))
     hit = {t for f, t in zip(_strings(x.leaftable, frame),
-                             _strings(x.leaftable, to), strict=True)
+                             _strings(x.leaftable, target), strict=True)
            if f in unit and t is not None}
-    return [c for c in scale_units(x, to) if c in hit]
+    return [c for c in scale_units(x, target) if c in hit]
 
 
 def scale_coverage(x: NestedScale, weight: str | None = None

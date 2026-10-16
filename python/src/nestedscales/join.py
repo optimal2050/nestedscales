@@ -14,7 +14,7 @@ import pyarrow.compute as pc
 
 from ._backend import backend_of, restore, scan, schema_of
 from ._utils import _as_str_tuple, _preview, _stop, _warn
-from .recast import _match_choice, _want_diagnostics
+from .recast import Diagnostics, _match_choice, _want_diagnostics
 from .scale_class import (
     NestedScale,
     _atom_level,
@@ -34,7 +34,7 @@ def join_scale(data: Any, x: NestedScale, key: str | None = None,
                attach: bool | str | Sequence[str] | None = None,
                meta: bool = False, weight: str | None = None,
                as_factor: bool = True, collect: bool | None = None,
-               diagnostics: str = "auto") -> Any:
+               diagnostics: Diagnostics = "auto") -> Any:
     """Attach a label column named after the scale, optionally the codes of
     coarser frames (`"<name>.<frame>"`) and the unit's share and weight
     (`"<name>.share"`, `"<name>.weight"`). Existing columns are never

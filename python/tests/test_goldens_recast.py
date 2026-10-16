@@ -19,7 +19,7 @@ def test_recast_golden(i):
     _, kw = call_args({k: v for k, v in c["args"].items()
                        if k not in ("to_scale", "map")})
     if "to_scale" in c["args"]:
-        kw["to"] = build_scale(c["args"]["to_scale"])
+        kw["target"] = build_scale(c["args"]["to_scale"])
     if "map" in c["args"]:
         kw["map"] = golden_table(c["args"]["map"])
     data = golden_table(c["data"])

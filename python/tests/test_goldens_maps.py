@@ -3,7 +3,7 @@ including warning and error text."""
 import warnings
 
 import pytest
-from conftest import build_scale, load_golden, rowset
+from conftest import build_scale, load_golden, r_message, rowset
 
 import nestedscales as ns
 
@@ -16,10 +16,11 @@ def replay(call, expect):
         if expect["error"]:
             with pytest.raises(ns.NestedScalesError) as e:
                 call()
-            assert str(e.value) == expect["message"]
+            assert str(e.value) == r_message(expect["message"])
             return
         got = call()
-    assert [str(w.message) for w in rec] == expect["warnings"]
+    assert [str(w.message) for w in rec] == [r_message(w)
+                                             for w in expect["warnings"]]
     assert rowset(got) == rowset(expect["value"])
     assert got.column_names[2:] == ["n_from", "n_overlap", "w", "w_from"]
 

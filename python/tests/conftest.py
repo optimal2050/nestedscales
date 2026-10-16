@@ -48,7 +48,7 @@ def rows(t):
     if isinstance(t, pa.Table):
         t = t.to_pylist()
     elif not isinstance(t, list):
-        t = ns.as_table(t).to_pylist()
+        t = ns.backend_pull(t).to_pylist()
     return [tuple(sorted((k, norm(v)) for k, v in r.items())) for r in t]
 
 
@@ -57,14 +57,28 @@ def rowset(t):
     return set(rows(t))
 
 
+# R still spells source/target as from/to (the rename lands after CRAN
+# accepts 0.1.1); until then the goldens are translated on the way in.
+R_ARGS = {"from": "source", "to": "target"}
+R_MESSAGE = [("`from`", "`source`"), ("`to`", "`target`"),
+             ("`from=`", "`source=`"), ("`to=`", "`target=`"),
+             ("`from = ", "`source = "), ("`to = ", "`target = ")]
+
+
+def r_message(msg):
+    """An R message in the binding's argument names."""
+    for a, b in R_MESSAGE:
+        msg = msg.replace(a, b)
+    return msg
+
+
 def call_args(args):
-    """Golden arguments as Python call arguments: R's `from` is `from_`, and
-    numeric keys (R's unnamed list elements) are positional."""
+    """Golden arguments as Python call arguments: R's argument names
+    translated, and numeric keys (R's unnamed list elements) positional."""
     if isinstance(args, list):
         return list(args), {}
     pos = [v for k, v in args.items() if k.isdigit()]
-    kw = {("from_" if k == "from" else k): v for k, v in args.items()
-          if not k.isdigit()}
+    kw = {R_ARGS.get(k, k): v for k, v in args.items() if not k.isdigit()}
     return pos, kw
 
 
@@ -75,10 +89,10 @@ def replay(fn, pos, kw, case, compare):
         if case["error"]:
             with pytest.raises(ns.NestedScalesError) as e:
                 fn(*pos, **kw)
-            assert str(e.value) == case["message"]
+            assert str(e.value) == r_message(case["message"])
             return None
         got = fn(*pos, **kw)
-    assert [str(w.message) for w in rec] == case["warnings"]
+    assert [str(w.message) for w in rec] == [r_message(w) for w in case["warnings"]]
     compare(got)
     return got
 

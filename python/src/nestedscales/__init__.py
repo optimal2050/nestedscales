@@ -3,11 +3,19 @@
 Python binding of the R package of the same name. Every function has the same
 name and argument order as in R; see API.md at the repository root.
 """
-# the twin views register their vocabularies on import
-from . import twins  # noqa: E402,F401
-from ._backend import as_table
 from ._utils import NestedScalesError, NestedScalesWarning
 from .array import as_scale_array, as_scale_table
+from .backend import (
+    Backend,
+    backend_bind_rows,
+    backend_distinct,
+    backend_is_lazy,
+    backend_of,
+    backend_pull,
+    backend_restore,
+    backend_scan,
+    backend_schema,
+)
 from .dataset import (
     ScaleDataset,
     open_scale_dataset,
@@ -103,7 +111,9 @@ __all__ = [
     "list_scale_rules", "register_scale_map", "register_scale_map_between",
     "register_scale_rule", "scale_atom_pairs", "scale_map", "scale_map_between",
     "NestedScale", "NestedScalesError", "NestedScalesWarning", "ScaleSummary",
-    "Verdict", "as_table", "is_valid_frame", "scale_alias_property",
+    "Verdict", "Backend", "backend_bind_rows", "backend_distinct",
+    "backend_is_lazy", "backend_of", "backend_pull", "backend_restore",
+    "backend_scan", "backend_schema", "is_valid_frame", "scale_alias_property",
     "scale_ancestors", "scale_ancestry", "scale_atom_level", "scale_children",
     "scale_class", "scale_coverage", "scale_crosses", "scale_descendants",
     "scale_example", "scale_example2", "scale_family", "scale_frames",

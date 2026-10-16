@@ -22,7 +22,7 @@ writes the cases, and every binding replays them.
 | summary | `summary(x)` | `scale_summary(x)` |
 | print | `print(x)` | `str(x)`; `repr(x)` is the one-line `format()` |
 | subclass hook | S7 generic | `functools.singledispatch` |
-| argument `from` | `from` | `from_` (reserved word); positional calls are identical |
+| source / target argument | `from` / `to` until 0.2.0 | `source` / `target` |
 | named vector argument (`rule = c(a = "sum")`) | named vector or list | `dict` |
 | lazy input | arrow Dataset / dtplyr | `pyarrow.dataset.Dataset`, polars `LazyFrame` |
 | `x[frame, unit]` | `[.NestedScale` | `x[frame, unit]` (`__getitem__`) |
@@ -55,6 +55,16 @@ Known differences:
 ## Functions
 
 Status: **R** = in the R package; **Py** = in the Python binding.
+
+Signatures are the agreed ones. Three renames are already in Python and land
+in R 0.2.0, after CRAN accepts 0.1.1; R keeps the old spellings as deprecated
+aliases for one release:
+
+* `from` / `to` become `source` / `target` everywhere: frames, scales,
+  crosswalk columns, navigation, and the atom-pair columns. In `recast()`,
+  the scale argument is `scale` and the source frame `source`;
+* the `clear_*` functions take `name` (registry names or keys) and `scope`;
+* the backend helpers `.ms_*` become the `backend_*` functions below.
 
 ### Construct and inspect
 
@@ -89,10 +99,10 @@ Status: **R** = in the R package; **Py** = in the Python binding.
 | `scale_nests` | `x, parent, child` | verdict, `offenders` | ✓ | ✓ |
 | `scale_crosses` | `x, a, b` | verdict, `offenders` | ✓ | ✓ |
 | `scale_is_uniform` | `x, frame, weight=NULL, tolerance=1e-9` | verdict, `sizes` | ✓ | ✓ |
-| `scale_children` | `x, frame, unit, to=NULL` | codes | ✓ | ✓ |
-| `scale_parents` | `x, frame, unit, to=NULL` | codes | ✓ | ✓ |
-| `scale_descendants` | `x, frame, unit, to=NULL` | table `frame, unit` | ✓ | ✓ |
-| `scale_ancestors` | `x, frame, unit, to=NULL` | table `frame, unit` | ✓ | ✓ |
+| `scale_children` | `x, frame, unit, target=NULL` | codes | ✓ | ✓ |
+| `scale_parents` | `x, frame, unit, target=NULL` | codes | ✓ | ✓ |
+| `scale_descendants` | `x, frame, unit, target=NULL` | table `frame, unit` | ✓ | ✓ |
+| `scale_ancestors` | `x, frame, unit, target=NULL` | table `frame, unit` | ✓ | ✓ |
 
 ### Rules
 
@@ -102,7 +112,7 @@ Status: **R** = in the R package; **Py** = in the Python binding.
 | `register_scale_rule` | `param, rule, weight=NULL, scope=NULL` | the entry | ✓ | ✓ |
 | `get_scale_rule` | `param, scope=NULL` | entry `rule, weight, scope`, or missing | ✓ | ✓ |
 | `list_scale_rules` | `scope=NULL` | table `param, rule, weight, scope` | ✓ | ✓ |
-| `clear_scale_rules` | `param=NULL, scope=NULL` | nothing | ✓ | ✓ |
+| `clear_scale_rules` | `name=NULL, scope=NULL` | nothing | ✓ | ✓ |
 
 A rule name may be a unique prefix (`"weighted"`), as with R's `match.arg()`.
 A scoped lookup falls back to the unscoped entry. A value column with no rule
@@ -112,17 +122,17 @@ A scoped lookup falls back to the unscoped entry. A value column with no rule
 
 | Function | Arguments | Returns | R | Py |
 |---|---|---|---|---|
-| `scale_atom_pairs` | `x, from, to, weight=NULL, ...` | table `from, to, w` (subclass hook) | ✓ | ✓ |
-| `scale_map` | `x, from, to, weight=NULL, by=character(), ...` | crosswalk | ✓ | ✓ |
-| `scale_map_between` | `from, to, weight=NULL` | crosswalk | ✓ | ✓ |
-| `register_scale_map` | `x, from, to, map` | registry key | ✓ | ✓ |
-| `register_scale_map_between` | `from, to, map` | registry key | ✓ | ✓ |
-| `get_scale_map` | `x, from, to` | map, or missing | ✓ | ✓ |
-| `get_scale_map_between` | `from, to` | map, or missing | ✓ | ✓ |
+| `scale_atom_pairs` | `x, source, target, weight=NULL, ...` | table `source, target, w` (subclass hook) | ✓ | ✓ |
+| `scale_map` | `x, source, target, weight=NULL, by=character(), ...` | crosswalk | ✓ | ✓ |
+| `scale_map_between` | `source, target, weight=NULL` | crosswalk | ✓ | ✓ |
+| `register_scale_map` | `x, source, target, map` | registry key | ✓ | ✓ |
+| `register_scale_map_between` | `source, target, map` | registry key | ✓ | ✓ |
+| `get_scale_map` | `x, source, target` | map, or missing | ✓ | ✓ |
+| `get_scale_map_between` | `source, target` | map, or missing | ✓ | ✓ |
 | `list_scale_maps` | | table `key` | ✓ | ✓ |
-| `clear_scale_maps` | | nothing | ✓ | ✓ |
+| `clear_scale_maps` | `name=NULL` | nothing | ✓ | ✓ |
 
-A crosswalk has columns `<from label>, <to label>, n_from, n_overlap, w,
+A crosswalk has columns `<source label>, <target label>, n_from, n_overlap, w,
 w_from` (plus any `by` columns first). `n_from` and `n_overlap` are 32-bit
 integers, `w` and `w_from` doubles. A missing target label marks atoms the
 target does not cover. The split share of `sum` disaggregation is
@@ -133,11 +143,11 @@ target does not cover. The split share of `sum` disaggregation is
 
 | Function | Arguments | Returns | R | Py |
 |---|---|---|---|---|
-| `recast_scale` | `data, x, from=NULL, to, key=NULL, values=NULL, rule=NULL, weight=NULL, na_action="drop", parent=NULL, collect=NULL, diagnostics="auto", missing_sources="na", batch=NULL, batch_by=NULL, ...` | table keyed at `to` (`from` for the share rules) | ✓ | ✓ |
-| `recast_crosswalk` | `data, map, from, to, key=from, values=NULL, rule=NULL, ids=NULL, by=character(), targets=NULL, missing_sources="na", unit="unit", collect=NULL` | table keyed at `to` | ✓ | ✓ |
-| `recast_to_atoms` | `data, x, from=NULL, key=NULL, values=NULL, rule=NULL, weight=NULL, attach_weight=TRUE, collect=NULL` | table keyed at the atoms | ✓ | ✓ |
-| `recast_from_atoms` | `data, x, to, key=NULL, values=NULL, rule=NULL, weight=NULL, na_rm=FALSE, na_action="drop", collect=NULL` | table keyed at `to` | ✓ | ✓ |
-| `recast` | `x, from, ...` | dispatches on the scale | ✓ | ✓ |
+| `recast_scale` | `data, x, source=NULL, target, key=NULL, values=NULL, rule=NULL, weight=NULL, na_action="drop", parent=NULL, collect=NULL, diagnostics="auto", missing_sources="na", batch=NULL, batch_by=NULL, ...` | table keyed at `target` (`source` for the share rules) | ✓ | ✓ |
+| `recast_crosswalk` | `data, map, source, target, key=source, values=NULL, rule=NULL, ids=NULL, by=character(), targets=NULL, missing_sources="na", unit="unit", collect=NULL` | table keyed at `target` | ✓ | ✓ |
+| `recast_to_atoms` | `data, x, source=NULL, key=NULL, values=NULL, rule=NULL, weight=NULL, attach_weight=TRUE, collect=NULL` | table keyed at the atoms | ✓ | ✓ |
+| `recast_from_atoms` | `data, x, target, key=NULL, values=NULL, rule=NULL, weight=NULL, na_rm=FALSE, na_action="drop", collect=NULL` | table keyed at `target` | ✓ | ✓ |
+| `recast` | `x, scale, ...` | dispatches on the scale | ✓ | ✓ |
 
 ### Subset, collapse, attach
 
@@ -151,6 +161,22 @@ target does not cover. The split share of `sum` disaggregation is
 | `as_scale_table` | `a, x, value="value", frames=NULL, drop_na=TRUE` | table | ✓ | one scale |
 
 `as_factor = TRUE` gives an R factor, and a dictionary column in Python.
+
+### Backends
+
+For dimension packages: accept the same inputs as the core verbs and return
+results in the caller's type.
+
+| Function | Arguments | Returns | R | Py |
+|---|---|---|---|---|
+| `backend_of` | `data, arg="data"` | the backend (errors on an unsupported input) | `.ms_backend` | ✓ |
+| `backend_is_lazy` | `backend` | logical | `.ms_is_lazy` | ✓ |
+| `backend_schema` | `data, backend=NULL` | column names and types, no scan | `.ms_schema` | ✓ |
+| `backend_scan` | `data, backend=NULL, columns=NULL, filter=NULL` | the needed columns and rows | `.ms_lazy` + `.ms_pull` | ✓ |
+| `backend_pull` | `data` | an in-memory table | `.ms_pull` | ✓ |
+| `backend_restore` | `table, backend, collect=NULL` | the caller's type | `.ms_restore` | ✓ |
+| `backend_bind_rows` | `parts` | one table | `.ms_bind_rows` | ✓ |
+| `backend_distinct` | `table, columns` | distinct rows, first-appearance order | — | ✓ |
 
 ### Store
 

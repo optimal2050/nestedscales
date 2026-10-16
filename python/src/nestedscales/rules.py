@@ -92,16 +92,17 @@ def list_scale_rules(scope: str | None = None) -> pa.Table:
     })
 
 
-def clear_scale_rules(param: str | Sequence[str] | None = None,
+def clear_scale_rules(name: str | Sequence[str] | None = None,
                       scope: str | None = None) -> None:
-    """Remove entries: everything, one scope, or the named params."""
-    if param is None:
+    """Remove rules: the named value columns (within `scope`), every rule of
+    one scope, or, with neither, everything."""
+    if name is None:
         if scope is None:
             _RULE_REGISTRY.clear()
             return
         present = [k for k in _RULE_REGISTRY if k.startswith(scope + ":")]
     else:
-        params = [param] if isinstance(param, str) else list(param)
+        params = [name] if isinstance(name, str) else list(name)
         present = [k for k in (_rule_key(p, scope) for p in params)
                    if k in _RULE_REGISTRY]
     for k in present:

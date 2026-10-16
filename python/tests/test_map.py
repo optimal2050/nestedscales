@@ -66,7 +66,7 @@ def test_between_names_and_keys():
 
 def test_atom_pairs_seam():
     d = ns.scale_atom_pairs(ns.scale_example(), "class", "group")
-    assert d.column_names == ["from", "to", "w"] and d.num_rows == 7
+    assert d.column_names == ["source", "target", "w"] and d.num_rows == 7
 
 
 def test_by_columns_are_carried():
@@ -83,8 +83,9 @@ def test_atom_pairs_override_for_subclass():
         pass
 
     @ns.scale_atom_pairs.register(Gen)
-    def _(x, from_, to, weight=None, **kw):
-        return pa.table({"from": ["a", "a"], "to": ["b1", "b2"], "w": [1.0, 3.0]})
+    def _(x, source, target, weight=None, **kw):
+        return pa.table({"source": ["a", "a"], "target": ["b1", "b2"],
+                         "w": [1.0, 3.0]})
 
     s = ns.scale_example2()
     g = Gen(leaftable=s.leaftable, frames=s.frames, members=s.members, key=s.key,
@@ -133,3 +134,14 @@ def test_between_registry():
     key = ns.register_scale_map_between("example", "other", m)
     assert key == "example->other"
     assert ns.get_scale_map_between(ns.scale_example(), "other").equals(m)
+
+
+def test_clear_by_name():
+    s = ns.scale_example()
+    k1 = ns.register_scale_map(s, "class", "group", fake())
+    ns.register_scale_map(s, "group", "class", fake().rename_columns(
+        ["group", "class", "n_from", "n_overlap", "w", "w_from"]))
+    ns.clear_scale_maps(k1)
+    assert ns.list_scale_maps()["key"].to_pylist() == ["example:group->class"]
+    ns.clear_scale_maps()
+    assert ns.list_scale_maps().num_rows == 0

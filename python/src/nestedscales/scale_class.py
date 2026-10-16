@@ -62,6 +62,33 @@ class NestedScale:
     meta: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        self._normalise()
+        self._raise_if_invalid(self._errors())
+
+    def _errors(self) -> list[str]:
+        """Validation errors. A subclass returns its parents' errors followed by
+        its own -- S7's order, duplicates included."""
+        return _validate(self)
+
+    def _construct(self) -> None:
+        """Validate a newly built subclass object as S7's constructor does: the
+        parent object is created (and validated) first, so a parent-level
+        failure names the parent class; then the whole object is validated."""
+        self._normalise()
+        self._raise_if_invalid(_validate(self), NestedScale)
+        self._raise_if_invalid(self._errors())
+
+    def _raise_if_invalid(self, errs: list[str], cls: type | None = None) -> None:
+        if not errs:
+            return
+        cls = cls or type(self)
+        pkg = getattr(cls, "_r_package", cls.__module__.split(".")[0])
+        if cls is NestedScale:
+            pkg = "nestedscales"
+        _stop("<%s::%s> object is invalid:\n%s", pkg, cls.__name__,
+              "\n".join("- " + e for e in errs))
+
+    def _normalise(self) -> None:
         object.__setattr__(self, "frames", _as_str_tuple(self.frames))
         if isinstance(self.members, Mapping):
             object.__setattr__(self, "members", {
@@ -74,12 +101,6 @@ class NestedScale:
                 meta["residuals"] = {k: _as_str_tuple(v)
                                      for k, v in meta["residuals"].items()}
             object.__setattr__(self, "meta", meta)
-        errs = _validate(self)
-        if errs:
-            cls = type(self)
-            pkg = getattr(cls, "_r_package", cls.__module__.split(".")[0])
-            _stop("<%s::%s> object is invalid:\n%s", pkg, cls.__name__,
-                  "\n".join("- " + e for e in errs))
 
     def __eq__(self, other: object) -> bool:
         if type(other) is not type(self):
