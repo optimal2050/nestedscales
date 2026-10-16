@@ -1,0 +1,40 @@
+name: python
+
+on:
+  push:
+    paths: ["python/**", "specs/**", ".github/workflows/python.yaml"]
+  pull_request:
+    paths: ["python/**", "specs/**", ".github/workflows/python.yaml"]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.10", "3.13"]
+        pyarrow: ["latest"]
+        include:
+          - os: ubuntu-latest
+            python: "3.10"
+            pyarrow: "16.1.0"
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test,polars,pandas]" ruff
+      - name: Pin pyarrow
+        if: matrix.pyarrow != 'latest'
+        run: python -m pip install "pyarrow==${{ matrix.pyarrow }}" "numpy<2"
+      - name: Lint
+        run: ruff check src tests
+      - name: Test
+        run: python -m pytest -q

@@ -6,6 +6,7 @@
 ^python$
 ^docs$
 ^specs$
+^API\.md$
 ^benchmark$
 ^inst/include$
 ^vignettes/articles$

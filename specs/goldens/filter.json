@@ -1,0 +1,2142 @@
+{
+  "generated_by": "nestedscales 0.1.1",
+  "cases": [
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "sector",
+            "P"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["P"],
+          "class": ["G1", "G2"],
+          "group": ["G1", "GB"],
+          "unit": ["U1", "U2", "U3", "U4"]
+        },
+        "name": "example[sector:P]",
+        "parent_name": "example",
+        "coverage": {
+          "size": 0.32258064516129,
+          "count": 0.666666666666667
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U1",
+            "size": 100,
+            "count": 10
+          },
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U2",
+            "size": 200,
+            "count": 90
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U3",
+            "size": 300,
+            "count": 30
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U4",
+            "size": 400,
+            "count": 70
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "class",
+            ["G1", "S1"]
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["P", "S"],
+          "class": ["G1", "S1"],
+          "group": ["G1", "GB", "GC"],
+          "unit": ["U1", "U2", "U5", "U6"]
+        },
+        "name": "example[class:G1+S1]",
+        "parent_name": "example",
+        "coverage": {
+          "size": 0.451612903225806,
+          "count": 0.666666666666667
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U1",
+            "size": 100,
+            "count": 10
+          },
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U2",
+            "size": 200,
+            "count": 90
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GB",
+            "unit": "U5",
+            "size": 500,
+            "count": 50
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GC",
+            "unit": "U6",
+            "size": 600,
+            "count": 50
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "group",
+            "GB"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["P", "S"],
+          "class": ["G2", "S1"],
+          "group": ["GB"],
+          "unit": ["U3", "U4", "U5"]
+        },
+        "name": "example[group:GB]",
+        "parent_name": "example",
+        "coverage": {
+          "size": 0.387096774193548,
+          "count": 0.5
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U3",
+            "size": 300,
+            "count": 30
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U4",
+            "size": 400,
+            "count": 70
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GB",
+            "unit": "U5",
+            "size": 500,
+            "count": 50
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "unit",
+            ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["P", "S"],
+          "class": ["G1", "G2", "S1"],
+          "group": ["G1", "GB", "GC"],
+          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+        },
+        "name": "example",
+        "parent_name": null,
+        "coverage": null,
+        "parent_totals": null,
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U1",
+            "size": 100,
+            "count": 10
+          },
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U2",
+            "size": 200,
+            "count": 90
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U3",
+            "size": 300,
+            "count": 30
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U4",
+            "size": 400,
+            "count": 70
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GB",
+            "unit": "U5",
+            "size": 500,
+            "count": 50
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GC",
+            "unit": "U6",
+            "size": 600,
+            "count": 50
+          },
+          {
+            "sector": null,
+            "class": null,
+            "group": null,
+            "unit": "OTH",
+            "size": 1000,
+            "count": 0
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "sector",
+            "P"
+          ]
+        },
+        {
+          "fn": "filter_scale",
+          "args": [
+            "class",
+            "G1"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["P"],
+          "class": ["G1"],
+          "group": ["G1"],
+          "unit": ["U1", "U2"]
+        },
+        "name": "example[class:G1]",
+        "parent_name": "example",
+        "coverage": {
+          "size": 0.0967741935483871,
+          "count": 0.333333333333333
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U1",
+            "size": 100,
+            "count": 10
+          },
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U2",
+            "size": 200,
+            "count": 90
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "unit",
+            "OTH"
+          ]
+        }
+      ],
+      "error": true,
+      "message": "frame(s) left with no codes: sector, class, group; pass drop_empty_frames = TRUE"
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": {
+            "1": "unit",
+            "2": "OTH",
+            "drop_empty_frames": true
+          }
+        }
+      ],
+      "error": true,
+      "message": "<nestedscales::NestedScale> object is invalid:\n- weight column `count` sums to zero\n- `meta$coverage` values must lie in (0, 1]"
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "sector",
+            "Q"
+          ]
+        }
+      ],
+      "error": true,
+      "message": "code(s) not found at frame `sector`: Q"
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "unit",
+            ["U1", "U2", "U3", "U4", "U5", "U6"]
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["P", "S"],
+          "class": ["G1", "G2", "S1"],
+          "group": ["G1", "GB", "GC"],
+          "unit": ["U1", "U2", "U3", "U4", "U5", "U6"]
+        },
+        "name": "example[unit:U1+U2+U3+U4+U5+U6]",
+        "parent_name": "example",
+        "coverage": {
+          "size": 0.67741935483871,
+          "count": 1
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U1",
+            "size": 100,
+            "count": 10
+          },
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U2",
+            "size": 200,
+            "count": 90
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U3",
+            "size": 300,
+            "count": 30
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U4",
+            "size": 400,
+            "count": 70
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GB",
+            "unit": "U5",
+            "size": 500,
+            "count": 50
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GC",
+            "unit": "U6",
+            "size": 600,
+            "count": 50
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "prune_scale",
+          "args": [
+            "sector"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector"],
+        "key": "unit",
+        "members": {
+          "sector": ["P", "S"]
+        },
+        "name": "example@sector",
+        "parent_name": "example",
+        "coverage": {
+          "size": 0.67741935483871,
+          "count": 1
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "size": 1000,
+            "count": 200,
+            "unit": "P"
+          },
+          {
+            "sector": "S",
+            "size": 1100,
+            "count": 100,
+            "unit": "S"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "prune_scale",
+          "args": [
+            "class"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class"],
+        "key": "unit",
+        "members": {
+          "sector": ["P", "S"],
+          "class": ["G1", "G2", "S1"]
+        },
+        "name": "example@class",
+        "parent_name": "example",
+        "coverage": {
+          "size": 0.67741935483871,
+          "count": 1
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G1",
+            "size": 300,
+            "count": 100,
+            "unit": "G1"
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "size": 700,
+            "count": 100,
+            "unit": "G2"
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "size": 1100,
+            "count": 100,
+            "unit": "S1"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "prune_scale",
+          "args": [
+            "group"
+          ]
+        }
+      ],
+      "error": true,
+      "message": "<nestedscales::NestedScale> object is invalid:\n- `leaftable$unit` must be unique; duplicated: GB. Parallel dimensions belong in separate NestedScale objects."
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "prune_scale",
+          "args": [
+            "unit"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["P", "S"],
+          "class": ["G1", "G2", "S1"],
+          "group": ["G1", "GB", "GC"],
+          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+        },
+        "name": "example@unit",
+        "parent_name": "example",
+        "coverage": null,
+        "parent_totals": null,
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U1",
+            "size": 100,
+            "count": 10
+          },
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U2",
+            "size": 200,
+            "count": 90
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U3",
+            "size": 300,
+            "count": 30
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U4",
+            "size": 400,
+            "count": 70
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GB",
+            "unit": "U5",
+            "size": 500,
+            "count": 50
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GC",
+            "unit": "U6",
+            "size": 600,
+            "count": 50
+          },
+          {
+            "sector": null,
+            "class": null,
+            "group": null,
+            "unit": "OTH",
+            "size": 1000,
+            "count": 0
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "sector",
+            "S"
+          ]
+        },
+        {
+          "fn": "prune_scale",
+          "args": [
+            "class"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class"],
+        "key": "unit",
+        "members": {
+          "sector": ["S"],
+          "class": ["S1"]
+        },
+        "name": "example[sector:S]@class",
+        "parent_name": "example[sector:S]",
+        "coverage": {
+          "size": 0.354838709677419,
+          "count": 0.333333333333333
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "S",
+            "class": "S1",
+            "size": 1100,
+            "count": 100,
+            "unit": "S1"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_from_leaftable",
+        "leaftable": {
+          "grp": ["A", "A", "B"],
+          "unit": ["u1", "u2", "u3"]
+        },
+        "frames": ["grp", "unit"],
+        "key": "unit",
+        "name": "noweights"
+      },
+      "steps": [
+        {
+          "fn": "prune_scale",
+          "args": [
+            "grp"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["grp"],
+        "key": "unit",
+        "members": {
+          "grp": ["A", "B"]
+        },
+        "name": "noweights@grp",
+        "parent_name": "noweights",
+        "coverage": null,
+        "parent_totals": null,
+        "weights": [],
+        "default_weight": null,
+        "leaftable": [
+          {
+            "grp": "A",
+            "unit": "A"
+          },
+          {
+            "grp": "B",
+            "unit": "B"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scale",
+      "scale": {
+        "build": "scale_from_leaftable",
+        "leaftable": {
+          "sector": ["P", "P", "P", "P", "S", "S", null],
+          "class": ["G1", "G1", "G2", "G2", "S1", "S1", null],
+          "group": ["G1", "G1", "GB", "GB", "GB", "GC", null],
+          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+          "size": [100, 200, 300, 400, 500, 600, 1000],
+          "count": [10, 90, 30, 70, 50, 50, 0]
+        },
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "name": "example",
+        "residuals": {
+          "unit": ["U6"]
+        }
+      },
+      "steps": [
+        {
+          "fn": "filter_scale",
+          "args": [
+            "class",
+            "S1"
+          ]
+        }
+      ],
+      "error": false,
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["S"],
+          "class": ["S1"],
+          "group": ["GB", "GC"],
+          "unit": ["U5", "U6"]
+        },
+        "name": "example[class:S1]",
+        "parent_name": "example",
+        "coverage": {
+          "size": 0.354838709677419,
+          "count": 0.333333333333333
+        },
+        "parent_totals": {
+          "size": 3100,
+          "count": 300
+        },
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "leaftable": [
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GB",
+            "unit": "U5",
+            "size": 500,
+            "count": 50
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GC",
+            "unit": "U6",
+            "size": 600,
+            "count": 50
+          }
+        ]
+      }
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "class",
+        "weight": null
+      },
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "size": 300,
+          "share": 0.142857142857143
+        },
+        {
+          "class": "G2",
+          "size": 700,
+          "share": 0.333333333333333
+        },
+        {
+          "class": "S1",
+          "size": 1100,
+          "share": 0.523809523809524
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "class",
+        "weight": null,
+        "within": "sector"
+      },
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "sector": "P",
+          "size": 300,
+          "share": 0.3
+        },
+        {
+          "class": "G2",
+          "sector": "P",
+          "size": 700,
+          "share": 0.7
+        },
+        {
+          "class": "S1",
+          "sector": "S",
+          "size": 1100,
+          "share": 1
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "class",
+        "weight": "count"
+      },
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "count": 100,
+          "share": 0.333333333333333
+        },
+        {
+          "class": "G2",
+          "count": 100,
+          "share": 0.333333333333333
+        },
+        {
+          "class": "S1",
+          "count": 100,
+          "share": 0.333333333333333
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "class",
+        "weight": "count",
+        "within": "sector"
+      },
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "sector": "P",
+          "count": 100,
+          "share": 0.5
+        },
+        {
+          "class": "G2",
+          "sector": "P",
+          "count": 100,
+          "share": 0.5
+        },
+        {
+          "class": "S1",
+          "sector": "S",
+          "count": 100,
+          "share": 1
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "group",
+        "weight": null
+      },
+      "error": false,
+      "value": [
+        {
+          "group": "G1",
+          "size": 300,
+          "share": 0.142857142857143
+        },
+        {
+          "group": "GB",
+          "size": 1200,
+          "share": 0.571428571428571
+        },
+        {
+          "group": "GC",
+          "size": 600,
+          "share": 0.285714285714286
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "group",
+        "weight": null,
+        "within": "sector"
+      },
+      "error": false,
+      "value": [
+        {
+          "group": "G1",
+          "sector": "P",
+          "size": 300,
+          "share": 0.3
+        },
+        {
+          "group": "GB",
+          "sector": "P",
+          "size": 700,
+          "share": 0.7
+        },
+        {
+          "group": "GB",
+          "sector": "S",
+          "size": 500,
+          "share": 0.454545454545455
+        },
+        {
+          "group": "GC",
+          "sector": "S",
+          "size": 600,
+          "share": 0.545454545454545
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "group",
+        "weight": "count"
+      },
+      "error": false,
+      "value": [
+        {
+          "group": "G1",
+          "count": 100,
+          "share": 0.333333333333333
+        },
+        {
+          "group": "GB",
+          "count": 150,
+          "share": 0.5
+        },
+        {
+          "group": "GC",
+          "count": 50,
+          "share": 0.166666666666667
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "group",
+        "weight": "count",
+        "within": "sector"
+      },
+      "error": false,
+      "value": [
+        {
+          "group": "G1",
+          "sector": "P",
+          "count": 100,
+          "share": 0.5
+        },
+        {
+          "group": "GB",
+          "sector": "P",
+          "count": 100,
+          "share": 0.5
+        },
+        {
+          "group": "GB",
+          "sector": "S",
+          "count": 50,
+          "share": 0.5
+        },
+        {
+          "group": "GC",
+          "sector": "S",
+          "count": 50,
+          "share": 0.5
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "unit",
+        "weight": null
+      },
+      "error": false,
+      "value": [
+        {
+          "unit": "U1",
+          "size": 100,
+          "share": 0.032258064516129
+        },
+        {
+          "unit": "U2",
+          "size": 200,
+          "share": 0.0645161290322581
+        },
+        {
+          "unit": "U3",
+          "size": 300,
+          "share": 0.0967741935483871
+        },
+        {
+          "unit": "U4",
+          "size": 400,
+          "share": 0.129032258064516
+        },
+        {
+          "unit": "U5",
+          "size": 500,
+          "share": 0.161290322580645
+        },
+        {
+          "unit": "U6",
+          "size": 600,
+          "share": 0.193548387096774
+        },
+        {
+          "unit": "OTH",
+          "size": 1000,
+          "share": 0.32258064516129
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "unit",
+        "weight": null,
+        "within": "sector"
+      },
+      "error": false,
+      "value": [
+        {
+          "unit": "U1",
+          "sector": "P",
+          "size": 100,
+          "share": 0.1
+        },
+        {
+          "unit": "U2",
+          "sector": "P",
+          "size": 200,
+          "share": 0.2
+        },
+        {
+          "unit": "U3",
+          "sector": "P",
+          "size": 300,
+          "share": 0.3
+        },
+        {
+          "unit": "U4",
+          "sector": "P",
+          "size": 400,
+          "share": 0.4
+        },
+        {
+          "unit": "U5",
+          "sector": "S",
+          "size": 500,
+          "share": 0.454545454545455
+        },
+        {
+          "unit": "U6",
+          "sector": "S",
+          "size": 600,
+          "share": 0.545454545454545
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "unit",
+        "weight": "count"
+      },
+      "error": false,
+      "value": [
+        {
+          "unit": "U1",
+          "count": 10,
+          "share": 0.0333333333333333
+        },
+        {
+          "unit": "U2",
+          "count": 90,
+          "share": 0.3
+        },
+        {
+          "unit": "U3",
+          "count": 30,
+          "share": 0.1
+        },
+        {
+          "unit": "U4",
+          "count": 70,
+          "share": 0.233333333333333
+        },
+        {
+          "unit": "U5",
+          "count": 50,
+          "share": 0.166666666666667
+        },
+        {
+          "unit": "U6",
+          "count": 50,
+          "share": 0.166666666666667
+        },
+        {
+          "unit": "OTH",
+          "count": 0,
+          "share": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "unit",
+        "weight": "count",
+        "within": "sector"
+      },
+      "error": false,
+      "value": [
+        {
+          "unit": "U1",
+          "sector": "P",
+          "count": 10,
+          "share": 0.05
+        },
+        {
+          "unit": "U2",
+          "sector": "P",
+          "count": 90,
+          "share": 0.45
+        },
+        {
+          "unit": "U3",
+          "sector": "P",
+          "count": 30,
+          "share": 0.15
+        },
+        {
+          "unit": "U4",
+          "sector": "P",
+          "count": 70,
+          "share": 0.35
+        },
+        {
+          "unit": "U5",
+          "sector": "S",
+          "count": 50,
+          "share": 0.5
+        },
+        {
+          "unit": "U6",
+          "sector": "S",
+          "count": 50,
+          "share": 0.5
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "scale_share",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": null,
+      "args": {
+        "frame": "unit",
+        "within": "group"
+      },
+      "error": false,
+      "value": [
+        {
+          "unit": "U1",
+          "group": "G1",
+          "size": 100,
+          "share": 0.333333333333333
+        },
+        {
+          "unit": "U2",
+          "group": "G1",
+          "size": 200,
+          "share": 0.666666666666667
+        },
+        {
+          "unit": "U3",
+          "group": "GB",
+          "size": 300,
+          "share": 0.25
+        },
+        {
+          "unit": "U4",
+          "group": "GB",
+          "size": 400,
+          "share": 0.333333333333333
+        },
+        {
+          "unit": "U5",
+          "group": "GB",
+          "size": 500,
+          "share": 0.416666666666667
+        },
+        {
+          "unit": "U6",
+          "group": "GC",
+          "size": 600,
+          "share": 1
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "class": ["G1", "G2", "S1", "G1"],
+          "v": [1, 2, 3, 4]
+        },
+        "types": {
+          "class": "string",
+          "v": "double"
+        }
+      },
+      "args": [],
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "v": 1,
+          "example": "G1"
+        },
+        {
+          "class": "G2",
+          "v": 2,
+          "example": "G2"
+        },
+        {
+          "class": "S1",
+          "v": 3,
+          "example": "S1"
+        },
+        {
+          "class": "G1",
+          "v": 4,
+          "example": "G1"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "class": ["G1", "G2", "S1", "G1"],
+          "v": [1, 2, 3, 4]
+        },
+        "types": {
+          "class": "string",
+          "v": "double"
+        }
+      },
+      "args": {
+        "attach": true
+      },
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "v": 1,
+          "example.sector": "P",
+          "example": "G1"
+        },
+        {
+          "class": "G2",
+          "v": 2,
+          "example.sector": "P",
+          "example": "G2"
+        },
+        {
+          "class": "S1",
+          "v": 3,
+          "example.sector": "S",
+          "example": "S1"
+        },
+        {
+          "class": "G1",
+          "v": 4,
+          "example.sector": "P",
+          "example": "G1"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "class": ["G1", "G2", "S1", "G1"],
+          "v": [1, 2, 3, 4]
+        },
+        "types": {
+          "class": "string",
+          "v": "double"
+        }
+      },
+      "args": {
+        "attach": "sector",
+        "as_factor": false
+      },
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "v": 1,
+          "example.sector": "P",
+          "example": "G1"
+        },
+        {
+          "class": "G2",
+          "v": 2,
+          "example.sector": "P",
+          "example": "G2"
+        },
+        {
+          "class": "S1",
+          "v": 3,
+          "example.sector": "S",
+          "example": "S1"
+        },
+        {
+          "class": "G1",
+          "v": 4,
+          "example.sector": "P",
+          "example": "G1"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "class": ["G1", "G2", "S1", "G1"],
+          "v": [1, 2, 3, 4]
+        },
+        "types": {
+          "class": "string",
+          "v": "double"
+        }
+      },
+      "args": {
+        "meta": true
+      },
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "v": 1,
+          "example.weight": 300,
+          "example.share": 0.142857142857143,
+          "example": "G1"
+        },
+        {
+          "class": "G2",
+          "v": 2,
+          "example.weight": 700,
+          "example.share": 0.333333333333333,
+          "example": "G2"
+        },
+        {
+          "class": "S1",
+          "v": 3,
+          "example.weight": 1100,
+          "example.share": 0.523809523809524,
+          "example": "S1"
+        },
+        {
+          "class": "G1",
+          "v": 4,
+          "example.weight": 300,
+          "example.share": 0.142857142857143,
+          "example": "G1"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "class": ["G1", "G2", "S1", "G1"],
+          "v": [1, 2, 3, 4]
+        },
+        "types": {
+          "class": "string",
+          "v": "double"
+        }
+      },
+      "args": {
+        "attach": true,
+        "meta": true,
+        "weight": "count"
+      },
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "v": 1,
+          "example.sector": "P",
+          "example.weight": 100,
+          "example.share": 0.333333333333333,
+          "example": "G1"
+        },
+        {
+          "class": "G2",
+          "v": 2,
+          "example.sector": "P",
+          "example.weight": 100,
+          "example.share": 0.333333333333333,
+          "example": "G2"
+        },
+        {
+          "class": "S1",
+          "v": 3,
+          "example.sector": "S",
+          "example.weight": 100,
+          "example.share": 0.333333333333333,
+          "example": "S1"
+        },
+        {
+          "class": "G1",
+          "v": 4,
+          "example.sector": "P",
+          "example.weight": 100,
+          "example.share": 0.333333333333333,
+          "example": "G1"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "group": ["G1", "GB", "GC"],
+          "cap": [3, 12, 6],
+          "eff": [0.5, 0.6, 0.7]
+        },
+        "types": {
+          "group": "string",
+          "cap": "double",
+          "eff": "double"
+        }
+      },
+      "args": {
+        "attach": true
+      },
+      "error": false,
+      "value": [
+        {
+          "group": "G1",
+          "cap": 3,
+          "eff": 0.5,
+          "example.sector": "P",
+          "example.class": "G1",
+          "example": "G1"
+        },
+        {
+          "group": "GB",
+          "cap": 12,
+          "eff": 0.6,
+          "example.sector": null,
+          "example.class": null,
+          "example": "GB"
+        },
+        {
+          "group": "GC",
+          "cap": 6,
+          "eff": 0.7,
+          "example.sector": "S",
+          "example.class": "S1",
+          "example": "GC"
+        }
+      ],
+      "warnings": ["frame 'group' does not nest in 'sector'; 1 code(s) have multiple parents and get NA (e.g. GB)", "frame 'group' does not nest in 'class'; 1 code(s) have multiple parents and get NA (e.g. GB)"]
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "class": ["G1", "G2", "S1", "G1", "ZZ"],
+          "v": [1, 2, 3, 4, 9]
+        },
+        "types": {
+          "class": "string",
+          "v": "double"
+        }
+      },
+      "args": [],
+      "error": false,
+      "value": [
+        {
+          "class": "G1",
+          "v": 1,
+          "example": "G1"
+        },
+        {
+          "class": "G2",
+          "v": 2,
+          "example": "G2"
+        },
+        {
+          "class": "S1",
+          "v": 3,
+          "example": "S1"
+        },
+        {
+          "class": "G1",
+          "v": 4,
+          "example": "G1"
+        },
+        {
+          "class": "ZZ",
+          "v": 9,
+          "example": null
+        }
+      ],
+      "warnings": ["1 code(s) in the `class` column are not units at frame 'class': ZZ"]
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "class": ["ZZ"],
+          "v": [9]
+        },
+        "types": {
+          "class": "string",
+          "v": "double"
+        }
+      },
+      "args": [],
+      "error": true,
+      "message": "no rows of the `class` column match units at frame 'class'",
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "class": ["G1"],
+          "example": ["x"]
+        },
+        "types": {
+          "class": "string",
+          "example": "string"
+        }
+      },
+      "args": {
+        "attach": "sector"
+      },
+      "error": true,
+      "message": "no rows of the `example` column match units at frame 'class'",
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "example": ["G1", "S1"],
+          "v": [1, 2]
+        },
+        "types": {
+          "example": "string",
+          "v": "double"
+        }
+      },
+      "args": {
+        "frame": "class",
+        "attach": true
+      },
+      "error": false,
+      "value": [
+        {
+          "example": "G1",
+          "v": 1,
+          "example.sector": "P"
+        },
+        {
+          "example": "S1",
+          "v": 2,
+          "example.sector": "S"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+          "cap": [1, 2, 3, 4, 5, 6, 7],
+          "eff": [0.5, 0.6, 0.7, 0.8, 0.9, 1, 0.4]
+        },
+        "types": {
+          "unit": "string",
+          "cap": "double",
+          "eff": "double"
+        }
+      },
+      "args": {
+        "attach": "group"
+      },
+      "error": false,
+      "value": [
+        {
+          "unit": "U1",
+          "cap": 1,
+          "eff": 0.5,
+          "example.group": "G1",
+          "example": "U1"
+        },
+        {
+          "unit": "U2",
+          "cap": 2,
+          "eff": 0.6,
+          "example.group": "G1",
+          "example": "U2"
+        },
+        {
+          "unit": "U3",
+          "cap": 3,
+          "eff": 0.7,
+          "example.group": "GB",
+          "example": "U3"
+        },
+        {
+          "unit": "U4",
+          "cap": 4,
+          "eff": 0.8,
+          "example.group": "GB",
+          "example": "U4"
+        },
+        {
+          "unit": "U5",
+          "cap": 5,
+          "eff": 0.9,
+          "example.group": "GB",
+          "example": "U5"
+        },
+        {
+          "unit": "U6",
+          "cap": 6,
+          "eff": 1,
+          "example.group": "GC",
+          "example": "U6"
+        },
+        {
+          "unit": "OTH",
+          "cap": 7,
+          "eff": 0.4,
+          "example.group": null,
+          "example": "OTH"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "data": {
+        "columns": {
+          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+          "cap": [1, 2, 3, 4, 5, 6, 7],
+          "eff": [0.5, 0.6, 0.7, 0.8, 0.9, 1, 0.4]
+        },
+        "types": {
+          "unit": "string",
+          "cap": "double",
+          "eff": "double"
+        }
+      },
+      "args": {
+        "frame": "unit",
+        "attach": "nope"
+      },
+      "error": true,
+      "message": "`attach` must be coarser than 'unit'; not: nope",
+      "warnings": []
+    },
+    {
+      "kind": "table",
+      "fn": "join_scale",
+      "scale": {
+        "build": "scale_from_leaftable",
+        "leaftable": {
+          "grp": ["A", "A", "B"],
+          "unit": ["u1", "u2", "u3"]
+        },
+        "frames": ["grp", "unit"],
+        "key": "unit",
+        "name": "noweights"
+      },
+      "data": {
+        "columns": {
+          "grp": ["A", "B"],
+          "cap": [10, 20]
+        },
+        "types": {
+          "grp": "string",
+          "cap": "double"
+        }
+      },
+      "args": {
+        "meta": true
+      },
+      "error": false,
+      "value": [
+        {
+          "grp": "A",
+          "cap": 10,
+          "noweights": "A"
+        },
+        {
+          "grp": "B",
+          "cap": 20,
+          "noweights": "B"
+        }
+      ],
+      "warnings": ["\"noweights\" declares no weight columns; `meta = TRUE` share/weight skipped"]
+    }
+  ]
+}

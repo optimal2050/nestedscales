@@ -1,0 +1,2260 @@
+{
+  "generated_by": "nestedscales 0.1.1",
+  "cases": {
+    "example": {
+      "construct": {
+        "build": "scale_example",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "frames": ["sector", "class", "group", "unit"],
+      "key": "unit",
+      "atom_level": "unit",
+      "weights": ["size", "count"],
+      "coverage": {
+        "size": 1,
+        "count": 1
+      },
+      "rank": {
+        "sector": 1,
+        "class": 2,
+        "group": 3,
+        "unit": 4,
+        "nope": null
+      },
+      "units": {
+        "sector": ["P", "S"],
+        "class": ["G1", "G2", "S1"],
+        "group": ["G1", "GB", "GC"],
+        "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+      },
+      "family": [
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "class",
+          "child": "G1"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "class",
+          "child": "G2"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "S",
+          "child_frame": "class",
+          "child": "S1"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "G1",
+          "child_frame": "group",
+          "child": "G1"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "G2",
+          "child_frame": "group",
+          "child": "GB"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "S1",
+          "child_frame": "group",
+          "child": "GB"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "S1",
+          "child_frame": "group",
+          "child": "GC"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "G1",
+          "child_frame": "unit",
+          "child": "U1"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "G1",
+          "child_frame": "unit",
+          "child": "U2"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "GB",
+          "child_frame": "unit",
+          "child": "U3"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "GB",
+          "child_frame": "unit",
+          "child": "U4"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "GB",
+          "child_frame": "unit",
+          "child": "U5"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "GC",
+          "child_frame": "unit",
+          "child": "U6"
+        }
+      ],
+      "ancestry": [
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "class",
+          "child": "G1"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "class",
+          "child": "G2"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "group",
+          "child": "G1"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "group",
+          "child": "GB"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "unit",
+          "child": "U1"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "unit",
+          "child": "U2"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "unit",
+          "child": "U3"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "P",
+          "child_frame": "unit",
+          "child": "U4"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "S",
+          "child_frame": "class",
+          "child": "S1"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "S",
+          "child_frame": "group",
+          "child": "GB"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "S",
+          "child_frame": "group",
+          "child": "GC"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "S",
+          "child_frame": "unit",
+          "child": "U5"
+        },
+        {
+          "parent_frame": "sector",
+          "parent": "S",
+          "child_frame": "unit",
+          "child": "U6"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "G1",
+          "child_frame": "group",
+          "child": "G1"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "G1",
+          "child_frame": "unit",
+          "child": "U1"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "G1",
+          "child_frame": "unit",
+          "child": "U2"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "G2",
+          "child_frame": "group",
+          "child": "GB"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "G2",
+          "child_frame": "unit",
+          "child": "U3"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "G2",
+          "child_frame": "unit",
+          "child": "U4"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "S1",
+          "child_frame": "group",
+          "child": "GB"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "S1",
+          "child_frame": "group",
+          "child": "GC"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "S1",
+          "child_frame": "unit",
+          "child": "U5"
+        },
+        {
+          "parent_frame": "class",
+          "parent": "S1",
+          "child_frame": "unit",
+          "child": "U6"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "G1",
+          "child_frame": "unit",
+          "child": "U1"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "G1",
+          "child_frame": "unit",
+          "child": "U2"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "GB",
+          "child_frame": "unit",
+          "child": "U3"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "GB",
+          "child_frame": "unit",
+          "child": "U4"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "GB",
+          "child_frame": "unit",
+          "child": "U5"
+        },
+        {
+          "parent_frame": "group",
+          "parent": "GC",
+          "child_frame": "unit",
+          "child": "U6"
+        }
+      ],
+      "nests": [
+        {
+          "parent": "class",
+          "child": "sector",
+          "ok": false,
+          "offenders": ["P"],
+          "sizes": null
+        },
+        {
+          "parent": "group",
+          "child": "sector",
+          "ok": false,
+          "offenders": ["P", "S"],
+          "sizes": null
+        },
+        {
+          "parent": "unit",
+          "child": "sector",
+          "ok": false,
+          "offenders": ["P", "S"],
+          "sizes": null
+        },
+        {
+          "parent": "sector",
+          "child": "class",
+          "ok": true,
+          "offenders": [],
+          "sizes": null
+        },
+        {
+          "parent": "group",
+          "child": "class",
+          "ok": false,
+          "offenders": ["S1"],
+          "sizes": null
+        },
+        {
+          "parent": "unit",
+          "child": "class",
+          "ok": false,
+          "offenders": ["G1", "G2", "S1"],
+          "sizes": null
+        },
+        {
+          "parent": "sector",
+          "child": "group",
+          "ok": false,
+          "offenders": ["GB"],
+          "sizes": null
+        },
+        {
+          "parent": "class",
+          "child": "group",
+          "ok": false,
+          "offenders": ["GB"],
+          "sizes": null
+        },
+        {
+          "parent": "unit",
+          "child": "group",
+          "ok": false,
+          "offenders": ["G1", "GB"],
+          "sizes": null
+        },
+        {
+          "parent": "sector",
+          "child": "unit",
+          "ok": true,
+          "offenders": [],
+          "sizes": null
+        },
+        {
+          "parent": "class",
+          "child": "unit",
+          "ok": true,
+          "offenders": [],
+          "sizes": null
+        },
+        {
+          "parent": "group",
+          "child": "unit",
+          "ok": true,
+          "offenders": [],
+          "sizes": null
+        }
+      ],
+      "crosses": [
+        {
+          "a": "class",
+          "b": "sector",
+          "ok": false,
+          "offenders": ["S1"],
+          "sizes": null
+        },
+        {
+          "a": "group",
+          "b": "sector",
+          "ok": false,
+          "offenders": ["GB", "GC"],
+          "sizes": null
+        },
+        {
+          "a": "unit",
+          "b": "sector",
+          "ok": false,
+          "offenders": ["U5", "U6"],
+          "sizes": null
+        },
+        {
+          "a": "sector",
+          "b": "class",
+          "ok": false,
+          "offenders": ["S"],
+          "sizes": null
+        },
+        {
+          "a": "group",
+          "b": "class",
+          "ok": false,
+          "offenders": ["GB", "GC"],
+          "sizes": null
+        },
+        {
+          "a": "unit",
+          "b": "class",
+          "ok": false,
+          "offenders": ["U3", "U4", "U5", "U6"],
+          "sizes": null
+        },
+        {
+          "a": "sector",
+          "b": "group",
+          "ok": false,
+          "offenders": ["S"],
+          "sizes": null
+        },
+        {
+          "a": "class",
+          "b": "group",
+          "ok": false,
+          "offenders": ["G2", "S1"],
+          "sizes": null
+        },
+        {
+          "a": "unit",
+          "b": "group",
+          "ok": false,
+          "offenders": ["U3", "U4", "U5", "U6"],
+          "sizes": null
+        },
+        {
+          "a": "sector",
+          "b": "unit",
+          "ok": false,
+          "offenders": ["S"],
+          "sizes": null
+        },
+        {
+          "a": "class",
+          "b": "unit",
+          "ok": false,
+          "offenders": ["G2", "S1"],
+          "sizes": null
+        },
+        {
+          "a": "group",
+          "b": "unit",
+          "ok": false,
+          "offenders": ["GB", "GC"],
+          "sizes": null
+        }
+      ],
+      "uniform": [
+        {
+          "frame": "sector",
+          "weight": null,
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "P": 4,
+            "S": 2
+          }
+        },
+        {
+          "frame": "sector",
+          "weight": "size",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "P": 1000,
+            "S": 1100
+          }
+        },
+        {
+          "frame": "sector",
+          "weight": "count",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "P": 200,
+            "S": 100
+          }
+        },
+        {
+          "frame": "class",
+          "weight": null,
+          "ok": true,
+          "offenders": null,
+          "sizes": null
+        },
+        {
+          "frame": "class",
+          "weight": "size",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "G1": 300,
+            "G2": 700,
+            "S1": 1100
+          }
+        },
+        {
+          "frame": "class",
+          "weight": "count",
+          "ok": true,
+          "offenders": null,
+          "sizes": null
+        },
+        {
+          "frame": "group",
+          "weight": null,
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "G1": 2,
+            "GB": 3,
+            "GC": 1
+          }
+        },
+        {
+          "frame": "group",
+          "weight": "size",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "G1": 300,
+            "GB": 1200,
+            "GC": 600
+          }
+        },
+        {
+          "frame": "group",
+          "weight": "count",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "G1": 100,
+            "GB": 150,
+            "GC": 50
+          }
+        },
+        {
+          "frame": "unit",
+          "weight": null,
+          "ok": true,
+          "offenders": null,
+          "sizes": null
+        },
+        {
+          "frame": "unit",
+          "weight": "size",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "OTH": 1000,
+            "U1": 100,
+            "U2": 200,
+            "U3": 300,
+            "U4": 400,
+            "U5": 500,
+            "U6": 600
+          }
+        },
+        {
+          "frame": "unit",
+          "weight": "count",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "OTH": 0,
+            "U1": 10,
+            "U2": 90,
+            "U3": 30,
+            "U4": 70,
+            "U5": 50,
+            "U6": 50
+          }
+        }
+      ],
+      "nav": [
+        {
+          "fn": "scale_children",
+          "frame": "sector",
+          "unit": "P",
+          "error": false,
+          "value": ["G1", "G2"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "sector",
+          "unit": "S",
+          "error": false,
+          "value": ["S1"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "class",
+          "unit": "G1",
+          "error": false,
+          "value": ["G1"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "class",
+          "unit": "G2",
+          "error": false,
+          "value": ["GB"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "class",
+          "unit": "S1",
+          "error": false,
+          "value": ["GB", "GC"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "group",
+          "unit": "G1",
+          "error": false,
+          "value": ["U1", "U2"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "group",
+          "unit": "GB",
+          "error": false,
+          "value": ["U3", "U4", "U5"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "group",
+          "unit": "GC",
+          "error": false,
+          "value": ["U6"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "U1",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "U2",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "U3",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "U4",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "U5",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "U6",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "OTH",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "sector",
+          "unit": "P",
+          "error": true,
+          "message": "`sector` is the coarsest frame; it has no parents"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "sector",
+          "unit": "S",
+          "error": true,
+          "message": "`sector` is the coarsest frame; it has no parents"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "class",
+          "unit": "G1",
+          "error": false,
+          "value": ["P"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "class",
+          "unit": "G2",
+          "error": false,
+          "value": ["P"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "class",
+          "unit": "S1",
+          "error": false,
+          "value": ["S"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "group",
+          "unit": "G1",
+          "error": false,
+          "value": ["G1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "group",
+          "unit": "GB",
+          "error": false,
+          "value": ["G2", "S1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "group",
+          "unit": "GC",
+          "error": false,
+          "value": ["S1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "U1",
+          "error": false,
+          "value": ["G1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "U2",
+          "error": false,
+          "value": ["G1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "U3",
+          "error": false,
+          "value": ["GB"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "U4",
+          "error": false,
+          "value": ["GB"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "U5",
+          "error": false,
+          "value": ["GB"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "U6",
+          "error": false,
+          "value": ["GC"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "OTH",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "sector",
+          "unit": "P",
+          "error": false,
+          "value": [
+            {
+              "frame": "class",
+              "unit": "G1"
+            },
+            {
+              "frame": "class",
+              "unit": "G2"
+            },
+            {
+              "frame": "group",
+              "unit": "G1"
+            },
+            {
+              "frame": "group",
+              "unit": "GB"
+            },
+            {
+              "frame": "unit",
+              "unit": "U1"
+            },
+            {
+              "frame": "unit",
+              "unit": "U2"
+            },
+            {
+              "frame": "unit",
+              "unit": "U3"
+            },
+            {
+              "frame": "unit",
+              "unit": "U4"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "sector",
+          "unit": "S",
+          "error": false,
+          "value": [
+            {
+              "frame": "class",
+              "unit": "S1"
+            },
+            {
+              "frame": "group",
+              "unit": "GB"
+            },
+            {
+              "frame": "group",
+              "unit": "GC"
+            },
+            {
+              "frame": "unit",
+              "unit": "U5"
+            },
+            {
+              "frame": "unit",
+              "unit": "U6"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "class",
+          "unit": "G1",
+          "error": false,
+          "value": [
+            {
+              "frame": "group",
+              "unit": "G1"
+            },
+            {
+              "frame": "unit",
+              "unit": "U1"
+            },
+            {
+              "frame": "unit",
+              "unit": "U2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "class",
+          "unit": "G2",
+          "error": false,
+          "value": [
+            {
+              "frame": "group",
+              "unit": "GB"
+            },
+            {
+              "frame": "unit",
+              "unit": "U3"
+            },
+            {
+              "frame": "unit",
+              "unit": "U4"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "class",
+          "unit": "S1",
+          "error": false,
+          "value": [
+            {
+              "frame": "group",
+              "unit": "GB"
+            },
+            {
+              "frame": "group",
+              "unit": "GC"
+            },
+            {
+              "frame": "unit",
+              "unit": "U5"
+            },
+            {
+              "frame": "unit",
+              "unit": "U6"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "group",
+          "unit": "G1",
+          "error": false,
+          "value": [
+            {
+              "frame": "unit",
+              "unit": "U1"
+            },
+            {
+              "frame": "unit",
+              "unit": "U2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "group",
+          "unit": "GB",
+          "error": false,
+          "value": [
+            {
+              "frame": "unit",
+              "unit": "U3"
+            },
+            {
+              "frame": "unit",
+              "unit": "U4"
+            },
+            {
+              "frame": "unit",
+              "unit": "U5"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "group",
+          "unit": "GC",
+          "error": false,
+          "value": [
+            {
+              "frame": "unit",
+              "unit": "U6"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "U1",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "U2",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "U3",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "U4",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "U5",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "U6",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "OTH",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "sector",
+          "unit": "P",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "sector",
+          "unit": "S",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "class",
+          "unit": "G1",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "P"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "class",
+          "unit": "G2",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "P"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "class",
+          "unit": "S1",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "S"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "group",
+          "unit": "G1",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "P"
+            },
+            {
+              "frame": "class",
+              "unit": "G1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "group",
+          "unit": "GB",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "P"
+            },
+            {
+              "frame": "sector",
+              "unit": "S"
+            },
+            {
+              "frame": "class",
+              "unit": "G2"
+            },
+            {
+              "frame": "class",
+              "unit": "S1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "group",
+          "unit": "GC",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "S"
+            },
+            {
+              "frame": "class",
+              "unit": "S1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "U1",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "P"
+            },
+            {
+              "frame": "class",
+              "unit": "G1"
+            },
+            {
+              "frame": "group",
+              "unit": "G1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "U2",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "P"
+            },
+            {
+              "frame": "class",
+              "unit": "G1"
+            },
+            {
+              "frame": "group",
+              "unit": "G1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "U3",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "P"
+            },
+            {
+              "frame": "class",
+              "unit": "G2"
+            },
+            {
+              "frame": "group",
+              "unit": "GB"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "U4",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "P"
+            },
+            {
+              "frame": "class",
+              "unit": "G2"
+            },
+            {
+              "frame": "group",
+              "unit": "GB"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "U5",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "S"
+            },
+            {
+              "frame": "class",
+              "unit": "S1"
+            },
+            {
+              "frame": "group",
+              "unit": "GB"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "U6",
+          "error": false,
+          "value": [
+            {
+              "frame": "sector",
+              "unit": "S"
+            },
+            {
+              "frame": "class",
+              "unit": "S1"
+            },
+            {
+              "frame": "group",
+              "unit": "GC"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "OTH",
+          "error": false,
+          "value": []
+        }
+      ]
+    },
+    "example2": {
+      "construct": {
+        "build": "scale_example2",
+        "leaftable": null,
+        "frames": null,
+        "key": null,
+        "name": null
+      },
+      "frames": ["era", "period"],
+      "key": "period",
+      "atom_level": "period",
+      "weights": ["span"],
+      "coverage": {
+        "span": 1
+      },
+      "rank": {
+        "era": 1,
+        "period": 2,
+        "nope": null
+      },
+      "units": {
+        "era": ["E1", "E2"],
+        "period": ["p1", "p2", "p3", "p4"]
+      },
+      "family": [
+        {
+          "parent_frame": "era",
+          "parent": "E1",
+          "child_frame": "period",
+          "child": "p1"
+        },
+        {
+          "parent_frame": "era",
+          "parent": "E1",
+          "child_frame": "period",
+          "child": "p2"
+        },
+        {
+          "parent_frame": "era",
+          "parent": "E2",
+          "child_frame": "period",
+          "child": "p3"
+        },
+        {
+          "parent_frame": "era",
+          "parent": "E2",
+          "child_frame": "period",
+          "child": "p4"
+        }
+      ],
+      "ancestry": [
+        {
+          "parent_frame": "era",
+          "parent": "E1",
+          "child_frame": "period",
+          "child": "p1"
+        },
+        {
+          "parent_frame": "era",
+          "parent": "E1",
+          "child_frame": "period",
+          "child": "p2"
+        },
+        {
+          "parent_frame": "era",
+          "parent": "E2",
+          "child_frame": "period",
+          "child": "p3"
+        },
+        {
+          "parent_frame": "era",
+          "parent": "E2",
+          "child_frame": "period",
+          "child": "p4"
+        }
+      ],
+      "nests": [
+        {
+          "parent": "period",
+          "child": "era",
+          "ok": false,
+          "offenders": ["E1", "E2"],
+          "sizes": null
+        },
+        {
+          "parent": "era",
+          "child": "period",
+          "ok": true,
+          "offenders": [],
+          "sizes": null
+        }
+      ],
+      "crosses": [
+        {
+          "a": "period",
+          "b": "era",
+          "ok": false,
+          "offenders": ["p3", "p4"],
+          "sizes": null
+        },
+        {
+          "a": "era",
+          "b": "period",
+          "ok": false,
+          "offenders": ["E2"],
+          "sizes": null
+        }
+      ],
+      "uniform": [
+        {
+          "frame": "era",
+          "weight": null,
+          "ok": true,
+          "offenders": null,
+          "sizes": null
+        },
+        {
+          "frame": "era",
+          "weight": "span",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "E1": 4,
+            "E2": 6
+          }
+        },
+        {
+          "frame": "period",
+          "weight": null,
+          "ok": true,
+          "offenders": null,
+          "sizes": null
+        },
+        {
+          "frame": "period",
+          "weight": "span",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "p1": 1,
+            "p2": 3,
+            "p3": 2,
+            "p4": 4
+          }
+        }
+      ],
+      "nav": [
+        {
+          "fn": "scale_children",
+          "frame": "era",
+          "unit": "E1",
+          "error": false,
+          "value": ["p1", "p2"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "era",
+          "unit": "E2",
+          "error": false,
+          "value": ["p3", "p4"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "period",
+          "unit": "p1",
+          "error": true,
+          "message": "`period` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "period",
+          "unit": "p2",
+          "error": true,
+          "message": "`period` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "period",
+          "unit": "p3",
+          "error": true,
+          "message": "`period` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "period",
+          "unit": "p4",
+          "error": true,
+          "message": "`period` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "era",
+          "unit": "E1",
+          "error": true,
+          "message": "`era` is the coarsest frame; it has no parents"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "era",
+          "unit": "E2",
+          "error": true,
+          "message": "`era` is the coarsest frame; it has no parents"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "period",
+          "unit": "p1",
+          "error": false,
+          "value": ["E1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "period",
+          "unit": "p2",
+          "error": false,
+          "value": ["E1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "period",
+          "unit": "p3",
+          "error": false,
+          "value": ["E2"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "period",
+          "unit": "p4",
+          "error": false,
+          "value": ["E2"]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "era",
+          "unit": "E1",
+          "error": false,
+          "value": [
+            {
+              "frame": "period",
+              "unit": "p1"
+            },
+            {
+              "frame": "period",
+              "unit": "p2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "era",
+          "unit": "E2",
+          "error": false,
+          "value": [
+            {
+              "frame": "period",
+              "unit": "p3"
+            },
+            {
+              "frame": "period",
+              "unit": "p4"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "period",
+          "unit": "p1",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "period",
+          "unit": "p2",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "period",
+          "unit": "p3",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "period",
+          "unit": "p4",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "era",
+          "unit": "E1",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "era",
+          "unit": "E2",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "period",
+          "unit": "p1",
+          "error": false,
+          "value": [
+            {
+              "frame": "era",
+              "unit": "E1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "period",
+          "unit": "p2",
+          "error": false,
+          "value": [
+            {
+              "frame": "era",
+              "unit": "E1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "period",
+          "unit": "p3",
+          "error": false,
+          "value": [
+            {
+              "frame": "era",
+              "unit": "E2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "period",
+          "unit": "p4",
+          "error": false,
+          "value": [
+            {
+              "frame": "era",
+              "unit": "E2"
+            }
+          ]
+        }
+      ]
+    },
+    "grid": {
+      "construct": {
+        "build": "scale_from_leaftable",
+        "leaftable": {
+          "m": ["m1", "m2", "m1", "m2", "m1", "m2"],
+          "h": ["h1", "h1", "h2", "h2", "h3", "h3"],
+          "unit": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"],
+          "hours": [31, 28, 31, 28, 31, 28]
+        },
+        "frames": ["m", "h"],
+        "key": "unit",
+        "name": "grid"
+      },
+      "frames": ["m", "h"],
+      "key": "unit",
+      "atom_level": "unit",
+      "weights": ["hours"],
+      "coverage": {
+        "hours": 1
+      },
+      "rank": {
+        "m": 1,
+        "h": 2,
+        "unit": 3,
+        "nope": null
+      },
+      "units": {
+        "m": ["m1", "m2"],
+        "h": ["h1", "h2", "h3"],
+        "unit": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"]
+      },
+      "family": [
+        {
+          "parent_frame": "m",
+          "parent": "m1",
+          "child_frame": "h",
+          "child": "h1"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m1",
+          "child_frame": "h",
+          "child": "h2"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m1",
+          "child_frame": "h",
+          "child": "h3"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m2",
+          "child_frame": "h",
+          "child": "h1"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m2",
+          "child_frame": "h",
+          "child": "h2"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m2",
+          "child_frame": "h",
+          "child": "h3"
+        }
+      ],
+      "ancestry": [
+        {
+          "parent_frame": "m",
+          "parent": "m1",
+          "child_frame": "h",
+          "child": "h1"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m1",
+          "child_frame": "h",
+          "child": "h2"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m1",
+          "child_frame": "h",
+          "child": "h3"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m2",
+          "child_frame": "h",
+          "child": "h1"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m2",
+          "child_frame": "h",
+          "child": "h2"
+        },
+        {
+          "parent_frame": "m",
+          "parent": "m2",
+          "child_frame": "h",
+          "child": "h3"
+        }
+      ],
+      "nests": [
+        {
+          "parent": "h",
+          "child": "m",
+          "ok": false,
+          "offenders": ["m1", "m2"],
+          "sizes": null
+        },
+        {
+          "parent": "m",
+          "child": "h",
+          "ok": false,
+          "offenders": ["h1", "h2", "h3"],
+          "sizes": null
+        }
+      ],
+      "crosses": [
+        {
+          "a": "h",
+          "b": "m",
+          "ok": true,
+          "offenders": [],
+          "sizes": null
+        },
+        {
+          "a": "m",
+          "b": "h",
+          "ok": true,
+          "offenders": [],
+          "sizes": null
+        }
+      ],
+      "uniform": [
+        {
+          "frame": "m",
+          "weight": null,
+          "ok": true,
+          "offenders": null,
+          "sizes": null
+        },
+        {
+          "frame": "m",
+          "weight": "hours",
+          "ok": false,
+          "offenders": null,
+          "sizes": {
+            "m1": 93,
+            "m2": 84
+          }
+        },
+        {
+          "frame": "h",
+          "weight": null,
+          "ok": true,
+          "offenders": null,
+          "sizes": null
+        },
+        {
+          "frame": "h",
+          "weight": "hours",
+          "ok": true,
+          "offenders": null,
+          "sizes": null
+        }
+      ],
+      "nav": [
+        {
+          "fn": "scale_children",
+          "frame": "m",
+          "unit": "m1",
+          "error": false,
+          "value": ["h1", "h2", "h3"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "m",
+          "unit": "m2",
+          "error": false,
+          "value": ["h1", "h2", "h3"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "h",
+          "unit": "h1",
+          "error": false,
+          "value": ["m1_h1", "m2_h1"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "h",
+          "unit": "h2",
+          "error": false,
+          "value": ["m1_h2", "m2_h2"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "h",
+          "unit": "h3",
+          "error": false,
+          "value": ["m1_h3", "m2_h3"]
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "m1_h1",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "m2_h1",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "m1_h2",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "m2_h2",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "m1_h3",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_children",
+          "frame": "unit",
+          "unit": "m2_h3",
+          "error": true,
+          "message": "`unit` is the finest frame; it has no children"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "m",
+          "unit": "m1",
+          "error": true,
+          "message": "`m` is the coarsest frame; it has no parents"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "m",
+          "unit": "m2",
+          "error": true,
+          "message": "`m` is the coarsest frame; it has no parents"
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "h",
+          "unit": "h1",
+          "error": false,
+          "value": ["m1", "m2"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "h",
+          "unit": "h2",
+          "error": false,
+          "value": ["m1", "m2"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "h",
+          "unit": "h3",
+          "error": false,
+          "value": ["m1", "m2"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "m1_h1",
+          "error": false,
+          "value": ["h1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "m2_h1",
+          "error": false,
+          "value": ["h1"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "m1_h2",
+          "error": false,
+          "value": ["h2"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "m2_h2",
+          "error": false,
+          "value": ["h2"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "m1_h3",
+          "error": false,
+          "value": ["h3"]
+        },
+        {
+          "fn": "scale_parents",
+          "frame": "unit",
+          "unit": "m2_h3",
+          "error": false,
+          "value": ["h3"]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "m",
+          "unit": "m1",
+          "error": false,
+          "value": [
+            {
+              "frame": "h",
+              "unit": "h1"
+            },
+            {
+              "frame": "h",
+              "unit": "h2"
+            },
+            {
+              "frame": "h",
+              "unit": "h3"
+            },
+            {
+              "frame": "unit",
+              "unit": "m1_h1"
+            },
+            {
+              "frame": "unit",
+              "unit": "m1_h2"
+            },
+            {
+              "frame": "unit",
+              "unit": "m1_h3"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "m",
+          "unit": "m2",
+          "error": false,
+          "value": [
+            {
+              "frame": "h",
+              "unit": "h1"
+            },
+            {
+              "frame": "h",
+              "unit": "h2"
+            },
+            {
+              "frame": "h",
+              "unit": "h3"
+            },
+            {
+              "frame": "unit",
+              "unit": "m2_h1"
+            },
+            {
+              "frame": "unit",
+              "unit": "m2_h2"
+            },
+            {
+              "frame": "unit",
+              "unit": "m2_h3"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "h",
+          "unit": "h1",
+          "error": false,
+          "value": [
+            {
+              "frame": "unit",
+              "unit": "m1_h1"
+            },
+            {
+              "frame": "unit",
+              "unit": "m2_h1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "h",
+          "unit": "h2",
+          "error": false,
+          "value": [
+            {
+              "frame": "unit",
+              "unit": "m1_h2"
+            },
+            {
+              "frame": "unit",
+              "unit": "m2_h2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "h",
+          "unit": "h3",
+          "error": false,
+          "value": [
+            {
+              "frame": "unit",
+              "unit": "m1_h3"
+            },
+            {
+              "frame": "unit",
+              "unit": "m2_h3"
+            }
+          ]
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "m1_h1",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "m2_h1",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "m1_h2",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "m2_h2",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "m1_h3",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_descendants",
+          "frame": "unit",
+          "unit": "m2_h3",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "m",
+          "unit": "m1",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "m",
+          "unit": "m2",
+          "error": false,
+          "value": []
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "h",
+          "unit": "h1",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m1"
+            },
+            {
+              "frame": "m",
+              "unit": "m2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "h",
+          "unit": "h2",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m1"
+            },
+            {
+              "frame": "m",
+              "unit": "m2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "h",
+          "unit": "h3",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m1"
+            },
+            {
+              "frame": "m",
+              "unit": "m2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "m1_h1",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m1"
+            },
+            {
+              "frame": "h",
+              "unit": "h1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "m2_h1",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m2"
+            },
+            {
+              "frame": "h",
+              "unit": "h1"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "m1_h2",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m1"
+            },
+            {
+              "frame": "h",
+              "unit": "h2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "m2_h2",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m2"
+            },
+            {
+              "frame": "h",
+              "unit": "h2"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "m1_h3",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m1"
+            },
+            {
+              "frame": "h",
+              "unit": "h3"
+            }
+          ]
+        },
+        {
+          "fn": "scale_ancestors",
+          "frame": "unit",
+          "unit": "m2_h3",
+          "error": false,
+          "value": [
+            {
+              "frame": "m",
+              "unit": "m2"
+            },
+            {
+              "frame": "h",
+              "unit": "h3"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

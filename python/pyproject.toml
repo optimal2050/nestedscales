@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nestedscales"
+version = "0.1.0.dev0"
+description = "Nested scales and multi-dimensional indexes for modeling"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "Oleg Lugovoy", email = "olugovoy@optimalsolution.dev" }]
+dependencies = [
+  "pyarrow>=14",
+  "numpy>=1.23",
+  "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+polars = ["polars>=1.0"]
+pandas = ["pandas>=2.2"]
+test = ["pytest>=8", "hypothesis>=6"]
+
+[project.urls]
+Homepage = "https://github.com/optimal2050/nestedscales"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nestedscales"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error::nestedscales.NestedScalesWarning"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+# Messages are ported verbatim from R sprintf() calls, so %-formatting stays.
+ignore = ["UP031"]

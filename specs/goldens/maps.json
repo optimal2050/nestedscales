@@ -1,0 +1,2701 @@
+{
+  "generated_by": "nestedscales 0.1.1",
+  "cases": {
+    "within": {
+      "example": {
+        "construct": {
+          "build": "scale_example",
+          "leaftable": null,
+          "frames": null,
+          "key": null,
+          "name": null
+        },
+        "calls": [
+          {
+            "from": "sector",
+            "to": "class",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "class": "G1",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "class": "G2",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 1000
+              },
+              {
+                "sector": "S",
+                "class": "S1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 1100,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "sector",
+            "to": "class",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "class": "G1",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "class": "G2",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 1000
+              },
+              {
+                "sector": "S",
+                "class": "S1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 1100,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "sector",
+            "to": "class",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "class": "G1",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 200
+              },
+              {
+                "sector": "P",
+                "class": "G2",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 200
+              },
+              {
+                "sector": "S",
+                "class": "S1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "sector",
+            "to": "group",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "group": "G1",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "group": "GB",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 1000
+              },
+              {
+                "sector": "S",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "sector": "S",
+                "group": "GC",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "sector",
+            "to": "group",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "group": "G1",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "group": "GB",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 1000
+              },
+              {
+                "sector": "S",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "sector": "S",
+                "group": "GC",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "sector",
+            "to": "group",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "group": "G1",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 200
+              },
+              {
+                "sector": "P",
+                "group": "GB",
+                "n_from": 4,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 200
+              },
+              {
+                "sector": "S",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 100
+              },
+              {
+                "sector": "S",
+                "group": "GC",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "sector",
+            "to": "unit",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "unit": "U1",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "unit": "U2",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "unit": "U3",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "unit": "U4",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 1000
+              },
+              {
+                "sector": "S",
+                "unit": "U5",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "sector": "S",
+                "unit": "U6",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "sector",
+            "to": "unit",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "unit": "U1",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "unit": "U2",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "unit": "U3",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 1000
+              },
+              {
+                "sector": "P",
+                "unit": "U4",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 1000
+              },
+              {
+                "sector": "S",
+                "unit": "U5",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "sector": "S",
+                "unit": "U6",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "sector",
+            "to": "unit",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "sector": "P",
+                "unit": "U1",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 10,
+                "w_from": 200
+              },
+              {
+                "sector": "P",
+                "unit": "U2",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 90,
+                "w_from": 200
+              },
+              {
+                "sector": "P",
+                "unit": "U3",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 30,
+                "w_from": 200
+              },
+              {
+                "sector": "P",
+                "unit": "U4",
+                "n_from": 4,
+                "n_overlap": 1,
+                "w": 70,
+                "w_from": 200
+              },
+              {
+                "sector": "S",
+                "unit": "U5",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 100
+              },
+              {
+                "sector": "S",
+                "unit": "U6",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "sector",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "class": "G2",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 700
+              },
+              {
+                "class": "S1",
+                "sector": "S",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 1100,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "sector",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "class": "G2",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 700
+              },
+              {
+                "class": "S1",
+                "sector": "S",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 1100,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "sector",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "class": "G2",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "class": "S1",
+                "sector": "S",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "group",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "group": "G1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "class": "G2",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 700
+              },
+              {
+                "class": "S1",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "class": "S1",
+                "group": "GC",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "group",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "group": "G1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "class": "G2",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 700
+              },
+              {
+                "class": "S1",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "class": "S1",
+                "group": "GC",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "group",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "group": "G1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "class": "G2",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "class": "S1",
+                "group": "GB",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 100
+              },
+              {
+                "class": "S1",
+                "group": "GC",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "unit",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "unit": "U1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 300
+              },
+              {
+                "class": "G1",
+                "unit": "U2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 300
+              },
+              {
+                "class": "G2",
+                "unit": "U3",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 700
+              },
+              {
+                "class": "G2",
+                "unit": "U4",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 700
+              },
+              {
+                "class": "S1",
+                "unit": "U5",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "class": "S1",
+                "unit": "U6",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "unit",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "unit": "U1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 300
+              },
+              {
+                "class": "G1",
+                "unit": "U2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 300
+              },
+              {
+                "class": "G2",
+                "unit": "U3",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 700
+              },
+              {
+                "class": "G2",
+                "unit": "U4",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 700
+              },
+              {
+                "class": "S1",
+                "unit": "U5",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "class": "S1",
+                "unit": "U6",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "class",
+            "to": "unit",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "unit": "U1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 10,
+                "w_from": 100
+              },
+              {
+                "class": "G1",
+                "unit": "U2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 90,
+                "w_from": 100
+              },
+              {
+                "class": "G2",
+                "unit": "U3",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 30,
+                "w_from": 100
+              },
+              {
+                "class": "G2",
+                "unit": "U4",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 70,
+                "w_from": 100
+              },
+              {
+                "class": "S1",
+                "unit": "U5",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 100
+              },
+              {
+                "class": "S1",
+                "unit": "U6",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "sector",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "group": "GB",
+                "sector": "P",
+                "n_from": 3,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 1200
+              },
+              {
+                "group": "GB",
+                "sector": "S",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1200
+              },
+              {
+                "group": "GC",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "sector",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "group": "GB",
+                "sector": "P",
+                "n_from": 3,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 1200
+              },
+              {
+                "group": "GB",
+                "sector": "S",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1200
+              },
+              {
+                "group": "GC",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "sector",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "sector": "P",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "group": "GB",
+                "sector": "P",
+                "n_from": 3,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 150
+              },
+              {
+                "group": "GB",
+                "sector": "S",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 150
+              },
+              {
+                "group": "GC",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "class",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "class": "G1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "group": "GB",
+                "class": "G2",
+                "n_from": 3,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 1200
+              },
+              {
+                "group": "GB",
+                "class": "S1",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1200
+              },
+              {
+                "group": "GC",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "class",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "class": "G1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "group": "GB",
+                "class": "G2",
+                "n_from": 3,
+                "n_overlap": 2,
+                "w": 700,
+                "w_from": 1200
+              },
+              {
+                "group": "GB",
+                "class": "S1",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1200
+              },
+              {
+                "group": "GC",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "class",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "class": "G1",
+                "n_from": 2,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "group": "GB",
+                "class": "G2",
+                "n_from": 3,
+                "n_overlap": 2,
+                "w": 100,
+                "w_from": 150
+              },
+              {
+                "group": "GB",
+                "class": "S1",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 150
+              },
+              {
+                "group": "GC",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "unit",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "unit": "U1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 300
+              },
+              {
+                "group": "G1",
+                "unit": "U2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 300
+              },
+              {
+                "group": "GB",
+                "unit": "U3",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 1200
+              },
+              {
+                "group": "GB",
+                "unit": "U4",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 1200
+              },
+              {
+                "group": "GB",
+                "unit": "U5",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1200
+              },
+              {
+                "group": "GC",
+                "unit": "U6",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "unit",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "unit": "U1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 300
+              },
+              {
+                "group": "G1",
+                "unit": "U2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 300
+              },
+              {
+                "group": "GB",
+                "unit": "U3",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 1200
+              },
+              {
+                "group": "GB",
+                "unit": "U4",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 1200
+              },
+              {
+                "group": "GB",
+                "unit": "U5",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1200
+              },
+              {
+                "group": "GC",
+                "unit": "U6",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "group",
+            "to": "unit",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "group": "G1",
+                "unit": "U1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 10,
+                "w_from": 100
+              },
+              {
+                "group": "G1",
+                "unit": "U2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 90,
+                "w_from": 100
+              },
+              {
+                "group": "GB",
+                "unit": "U3",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 30,
+                "w_from": 150
+              },
+              {
+                "group": "GB",
+                "unit": "U4",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 70,
+                "w_from": 150
+              },
+              {
+                "group": "GB",
+                "unit": "U5",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 150
+              },
+              {
+                "group": "GC",
+                "unit": "U6",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "sector",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "sector": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1000,
+                "w_from": 1000
+              },
+              {
+                "unit": "U1",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "unit": "U2",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 200
+              },
+              {
+                "unit": "U3",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "unit": "U4",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 400
+              },
+              {
+                "unit": "U5",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 500
+              },
+              {
+                "unit": "U6",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "sector",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "sector": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1000,
+                "w_from": 1000
+              },
+              {
+                "unit": "U1",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "unit": "U2",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 200
+              },
+              {
+                "unit": "U3",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "unit": "U4",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 400
+              },
+              {
+                "unit": "U5",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 500
+              },
+              {
+                "unit": "U6",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "sector",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "sector": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 0,
+                "w_from": 0
+              },
+              {
+                "unit": "U1",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 10,
+                "w_from": 10
+              },
+              {
+                "unit": "U2",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 90,
+                "w_from": 90
+              },
+              {
+                "unit": "U3",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 30,
+                "w_from": 30
+              },
+              {
+                "unit": "U4",
+                "sector": "P",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 70,
+                "w_from": 70
+              },
+              {
+                "unit": "U5",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              },
+              {
+                "unit": "U6",
+                "sector": "S",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "class",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "class": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1000,
+                "w_from": 1000
+              },
+              {
+                "unit": "U1",
+                "class": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "unit": "U2",
+                "class": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 200
+              },
+              {
+                "unit": "U3",
+                "class": "G2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "unit": "U4",
+                "class": "G2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 400
+              },
+              {
+                "unit": "U5",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 500
+              },
+              {
+                "unit": "U6",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "class",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "class": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1000,
+                "w_from": 1000
+              },
+              {
+                "unit": "U1",
+                "class": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "unit": "U2",
+                "class": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 200
+              },
+              {
+                "unit": "U3",
+                "class": "G2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "unit": "U4",
+                "class": "G2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 400
+              },
+              {
+                "unit": "U5",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 500
+              },
+              {
+                "unit": "U6",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "class",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "class": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 0,
+                "w_from": 0
+              },
+              {
+                "unit": "U1",
+                "class": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 10,
+                "w_from": 10
+              },
+              {
+                "unit": "U2",
+                "class": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 90,
+                "w_from": 90
+              },
+              {
+                "unit": "U3",
+                "class": "G2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 30,
+                "w_from": 30
+              },
+              {
+                "unit": "U4",
+                "class": "G2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 70,
+                "w_from": 70
+              },
+              {
+                "unit": "U5",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              },
+              {
+                "unit": "U6",
+                "class": "S1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "group",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "group": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1000,
+                "w_from": 1000
+              },
+              {
+                "unit": "U1",
+                "group": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "unit": "U2",
+                "group": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 200
+              },
+              {
+                "unit": "U3",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "unit": "U4",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 400
+              },
+              {
+                "unit": "U5",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 500
+              },
+              {
+                "unit": "U6",
+                "group": "GC",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "group",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "group": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1000,
+                "w_from": 1000
+              },
+              {
+                "unit": "U1",
+                "group": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 100
+              },
+              {
+                "unit": "U2",
+                "group": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 200
+              },
+              {
+                "unit": "U3",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 300
+              },
+              {
+                "unit": "U4",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 400
+              },
+              {
+                "unit": "U5",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 500
+              },
+              {
+                "unit": "U6",
+                "group": "GC",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 600
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "group",
+            "weight": "count",
+            "error": false,
+            "value": [
+              {
+                "unit": "OTH",
+                "group": null,
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 0,
+                "w_from": 0
+              },
+              {
+                "unit": "U1",
+                "group": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 10,
+                "w_from": 10
+              },
+              {
+                "unit": "U2",
+                "group": "G1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 90,
+                "w_from": 90
+              },
+              {
+                "unit": "U3",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 30,
+                "w_from": 30
+              },
+              {
+                "unit": "U4",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 70,
+                "w_from": 70
+              },
+              {
+                "unit": "U5",
+                "group": "GB",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              },
+              {
+                "unit": "U6",
+                "group": "GC",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 50,
+                "w_from": 50
+              }
+            ],
+            "warnings": []
+          }
+        ]
+      },
+      "example2": {
+        "construct": {
+          "build": "scale_example2",
+          "leaftable": null,
+          "frames": null,
+          "key": null,
+          "name": null
+        },
+        "calls": [
+          {
+            "from": "era",
+            "to": "period",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "era": "E1",
+                "period": "p1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 4
+              },
+              {
+                "era": "E1",
+                "period": "p2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 3,
+                "w_from": 4
+              },
+              {
+                "era": "E2",
+                "period": "p3",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 2,
+                "w_from": 6
+              },
+              {
+                "era": "E2",
+                "period": "p4",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 4,
+                "w_from": 6
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "era",
+            "to": "period",
+            "weight": "span",
+            "error": false,
+            "value": [
+              {
+                "era": "E1",
+                "period": "p1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 4
+              },
+              {
+                "era": "E1",
+                "period": "p2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 3,
+                "w_from": 4
+              },
+              {
+                "era": "E2",
+                "period": "p3",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 2,
+                "w_from": 6
+              },
+              {
+                "era": "E2",
+                "period": "p4",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 4,
+                "w_from": 6
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "period",
+            "to": "era",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "period": "p1",
+                "era": "E1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 1
+              },
+              {
+                "period": "p2",
+                "era": "E1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 3,
+                "w_from": 3
+              },
+              {
+                "period": "p3",
+                "era": "E2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 2,
+                "w_from": 2
+              },
+              {
+                "period": "p4",
+                "era": "E2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 4,
+                "w_from": 4
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "period",
+            "to": "era",
+            "weight": "span",
+            "error": false,
+            "value": [
+              {
+                "period": "p1",
+                "era": "E1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 1
+              },
+              {
+                "period": "p2",
+                "era": "E1",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 3,
+                "w_from": 3
+              },
+              {
+                "period": "p3",
+                "era": "E2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 2,
+                "w_from": 2
+              },
+              {
+                "period": "p4",
+                "era": "E2",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 4,
+                "w_from": 4
+              }
+            ],
+            "warnings": []
+          }
+        ]
+      },
+      "grid": {
+        "construct": {
+          "build": "scale_from_leaftable",
+          "leaftable": {
+            "m": ["m1", "m2", "m1", "m2", "m1", "m2"],
+            "h": ["h1", "h1", "h2", "h2", "h3", "h3"],
+            "unit": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"],
+            "hours": [31, 28, 31, 28, 31, 28]
+          },
+          "frames": ["m", "h"],
+          "key": "unit",
+          "name": "grid"
+        },
+        "calls": [
+          {
+            "from": "m",
+            "to": "h",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "m": "m1",
+                "h": "h1",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 93
+              },
+              {
+                "m": "m1",
+                "h": "h2",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 93
+              },
+              {
+                "m": "m1",
+                "h": "h3",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 93
+              },
+              {
+                "m": "m2",
+                "h": "h1",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 84
+              },
+              {
+                "m": "m2",
+                "h": "h2",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 84
+              },
+              {
+                "m": "m2",
+                "h": "h3",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 84
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "m",
+            "to": "h",
+            "weight": "hours",
+            "error": false,
+            "value": [
+              {
+                "m": "m1",
+                "h": "h1",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 93
+              },
+              {
+                "m": "m1",
+                "h": "h2",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 93
+              },
+              {
+                "m": "m1",
+                "h": "h3",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 93
+              },
+              {
+                "m": "m2",
+                "h": "h1",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 84
+              },
+              {
+                "m": "m2",
+                "h": "h2",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 84
+              },
+              {
+                "m": "m2",
+                "h": "h3",
+                "n_from": 3,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 84
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "h",
+            "to": "m",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "h": "h1",
+                "m": "m1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 59
+              },
+              {
+                "h": "h1",
+                "m": "m2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 59
+              },
+              {
+                "h": "h2",
+                "m": "m1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 59
+              },
+              {
+                "h": "h2",
+                "m": "m2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 59
+              },
+              {
+                "h": "h3",
+                "m": "m1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 59
+              },
+              {
+                "h": "h3",
+                "m": "m2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 59
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "h",
+            "to": "m",
+            "weight": "hours",
+            "error": false,
+            "value": [
+              {
+                "h": "h1",
+                "m": "m1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 59
+              },
+              {
+                "h": "h1",
+                "m": "m2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 59
+              },
+              {
+                "h": "h2",
+                "m": "m1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 59
+              },
+              {
+                "h": "h2",
+                "m": "m2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 59
+              },
+              {
+                "h": "h3",
+                "m": "m1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 31,
+                "w_from": 59
+              },
+              {
+                "h": "h3",
+                "m": "m2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 28,
+                "w_from": 59
+              }
+            ],
+            "warnings": []
+          }
+        ]
+      },
+      "noweights": {
+        "construct": {
+          "build": "scale_from_leaftable",
+          "leaftable": {
+            "grp": ["A", "A", "B"],
+            "unit": ["u1", "u2", "u3"]
+          },
+          "frames": ["grp", "unit"],
+          "key": "unit",
+          "name": "noweights"
+        },
+        "calls": [
+          {
+            "from": "grp",
+            "to": "unit",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "grp": "A",
+                "unit": "u1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 2
+              },
+              {
+                "grp": "A",
+                "unit": "u2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 2
+              },
+              {
+                "grp": "B",
+                "unit": "u3",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 1
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "from": "unit",
+            "to": "grp",
+            "weight": null,
+            "error": false,
+            "value": [
+              {
+                "unit": "u1",
+                "grp": "A",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 1
+              },
+              {
+                "unit": "u2",
+                "grp": "A",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 1
+              },
+              {
+                "unit": "u3",
+                "grp": "B",
+                "n_from": 1,
+                "n_overlap": 1,
+                "w": 1,
+                "w_from": 1
+              }
+            ],
+            "warnings": []
+          }
+        ]
+      }
+    },
+    "between": [
+      {
+        "from": {
+          "build": "scale_example",
+          "leaftable": null,
+          "frames": null,
+          "key": null,
+          "name": null
+        },
+        "to": {
+          "build": "scale_from_leaftable",
+          "leaftable": {
+            "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
+            "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+            "size": [1, 2, 3, 4, 5, 6, 7]
+          },
+          "frames": ["big", "unit"],
+          "key": "unit",
+          "name": "other"
+        },
+        "weight": null,
+        "error": false,
+        "value": [
+          {
+            "example": "OTH",
+            "other": "OTH",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 1000,
+            "w_from": 1000
+          },
+          {
+            "example": "U1",
+            "other": "U1",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 100,
+            "w_from": 100
+          },
+          {
+            "example": "U2",
+            "other": "U2",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 200,
+            "w_from": 200
+          },
+          {
+            "example": "U3",
+            "other": "U3",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 300,
+            "w_from": 300
+          },
+          {
+            "example": "U4",
+            "other": "U4",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 400,
+            "w_from": 400
+          },
+          {
+            "example": "U5",
+            "other": "U5",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 500,
+            "w_from": 500
+          },
+          {
+            "example": "U6",
+            "other": "U6",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 600,
+            "w_from": 600
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "from": {
+          "build": "scale_example",
+          "leaftable": null,
+          "frames": null,
+          "key": null,
+          "name": null
+        },
+        "to": {
+          "build": "scale_from_leaftable",
+          "leaftable": {
+            "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
+            "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+            "size": [1, 2, 3, 4, 5, 6, 7]
+          },
+          "frames": ["big", "unit"],
+          "key": "unit",
+          "name": "other"
+        },
+        "weight": "count",
+        "error": false,
+        "value": [
+          {
+            "example": "OTH",
+            "other": "OTH",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 0,
+            "w_from": 0
+          },
+          {
+            "example": "U1",
+            "other": "U1",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 10,
+            "w_from": 10
+          },
+          {
+            "example": "U2",
+            "other": "U2",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 90,
+            "w_from": 90
+          },
+          {
+            "example": "U3",
+            "other": "U3",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 30,
+            "w_from": 30
+          },
+          {
+            "example": "U4",
+            "other": "U4",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 70,
+            "w_from": 70
+          },
+          {
+            "example": "U5",
+            "other": "U5",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 50,
+            "w_from": 50
+          },
+          {
+            "example": "U6",
+            "other": "U6",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 50,
+            "w_from": 50
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "from": {
+          "build": "scale_from_leaftable",
+          "leaftable": {
+            "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
+            "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+            "size": [1, 2, 3, 4, 5, 6, 7]
+          },
+          "frames": ["big", "unit"],
+          "key": "unit",
+          "name": "other"
+        },
+        "to": {
+          "build": "scale_example",
+          "leaftable": null,
+          "frames": null,
+          "key": null,
+          "name": null
+        },
+        "weight": null,
+        "error": false,
+        "value": [
+          {
+            "other": "OTH",
+            "example": "OTH",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 7,
+            "w_from": 7
+          },
+          {
+            "other": "U1",
+            "example": "U1",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 1,
+            "w_from": 1
+          },
+          {
+            "other": "U2",
+            "example": "U2",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 2,
+            "w_from": 2
+          },
+          {
+            "other": "U3",
+            "example": "U3",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 3,
+            "w_from": 3
+          },
+          {
+            "other": "U4",
+            "example": "U4",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 4,
+            "w_from": 4
+          },
+          {
+            "other": "U5",
+            "example": "U5",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 5,
+            "w_from": 5
+          },
+          {
+            "other": "U6",
+            "example": "U6",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 6,
+            "w_from": 6
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "from": {
+          "build": "scale_example",
+          "leaftable": null,
+          "frames": null,
+          "key": null,
+          "name": null
+        },
+        "to": {
+          "build": "scale_from_leaftable",
+          "leaftable": {
+            "top": ["T1", "T1", "T2"],
+            "unit": ["U1", "U3", "U9"]
+          },
+          "frames": ["top", "unit"],
+          "key": "unit",
+          "name": "partial"
+        },
+        "weight": null,
+        "error": false,
+        "value": [
+          {
+            "example": "OTH",
+            "partial": null,
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 1000,
+            "w_from": 1000
+          },
+          {
+            "example": "U1",
+            "partial": "U1",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 100,
+            "w_from": 100
+          },
+          {
+            "example": "U2",
+            "partial": null,
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 200,
+            "w_from": 200
+          },
+          {
+            "example": "U3",
+            "partial": "U3",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 300,
+            "w_from": 300
+          },
+          {
+            "example": "U4",
+            "partial": null,
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 400,
+            "w_from": 400
+          },
+          {
+            "example": "U5",
+            "partial": null,
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 500,
+            "w_from": 500
+          },
+          {
+            "example": "U6",
+            "partial": null,
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 600,
+            "w_from": 600
+          }
+        ],
+        "warnings": ["5 atom(s) of \"example\" have no counterpart in \"partial\"; their share is uncovered (NA target)"]
+      },
+      {
+        "from": {
+          "build": "scale_from_leaftable",
+          "leaftable": {
+            "top": ["T1", "T1", "T2"],
+            "unit": ["U1", "U3", "U9"]
+          },
+          "frames": ["top", "unit"],
+          "key": "unit",
+          "name": "partial"
+        },
+        "to": {
+          "build": "scale_example",
+          "leaftable": null,
+          "frames": null,
+          "key": null,
+          "name": null
+        },
+        "weight": null,
+        "error": false,
+        "value": [
+          {
+            "partial": "U1",
+            "example": "U1",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 1,
+            "w_from": 1
+          },
+          {
+            "partial": "U3",
+            "example": "U3",
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 1,
+            "w_from": 1
+          },
+          {
+            "partial": "U9",
+            "example": null,
+            "n_from": 1,
+            "n_overlap": 1,
+            "w": 1,
+            "w_from": 1
+          }
+        ],
+        "warnings": ["1 atom(s) of \"partial\" have no counterpart in \"example\"; their share is uncovered (NA target)"]
+      },
+      {
+        "from": {
+          "build": "scale_example",
+          "leaftable": null,
+          "frames": null,
+          "key": null,
+          "name": null
+        },
+        "to": {
+          "build": "scale_from_leaftable",
+          "leaftable": {
+            "grp": ["A", "B"],
+            "unit": ["z1", "z2"]
+          },
+          "frames": ["grp", "unit"],
+          "key": "unit",
+          "name": "disjoint"
+        },
+        "weight": null,
+        "error": true,
+        "message": "the atom layers of \"example\" and \"disjoint\" share no `unit` keys; register an explicit crosswalk with register_scale_map_between()",
+        "warnings": []
+      }
+    ]
+  }
+}
