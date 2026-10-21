@@ -181,3 +181,41 @@ test_that("a positional per-atom payload survives a row subset", {
   expect_identical(p@shape, paste0("shape_", scale_leaftable(p)$unit))
   expect_true(S7::S7_inherits(p, Shaped))
 })
+
+test_that("a collapse keeps the concrete class and asks the payload to merge", {
+  Shaped <- S7::new_class("Shaped",
+    parent = scale_class(),
+    properties = list(shape = S7::class_character),
+    validator = function(self) {
+      if (length(self@shape) != nrow(self@leaftable)) {
+        "`shape` needs one entry per leaftable row"
+      }
+    }
+  )
+  base <- scale_example()
+  lt <- scale_leaftable(base)
+  s <- Shaped(
+    leaftable = lt, frames = scale_frames(base),
+    members = S7::prop(base, "members"), key = scale_key(base),
+    meta = S7::prop(base, "meta"),
+    shape = paste0("shape_", lt$unit)
+  )
+  # no collapse method: the positional payload no longer fits and the
+  # subclass's own validator says so -- loud, not silently misaligned
+  expect_error(prune_scale(s, "class"), "one entry per leaftable row")
+
+  # with one: merged by `map`, one new row index per old row, NA = dropped
+  S7::method(scale_payload_collapse, Shaped) <- function(x, map, ...) {
+    merged <- tapply(x@shape, map, function(z) paste(z, collapse = "+"))
+    x@shape <- unname(merged[as.character(seq_len(max(map, na.rm = TRUE)))])
+    x
+  }
+  p <- prune_scale(s, "class")
+  expect_true(S7::S7_inherits(p, Shaped))
+  expect_identical(scale_frames(p), c("sector", "class"))
+  expect_identical(length(p@shape), nrow(scale_leaftable(p)))
+  expect_identical(p@shape[scale_leaftable(p)$class == "G1"], "shape_U1+shape_U2")
+  # the default hook is the identity: a scale with no payload is unchanged
+  expect_identical(scale_payload_collapse(base, c(1L, 1L, 2L, 2L, 3L, 3L, NA)),
+                   base)
+})

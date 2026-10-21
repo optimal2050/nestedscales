@@ -1,0 +1,15 @@
+alias,frame,unit,status,note
+GAS,carrier,FossilGas,mapped,natural gas commodity
+OIL,carrier,FossilOil,mapped,oil products commodity
+NUC,carrier,Nuclear,mapped,nuclear fuel commodity
+GEO,carrier,Geothermal,mapped,geothermal heat commodity
+LIG,fuel,Lignite,mapped,lignite / brown coal
+WST,fuel,Waste,mapped,waste commodity
+ELC,carrier,Electricity,mapped,electricity
+HEAT,carrier,Heat,mapped,heat
+H2,carrier,Hydrogen,mapped,hydrogen (the carrier under Synthetic)
+BIO,carrier,Bioenergy,mapped,biomass commodity
+BATTERY,fuel,Battery,mapped,battery storage
+COA,fuel,Bituminous,review,hard coal: Bituminous? FossilCoal minus Lignite is not expressible -- needs a ruling
+CO2,,,unmapped,an emission; not a carrier
+HYDWAT,,,unmapped,hydro water inflow; a resource; not a carrier

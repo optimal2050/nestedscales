@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "nestedscales": "0.1.1.9000",
+  "class": "nestedscales::NestedScale",
+  "name": "carriers",
+  "key": "fuel",
+  "frames": ["group", "carrier", "fuel"],
+  "members": {
+    "group": ["FossilFuels", "Renewable", "Nuclear", "Electricity", "Heat", "Synthetic", "Storage", "Other"],
+    "carrier": ["FossilCoal", "FossilOil", "FossilGas", "Bioenergy", "Hydro", "Wind", "Solar", "Geothermal", "OtherRenewables", "Nuclear", "Electricity", "Heat", "Hydrogen", "HydrogenDerivatives", "SyntheticFuels", "Storage", "Other"],
+    "fuel": ["Anthracite", "Bituminous", "SubBituminous", "Lignite", "Coke", "OtherFossilCoal", "Crude", "ResidualFuelOil", "DistillateFuelOil", "MotorGasoline", "JetFuel", "LPG_NGL", "OtherFossilOil", "NaturalGas", "ShaleGas", "TightGas", "LNG", "AssociatedGas", "OtherFossilGas", "SolidBiomass", "Biogas", "Ethanol", "Biodiesel", "Waste", "OtherBioenergy", "LargeHydro", "SmallHydro", "RunOfRiver", "PumpedStorage", "OtherHydro", "Onshore", "Offshore", "OtherWind", "SolarPV", "CSP", "SolarThermal", "OtherSolar", "Hydrothermal", "EGS", "OtherGeothermal", "Wave", "Tidal", "OceanThermal", "OtherOtherRenewables", "PWR", "BWR", "SMR", "OtherNuclear", "Electricity", "Heat", "GreenHydrogen", "BlueHydrogen", "GreyHydrogen", "PinkHydrogen", "TurquoiseHydrogen", "OtherHydrogen", "Ammonia", "MethanolSynthetic", "LOHC", "OtherHydrogenDerivatives", "eMethane", "eMethanol", "eDiesel", "eJetFuel", "FT_Liquids", "OtherSyntheticFuels", "Hydrogen", "Battery", "ThermalStorage", "OtherStorage", "Other"]
+  },
+  "meta": {
+    "name": "carriers",
+    "desc": "Energy carriers: fuels and energy vectors with subtypes, from energypal's carriers palette (IPCC 2006 / IEA classifications)",
+    "weights": [],
+    "default_weight": null,
+    "source": "energypal carriers.yml",
+    "labels": {
+      "_table": {
+        "columns": {
+          "frame": ["group", "carrier", "carrier", "carrier", "group", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "group", "carrier", "group", "carrier", "group", "carrier", "group", "carrier", "carrier", "carrier", "group", "carrier", "group", "carrier"],
+          "unit": ["FossilFuels", "FossilCoal", "FossilOil", "FossilGas", "Renewable", "Bioenergy", "Hydro", "Wind", "Solar", "Geothermal", "OtherRenewables", "Nuclear", "Nuclear", "Electricity", "Electricity", "Heat", "Heat", "Synthetic", "Hydrogen", "HydrogenDerivatives", "SyntheticFuels", "Storage", "Storage", "Other", "Other"],
+          "label_short": ["Fossil", "Coal", "Oil", "Gas", "RE", "Bio", "Hydro", "Wind", "Solar", "Geo", "Other RE", "Nuclear", "Nuclear", "Elec", "Elec", "Heat", "Heat", "Synthetic", "H2", "H2 Deriv.", "SynFuels", "Storage", "Storage", "Other", "Other"],
+          "label_long": ["Fossil Fuels", "Coal", "Oil", "Natural Gas", "Renewables", "Bioenergy", "Hydroelectric Power", "Wind", "Solar", "Geothermal", "Other Renewables", "Nuclear", "Nuclear", "Electricity", "Electricity", "Heat", "Heat", "Synthetic Fuels", "Hydrogen", "Hydrogen Derivatives", "Synthetic Fuels", "Energy Storage", "Energy Storage", "Other", "Other"]
+        },
+        "types": {
+          "frame": "string",
+          "unit": "string",
+          "label_short": "string",
+          "label_long": "string"
+        }
+      }
+    },
+    "energypal_version": "0.1.0.9000",
+    "palette_version": "0.1.1"
+  },
+  "tables": {
+    "leaftable": {
+      "inline": {
+        "columns": {
+          "group": ["FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "FossilFuels", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Renewable", "Nuclear", "Nuclear", "Nuclear", "Nuclear", "Electricity", "Heat", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Synthetic", "Storage", "Storage", "Storage", "Storage", "Other"],
+          "carrier": ["FossilCoal", "FossilCoal", "FossilCoal", "FossilCoal", "FossilCoal", "FossilCoal", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Hydro", "Hydro", "Hydro", "Hydro", "Hydro", "Wind", "Wind", "Wind", "Solar", "Solar", "Solar", "Solar", "Geothermal", "Geothermal", "Geothermal", "OtherRenewables", "OtherRenewables", "OtherRenewables", "OtherRenewables", "Nuclear", "Nuclear", "Nuclear", "Nuclear", "Electricity", "Heat", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "HydrogenDerivatives", "HydrogenDerivatives", "HydrogenDerivatives", "HydrogenDerivatives", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "Storage", "Storage", "Storage", "Storage", "Other"],
+          "fuel": ["Anthracite", "Bituminous", "SubBituminous", "Lignite", "Coke", "OtherFossilCoal", "Crude", "ResidualFuelOil", "DistillateFuelOil", "MotorGasoline", "JetFuel", "LPG_NGL", "OtherFossilOil", "NaturalGas", "ShaleGas", "TightGas", "LNG", "AssociatedGas", "OtherFossilGas", "SolidBiomass", "Biogas", "Ethanol", "Biodiesel", "Waste", "OtherBioenergy", "LargeHydro", "SmallHydro", "RunOfRiver", "PumpedStorage", "OtherHydro", "Onshore", "Offshore", "OtherWind", "SolarPV", "CSP", "SolarThermal", "OtherSolar", "Hydrothermal", "EGS", "OtherGeothermal", "Wave", "Tidal", "OceanThermal", "OtherOtherRenewables", "PWR", "BWR", "SMR", "OtherNuclear", "Electricity", "Heat", "GreenHydrogen", "BlueHydrogen", "GreyHydrogen", "PinkHydrogen", "TurquoiseHydrogen", "OtherHydrogen", "Ammonia", "MethanolSynthetic", "LOHC", "OtherHydrogenDerivatives", "eMethane", "eMethanol", "eDiesel", "eJetFuel", "FT_Liquids", "OtherSyntheticFuels", "Hydrogen", "Battery", "ThermalStorage", "OtherStorage", "Other"]
+        },
+        "types": {
+          "group": "string",
+          "carrier": "string",
+          "fuel": "string"
+        }
+      }
+    },
+    "attributes": {
+      "inline": {
+        "columns": {
+          "frame": ["fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel", "fuel"],
+          "unit": ["Crude", "Crude", "MotorGasoline", "MotorGasoline", "JetFuel", "JetFuel", "DistillateFuelOil", "DistillateFuelOil", "ResidualFuelOil", "ResidualFuelOil", "LPG_NGL", "LPG_NGL", "Anthracite", "Anthracite", "Bituminous", "Bituminous", "SubBituminous", "SubBituminous", "Lignite", "Lignite", "Coke", "Coke", "NaturalGas", "NaturalGas", "Biodiesel", "Biodiesel"],
+          "attribute": ["lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2", "lhv", "ef_co2"],
+          "kind": ["property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor", "property", "factor"],
+          "value": [42.3, 73300, 44.3, 69300, 44.1, 71500, 43, 74100, 40.4, 77400, 47.3, 63100, 26.7, 98300, 25.8, 94600, 18.9, 96100, 11.9, 101000, 28.2, 107000, 48, 56100, 27, 70800],
+          "lower": [40.1, 71100, 42.5, 67500, 42, 69700, 41.4, 72600, 39.8, 75500, 44.8, 61600, 21.6, 94600, 19.9, 89500, 11.5, 92800, 5.5, 90900, 25.1, 95700, 46.5, 54300, 13.6, 59800],
+          "upper": [44.8, 75500, 44.8, 73000, 45, 74400, 43.3, 74800, 41.7, 78800, 52.2, 65600, 32.2, 101000, 30.5, 99700, 26, 100000, 21.6, 115000, 30.2, 119000, 50.4, 58300, 54, 84300],
+          "unit_of_measure": ["GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ", "GJ/t", "kg/TJ"],
+          "source": ["IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006", "IPCC2006"],
+          "note": ["Crude Oil", "Crude Oil", "Motor Gasoline", "Motor Gasoline", "Jet Kerosene", "Jet Kerosene", "Gas/Diesel Oil", "Gas/Diesel Oil", "Residual Fuel Oil", "Residual Fuel Oil", "Liquefied Petroleum Gases", "Liquefied Petroleum Gases", "Anthracite", "Anthracite", "Other Bituminous Coal", "Other Bituminous Coal", "Sub-Bituminous Coal", "Sub-Bituminous Coal", "Lignite", "Lignite", "Coke Oven Coke and Lignite Coke", "Coke Oven Coke and Lignite Coke", "Natural Gas", "Natural Gas", "Biodiesels", "Biodiesels"]
+        },
+        "types": {
+          "frame": "string",
+          "unit": "string",
+          "attribute": "string",
+          "kind": "string",
+          "value": "double",
+          "lower": "double",
+          "upper": "double",
+          "unit_of_measure": "string",
+          "source": "string",
+          "note": "string"
+        }
+      }
+    },
+    "aliases": {
+      "inline": {
+        "columns": {
+          "frame": ["group", "group", "group", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "group", "group", "group", "group", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "group", "group", "group", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "carrier", "fuel", "fuel", "carrier", "carrier", "carrier", "carrier", "fuel"],
+          "unit": ["FossilFuels", "FossilFuels", "FossilFuels", "FossilCoal", "FossilCoal", "FossilCoal", "FossilCoal", "FossilCoal", "FossilCoal", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilOil", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "FossilGas", "Renewable", "Renewable", "Renewable", "Renewable", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Bioenergy", "Hydro", "Hydro", "Hydro", "Hydro", "Hydro", "Hydro", "Wind", "Wind", "Wind", "Wind", "Wind", "Wind", "Solar", "Solar", "Solar", "Solar", "Solar", "Solar", "Solar", "Geothermal", "Geothermal", "Geothermal", "Geothermal", "Geothermal", "OtherRenewables", "OtherRenewables", "OtherRenewables", "OtherRenewables", "OtherRenewables", "OtherRenewables", "Nuclear", "Nuclear", "Nuclear", "Nuclear", "Nuclear", "Electricity", "Electricity", "Electricity", "Electricity", "Heat", "Heat", "Heat", "Heat", "Synthetic", "Synthetic", "Synthetic", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "HydrogenDerivatives", "HydrogenDerivatives", "HydrogenDerivatives", "HydrogenDerivatives", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "SyntheticFuels", "Storage", "Storage", "Storage", "Storage", "Storage", "Other", "Other", "Other", "Other", "FossilGas", "FossilOil", "Nuclear", "Geothermal", "Lignite", "Waste", "Electricity", "Heat", "Hydrogen", "Bioenergy", "Battery"],
+          "alias": ["fossil", "fossil fuels", "fossil energy", "coal", "hard coal", "steam coal", "thermal coal", "coal power", "coal fired", "oil", "petroleum", "crude", "crude oil", "fuel oil", "diesel", "gasoline", "petrol", "jet fuel", "kerosene", "lpg", "ngl", "liquid fuels", "gas", "natural gas", "nat gas", "ng", "methane", "ch4", "fossil gas", "lng", "cng", "ccgt", "ocgt", "combined cycle", "open cycle", "gas turbine", "renewable", "renewables", "renewable energy", "re", "bio", "biomass", "biofuel", "biofuels", "solid biomass", "wood", "ethanol", "biodiesel", "biogas", "waste", "hydro", "hydropower", "hydroelectric", "hydroelectricity", "water power", "run of river", "wind", "wind power", "wind energy", "onshore wind", "offshore wind", "wind turbine", "solar", "pv", "photovoltaic", "photovoltaics", "solar pv", "solar power", "solar energy", "geothermal", "geo", "hydrothermal", "egs", "ground source", "other renewables", "other renewable", "wave", "tidal", "marine", "ocean", "nuclear", "nuclear power", "nuclear energy", "uranium", "atomic", "electricity", "electric", "elec", "power", "heat", "heating", "district heat", "district heating", "synthetic", "power to x", "ptx", "hydrogen", "h2", "green hydrogen", "blue hydrogen", "grey hydrogen", "pink hydrogen", "turquoise hydrogen", "hydrogen derivatives", "ammonia", "nh3", "lohc", "synthetic fuels", "synfuels", "e-fuels", "efuels", "e-methane", "e-methanol", "e-diesel", "e-jet", "ft liquids", "storage", "energy storage", "battery", "batteries", "thermal storage", "other", "misc", "miscellaneous", "unspecified", "GAS", "OIL", "NUC", "GEO", "LIG", "WST", "ELC", "HEAT", "H2", "BIO", "BATTERY"],
+          "source": ["energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "energypal", "commodity", "commodity", "commodity", "commodity", "commodity", "commodity", "commodity", "commodity", "commodity", "commodity", "commodity"]
+        },
+        "types": {
+          "frame": "string",
+          "unit": "string",
+          "alias": "string",
+          "source": "string"
+        }
+      }
+    }
+  },
+  "payload": {}
+}

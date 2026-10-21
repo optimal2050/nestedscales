@@ -47,6 +47,149 @@ def _is_numeric(t: pa.Table, col: str) -> bool:
     return pa.types.is_integer(ty) or pa.types.is_floating(ty)
 
 
+# Member attributes and aliases ------------------------------------------------
+# Two long tables keyed by (frame, unit): a physical attribute (a calorific
+# value, a density) may sit on an atom or on any coarser member; an alias is
+# an alternative label. Attributes are not weights: they are consumed row by
+# row by `convert_scale()`, never aggregated.
+
+SCALE_ATTRIBUTE_KINDS = ("property", "factor")
+"""`property` = an invertible ratio (lhv, density); `factor` = one-way (an
+emission factor, a loss factor)."""
+
+ATTR_SCHEMA = pa.schema([
+    ("frame", pa.string()), ("unit", pa.string()), ("attribute", pa.string()),
+    ("kind", pa.string()), ("value", pa.float64()), ("lower", pa.float64()),
+    ("upper", pa.float64()), ("unit_of_measure", pa.string()),
+    ("source", pa.string()), ("note", pa.string())])
+ALIAS_SCHEMA = pa.schema([
+    ("frame", pa.string()), ("unit", pa.string()), ("alias", pa.string()),
+    ("source", pa.string())])
+
+
+def empty_attributes() -> pa.Table:
+    return ATTR_SCHEMA.empty_table()
+
+
+def empty_aliases() -> pa.Table:
+    return ALIAS_SCHEMA.empty_table()
+
+
+def _as_member_table(x: Any, schema: pa.Schema, what: str,
+                     optional: Sequence[str] = ()) -> pa.Table:
+    """Coerce a table to `schema`: optional columns filled with nulls, the
+    rest required, no extras."""
+    from ._backend import as_table
+
+    if x is None:
+        return schema.empty_table()
+    t = as_table(x, what)
+    cols = {}
+    for f in schema:
+        if f.name in t.column_names:
+            c = t[f.name]
+            if pa.types.is_dictionary(c.type):
+                c = c.cast(pa.string())
+            cols[f.name] = c.cast(f.type)
+        elif f.name in optional:
+            cols[f.name] = pa.nulls(t.num_rows, f.type)
+        else:
+            _stop("`%s` is missing column(s): %s", what,
+                  _preview([g.name for g in schema if g.name not in t.column_names
+                            and g.name not in optional]))
+    extra = [c for c in t.column_names if c not in schema.names]
+    if extra:
+        _stop("`%s` has unknown column(s): %s", what, _preview(extra))
+    return pa.table(cols, schema=schema)
+
+
+def _check_member_table(t: pa.Table, schema: pa.Schema, what: str,
+                        frames: Sequence[str], members: Mapping, v: Mapping,
+                        key_cols: Sequence[str]) -> list[str]:
+    """Membership, non-empty strings and duplicates; the attribute-specific
+    checks are added by `_check_attributes`."""
+    errs: list[str] = []
+    if t.schema.names != schema.names:
+        return ["`%s` must have exactly the columns: %s"
+                % (what, ", ".join(schema.names))]
+    if t.num_rows == 0:
+        return errs
+    fr, un = t["frame"].to_pylist(), t["unit"].to_pylist()
+    bad_frame = list(dict.fromkeys(f for f in fr if f not in frames))
+    if bad_frame:
+        errs.append("`%s` names %s(s) not in the object: %s"
+                    % (what, v["frame"], _preview(bad_frame)))
+    bad = list(dict.fromkeys("%s/%s" % (f, u) for f, u in zip(fr, un, strict=True)
+                             if f in frames and u not in members.get(f, ())))
+    if bad:
+        errs.append("`%s` names (%s/%s) pairs that are not members: %s"
+                    % (what, v["frame"], v["unit"], _preview(bad)))
+    for c in [c for c in schema.names if c not in ("value", "lower", "upper", "note")]:
+        vals = t[c].to_pylist()
+        if any(z is None or z == "" for z in vals):
+            errs.append("`%s$%s` must be non-empty strings" % (what, c))
+    keys = list(zip(*(t[c].to_pylist() for c in key_cols), strict=True))
+    if len(set(keys)) != len(keys):
+        seen: set = set()
+        dup = [k for k in keys if k in seen or seen.add(k)]
+        label = ("duplicate (%s, %s, attribute, source) rows" % (v["frame"], v["unit"])
+                 if what == "attributes" else "duplicate rows")
+        errs.append("`%s` has %s: %s" % (what, label, _preview(
+            ["/".join(str(z) for z in d[:2]) for d in dup])))
+    return errs
+
+
+def _check_attributes(t: pa.Table, frames: Sequence[str], members: Mapping,
+                      v: Mapping) -> list[str]:
+    errs = _check_member_table(t, ATTR_SCHEMA, "attributes", frames, members, v,
+                               ("frame", "unit", "attribute", "source"))
+    if errs and errs[0].startswith("`attributes` must have exactly"):
+        return errs
+    if t.num_rows == 0:
+        return errs
+    vals = t["value"].to_pylist()
+    if any(z is None or not math.isfinite(z) for z in vals):
+        errs.append("`attributes$value` must be finite numeric")
+    lo, up = t["lower"].to_pylist(), t["upper"].to_pylist()
+    below = any(a is not None and z is not None and a > z
+                for a, z in zip(lo, vals, strict=True))
+    above = any(b is not None and z is not None and b < z
+                for b, z in zip(up, vals, strict=True))
+    if below or above:
+        errs.append("`attributes` must satisfy lower <= value <= upper")
+    kinds = t["kind"].to_pylist()
+    bad_kind = list(dict.fromkeys(k for k in kinds if k not in SCALE_ATTRIBUTE_KINDS))
+    if bad_kind:
+        errs.append("`attributes$kind` must be one of %s; got: %s"
+                    % (", ".join(SCALE_ATTRIBUTE_KINDS), _preview(bad_kind)))
+    per: dict[str, set] = {}
+    for a, k in zip(t["attribute"].to_pylist(), kinds, strict=True):
+        per.setdefault(a, set()).add(k)
+    mixed = [a for a, ks in per.items() if len(ks) > 1]
+    if mixed:
+        errs.append("an attribute has one kind; these have several: %s"
+                    % _preview(mixed))
+    return errs
+
+
+def _member_keys(x: NestedScale) -> set:
+    return {(f, u) for f, cs in x.members.items() for u in cs}
+
+
+def _slice_member_tables(x: NestedScale) -> tuple[pa.Table, pa.Table]:
+    """The attribute and alias rows of the members `x` still has."""
+    keep = _member_keys(x)
+    out = []
+    for t in (x.attributes, x.aliases):
+        if t.num_rows == 0:
+            out.append(t)
+            continue
+        mask = [(f, u) in keep for f, u in zip(t["frame"].to_pylist(),
+                                                 t["unit"].to_pylist(), strict=True)]
+        out.append(t.filter(pa.array(mask, pa.bool_())))
+    return out[0], out[1]
+
+
 @dataclass(frozen=True, eq=False, repr=False)
 class NestedScale:
     """A nested discrete partition: a table of atoms plus the frames grouping them.
@@ -60,6 +203,8 @@ class NestedScale:
     members: dict[str, tuple[str, ...]]
     key: str = "unit"
     meta: dict[str, Any] = field(default_factory=dict)
+    attributes: pa.Table = field(default_factory=empty_attributes)
+    aliases: pa.Table = field(default_factory=empty_aliases)
 
     def __post_init__(self) -> None:
         self._normalise()
@@ -101,13 +246,19 @@ class NestedScale:
                 meta["residuals"] = {k: _as_str_tuple(v)
                                      for k, v in meta["residuals"].items()}
             object.__setattr__(self, "meta", meta)
+        object.__setattr__(self, "attributes", _as_member_table(
+            self.attributes, ATTR_SCHEMA, "attributes", ("lower", "upper", "note")))
+        object.__setattr__(self, "aliases", _as_member_table(
+            self.aliases, ALIAS_SCHEMA, "aliases"))
 
     def __eq__(self, other: object) -> bool:
         if type(other) is not type(self):
             return NotImplemented
         return (self.frames == other.frames and self.key == other.key
                 and self.members == other.members and self.meta == other.meta
-                and self.leaftable.equals(other.leaftable))
+                and self.leaftable.equals(other.leaftable)
+                and self.attributes.equals(other.attributes)
+                and self.aliases.equals(other.aliases))
 
     __hash__ = None  # type: ignore[assignment]
 
@@ -201,6 +352,13 @@ def _validate(self: NestedScale) -> list[str]:
             if seen_codes != set(mb):
                 errs.append('`members[["%s"]]` must contain exactly the non-NA '
                             "values present in `leaftable$%s`" % (f, f))
+
+    # attributes and aliases, against the members (so only once those are sound)
+    if not errs and isinstance(members, Mapping):
+        v = scale_vocab(self)
+        errs += _check_attributes(self.attributes, frames, members, v)
+        errs += _check_member_table(self.aliases, ALIAS_SCHEMA, "aliases", frames,
+                                    members, v, ("alias", "frame", "unit", "source"))
 
     # meta
     if not isinstance(meta, Mapping):
@@ -475,6 +633,19 @@ def _format_scale(x: NestedScale) -> str:
     if wts:
         out.append("Weights: %s (default: %s)" % (
             ", ".join(wts), meta.get("default_weight") or wts[0]))
+    at = x.attributes
+    if at.num_rows > 0:
+        per: dict[str, int] = {}
+        for fr_ in at["frame"].to_pylist():
+            per[fr_] = per.get(fr_, 0) + 1
+        out.append("Attributes: %s (sources: %s) -- %s" % (
+            ", ".join(dict.fromkeys(at["attribute"].to_pylist())),
+            ", ".join(dict.fromkeys(at["source"].to_pylist())),
+            ", ".join("%d at %s" % (per[fr_], fr_) for fr_ in f if fr_ in per)))
+    al = x.aliases
+    if al.num_rows > 0:
+        out.append("Aliases: %d (%s)" % (
+            al.num_rows, ", ".join(dict.fromkeys(al["source"].to_pylist()))))
     if meta.get("source") is not None:
         out.append("Source: %s" % meta["source"])
     return "\n".join(out)

@@ -4,7 +4,9 @@ Python binding of the R package of the same name. Every function has the same
 name and argument order as in R; see API.md at the repository root.
 """
 from ._utils import NestedScalesError, NestedScalesWarning
+from .aliases import attach_aliases_scale, scale_aliases, scale_match
 from .array import as_scale_array, as_scale_table
+from .attributes import attach_attributes_scale, scale_attributes
 from .backend import (
     Backend,
     backend_bind_rows,
@@ -16,11 +18,24 @@ from .backend import (
     backend_scan,
     backend_schema,
 )
+from .convert import convert_scale
 from .dataset import (
     ScaleDataset,
     open_scale_dataset,
     scale_dataset_info,
     write_scale_dataset,
+)
+from .definition import (
+    clear_scale_dirs,
+    list_scale_classes,
+    list_scale_dirs,
+    read_scale,
+    register_scale_class,
+    register_scale_dir,
+    scale_catalog,
+    scale_read_payload,
+    scale_write_payload,
+    write_scale,
 )
 from .filter import filter_scale, prune_scale, scale_share
 from .frames import is_valid_frame
@@ -76,8 +91,13 @@ from .rules import (
     register_scale_rule,
 )
 from .scale_class import (
+    ALIAS_SCHEMA,
+    ATTR_SCHEMA,
+    SCALE_ATTRIBUTE_KINDS,
     NestedScale,
     ScaleSummary,
+    empty_aliases,
+    empty_attributes,
     scale_alias_property,
     scale_atom_level,
     scale_class,
@@ -99,7 +119,14 @@ __version__ = "0.1.0.dev0"
 
 __all__ = [
     "ScaleDataset", "open_scale_dataset", "scale_dataset_info",
-    "write_scale_dataset", "ScaleProduct", "product_coverage", "product_frames",
+    "write_scale_dataset", "write_scale", "read_scale", "scale_catalog",
+    "register_scale_dir", "list_scale_dirs", "clear_scale_dirs",
+    "register_scale_class", "list_scale_classes", "scale_read_payload",
+    "scale_write_payload", "SCALE_ATTRIBUTE_KINDS", "ATTR_SCHEMA",
+    "ALIAS_SCHEMA", "empty_attributes", "empty_aliases",
+    "attach_attributes_scale", "scale_attributes", "attach_aliases_scale",
+    "scale_aliases", "scale_match", "convert_scale",
+    "ScaleProduct", "product_coverage", "product_frames",
     "product_keys", "product_size", "product_weights", "scale_axes",
     "scale_is_product", "scale_product", "scale_product_class",
     "as_scale_array", "as_scale_table", "filter_scale", "join_scale",

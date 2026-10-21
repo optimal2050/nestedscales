@@ -1,0 +1,496 @@
+{
+  "generated_by": "nestedscales 0.1.1.9000",
+  "cases": [
+    {
+      "file": "example.json",
+      "tables": "inline",
+      "value": {
+        "frames": ["sector", "class", "group", "unit"],
+        "key": "unit",
+        "members": {
+          "sector": ["P", "S"],
+          "class": ["G1", "G2", "S1"],
+          "group": ["G1", "GB", "GC"],
+          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+        },
+        "attributes": [],
+        "aliases": [],
+        "weights": ["size", "count"],
+        "default_weight": "size",
+        "name": "example",
+        "desc": "Synthetic example: reused code, non-nesting frame pair, and an unassigned atom",
+        "tokens": null,
+        "leaftable": [
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U1",
+            "size": 100,
+            "count": 10
+          },
+          {
+            "sector": "P",
+            "class": "G1",
+            "group": "G1",
+            "unit": "U2",
+            "size": 200,
+            "count": 90
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U3",
+            "size": 300,
+            "count": 30
+          },
+          {
+            "sector": "P",
+            "class": "G2",
+            "group": "GB",
+            "unit": "U4",
+            "size": 400,
+            "count": 70
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GB",
+            "unit": "U5",
+            "size": 500,
+            "count": 50
+          },
+          {
+            "sector": "S",
+            "class": "S1",
+            "group": "GC",
+            "unit": "U6",
+            "size": 600,
+            "count": 50
+          },
+          {
+            "sector": null,
+            "class": null,
+            "group": null,
+            "unit": "OTH",
+            "size": 1000,
+            "count": 0
+          }
+        ]
+      }
+    },
+    {
+      "file": "fuels.json",
+      "tables": "inline",
+      "value": {
+        "frames": ["group", "phase", "carrier", "fuel"],
+        "key": "fuel",
+        "members": {
+          "group": ["Fossil", "Bio", "Power"],
+          "phase": ["solid", "liquid", "gas"],
+          "carrier": ["Coal", "Oil", "Gas", "Biomass", "Electricity"],
+          "fuel": ["Anthracite", "Lignite", "Diesel", "Gasoline", "NaturalGas", "Wood", "Biodiesel", "Biogas", "Electricity"]
+        },
+        "attributes": [
+          {
+            "frame": "fuel",
+            "unit": "Anthracite",
+            "attribute": "lhv",
+            "kind": "property",
+            "value": 26.7,
+            "lower": 21.6,
+            "upper": 32.2,
+            "unit_of_measure": "GJ/t",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "fuel",
+            "unit": "Lignite",
+            "attribute": "lhv",
+            "kind": "property",
+            "value": 11.9,
+            "lower": 5.5,
+            "upper": 21.6,
+            "unit_of_measure": "GJ/t",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "carrier",
+            "unit": "Oil",
+            "attribute": "lhv",
+            "kind": "property",
+            "value": 42.5,
+            "lower": 40,
+            "upper": 45,
+            "unit_of_measure": "GJ/t",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "group",
+            "unit": "Bio",
+            "attribute": "lhv",
+            "kind": "property",
+            "value": 15,
+            "lower": 7.9,
+            "upper": 31,
+            "unit_of_measure": "GJ/t",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "fuel",
+            "unit": "Anthracite",
+            "attribute": "ef_co2",
+            "kind": "factor",
+            "value": 98300,
+            "lower": 94600,
+            "upper": 101000,
+            "unit_of_measure": "kg/TJ",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "carrier",
+            "unit": "Gas",
+            "attribute": "ef_co2",
+            "kind": "factor",
+            "value": 56100,
+            "lower": 54300,
+            "upper": 58300,
+            "unit_of_measure": "kg/TJ",
+            "source": "example",
+            "note": null
+          }
+        ],
+        "aliases": [
+          {
+            "frame": "fuel",
+            "unit": "Anthracite",
+            "alias": "hard coal",
+            "source": "example"
+          },
+          {
+            "frame": "carrier",
+            "unit": "Coal",
+            "alias": "coal",
+            "source": "example"
+          },
+          {
+            "frame": "fuel",
+            "unit": "Electricity",
+            "alias": "elc",
+            "source": "example"
+          },
+          {
+            "frame": "carrier",
+            "unit": "Electricity",
+            "alias": "elc",
+            "source": "example"
+          },
+          {
+            "frame": "carrier",
+            "unit": "Electricity",
+            "alias": "power",
+            "source": "example"
+          }
+        ],
+        "weights": [],
+        "default_weight": null,
+        "name": "fuels",
+        "desc": "",
+        "tokens": null,
+        "leaftable": [
+          {
+            "group": "Fossil",
+            "phase": "solid",
+            "carrier": "Coal",
+            "fuel": "Anthracite"
+          },
+          {
+            "group": "Fossil",
+            "phase": "solid",
+            "carrier": "Coal",
+            "fuel": "Lignite"
+          },
+          {
+            "group": "Fossil",
+            "phase": "liquid",
+            "carrier": "Oil",
+            "fuel": "Diesel"
+          },
+          {
+            "group": "Fossil",
+            "phase": "liquid",
+            "carrier": "Oil",
+            "fuel": "Gasoline"
+          },
+          {
+            "group": "Fossil",
+            "phase": "gas",
+            "carrier": "Gas",
+            "fuel": "NaturalGas"
+          },
+          {
+            "group": "Bio",
+            "phase": "solid",
+            "carrier": "Biomass",
+            "fuel": "Wood"
+          },
+          {
+            "group": "Bio",
+            "phase": "liquid",
+            "carrier": "Biomass",
+            "fuel": "Biodiesel"
+          },
+          {
+            "group": "Bio",
+            "phase": "gas",
+            "carrier": "Biomass",
+            "fuel": "Biogas"
+          },
+          {
+            "group": "Power",
+            "phase": null,
+            "carrier": "Electricity",
+            "fuel": "Electricity"
+          }
+        ]
+      }
+    },
+    {
+      "file": "grid.scale",
+      "tables": "arrow",
+      "value": {
+        "frames": ["m", "h"],
+        "key": "unit",
+        "members": {
+          "m": ["m1", "m2"],
+          "h": ["h1", "h2", "h3"]
+        },
+        "attributes": [],
+        "aliases": [],
+        "weights": ["hours"],
+        "default_weight": "hours",
+        "name": "grid",
+        "desc": "",
+        "tokens": {
+          "m": "month",
+          "h": "hour"
+        },
+        "leaftable": [
+          {
+            "m": "m1",
+            "h": "h1",
+            "unit": "m1_h1",
+            "hours": 31
+          },
+          {
+            "m": "m2",
+            "h": "h1",
+            "unit": "m2_h1",
+            "hours": 28
+          },
+          {
+            "m": "m1",
+            "h": "h2",
+            "unit": "m1_h2",
+            "hours": 31
+          },
+          {
+            "m": "m2",
+            "h": "h2",
+            "unit": "m2_h2",
+            "hours": 28
+          },
+          {
+            "m": "m1",
+            "h": "h3",
+            "unit": "m1_h3",
+            "hours": 31
+          },
+          {
+            "m": "m2",
+            "h": "h3",
+            "unit": "m2_h3",
+            "hours": 28
+          }
+        ]
+      }
+    },
+    {
+      "file": "tree.scale",
+      "tables": "csv",
+      "value": {
+        "frames": ["group", "carrier", "fuel"],
+        "key": "fuel",
+        "members": {
+          "group": ["Fossil", "Bio", "Power"],
+          "carrier": ["Coal", "Oil", "Gas", "Biomass", "Electricity"],
+          "fuel": ["Anthracite", "Lignite", "Diesel", "Gasoline", "NaturalGas", "Wood", "Biodiesel", "Biogas", "Electricity"]
+        },
+        "attributes": [
+          {
+            "frame": "fuel",
+            "unit": "Anthracite",
+            "attribute": "lhv",
+            "kind": "property",
+            "value": 26.7,
+            "lower": 21.6,
+            "upper": 32.2,
+            "unit_of_measure": "GJ/t",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "fuel",
+            "unit": "Lignite",
+            "attribute": "lhv",
+            "kind": "property",
+            "value": 11.9,
+            "lower": 5.5,
+            "upper": 21.6,
+            "unit_of_measure": "GJ/t",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "carrier",
+            "unit": "Oil",
+            "attribute": "lhv",
+            "kind": "property",
+            "value": 42.5,
+            "lower": 40,
+            "upper": 45,
+            "unit_of_measure": "GJ/t",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "group",
+            "unit": "Bio",
+            "attribute": "lhv",
+            "kind": "property",
+            "value": 15,
+            "lower": 7.9,
+            "upper": 31,
+            "unit_of_measure": "GJ/t",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "fuel",
+            "unit": "Anthracite",
+            "attribute": "ef_co2",
+            "kind": "factor",
+            "value": 98300,
+            "lower": 94600,
+            "upper": 101000,
+            "unit_of_measure": "kg/TJ",
+            "source": "example",
+            "note": null
+          },
+          {
+            "frame": "carrier",
+            "unit": "Gas",
+            "attribute": "ef_co2",
+            "kind": "factor",
+            "value": 56100,
+            "lower": 54300,
+            "upper": 58300,
+            "unit_of_measure": "kg/TJ",
+            "source": "example",
+            "note": null
+          }
+        ],
+        "aliases": [
+          {
+            "frame": "fuel",
+            "unit": "Anthracite",
+            "alias": "hard coal",
+            "source": "example"
+          },
+          {
+            "frame": "carrier",
+            "unit": "Coal",
+            "alias": "coal",
+            "source": "example"
+          },
+          {
+            "frame": "fuel",
+            "unit": "Electricity",
+            "alias": "elc",
+            "source": "example"
+          },
+          {
+            "frame": "carrier",
+            "unit": "Electricity",
+            "alias": "elc",
+            "source": "example"
+          },
+          {
+            "frame": "carrier",
+            "unit": "Electricity",
+            "alias": "power",
+            "source": "example"
+          }
+        ],
+        "weights": [],
+        "default_weight": null,
+        "name": "tree",
+        "desc": "",
+        "tokens": null,
+        "leaftable": [
+          {
+            "group": "Fossil",
+            "carrier": "Coal",
+            "fuel": "Anthracite"
+          },
+          {
+            "group": "Fossil",
+            "carrier": "Coal",
+            "fuel": "Lignite"
+          },
+          {
+            "group": "Fossil",
+            "carrier": "Oil",
+            "fuel": "Diesel"
+          },
+          {
+            "group": "Fossil",
+            "carrier": "Oil",
+            "fuel": "Gasoline"
+          },
+          {
+            "group": "Fossil",
+            "carrier": "Gas",
+            "fuel": "NaturalGas"
+          },
+          {
+            "group": "Bio",
+            "carrier": "Biomass",
+            "fuel": "Wood"
+          },
+          {
+            "group": "Bio",
+            "carrier": "Biomass",
+            "fuel": "Biodiesel"
+          },
+          {
+            "group": "Bio",
+            "carrier": "Biomass",
+            "fuel": "Biogas"
+          },
+          {
+            "group": "Power",
+            "carrier": "Electricity",
+            "fuel": "Electricity"
+          }
+        ]
+      }
+    }
+  ]
+}

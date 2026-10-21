@@ -12,56 +12,56 @@
   )
 }
 
-test_that(".ms_backend() names every supported input", {
-  expect_identical(.ms_backend(.df()), "data.frame")
-  expect_identical(.ms_backend(list(a = 1)), NA_character_)
+test_that(".backend_class() names every supported input", {
+  expect_identical(.backend_class(.df()), "data.frame")
+  expect_identical(.backend_class(list(a = 1)), NA_character_)
 
   skip_if_not_installed("tibble")
-  expect_identical(.ms_backend(tibble::as_tibble(.df())), "tibble")
+  expect_identical(.backend_class(tibble::as_tibble(.df())), "tibble")
 })
 
-test_that(".ms_backend() recognises the lazy engines", {
+test_that(".backend_class() recognises the lazy engines", {
   skip_if_tier_below("full")
   skip_if_not_installed("data.table")
   skip_if_not_installed("dtplyr")
   skip_if_not_installed("arrow")
 
   expect_identical(
-    .ms_backend(data.table::as.data.table(.df())),
+    .backend_class(data.table::as.data.table(.df())),
     "data.table"
   )
   expect_identical(
-    .ms_backend(dtplyr::lazy_dt(data.table::as.data.table(.df()))), "dtplyr"
+    .backend_class(dtplyr::lazy_dt(data.table::as.data.table(.df()))), "dtplyr"
   )
-  expect_identical(.ms_backend(arrow::arrow_table(.df())), "arrow")
+  expect_identical(.backend_class(arrow::arrow_table(.df())), "arrow")
 })
 
-test_that(".ms_is_lazy() marks exactly the query-producing backends", {
-  expect_true(.ms_is_lazy("arrow"))
-  expect_true(.ms_is_lazy("dtplyr"))
-  expect_false(.ms_is_lazy("data.frame"))
-  expect_false(.ms_is_lazy("tibble"))
-  expect_false(.ms_is_lazy("data.table"))
+test_that("backend_is_lazy() marks exactly the query-producing backends", {
+  expect_true(backend_is_lazy("arrow"))
+  expect_true(backend_is_lazy("dtplyr"))
+  expect_false(backend_is_lazy("data.frame"))
+  expect_false(backend_is_lazy("tibble"))
+  expect_false(backend_is_lazy("data.table"))
 })
 
-test_that(".ms_require_backend() rejects unsupported input once", {
+test_that("backend_of() rejects unsupported input once", {
   expect_error(
-    .ms_require_backend(list(a = 1)),
+    backend_of(list(a = 1)),
     "data\\.frame, tibble, data\\.table"
   )
-  expect_identical(.ms_require_backend(.df()), "data.frame")
+  expect_identical(backend_of(.df()), "data.frame")
 })
 
-test_that(".ms_schema() describes columns without materialising rows", {
-  s <- .ms_schema(.df())
+test_that("backend_schema() describes columns without materialising rows", {
+  s <- backend_schema(.df())
   expect_identical(nrow(s), 0L)
   expect_named(s, c("unit", "v"))
 })
 
-test_that(".ms_restore() round-trips every eager backend to its own class", {
+test_that("backend_restore() round-trips every eager backend to its own class", {
   for (bk in setdiff(test_backends(), c("dtplyr", "arrow"))) {
     x <- as_backend(.df(), bk)
-    out <- .ms_restore(.ms_lazy(x, bk), bk)
+    out <- backend_restore(backend_lazy(x, bk), bk)
     expect_true(.bk_expect_class(out, bk),
       label = sprintf("[%s] class restored", bk)
     )
@@ -75,11 +75,11 @@ test_that("lazy inputs stay lazy unless collect = TRUE", {
   skip_if_tier_below("full")
   for (bk in intersect(test_backends(), c("dtplyr", "arrow"))) {
     x <- as_backend(.df(), bk)
-    out <- .ms_restore(x, bk)
+    out <- backend_restore(x, bk)
     expect_true(.bk_expect_class(out, bk),
       label = sprintf("[%s] stays lazy", bk)
     )
-    out2 <- .ms_restore(x, bk, collect = TRUE)
+    out2 <- backend_restore(x, bk, collect = TRUE)
     expect_true(.bk_expect_class(out2, bk, collected = TRUE),
       label = sprintf("[%s] collect = TRUE materialises", bk)
     )
@@ -103,7 +103,7 @@ test_that("recast_scale() honours the contract on every backend", {
     function(x, collect = NULL) {
       suppressWarnings(
         recast_scale(x, s,
-          from = "unit", to = "sector", rule = "sum",
+          source = "unit", target = "sector", rule = "sum",
           collect = collect
         )
       )
@@ -128,7 +128,7 @@ test_that("recast_scale() with identifiers holds on every backend", {
     function(x, collect = NULL) {
       suppressWarnings(
         recast_scale(x, s,
-          from = "unit", to = "sector", rule = "sum",
+          source = "unit", target = "sector", rule = "sum",
           values = "value", collect = collect
         )
       )
@@ -149,7 +149,7 @@ test_that("recast_to_atoms() honours the contract on every backend", {
     function(x, collect = NULL) {
       suppressWarnings(
         recast_to_atoms(x, s,
-          from = "sector", rule = "sum",
+          source = "sector", rule = "sum",
           weight = "size", collect = collect
         )
       )
@@ -161,21 +161,21 @@ test_that("recast_to_atoms() honours the contract on every backend", {
 test_that("every entry point rejects unsupported input the same way", {
   s <- scale_example()
   expect_backend_rejects(function(x) {
-    recast_scale(x, s, from = "unit", to = "sector", rule = "sum")
+    recast_scale(x, s, source = "unit", target = "sector", rule = "sum")
   })
   expect_backend_rejects(function(x) {
-    recast_to_atoms(x, s, from = "sector", rule = "sum")
+    recast_to_atoms(x, s, source = "sector", rule = "sum")
   })
   expect_backend_rejects(function(x) {
-    recast_from_atoms(x, s, to = "sector", rule = "sum")
+    recast_from_atoms(x, s, target = "sector", rule = "sum")
   })
 })
 
-test_that(".ms_lazy() wraps a data.table for dtplyr translation", {
+test_that("backend_lazy() wraps a data.table for dtplyr translation", {
   skip_if_not_installed("data.table")
   skip_if_not_installed("dtplyr")
   x <- data.table::as.data.table(.df())
-  expect_s3_class(.ms_lazy(x, "data.table"), "dtplyr_step")
+  expect_s3_class(backend_lazy(x, "data.table"), "dtplyr_step")
   # every other backend passes through untouched
-  expect_identical(.ms_lazy(.df(), "data.frame"), .df())
+  expect_identical(backend_lazy(.df(), "data.frame"), .df())
 })

@@ -1,0 +1,54 @@
+ipcc_fuel,carbon_content,ef_co2,ef_lower,ef_upper
+Crude Oil,20.0,73300,71100,75500
+Orimulsion,21.0,77000,69300,85400
+Natural Gas Liquids,17.5,64200,58300,70400
+Motor Gasoline,18.9,69300,67500,73000
+Aviation Gasoline,19.1,70000,67500,73000
+Jet Gasoline,19.1,70000,67500,73000
+Jet Kerosene,19.5,71500,69700,74400
+Other Kerosene,19.6,71900,70800,73700
+Shale Oil,20.0,73300,67800,79200
+Gas/Diesel Oil,20.2,74100,72600,74800
+Residual Fuel Oil,21.1,77400,75500,78800
+Liquefied Petroleum Gases,17.2,63100,61600,65600
+Ethane,16.8,61600,56500,68600
+Naphtha,20.0,73300,69300,76300
+Bitumen,22.0,80700,73000,89900
+Lubricants,20.0,73300,71900,75200
+Petroleum Coke,26.6,97500,82900,115000
+Refinery Feedstocks,20.0,73300,68900,76600
+Refinery Gas,15.7,57600,48200,69000
+Paraffin Waxes,20.0,73300,72200,74400
+White Spirit and SBP,20.0,73300,72200,74400
+Other Petroleum Products,20.0,73300,72200,74400
+Anthracite,26.8,98300,94600,101000
+Coking Coal,25.8,94600,87300,101000
+Other Bituminous Coal,25.8,94600,89500,99700
+Sub-Bituminous Coal,26.2,96100,92800,100000
+Lignite,27.6,101000,90900,115000
+Oil Shale and Tar Sands,29.1,107000,90200,125000
+Brown Coal Briquettes,26.6,97500,87300,109000
+Patent Fuel,26.6,97500,87300,109000
+Coke Oven Coke and Lignite Coke,29.2,107000,95700,119000
+Gas Coke,29.2,107000,95700,119000
+Coal Tar,22.0,80700,68200,95300
+Gas Works Gas,12.1,44400,37300,54100
+Coke Oven Gas,12.1,44400,37300,54100
+Blast Furnace Gas,70.8,260000,219000,308000
+Oxygen Steel Furnace Gas,49.6,182000,145000,202000
+Natural Gas,15.3,56100,54300,58300
+Municipal Wastes (non-biomass fraction),25.0,91700,73300,121000
+Industrial Wastes,39.0,143000,110000,183000
+Waste Oil,20.0,73300,72200,74400
+Peat,28.9,106000,100000,108000
+Wood/Wood Waste,30.5,112000,95000,132000
+Sulphite lyes (black liquor),26.0,95300,80700,110000
+Other Primary Solid Biomass,27.3,100000,84700,117000
+Charcoal,30.5,112000,95000,132000
+Biogasoline,19.3,70800,59800,84300
+Biodiesels,19.3,70800,59800,84300
+Other Liquid Biofuels,21.7,79600,67100,95300
+Landfill Gas,14.9,54600,46200,66000
+Sludge Gas,14.9,54600,46200,66000
+Other Biogas,14.9,54600,46200,66000
+Municipal Wastes (biomass fraction),27.3,100000,84700,117000

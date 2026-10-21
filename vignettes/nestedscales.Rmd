@@ -94,7 +94,7 @@ x <- data.frame(
 )
 
 recast_scale(x, ind,
-  from = "class", to = "section",
+  source = "class", target = "section",
   rule = c(jobs = "sum", wage = "weighted_mean")
 )
 ```
@@ -105,7 +105,7 @@ level is split over the classes in proportion to the weight:
 ```{r recast-down}
 y <- data.frame(section = c("C", "D"), investment = c(100, 400))
 
-recast_scale(y, ind, from = "section", to = "class", rule = "sum")
+recast_scale(y, ind, source = "section", target = "class", rule = "sum")
 ```
 
 Columns that are neither the key nor a value column are identifiers and are
@@ -136,6 +136,50 @@ scale_units(manufacturing)
 scale_coverage(manufacturing)
 
 scale_frames(prune_scale(ind, "division"))
+```
+
+## Attributes and aliases
+
+A scale may carry values that belong to its members but are not weights: a
+calorific value per fuel, a density, an emission factor. They live in an
+attribute table keyed by `(frame, unit)`, at whatever level they are
+published, and `scale_attributes()` resolves one value per member of a
+frame, walking to the nearest coarser level when a member has none of its
+own. `convert_scale()` applies the resolved value row by row. Alternative
+labels live in an alias table, and `scale_match()` resolves labels against
+member names and aliases exactly, reporting ambiguity rather than guessing.
+The package ships one such scale, the energypal fuel taxonomy with the IPCC
+2006 defaults:
+
+```{r attributes}
+carriers <- read_scale("carriers")
+lhv <- scale_attributes(carriers, "lhv", frame = "fuel")
+head(lhv[!is.na(lhv$value), c("unit", "value", "unit_of_measure")])
+
+fuel_use <- data.frame(fuel = c("Lignite", "NaturalGas"), t = c(1000, 1000))
+convert_scale(fuel_use, carriers, "lhv", from_unit = "t", to_unit = "GJ")
+
+scale_match(carriers, c("GAS", "lignite", "Hydrogen"))
+```
+
+`vignette("attributes")` has the full account.
+
+## Definition files
+
+A scale is stored as a definition: a JSON header with its tables inline, or
+a bundle directory with Arrow or CSV tables, which the Python binding reads
+as well. `write_scale()` and `read_scale()` exchange them, and
+`scale_catalog()` lists the definitions installed packages ship:
+
+```{r definition}
+path <- file.path(tempdir(), "nace.json")
+write_scale(ind, path)
+scale_frames(read_scale(path))
+scale_catalog()[c("id", "name", "frames", "n_atoms", "package")]
+```
+
+```{r definition-cleanup, include = FALSE}
+unlink(path)
 ```
 
 ## Several dimensions

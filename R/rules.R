@@ -180,8 +180,8 @@ list_scale_rules <- function(scope = NULL) {
 #'
 #' Mainly useful in tests.
 #'
-#' @param param Optional character vector of names to remove. `NULL` (default)
-#'   clears everything in `scope`.
+#' @param name Optional character vector of parameter names to remove. `NULL`
+#'   (default) clears everything in `scope`.
 #' @param scope Optional dimension namespace.
 #'
 #' @return Invisibly `NULL`.
@@ -190,8 +190,8 @@ list_scale_rules <- function(scope = NULL) {
 #' register_scale_rule("tmp_param", "sum")
 #' clear_scale_rules("tmp_param")
 #' @export
-clear_scale_rules <- function(param = NULL, scope = NULL) {
-  if (is.null(param)) {
+clear_scale_rules <- function(name = NULL, scope = NULL) {
+  if (is.null(name)) {
     if (is.null(scope)) {
       rm(
         list = ls(envir = .RULE_REGISTRY, all.names = TRUE),
@@ -205,7 +205,7 @@ clear_scale_rules <- function(param = NULL, scope = NULL) {
     )
   } else {
     present <- intersect(
-      vapply(param, .rule_key, character(1), scope = scope),
+      vapply(name, .rule_key, character(1), scope = scope),
       ls(envir = .RULE_REGISTRY, all.names = TRUE)
     )
   }

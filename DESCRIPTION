@@ -1,6 +1,6 @@
 Package: nestedscales
 Title: Nested Scales and Multi-Dimensional Indexes for Modeling
-Version: 0.1.1
+Version: 0.1.1.9000
 URL: https://optimal2050.github.io/nestedscales/,
     https://github.com/optimal2050/nestedscales
 BugReports: https://github.com/optimal2050/nestedscales/issues
@@ -18,7 +18,12 @@ Description: Provides multi-level discrete representations of data dimensions
     for sums, means, standard deviations, copying and within-parent shares.
     Also supports labeling, subsetting, combining scales into
     multi-dimensional indexes, clustering units and storing data with its
-    scale metadata. Forms the dimension-agnostic core of 'timescales'
+    scale metadata. Members may carry attributes (a calorific value, an
+    emission factor) and aliases, resolved along the hierarchy and applied
+    row by row, and a scale is exchanged as a language-neutral definition
+    file: a 'JSON' header with inline, 'Arrow' or 'CSV' tables ('YAML'
+    accepted), with a catalogue of the definitions installed packages ship.
+    Forms the dimension-agnostic core of 'timescales'
     <https://github.com/optimal2050/timescales> (calendars) and 'geoscales'
     <https://github.com/optimal2050/geoscales> (regions), designed for
     optimization and simulation models.
@@ -29,6 +34,7 @@ Depends:
     R (>= 4.2)
 Imports:
     dplyr,
+    jsonlite,
     rlang,
     S7,
     stats,
@@ -47,16 +53,22 @@ Suggests:
     withr,
     yaml
 Config/testthat/edition: 3
-Config/Needs/website: pkgdown, rmarkdown, ggplot2
+Config/Needs/website: pkgdown, rmarkdown, ggplot2, optimal2050/timescales,
+    optimal2050/geoscales, optimal2050/energypal
 VignetteBuilder: knitr
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1
 Collate: 
     'scale-class.R'
+    'aliases.R'
     'product-class.R'
     'array.R'
+    'attributes.R'
     'backend.R'
+    'definition.R'
+    'catalog.R'
     'cluster.R'
     'contiguity.R'
+    'convert.R'
     'dataset.R'
     'distance.R'
     'navigate.R'
@@ -70,6 +82,7 @@ Collate:
     'reconcile.R'
     'rules.R'
     'scale-construct.R'
+    'shipped-scales.R'
     'sweep.R'
     'utils.R'
     'zzz.R'

@@ -61,8 +61,8 @@ test_that("data keyed by the atoms recasts up to either cross-cutting frame", {
   lt <- .cross_lt(3L, 4L)
   s <- .build(lt, c("YDAY", "HOUR"))
   d <- data.frame(timeslice = lt$timeslice, v = 1)
-  up_d <- recast_scale(d, s, from = "timeslice", to = "YDAY", rule = "sum")
-  up_h <- recast_scale(d, s, from = "timeslice", to = "HOUR", rule = "sum")
+  up_d <- recast_scale(d, s, source = "timeslice", target = "YDAY", rule = "sum")
+  up_h <- recast_scale(d, s, source = "timeslice", target = "HOUR", rule = "sum")
   expect_equal(nrow(up_d), 3L)
   expect_equal(nrow(up_h), 4L)
   # conservation: every atom counted once on either axis
@@ -78,7 +78,7 @@ test_that("an IRREGULAR scale aggregates by its real groupings", {
   expect_equal(length(scale_units(s, "MONTH")) *
     length(scale_units(s, "MDAY")), 12L)
   d <- data.frame(timeslice = lt$timeslice, v = 1)
-  up <- recast_scale(d, s, from = "timeslice", to = "MONTH", rule = "sum")
+  up <- recast_scale(d, s, source = "timeslice", target = "MONTH", rule = "sum")
   expect_equal(nrow(up), 3L)
   # the uneven month lengths, read from the data rather than assumed
   expect_equal(sort(up$v), c(2, 3, 4))
@@ -114,7 +114,7 @@ test_that("navigation treats a key-level atom as the finest level", {
   s <- .build(.irregular_lt(c(3L, 2L, 4L)), c("MONTH", "MDAY"))
   expect_identical(scale_parents(s, "timeslice", "m02_md01"), "md01")
   expect_identical(
-    scale_children(s, "MONTH", "m02", to = "timeslice"),
+    scale_children(s, "MONTH", "m02", target = "timeslice"),
     c("m02_md01", "m02_md02")
   )
   expect_error(scale_children(s, "timeslice", "m02_md01"), "finest")

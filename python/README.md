@@ -56,9 +56,12 @@ inputs and return the caller's type.
 ## Stores shared with R
 
 `write_scale_dataset()` / `open_scale_dataset()` read and write the R
-package's store -- hive-partitioned Arrow IPC data plus a YAML manifest and
-Arrow leaftables -- so data and its scales move between R and Python
-unchanged. Scales written by R's timescales and geoscales are restored as
+package's store -- hive-partitioned Arrow IPC data plus a JSON manifest and
+Arrow leaftables (a legacy YAML manifest is still read) -- so data and its
+scales move between R and Python unchanged. `write_scale()` / `read_scale()`
+exchange single definition files and bundles (JSON header; inline, Arrow or
+CSV tables), and `read_scale("carriers")` opens the fuel taxonomy vendored
+with the binding (`scale_catalog()` lists every registered definition). Scales written by R's timescales and geoscales are restored as
 Calendars and GeoScales by the Python timescales and geoscales packages
 (`as_calendar()`, `as_geoscale()`).
 

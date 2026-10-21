@@ -11,13 +11,26 @@
 #   * `members`   -- named list giving the full ordered code vocabulary at each
 #                    frame (e.g. `members$section = c("A", "B", ...)`)
 #   * `key`       -- name of the atom key column (default `"unit"`)
+#   * `attributes` -- long table of per-member physical attributes (a
+#                    calorific value, a population density) keyed by
+#                    `(frame, unit)`, so a value may sit on an atom OR on any
+#                    coarser member; see R/attributes.R
+#   * `aliases`   -- long table of alternative labels keyed by `(frame, unit)`;
+#                    see R/aliases.R
 #   * `meta`      -- small named list: `name`, `desc`, `weights`,
 #                    `default_weight`, the sample bookkeeping triple
 #                    (`coverage`, `parent_totals`, `parent_name`),
 #                    `residuals`, `labels`, `source`
 #
+# Attributes are NOT weights: a weight says how big an atom is and drives
+# aggregation; an attribute is a per-member factor consumed row by row by
+# `convert_scale()`. The two tables are typed `class_any` with an empty-table
+# default so that an object saved before they existed (which reads them as
+# NULL) still validates; every accessor normalises NULL to the empty table.
+#
 # Anything derivable from these (parent/child tables, ancestry, shares, frame
-# ranks) is computed on demand. Nothing is cached on the object.
+# ranks, resolved attributes) is computed on demand. Nothing is cached on the
+# object.
 #
 # Frames are *partitions of the atoms*, NOT necessarily a strict tree. Real
 # hierarchies cross-cut, which is precisely why the atom layer exists and why
@@ -32,7 +45,7 @@
 #'
 #' A nested discrete partition: a flat table of atoms plus the ordered
 #' hierarchy of frames that groups them. The dimension is not named -- time and
-#' space are the subclasses `timescales::Calendar` and `geoscales::Geoscale`;
+#' space are the subclasses `Calendar` (timescales) and `Geoscale` (geoscales);
 #' anything else (industries, income brackets, temperature regimes, technology
 #' vintages) is declared directly.
 #'
@@ -49,6 +62,10 @@
 #' @param meta Named list of attributes (`name`, `desc`, `weights`,
 #'   `default_weight`, `residuals` (see [`scale_residuals()`]), `labels`,
 #'   `source`, sample bookkeeping).
+#' @param attributes Optional table of per-member physical attributes keyed
+#'   by `(frame, unit)`; see [`attach_attributes_scale()`] for the columns.
+#' @param aliases Optional table of alternative labels keyed by
+#'   `(frame, unit)`; see [`attach_aliases_scale()`] for the columns.
 #'
 #' @return A `NestedScale` object.
 #'
@@ -60,21 +77,31 @@ NestedScale <- S7::new_class(
   "NestedScale",
   package = "nestedscales",
   properties = list(
-    leaftable = S7::new_property(S7::class_data.frame),
-    frames    = S7::new_property(S7::class_character),
-    members   = S7::new_property(S7::class_list),
-    key       = S7::new_property(S7::class_character, default = "unit"),
-    meta      = S7::new_property(S7::class_list, default = quote(list()))
+    leaftable  = S7::new_property(S7::class_data.frame),
+    frames     = S7::new_property(S7::class_character),
+    members    = S7::new_property(S7::class_list),
+    key        = S7::new_property(S7::class_character, default = "unit"),
+    meta       = S7::new_property(S7::class_list, default = quote(list())),
+    # `class_any`, not `class_data.frame`: an object saved before these
+    # properties existed reads them as NULL, and a typed property would then
+    # fail `S7::validate()` on every subset. The validator below treats NULL
+    # as the empty table instead.
+    attributes = S7::new_property(S7::class_any,
+                                  default = quote(.empty_attributes())),
+    aliases    = S7::new_property(S7::class_any,
+                                  default = quote(.empty_aliases()))
   ),
   constructor = function(leaftable, frames, members, key = "unit",
-                         meta = list()) {
+                         meta = list(), attributes = NULL, aliases = NULL) {
     S7::new_object(
       S7::S7_object(),
-      leaftable = leaftable,
-      frames    = frames,
-      members   = members,
-      key       = key,
-      meta      = meta
+      leaftable  = leaftable,
+      frames     = frames,
+      members    = members,
+      key        = key,
+      meta       = meta,
+      attributes = attributes %||% .empty_attributes(),
+      aliases    = aliases %||% .empty_aliases()
     )
   },
   validator = function(self) {
@@ -85,6 +112,8 @@ NestedScale <- S7::new_class(
     members <- S7::prop(self, "members")
     key <- S7::prop(self, "key")
     meta <- S7::prop(self, "meta")
+    attributes <- S7::prop(self, "attributes")
+    aliases <- S7::prop(self, "aliases")
 
     # leaftable ---------------------------------------------------------------
     if (!is.data.frame(leaftable)) {
@@ -184,6 +213,28 @@ NestedScale <- S7::new_class(
               "values present in `leaftable$%s`"
             ), f, f
           ))
+        }
+      }
+    }
+
+    # attributes and aliases --------------------------------------------------
+    # Checked against the members, so only once those are known to be sound.
+    # NULL is the empty table (an object saved before these existed).
+    if (length(errs) == 0L && is.list(members)) {
+      v <- scale_vocab(self)
+      if (!is.null(attributes)) {
+        if (!is.data.frame(attributes)) {
+          errs <- c(errs, "`attributes` must be a data.frame or NULL")
+        } else {
+          errs <- c(errs, .check_attributes_table(attributes, frames,
+                                                  members, v))
+        }
+      }
+      if (!is.null(aliases)) {
+        if (!is.data.frame(aliases)) {
+          errs <- c(errs, "`aliases` must be a data.frame or NULL")
+        } else {
+          errs <- c(errs, .check_aliases_table(aliases, frames, members, v))
         }
       }
     }
@@ -412,7 +463,7 @@ scale_units <- function(x, frame = NULL) {
 #'
 #' The finest frame when one code of it sits on each leaftable row, and the
 #' key column otherwise. A [`NestedScale`] built from a nested hierarchy is the
-#' first kind; a `timescales::Calendar` is the second, because its timeslices
+#' first kind; a timescales `Calendar` is the second, because its timeslices
 #' are combinations of its frames rather than codes of any one of them.
 #'
 #' Needed by the dimension packages: it is the `frame` to pass to
@@ -526,7 +577,7 @@ scale_weights <- function(x) {
 #' Subset a subclass's per-atom payload
 #'
 #' The seam a dimension package overrides when it carries per-atom data
-#' alongside the leaftable -- `geoscales::Geoscale` and its geometry. Called
+#' alongside the leaftable -- geoscales' `Geoscale` and its geometry. Called
 #' whenever the engine rebuilds an object from a row subset, with the kept row
 #' indices. The `NestedScale` default has no payload and returns `x` unchanged.
 #'
@@ -546,11 +597,42 @@ scale_payload_slice <- S7::new_generic("scale_payload_slice", "x")
 
 S7::method(scale_payload_slice, NestedScale) <- function(x, i, ...) x
 
+#' Collapse a subclass's per-atom payload
+#'
+#' The companion of [`scale_payload_slice()`] for the rebuilds that MERGE
+#' atoms rather than keep a subset of them -- [`prune_scale()`], which makes
+#' a coarser frame the new atom layer. Called with `map`, an integer vector
+#' with one entry per row of the OLD leaftable giving the index of the NEW
+#' row that atom was merged into, or `NA` for an atom that was dropped.
+#'
+#' The `NestedScale` default returns `x` unchanged, which is right for a
+#' payload keyed by member codes (the core's own attribute and alias tables
+#' are re-keyed by the engine itself). A subclass whose payload is positional
+#' -- one geometry per leaftable row -- must override it and merge its
+#' payload by `map`; if it does not, its own validator rejects the length
+#' mismatch, so the failure is loud rather than a silently misaligned
+#' payload.
+#'
+#' @param x A [`NestedScale`].
+#' @param ... Method arguments: `map`, the integer vector described above.
+#'
+#' @return `x`, with any payload merged to the new rows.
+#'
+#' @examples
+#' identical(
+#'   scale_payload_collapse(scale_example(), c(1L, 1L, 2L, 2L, 3L, 3L, NA)),
+#'   scale_example()
+#' )
+#' @export
+scale_payload_collapse <- S7::new_generic("scale_payload_collapse", "x")
+
+S7::method(scale_payload_collapse, NestedScale) <- function(x, map, ...) x
+
 #' An alias property for a subclass
 #'
 #' Builds a getter/setter property that reads and writes an inherited property
-#' under a different name -- how `timescales::Calendar` keeps `@timeframes` and
-#' `geoscales::Geoscale` keeps `@geoframes` working over the inherited
+#' under a different name -- how timescales' `Calendar` keeps `@timeframes` and
+#' geoscales' `Geoscale` keeps `@geoframes` working over the inherited
 #' `@frames`, so no existing code has to change when they become subclasses.
 #'
 #' The setter is a no-op on `NULL`. S7's generated constructor writes every
@@ -747,6 +829,26 @@ print.NestedScale <- function(x, ...) {
       sep = ""
     )
   }
+  at <- .attr_table(x)
+  if (nrow(at) > 0L) {
+    per_frame <- table(factor(at$frame, levels = f))
+    per_frame <- per_frame[per_frame > 0L]
+    cat("Attributes: ", paste(unique(at$attribute), collapse = ", "),
+      " (sources: ", paste(unique(at$source), collapse = ", "), ") -- ",
+      paste(sprintf("%d at %s", as.integer(per_frame), names(per_frame)),
+        collapse = ", "
+      ),
+      "\n",
+      sep = ""
+    )
+  }
+  al <- .alias_table(x)
+  if (nrow(al) > 0L) {
+    cat("Aliases: ", nrow(al), " (", paste(unique(al$source), collapse = ", "),
+      ")\n",
+      sep = ""
+    )
+  }
   if (!is.null(meta[["source"]])) cat("Source: ", meta[["source"]], "\n", sep = "")
   invisible(x)
 }
@@ -775,7 +877,8 @@ S7::method(print, NestedScale) <- print.NestedScale
 #'   counts), `n_atoms`, `weights`, `weight_totals`, `default_weight`,
 #'   `coverage` (see [scale_coverage()]), `sampled`, `parent_name`, `nesting`
 #'   (adjacent-pair table with offender counts, see [scale_nests()]),
-#'   `source`, `vocab`.
+#'   `attributes` (a `data.frame` of row counts by `attribute`, `frame` and
+#'   `source`), `aliases` (counts by `source`), `source`, `vocab`.
 #' @examples
 #' summary(scale_example())
 #' @method summary NestedScale
@@ -785,6 +888,34 @@ summary.NestedScale <- function(object, ...) {
   fr <- S7::prop(object, "frames")
   wts <- scale_weights(object)
   cov <- scale_coverage(object)
+  at <- .attr_table(object)
+  al <- .alias_table(object)
+
+  attr_counts <- if (nrow(at) > 0L) {
+    cnt <- as.data.frame(
+      table(
+        attribute = at$attribute, frame = factor(at$frame, levels = fr),
+        source = at$source
+      ),
+      stringsAsFactors = FALSE
+    )
+    names(cnt)[4L] <- "n"
+    cnt <- cnt[cnt$n > 0L, , drop = FALSE]
+    rownames(cnt) <- NULL
+    cnt
+  } else {
+    data.frame(
+      attribute = character(), frame = character(), source = character(),
+      n = integer(), stringsAsFactors = FALSE
+    )
+  }
+  alias_counts <- if (nrow(al) > 0L) {
+    cnt <- as.data.frame(table(source = al$source), stringsAsFactors = FALSE)
+    names(cnt)[2L] <- "n"
+    cnt
+  } else {
+    data.frame(source = character(), n = integer(), stringsAsFactors = FALSE)
+  }
 
   nesting <- NULL
   if (length(fr) > 1L) {
@@ -816,6 +947,8 @@ summary.NestedScale <- function(object, ...) {
     sampled = any(cov < 1),
     parent_name = meta[["parent_name"]],
     nesting = nesting,
+    attributes = attr_counts,
+    aliases = alias_counts,
     source = meta[["source"]],
     vocab = scale_vocab(object)
   )
@@ -894,6 +1027,24 @@ print.summary_Scale <- function(x, ...) {
         sep = ""
       )
     }
+  }
+  if (!is.null(x$attributes) && nrow(x$attributes) > 0L) {
+    for (i in seq_len(nrow(x$attributes))) {
+      r <- x$attributes[i, ]
+      cat("  attributes:     ", r$attribute, " at ", r$frame, ": ", r$n,
+        " (", r$source, ")\n",
+        sep = ""
+      )
+    }
+  }
+  if (!is.null(x$aliases) && nrow(x$aliases) > 0L) {
+    cat("  aliases:        ",
+      paste(sprintf("%s (%d)", x$aliases$source, x$aliases$n),
+        collapse = ", "
+      ),
+      "\n",
+      sep = ""
+    )
   }
   if (!is.null(x$source)) cat("  source:         ", x$source, "\n", sep = "")
   invisible(x)

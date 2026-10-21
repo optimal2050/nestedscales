@@ -137,3 +137,9 @@
   }
   m
 }
+
+#' A single non-empty string?
+#' @noRd
+.is_string <- function(x) {
+  is.character(x) && length(x) == 1L && !is.na(x) && nzchar(x)
+}

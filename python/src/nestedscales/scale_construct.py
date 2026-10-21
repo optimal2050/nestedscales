@@ -44,6 +44,8 @@ def scale_from_leaftable(
     members: Mapping[str, Sequence[str]] | None = None,
     name: str = "",
     desc: str = "",
+    attributes: Any = None,
+    aliases: Any = None,
     **meta: Any,
 ) -> NestedScale:
     """Build a NestedScale from a flat table of atoms.
@@ -116,7 +118,8 @@ def scale_from_leaftable(
     return NestedScale(
         leaftable=lt, frames=frames, members=dict(members), key=key,
         meta={"name": name, "desc": desc, "weights": weights,
-              "default_weight": default_weight, **meta})
+              "default_weight": default_weight, **meta},
+        attributes=attributes, aliases=aliases)
 
 
 def scale_example() -> NestedScale:

@@ -121,3 +121,58 @@ ordered_data <- function() {
     )
   }))
 }
+
+# A small fuel hierarchy with attributes at three levels, an alias that
+# resolves to two members, and a cross-cutting `phase` frame -- the fixture
+# for attributes, aliases and conversion (the energyscales example, 2026-10).
+.fuels <- function() {
+  lt <- data.frame(
+    group   = c("Fossil", "Fossil", "Fossil", "Fossil", "Fossil",
+                "Bio", "Bio", "Bio", "Power"),
+    phase   = c("solid", "solid", "liquid", "liquid", "gas",
+                "solid", "liquid", "gas", NA),
+    carrier = c("Coal", "Coal", "Oil", "Oil", "Gas",
+                "Biomass", "Biomass", "Biomass", "Electricity"),
+    fuel    = c("Anthracite", "Lignite", "Diesel", "Gasoline", "NaturalGas",
+                "Wood", "Biodiesel", "Biogas", "Electricity"),
+    stringsAsFactors = FALSE
+  )
+  at <- data.frame(
+    frame     = c("fuel", "fuel", "carrier", "group", "fuel", "carrier"),
+    unit      = c("Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"),
+    attribute = c("lhv", "lhv", "lhv", "lhv", "ef_co2", "ef_co2"),
+    kind      = c(rep("property", 4L), "factor", "factor"),
+    value     = c(26.7, 11.9, 42.5, 15.0, 98300, 56100),
+    lower     = c(21.6, 5.5, 40.0, 7.9, 94600, 54300),
+    upper     = c(32.2, 21.6, 45.0, 31.0, 101000, 58300),
+    unit_of_measure = c("GJ/t", "GJ/t", "GJ/t", "GJ/t", "kg/TJ", "kg/TJ"),
+    source    = "example",
+    stringsAsFactors = FALSE
+  )
+  al <- data.frame(
+    frame  = c("fuel", "carrier", "fuel", "carrier", "carrier"),
+    unit   = c("Anthracite", "Coal", "Electricity", "Electricity",
+               "Electricity"),
+    alias  = c("hard coal", "coal", "elc", "elc", "power"),
+    source = "example",
+    stringsAsFactors = FALSE
+  )
+  scale_from_leaftable(
+    lt,
+    frames = c("group", "phase", "carrier", "fuel"), key = "fuel",
+    attributes = at, aliases = al, name = "fuels",
+    desc = "Fuels: reused code, cross-cutting phase, attributes at 3 levels"
+  )
+}
+
+# The same fuels without the cross-cutting frame: a pure tree, for prune.
+.fuels_tree <- function() {
+  es <- .fuels()
+  lt <- scale_leaftable(es)
+  lt$phase <- NULL
+  scale_from_leaftable(
+    lt, frames = c("group", "carrier", "fuel"), key = "fuel",
+    attributes = S7::prop(es, "attributes"),
+    aliases = S7::prop(es, "aliases"), name = "tree"
+  )
+}

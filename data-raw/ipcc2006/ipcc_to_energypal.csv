@@ -1,0 +1,54 @@
+ipcc_fuel,frame,unit,status,primary,note
+Anthracite,fuel,Anthracite,mapped,TRUE,exact name
+Coking Coal,fuel,Bituminous,mapped,FALSE,coking coal is a bituminous coal; Other Bituminous Coal is the primary
+Other Bituminous Coal,fuel,Bituminous,mapped,TRUE,IPCC's general bituminous (steam) coal
+Sub-Bituminous Coal,fuel,SubBituminous,mapped,TRUE,exact name
+Lignite,fuel,Lignite,mapped,TRUE,exact name
+Coke Oven Coke and Lignite Coke,fuel,Coke,mapped,TRUE,the common coke product
+Gas Coke,fuel,Coke,mapped,FALSE,secondary coke product
+Crude Oil,fuel,Crude,mapped,TRUE,exact name
+Motor Gasoline,fuel,MotorGasoline,mapped,TRUE,exact name
+Jet Kerosene,fuel,JetFuel,mapped,TRUE,jet fuel is kerosene-type in the IEA/IPCC sense
+Gas/Diesel Oil,fuel,DistillateFuelOil,mapped,TRUE,distillate fuel oil = gas/diesel oil (EIA/IEA definitions)
+Residual Fuel Oil,fuel,ResidualFuelOil,mapped,TRUE,exact name
+Liquefied Petroleum Gases,fuel,LPG_NGL,mapped,TRUE,LPG is the primary of the combined LPG/NGL entry
+Natural Gas Liquids,fuel,LPG_NGL,mapped,FALSE,NGL is the secondary of the combined entry
+Natural Gas,fuel,NaturalGas,mapped,TRUE,exact name (the fuel; not the FossilGas carrier)
+Biodiesels,fuel,Biodiesel,mapped,TRUE,exact name
+Wood/Wood Waste,fuel,SolidBiomass,review,FALSE,candidate primary for SolidBiomass
+Other Primary Solid Biomass,fuel,SolidBiomass,review,FALSE,candidate for SolidBiomass
+Charcoal,fuel,SolidBiomass,review,FALSE,candidate for SolidBiomass
+Landfill Gas,fuel,Biogas,review,FALSE,one of three IPCC biogases; Other Biogas may be the better primary
+Sludge Gas,fuel,Biogas,review,FALSE,one of three IPCC biogases
+Other Biogas,fuel,Biogas,review,FALSE,one of three IPCC biogases; candidate primary
+Biogasoline,fuel,Ethanol,review,FALSE,bioethanol plus bioETBE/bioMTBE; broader than Ethanol
+Municipal Wastes (biomass fraction),fuel,Waste,review,FALSE,Waste sits under Bioenergy; the biomass fraction is the natural primary
+Municipal Wastes (non-biomass fraction),fuel,Waste,review,FALSE,fossil fraction of municipal waste
+Industrial Wastes,fuel,Waste,review,FALSE,no NCV in Table 1.2
+Other Petroleum Products,fuel,OtherFossilOil,review,FALSE,candidate for OtherFossilOil
+Other Liquid Biofuels,fuel,OtherBioenergy,review,FALSE,candidate for OtherBioenergy
+Aviation Gasoline,,,review,FALSE,no energypal subtype for gasoline-type aviation fuel
+Jet Gasoline,,,review,FALSE,no energypal subtype for gasoline-type aviation fuel
+Other Kerosene,,,review,FALSE,no energypal subtype for non-jet kerosene
+Orimulsion,,,unmapped,FALSE,
+Shale Oil,,,unmapped,FALSE,
+Ethane,,,unmapped,FALSE,
+Naphtha,,,unmapped,FALSE,
+Bitumen,,,unmapped,FALSE,
+Lubricants,,,unmapped,FALSE,
+Petroleum Coke,,,unmapped,FALSE,
+Refinery Feedstocks,,,unmapped,FALSE,
+Refinery Gas,,,unmapped,FALSE,
+Paraffin Waxes,,,unmapped,FALSE,
+White Spirit and SBP,,,unmapped,FALSE,
+Oil Shale and Tar Sands,,,unmapped,FALSE,
+Brown Coal Briquettes,,,unmapped,FALSE,
+Patent Fuel,,,unmapped,FALSE,
+Coal Tar,,,unmapped,FALSE,
+Gas Works Gas,,,unmapped,FALSE,
+Coke Oven Gas,,,unmapped,FALSE,
+Blast Furnace Gas,,,unmapped,FALSE,
+Oxygen Steel Furnace Gas,,,unmapped,FALSE,
+Waste Oil,,,unmapped,FALSE,
+Peat,,,unmapped,FALSE,treated as fossil by the IPCC; no energypal subtype
+Sulphite lyes (black liquor),,,unmapped,FALSE,

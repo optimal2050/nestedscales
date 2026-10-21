@@ -26,7 +26,7 @@ test_that("a partially-supplied target is NA for every rule", {
   for (r in c("sum", "mean", "weighted_mean", "copy", "sd")) {
     out <- suppressWarnings(
       recast_scale(.partial(), s,
-        from = "unit", to = "class", rule = r,
+        source = "unit", target = "class", rule = r,
         weight = if (r == "weighted_mean") "size" else NULL
       )
     )
@@ -47,7 +47,7 @@ test_that("the poisoning is partiality, not absence", {
   # under test: G1 is poisoned by its missing sibling U2, while G2 is simply
   # absent and gets its NA from vocabulary completion.
   out <- suppressWarnings(
-    recast_scale(.partial(), s, from = "unit", to = "class", rule = "sum")
+    recast_scale(.partial(), s, source = "unit", target = "class", rule = "sum")
   )
   expect_true(is.na(out$value[out$class == "G1"]))
   expect_true(is.na(out$value[out$class == "G2"]))
@@ -60,7 +60,7 @@ test_that("the poisoning is partiality, not absence", {
         stringsAsFactors = FALSE
       ),
       s,
-      from = "unit", to = "class", rule = "sum"
+      source = "unit", target = "class", rule = "sum"
     )
   )
   expect_equal(both$value[both$class == "G1"], 3)
@@ -78,7 +78,7 @@ test_that("poisoning is per identifier group, not global", {
   )
   out <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value"
     )
   )
@@ -89,7 +89,7 @@ test_that("poisoning is per identifier group, not global", {
 test_that("a partial source poisons through the atom halves too", {
   s <- scale_example()
   up <- suppressWarnings(
-    recast_from_atoms(.partial(), s, to = "class", rule = "sum")
+    recast_from_atoms(.partial(), s, target = "class", rule = "sum")
   )
   # recast_from_atoms joins the data to the members, so a missing atom simply
   # does not contribute; this half does NOT poison, and that asymmetry is
@@ -103,7 +103,7 @@ test_that("poisoning survives on every backend", {
     x <- as_backend(.partial(), bk)
     out <- suppressWarnings(
       recast_scale(x, s,
-        from = "unit", to = "class", rule = "sum",
+        source = "unit", target = "class", rule = "sum",
         collect = TRUE
       )
     )
@@ -126,7 +126,7 @@ test_that("the crosswalk is what defines the expected source set", {
   )
   register_scale_map(s, "unit", "class", one)
   out <- suppressWarnings(
-    recast_scale(.partial(), s, from = "unit", to = "class", rule = "sum")
+    recast_scale(.partial(), s, source = "unit", target = "class", rule = "sum")
   )
   expect_equal(out$value[out$class == "G1"], 1)
 })

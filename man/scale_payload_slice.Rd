@@ -17,7 +17,7 @@ indices.}
 }
 \description{
 The seam a dimension package overrides when it carries per-atom data
-alongside the leaftable -- \code{geoscales::Geoscale} and its geometry. Called
+alongside the leaftable -- geoscales' \code{Geoscale} and its geometry. Called
 whenever the engine rebuilds an object from a row subset, with the kept row
 indices. The \code{NestedScale} default has no payload and returns \code{x} unchanged.
 }

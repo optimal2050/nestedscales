@@ -1,0 +1,6 @@
+"frame","unit","alias","source"
+"fuel","Anthracite","hard coal","example"
+"carrier","Coal","coal","example"
+"fuel","Electricity","elc","example"
+"carrier","Electricity","elc","example"
+"carrier","Electricity","power","example"

@@ -15,7 +15,7 @@ A single string -- a frame name, or the key.
 \description{
 The finest frame when one code of it sits on each leaftable row, and the
 key column otherwise. A \code{\link{NestedScale}} built from a nested hierarchy is the
-first kind; a \code{timescales::Calendar} is the second, because its timeslices
+first kind; a timescales \code{Calendar} is the second, because its timeslices
 are combinations of its frames rather than codes of any one of them.
 }
 \details{

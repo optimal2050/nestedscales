@@ -16,6 +16,7 @@ import pyarrow.compute as pc
 from ._utils import _as_str_tuple, _preview, _stop
 from .scale_class import (
     NestedScale,
+    _slice_member_tables,
     _check_frame,
     _check_scale,
     _finite_sum,
@@ -71,6 +72,10 @@ def _rebuild(x: NestedScale, keep: Sequence[int], fr: Sequence[str],
     for k, v in (("leaftable", lt), ("frames", tuple(fr)), ("members", members),
                  ("meta", dict(x.meta if meta is None else meta))):
         object.__setattr__(out, k, v)
+    # the core's own tables are keyed by (frame, unit): a membership test
+    at, al = _slice_member_tables(out)
+    object.__setattr__(out, "attributes", at)
+    object.__setattr__(out, "aliases", al)
     out = scale_payload_slice(out, list(keep))
     out.__post_init__()
     return out
@@ -171,8 +176,16 @@ def prune_scale(x: NestedScale, frame: str) -> NestedScale:
             new_meta.pop(k, None)
         else:
             new_meta[k] = s.meta[k]
-    return NestedScale(leaftable=s.leaftable, frames=s.frames, members=s.members,
-                       key=s.key, meta=new_meta)
+    # rows at the dropped finer frames go; the concrete class is kept
+    out_s = copy.copy(x)
+    for k, v in (("leaftable", s.leaftable), ("frames", s.frames),
+                 ("members", s.members), ("meta", new_meta)):
+        object.__setattr__(out_s, k, v)
+    at, al = _slice_member_tables(out_s)
+    object.__setattr__(out_s, "attributes", at)
+    object.__setattr__(out_s, "aliases", al)
+    out_s.__post_init__()
+    return out_s
 
 
 def scale_share(x: NestedScale, frame: str, weight: str | None = None,

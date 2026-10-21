@@ -8,7 +8,7 @@
 recast_to_atoms(
   data,
   x,
-  from = NULL,
+  source = NULL,
   key = NULL,
   values = NULL,
   rule = NULL,
@@ -20,7 +20,7 @@ recast_to_atoms(
 recast_from_atoms(
   data,
   x,
-  to,
+  target,
   key = NULL,
   values = NULL,
   rule = NULL,
@@ -32,11 +32,11 @@ recast_from_atoms(
 }
 \arguments{
 \item{data}{The data: for \code{recast_to_atoms()} keyed by unit code at frame
-\code{from}; for \code{recast_from_atoms()} keyed by atom IDs.}
+\code{source}; for \code{recast_from_atoms()} keyed by atom IDs.}
 
 \item{x}{The \code{\link{NestedScale}} the data is keyed in, or aggregated into.}
 
-\item{from}{\code{to_atoms} only: frame name the codes belong to. \code{NULL}
+\item{source}{\code{to_atoms} only: frame name the codes belong to. \code{NULL}
 (default) is inferred as in \code{\link[=recast_scale]{recast_scale()}}.}
 
 \item{key}{The key column; defaults as in \code{\link[=recast_scale]{recast_scale()}}.}
@@ -53,13 +53,13 @@ the scale's declared weight.}
 
 \item{collect}{For lazy inputs: materialise (\code{TRUE}) or return the query.}
 
-\item{to}{\code{from_atoms} only: target frame name.}
+\item{target}{\code{from_atoms} only: target frame name.}
 
 \item{na_rm}{\code{from_atoms} only: read an \code{NA} value as "this member says
 nothing" rather than as an unknown that makes the whole group \code{NA}.}
 
 \item{na_action}{\code{from_atoms} only: what to do with atoms that have no code
-at \code{to}.}
+at \code{target}.}
 }
 \value{
 \code{recast_to_atoms()}: one row per (atom x identifier combination).
@@ -72,7 +72,7 @@ The two public halves of the \code{from -> atoms -> to} route:
 row per atom), and \code{recast_from_atoms()} aggregates atom-keyed data UP into
 a frame's units. Their composition is \code{\link[=recast_scale]{recast_scale()}}, and because the
 atom rows are keyed by the atom IDs,
-\code{recast_from_atoms(recast_to_atoms(data, a), b, to)} recasts across two
+\code{recast_from_atoms(recast_to_atoms(data, a), b, target)} recasts across two
 scales that share atom keys.
 }
 \details{
@@ -85,13 +85,13 @@ return trip's \code{"weighted_mean"} reproduces the source weighting exactly.
 s <- scale_example()
 d <- data.frame(sector = c("P", "S"), capacity = c(10, 20))
 atoms <- recast_to_atoms(d, s,
-  from = "sector", rule = "sum",
+  source = "sector", rule = "sum",
   weight = "size"
 )
 head(atoms)
 recast_from_atoms(
   atoms, s,
-  to = "class",
+  target = "class",
   rule = "sum",
   na_action = "keep"
 )

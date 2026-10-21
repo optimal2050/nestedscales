@@ -234,7 +234,7 @@ scale_ancestry <- function(x) {
 #' @param x A [`NestedScale`].
 #' @param frame The frame `unit` belongs to.
 #' @param unit Character vector of codes.
-#' @param to Target frame. `NULL` uses the adjacent frame (children/parents)
+#' @param target Target frame. `NULL` uses the adjacent frame (children/parents)
 #'   or every finer/coarser frame (descendants/ancestors).
 #'
 #' @return A character vector (children/parents) or a `data.frame` with
@@ -251,72 +251,72 @@ NULL
 
 #' @rdname scale_navigate
 #' @export
-scale_children <- function(x, frame, unit, to = NULL) {
+scale_children <- function(x, frame, unit, target = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- .nav_levels(x)
   i <- match(frame, fr)
-  if (is.null(to)) {
+  if (is.null(target)) {
     if (i == length(fr)) {
       .stop(
         "`%s` is the finest %s; it has no children", frame,
         scale_vocab(x)$frame
       )
     }
-    to <- fr[i + 1L]
+    target <- fr[i + 1L]
   }
-  .check_frame(x, to, "to")
-  .related(x, frame, unit, to)
+  .check_frame(x, target, "target")
+  .related(x, frame, unit, target)
 }
 
 #' @rdname scale_navigate
 #' @export
-scale_parents <- function(x, frame, unit, to = NULL) {
+scale_parents <- function(x, frame, unit, target = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- .nav_levels(x)
   i <- match(frame, fr)
-  if (is.null(to)) {
+  if (is.null(target)) {
     if (i == 1L) {
       .stop(
         "`%s` is the coarsest %s; it has no parents", frame,
         scale_vocab(x)$frame
       )
     }
-    to <- fr[i - 1L]
+    target <- fr[i - 1L]
   }
-  .check_frame(x, to, "to")
-  .related(x, frame, unit, to)
+  .check_frame(x, target, "target")
+  .related(x, frame, unit, target)
 }
 
 #' @rdname scale_navigate
 #' @export
-scale_descendants <- function(x, frame, unit, to = NULL) {
+scale_descendants <- function(x, frame, unit, target = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- .nav_levels(x)
   i <- match(frame, fr)
-  targets <- if (is.null(to)) {
+  targets <- if (is.null(target)) {
     utils::tail(fr, length(fr) - i)
   } else {
-    .check_frame(x, to, "to")
-    to
+    .check_frame(x, target, "target")
+    target
   }
   .related_df(x, frame, unit, targets)
 }
 
 #' @rdname scale_navigate
 #' @export
-scale_ancestors <- function(x, frame, unit, to = NULL) {
+scale_ancestors <- function(x, frame, unit, target = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- .nav_levels(x)
   i <- match(frame, fr)
-  targets <- if (is.null(to)) {
+  targets <- if (is.null(target)) {
     utils::head(fr, i - 1L)
   } else {
-    .check_frame(x, to, "to")
-    to
+    .check_frame(x, target, "target")
+    target
   }
   .related_df(x, frame, unit, targets)
 }
@@ -342,9 +342,9 @@ scale_ancestors <- function(x, frame, unit, to = NULL) {
   out
 }
 
-#' Codes at `to` that share at least one atom with `unit` at `frame`
+#' Codes at `target` that share at least one atom with `unit` at `frame`
 #' @noRd
-.related <- function(x, frame, unit, to) {
+.related <- function(x, frame, unit, target) {
   leaves <- S7::prop(x, "leaftable")
   unknown <- setdiff(unit, scale_units(x, frame))
   if (length(unknown) > 0L) {
@@ -354,8 +354,8 @@ scale_ancestors <- function(x, frame, unit, to = NULL) {
     )
   }
   hit <- leaves[[frame]] %in% unit
-  out <- unique(stats::na.omit(as.character(leaves[[to]][hit])))
-  ord <- scale_units(x, to)
+  out <- unique(stats::na.omit(as.character(leaves[[target]][hit])))
+  ord <- scale_units(x, target)
   out[order(match(out, ord))]
 }
 

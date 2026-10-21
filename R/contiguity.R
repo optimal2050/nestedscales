@@ -105,11 +105,11 @@ cluster_contiguous <- function(data, x, k, frame = NULL, key = NULL,
     if (ncol(pairs) < 2L) {
       .stop("`adjacency` must have two columns of unit codes")
     }
-    from <- match(as.character(pairs[[1L]]), units)
-    to <- match(as.character(pairs[[2L]]), units)
+    source <- match(as.character(pairs[[1L]]), units)
+    target <- match(as.character(pairs[[2L]]), units)
     bad <- unique(c(
-      as.character(pairs[[1L]])[is.na(from)],
-      as.character(pairs[[2L]])[is.na(to)]
+      as.character(pairs[[1L]])[is.na(source)],
+      as.character(pairs[[2L]])[is.na(target)]
     ))
     if (length(bad) > 0L) {
       .stop(
@@ -117,9 +117,9 @@ cluster_contiguous <- function(data, x, k, frame = NULL, key = NULL,
         .preview(bad)
       )
     }
-    ok <- !is.na(from) & !is.na(to)
-    a[cbind(from[ok], to[ok])] <- TRUE
-    a[cbind(to[ok], from[ok])] <- TRUE
+    ok <- !is.na(source) & !is.na(target)
+    a[cbind(source[ok], target[ok])] <- TRUE
+    a[cbind(target[ok], source[ok])] <- TRUE
     return(a)
   }
 

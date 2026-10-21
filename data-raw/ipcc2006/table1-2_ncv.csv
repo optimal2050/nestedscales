@@ -1,0 +1,54 @@
+ipcc_fuel,ncv,ncv_lower,ncv_upper
+Crude Oil,42.3,40.1,44.8
+Orimulsion,27.5,27.5,28.3
+Natural Gas Liquids,44.2,40.9,46.9
+Motor Gasoline,44.3,42.5,44.8
+Aviation Gasoline,44.3,42.5,44.8
+Jet Gasoline,44.3,42.5,44.8
+Jet Kerosene,44.1,42.0,45.0
+Other Kerosene,43.8,42.4,45.2
+Shale Oil,38.1,32.1,45.2
+Gas/Diesel Oil,43.0,41.4,43.3
+Residual Fuel Oil,40.4,39.8,41.7
+Liquefied Petroleum Gases,47.3,44.8,52.2
+Ethane,46.4,44.9,48.8
+Naphtha,44.5,41.8,46.5
+Bitumen,40.2,33.5,41.2
+Lubricants,40.2,33.5,42.3
+Petroleum Coke,32.5,29.7,41.9
+Refinery Feedstocks,43.0,36.3,46.4
+Refinery Gas,49.5,47.5,50.6
+Paraffin Waxes,40.2,33.7,48.2
+White Spirit and SBP,40.2,33.7,48.2
+Other Petroleum Products,40.2,33.7,48.2
+Anthracite,26.7,21.6,32.2
+Coking Coal,28.2,24.0,31.0
+Other Bituminous Coal,25.8,19.9,30.5
+Sub-Bituminous Coal,18.9,11.5,26.0
+Lignite,11.9,5.50,21.6
+Oil Shale and Tar Sands,8.9,7.1,11.1
+Brown Coal Briquettes,20.7,15.1,32.0
+Patent Fuel,20.7,15.1,32.0
+Coke Oven Coke and Lignite Coke,28.2,25.1,30.2
+Gas Coke,28.2,25.1,30.2
+Coal Tar,28.0,14.1,55.0
+Gas Works Gas,38.7,19.6,77.0
+Coke Oven Gas,38.7,19.6,77.0
+Blast Furnace Gas,2.47,1.20,5.00
+Oxygen Steel Furnace Gas,7.06,3.80,15.0
+Natural Gas,48.0,46.5,50.4
+Municipal Wastes (non-biomass fraction),10,7,18
+Industrial Wastes,NA,NA,NA
+Waste Oil,40.2,20.3,80.0
+Peat,9.76,7.80,12.5
+Wood/Wood Waste,15.6,7.90,31.0
+Sulphite lyes (black liquor),11.8,5.90,23.0
+Other Primary Solid Biomass,11.6,5.90,23.0
+Charcoal,29.5,14.9,58.0
+Biogasoline,27.0,13.6,54.0
+Biodiesels,27.0,13.6,54.0
+Other Liquid Biofuels,27.4,13.8,54.0
+Landfill Gas,50.4,25.4,100
+Sludge Gas,50.4,25.4,100
+Other Biogas,50.4,25.4,100
+Municipal Wastes (biomass fraction),11.6,6.80,18.0

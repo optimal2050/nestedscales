@@ -4,12 +4,12 @@
 \alias{scale_map_between}
 \title{Crosswalk between two scales through their shared atoms}
 \usage{
-scale_map_between(from, to, weight = NULL)
+scale_map_between(source, target, weight = NULL)
 }
 \arguments{
-\item{from, to}{Two named \code{\link{NestedScale}} objects whose atom keys overlap.}
+\item{source, target}{Two named \code{\link{NestedScale}} objects whose atom keys overlap.}
 
-\item{weight}{Weight column of \code{from} for \code{w}; \code{NULL} uses its default
+\item{weight}{Weight column of \code{source} for \code{w}; \code{NULL} uses its default
 weight, or weight 1 per atom when it declares none.}
 }
 \value{
@@ -18,9 +18,9 @@ A \code{data.frame} with columns \verb{<from name>}, \verb{<to name>}, \code{n_f
 }
 \description{
 The counterpart of \code{\link[=scale_map]{scale_map()}} for two scales: atoms are matched on
-their keys, so a unit of \code{from} overlaps a unit of \code{to} where they contain
+their keys, so a unit of \code{source} overlaps a unit of \code{target} where they contain
 the same atoms. Same columns as \code{\link[=scale_map]{scale_map()}}, with the two label columns
-named after the scales. Atoms of \code{from} absent from \code{to} get an \code{NA} target
+named after the scales. Atoms of \code{source} absent from \code{target} get an \code{NA} target
 (with a warning). A crosswalk registered with
 \code{\link[=register_scale_map_between]{register_scale_map_between()}} is returned as-is instead of being derived.
 }

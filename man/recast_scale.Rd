@@ -7,8 +7,8 @@
 recast_scale(
   data,
   x,
-  from = NULL,
-  to,
+  source = NULL,
+  target,
   key = NULL,
   values = NULL,
   rule = NULL,
@@ -30,14 +30,14 @@ preserved as identifiers.}
 
 \item{x}{The \code{\link{NestedScale}} the codes in \code{data} belong to.}
 
-\item{from}{Frame name the codes belong to. \code{NULL} (default) is inferred:
+\item{source}{Frame name the codes belong to. \code{NULL} (default) is inferred:
 \code{key} when it is a frame name, else the single frame name appearing among
 the data's columns.}
 
-\item{to}{Target frame name of \code{x}, or another (named) \code{\link{NestedScale}} -- then
+\item{target}{Target frame name of \code{x}, or another (named) \code{\link{NestedScale}} -- then
 the target is that object's atom layer, matched on shared atom keys.}
 
-\item{key}{Name of the code column in \code{data}. Defaults to \code{from} when that
+\item{key}{Name of the code column in \code{data}. Defaults to \code{source} when that
 column exists, otherwise the scale's own key.}
 
 \item{values}{Character vector of value columns to convert. Default: all
@@ -56,14 +56,14 @@ falling back to the object's default weight; when the object declares no
 weights at all, atoms weigh 1 (an equal split, warned about when it is
 material).}
 
-\item{na_action}{What to do with atoms that have no code at \code{from} or \code{to}:
+\item{na_action}{What to do with atoms that have no code at \code{source} or \code{target}:
 \code{"drop"} (default, with a warning -- the affected source share is
 genuinely lost), \code{"error"}, or \code{"keep"} (retain an explicit \code{NA} row so
 totals conserve).}
 
 \item{parent}{\code{rule = "share"} only: the frame defining the groups the
-shares are taken within. \code{NULL} (default) uses \code{to} when it differs from
-\code{from}, else the frame immediately above \code{from}.}
+shares are taken within. \code{NULL} (default) uses \code{target} when it differs from
+\code{source}, else the frame immediately above \code{source}.}
 
 \item{collect}{For lazy inputs: materialise the result (\code{TRUE}) or return
 the uncollected query (default).}
@@ -98,7 +98,7 @@ The recast table in the input's class, with columns
 }
 \description{
 The central conversion verb: takes a table keyed by unit code at frame
-\code{from} and returns one keyed at \code{to} -- a frame name of the same
+\code{source} and returns one keyed at \code{target} -- a frame name of the same
 \code{\link{NestedScale}}, or ANOTHER NestedScale (whose atom layer is the target, matched on
 shared atom keys). Handles both aggregation (fine to coarse) and
 disaggregation (coarse to fine) with one rule per value column; frames that
@@ -120,9 +120,9 @@ weights by the atom weights; \code{"mean"} is the plain atom-count mean -- the
 two differ exactly when atom weights differ. \code{"copy"} requires a constant
 value per target unit; \code{"sd"} is aggregation-only.
 
-\code{"share"} inverts the output contract: the result stays keyed at \code{from},
+\code{"share"} inverts the output contract: the result stays keyed at \code{source},
 and each value becomes that unit's share of the total over its parent
-group. \code{from} must nest within the parent. It cannot be combined with other
+group. \code{source} must nest within the parent. It cannot be combined with other
 rules in one call, and \verb{weight=} is ignored -- the observed values
 themselves are the weights.
 }
@@ -143,19 +143,19 @@ d <- data.frame(
   unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
   capacity = c(1, 2, 3, 4, 5, 6)
 )
-recast_scale(d, s, from = "unit", to = "sector", rule = "sum")
+recast_scale(d, s, source = "unit", target = "sector", rule = "sum")
 
 # Coarse -> fine: split proportionally to size
 y <- data.frame(sector = c("P", "S"), capacity = c(10, 20))
 recast_scale(y, s,
-  from = "sector", to = "class",
+  source = "sector", target = "class",
   rule = "sum", weight = "size"
 )
 
 # Share within parent: result stays at the atoms, sums to 1 per sector
 recast_scale(
   d, s,
-  from = "unit", to = "sector",
+  source = "unit", target = "sector",
   rule = "share",
   na_action = "keep"
 )

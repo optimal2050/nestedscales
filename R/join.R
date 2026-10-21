@@ -54,9 +54,9 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
                        diagnostics = c("auto", "on", "off")) {
   diagnostics <- match.arg(diagnostics)
   .check_scale(x, "x")
-  backend <- .ms_require_backend(data, "data")
+  backend <- backend_of(data, "data")
   nm <- .scale_name(x)
-  schema <- .ms_schema(data)
+  schema <- backend_schema(data)
   v <- scale_vocab(x)
 
   leaves <- S7::prop(x, "leaftable")
@@ -141,9 +141,9 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
   known <- unique(stats::na.omit(as.character(leaves[[frame]])))
   if (.want_diagnostics(diagnostics, backend)) {
     ksym <- rlang::sym(key)
-    any_match <- .ms_pull(
+    any_match <- backend_pull(
       utils::head(
-        dplyr::filter(.ms_lazy(data, backend), !!ksym %in% known),
+        dplyr::filter(backend_lazy(data, backend), !!ksym %in% known),
         1L
       )
     )
@@ -153,9 +153,9 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
         key, v$frame, frame
       )
     }
-    unknown <- .ms_pull(dplyr::distinct(dplyr::select(
+    unknown <- backend_pull(dplyr::distinct(dplyr::select(
       dplyr::filter(
-        .ms_lazy(data, backend),
+        backend_lazy(data, backend),
         !is.na(!!ksym) & !(!!ksym %in% known)
       ),
       dplyr::all_of(key)
@@ -219,7 +219,7 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
   names(lab_map)[names(lab_map) == ".ms_label"] <- key
   lab_map$.ms_label <- lab_map[[key]]
 
-  out <- dplyr::left_join(.ms_lazy(data, backend), lab_map,
+  out <- dplyr::left_join(backend_lazy(data, backend), lab_map,
     by = key,
     na_matches = "na"
   )
@@ -228,5 +228,5 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
   } else {
     out <- dplyr::select(out, -dplyr::all_of(".ms_label"))
   }
-  .ms_restore(out, backend, collect = collect)
+  backend_restore(out, backend, collect = collect)
 }

@@ -30,11 +30,12 @@ def test_within(name):
     case = CASES["within"][name]
     s = build_scale(case["construct"])
     for c in case["calls"]:
-        replay(lambda c=c: ns.scale_map(s, c["from"], c["to"], weight=c["weight"]), c)
+        replay(lambda c=c: ns.scale_map(s, c["source"], c["target"],
+                                        weight=c["weight"]), c)
 
 
 @pytest.mark.parametrize("i", range(len(CASES["between"])))
 def test_between(i):
     c = CASES["between"][i]
-    a, b = build_scale(c["from"]), build_scale(c["to"])
+    a, b = build_scale(c["source"]), build_scale(c["target"])
     replay(lambda: ns.scale_map_between(a, b, weight=c["weight"]), c)

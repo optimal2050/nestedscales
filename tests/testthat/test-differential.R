@@ -56,27 +56,27 @@ test_that("the two objects really do hold the same data", {
 .cases <- list(
   list(
     nm = "atom->country sum",
-    args = list(from = "atom", to = "country", rule = "sum")
+    args = list(source = "atom", target = "country", rule = "sum")
   ),
   list(
     nm = "atom->country weighted_mean",
     args = list(
-      from = "atom", to = "country", rule = "weighted_mean",
+      source = "atom", target = "country", rule = "weighted_mean",
       weight = "km2"
     )
   ),
   list(
     nm = "atom->state mean",
-    args = list(from = "atom", to = "state", rule = "mean")
+    args = list(source = "atom", target = "state", rule = "mean")
   ),
   list(
     nm = "atom->country sd",
-    args = list(from = "atom", to = "country", rule = "sd")
+    args = list(source = "atom", target = "country", rule = "sd")
   ),
   list(
     nm = "atom->state pop-weighted",
     args = list(
-      from = "atom", to = "state", rule = "weighted_mean",
+      source = "atom", target = "state", rule = "weighted_mean",
       weight = "pop"
     )
   ),
@@ -87,14 +87,14 @@ test_that("the two objects really do hold the same data", {
       stringsAsFactors = FALSE
     ),
     args = list(
-      from = "state", to = "zone", rule = "sum",
+      source = "state", target = "zone", rule = "sum",
       weight = "km2"
     )
   ),
   list(
     nm = "atom->country keep NA",
     args = list(
-      from = "atom", to = "country", rule = "sum",
+      source = "atom", target = "country", rule = "sum",
       na_action = "keep"
     )
   )
@@ -135,13 +135,13 @@ test_that("disaggregation agrees", {
   for (w in c("km2", "pop")) {
     a <- suppressWarnings(
       geoscales::recast_geoscale(d, gs,
-        from = "country", to = "state",
+        source = "country", target = "state",
         rule = "sum", weight = w
       )
     )
     b <- suppressWarnings(
       recast_scale(d, ms,
-        from = "country", to = "state", rule = "sum",
+        source = "country", target = "state", rule = "sum",
         weight = w
       )
     )
@@ -159,13 +159,13 @@ test_that("the copy rule agrees, including its refusal", {
   .same(
     suppressWarnings(
       geoscales::recast_geoscale(ok, gs,
-        from = "atom", to = "state",
+        source = "atom", target = "state",
         rule = "copy", key = "region"
       )
     ),
     suppressWarnings(
       recast_scale(ok, ms,
-        from = "atom", to = "state", rule = "copy",
+        source = "atom", target = "state", rule = "copy",
         key = "region"
       )
     ),
@@ -178,13 +178,13 @@ test_that("the copy rule agrees, including its refusal", {
   )
   expect_error(suppressWarnings(
     geoscales::recast_geoscale(bad, gs,
-      from = "atom", to = "state",
+      source = "atom", target = "state",
       rule = "copy", key = "region"
     )
   ))
   expect_error(suppressWarnings(
     recast_scale(bad, ms,
-      from = "atom", to = "state", rule = "copy",
+      source = "atom", target = "state", rule = "copy",
       key = "region"
     )
   ))
@@ -200,13 +200,13 @@ test_that("share agrees", {
   .same(
     suppressWarnings(
       geoscales::recast_geoscale(d, gs,
-        from = "atom", to = "country",
+        source = "atom", target = "country",
         rule = "share", key = "region"
       )
     ),
     suppressWarnings(
       recast_scale(d, ms,
-        from = "atom", to = "country", rule = "share",
+        source = "atom", target = "country", rule = "share",
         key = "region"
       )
     ),
@@ -226,14 +226,14 @@ test_that("identifier columns are carried the same way", {
   .same(
     suppressWarnings(
       geoscales::recast_geoscale(d, gs,
-        from = "atom", to = "country",
+        source = "atom", target = "country",
         rule = "sum", key = "region",
         values = "v"
       )
     ),
     suppressWarnings(
       recast_scale(d, ms,
-        from = "atom", to = "country", rule = "sum",
+        source = "atom", target = "country", rule = "sum",
         key = "region", values = "v"
       )
     ),
@@ -250,20 +250,20 @@ test_that("the route halves agree", {
   )
   a_down <- suppressWarnings(
     geoscales::recast_to_geoatoms(d, gs,
-      from = "country", rule = "sum",
+      source = "country", rule = "sum",
       weight = "km2"
     )
   )
   b_down <- suppressWarnings(
-    recast_to_atoms(d, ms, from = "country", rule = "sum", weight = "km2")
+    recast_to_atoms(d, ms, source = "country", rule = "sum", weight = "km2")
   )
   .same(a_down, b_down, "to atoms")
 
   a_up <- suppressWarnings(
-    geoscales::recast_from_geoatoms(a_down, gs, to = "state", rule = "sum")
+    geoscales::recast_from_geoatoms(a_down, gs, target = "state", rule = "sum")
   )
   b_up <- suppressWarnings(
-    recast_from_atoms(b_down, ms, to = "state", rule = "sum")
+    recast_from_atoms(b_down, ms, target = "state", rule = "sum")
   )
   .same(a_up, b_up, "from atoms")
 })

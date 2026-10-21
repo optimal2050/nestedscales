@@ -156,7 +156,7 @@ within <- lapply(map_cases, function(spec) {
     if (a == b) next
     for (w in c(list(NULL), as.list(scale_weights(s)))) {
       calls[[length(calls) + 1L]] <- c(
-        list(from = a, to = b, weight = w),
+        list(source = a, target = b, weight = w),
         with_warnings(scale_map(s, a, b, weight = w))
       )
     }
@@ -191,7 +191,7 @@ pairs_between <- list(
 between <- lapply(pairs_between, function(p) {
   w <- if (is.na(p[3])) NULL else p[3]
   c(
-    list(from = construct(specs[[p[1]]]), to = construct(specs[[p[2]]]),
+    list(source = construct(specs[[p[1]]]), target = construct(specs[[p[2]]]),
          weight = w),
     with_warnings(scale_map_between(build(specs[[p[1]]]), build(specs[[p[2]]]),
                                     weight = w))

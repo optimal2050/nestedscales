@@ -21,7 +21,7 @@ test_that("to_atoms splits an extensive quantity by weight", {
     mid = c("M1", "M2"), cap = c(4, 6),
     stringsAsFactors = FALSE
   )
-  out <- recast_to_atoms(d, s, from = "mid", rule = "sum")
+  out <- recast_to_atoms(d, s, source = "mid", rule = "sum")
   expect_named(out, c("leaf", "cap", "weight"))
   # M1 (w 1 + 3) splits 4 as 1 and 3
   expect_equal(out$cap[out$leaf == "L1"], 1)
@@ -35,7 +35,7 @@ test_that("to_atoms repeats an intensive quantity", {
     mid = c("M1", "M2"), eff = c(0.5, 0.8),
     stringsAsFactors = FALSE
   )
-  out <- recast_to_atoms(d, s, from = "mid", rule = "weighted_mean")
+  out <- recast_to_atoms(d, s, source = "mid", rule = "weighted_mean")
   expect_equal(out$eff[out$leaf == "L1"], 0.5)
   expect_equal(out$eff[out$leaf == "L2"], 0.5)
   expect_equal(out$eff[out$leaf == "L3"], 0.8)
@@ -48,11 +48,11 @@ test_that("to_atoms attaches the atom weight, and can be told not to", {
     stringsAsFactors = FALSE
   )
   expect_true("weight" %in% names(recast_to_atoms(d, s,
-    from = "mid",
+    source = "mid",
     rule = "sum"
   )))
   bare <- recast_to_atoms(d, s,
-    from = "mid", rule = "sum",
+    source = "mid", rule = "sum",
     attach_weight = FALSE
   )
   expect_false("weight" %in% names(bare))
@@ -64,7 +64,7 @@ test_that("from_atoms aggregates back up", {
     leaf = c("L1", "L2", "L3", "L4"), cap = c(1, 3, 2, 4),
     stringsAsFactors = FALSE
   )
-  out <- recast_from_atoms(atoms, s, to = "mid", rule = "sum")
+  out <- recast_from_atoms(atoms, s, target = "mid", rule = "sum")
   expect_named(out, c("mid", "cap"))
   expect_equal(out$cap[out$mid == "M1"], 4)
   expect_equal(out$cap[out$mid == "M2"], 6)
@@ -77,10 +77,10 @@ test_that("the composition of the halves equals recast_scale()", {
     stringsAsFactors = FALSE
   )
   for (r in c("sum", "weighted_mean", "mean")) {
-    direct <- recast_scale(d, s, from = "mid", to = "top", rule = r)
+    direct <- recast_scale(d, s, source = "mid", target = "top", rule = r)
     halves <- recast_from_atoms(
-      recast_to_atoms(d, s, from = "mid", rule = r), s,
-      to = "top", rule = r
+      recast_to_atoms(d, s, source = "mid", rule = r), s,
+      target = "top", rule = r
     )
     expect_equal(direct, halves,
       ignore_attr = TRUE,
@@ -95,9 +95,9 @@ test_that("the halves round-trip a value through the atom layer", {
     mid = c("M1", "M2"), cap = c(4, 6),
     stringsAsFactors = FALSE
   )
-  back <- recast_from_atoms(recast_to_atoms(d, s, from = "mid", rule = "sum"),
+  back <- recast_from_atoms(recast_to_atoms(d, s, source = "mid", rule = "sum"),
     s,
-    to = "mid", rule = "sum"
+    target = "mid", rule = "sum"
   )
   expect_equal(back$cap[back$mid == "M1"], 4)
   expect_equal(back$cap[back$mid == "M2"], 6)
@@ -110,7 +110,7 @@ test_that("from_atoms uses the attached weight for a weighted mean", {
     weight = c(1, 3), stringsAsFactors = FALSE
   )
   out <- suppressWarnings(
-    recast_from_atoms(atoms, s, to = "mid", rule = "weighted_mean")
+    recast_from_atoms(atoms, s, target = "mid", rule = "weighted_mean")
   )
   expect_equal(out$eff[out$mid == "M1"], (0.2 * 1 + 0.6 * 3) / 4)
 })
@@ -126,7 +126,7 @@ test_that("from_atoms honours a weight column that varies by identifier", {
   )
   out <- suppressWarnings(
     recast_from_atoms(atoms, s,
-      to = "mid", values = "eff",
+      target = "mid", values = "eff",
       rule = "weighted_mean", weight = "cap"
     )
   )
@@ -147,13 +147,13 @@ test_that("na_rm reads NA as silence rather than as an unknown", {
     weight = c(1, 3), stringsAsFactors = FALSE
   )
   poisoned <- suppressWarnings(
-    recast_from_atoms(atoms, s, to = "mid", values = "cap", rule = "sum")
+    recast_from_atoms(atoms, s, target = "mid", values = "cap", rule = "sum")
   )
   expect_true(is.na(poisoned$cap[poisoned$mid == "M1"]))
 
   rescued <- suppressWarnings(
     recast_from_atoms(atoms, s,
-      to = "mid", values = "cap", rule = "sum",
+      target = "mid", values = "cap", rule = "sum",
       na_rm = TRUE
     )
   )
@@ -168,7 +168,7 @@ test_that("an all-NA group stays NA even with na_rm", {
   )
   out <- suppressWarnings(
     recast_from_atoms(atoms, s,
-      to = "mid", values = "cap", rule = "sum",
+      target = "mid", values = "cap", rule = "sum",
       na_rm = TRUE
     )
   )
@@ -182,7 +182,7 @@ test_that("the halves refuse rule \"share\"", {
     stringsAsFactors = FALSE
   )
   expect_error(
-    recast_to_atoms(d, s, from = "mid", rule = "share"),
+    recast_to_atoms(d, s, source = "mid", rule = "share"),
     "not supported by recast_to_atoms"
   )
   atoms <- data.frame(
@@ -191,7 +191,7 @@ test_that("the halves refuse rule \"share\"", {
   )
   expect_error(
     suppressWarnings(
-      recast_from_atoms(atoms, s, to = "mid", rule = "share")
+      recast_from_atoms(atoms, s, target = "mid", rule = "share")
     ),
     "not supported by recast_from_atoms"
   )
@@ -211,7 +211,7 @@ test_that("a cross-object recast goes through the shared atom keys", {
     mid = c("M1", "M2"), cap = c(4, 6),
     stringsAsFactors = FALSE
   )
-  out <- recast_scale(d, a, from = "mid", to = b, rule = "sum")
+  out <- recast_scale(d, a, source = "mid", target = b, rule = "sum")
   # totals conserve across the object boundary
   expect_equal(sum(out$leaf %in% scale_units(b)), 4L)
   expect_equal(sum(out$cap, na.rm = TRUE), 10)

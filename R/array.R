@@ -80,8 +80,8 @@ NULL
 #' @export
 as_scale_array <- function(data, x, value = NULL, frames = NULL, fill = NA,
                            limit = 1e7) {
-  backend <- .ms_require_backend(data, "data")
-  schema <- .ms_schema(data)
+  backend <- backend_of(data, "data")
+  schema <- backend_schema(data)
   axes <- .array_axes(x, frames, cols = names(schema))
   keys <- vapply(axes, function(a) a$key, character(1))
   dims <- vapply(axes, function(a) length(a$units), integer(1))
@@ -99,7 +99,7 @@ as_scale_array <- function(data, x, value = NULL, frames = NULL, fill = NA,
     )
   }
 
-  d <- as.data.frame(dplyr::collect(.ms_lazy(data, backend)))
+  d <- as.data.frame(dplyr::collect(backend_lazy(data, backend)))
 
   missing_keys <- setdiff(unname(keys), names(d))
   if (length(missing_keys) > 0L) {

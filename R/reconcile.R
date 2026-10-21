@@ -24,18 +24,18 @@ NULL
 
 #' Check fine data against an independent parent total
 #'
-#' Aggregates `data` from `from` to `to` and compares the result with
+#' Aggregates `data` from `source` to `target` and compares the result with
 #' `totals`, the parent figure from another source. Reports the gap by
 #' default; can also close it.
 #'
-#' @param data The fine data, keyed at `from`.
+#' @param data The fine data, keyed at `source`.
 #' @param x A [`NestedScale`].
-#' @param from,to Frame names: where the data is, and the coarser frame whose
+#' @param source,target Frame names: where the data is, and the coarser frame whose
 #'   totals it is checked against.
-#' @param totals The independent parent figures: a table keyed at `to`
+#' @param totals The independent parent figures: a table keyed at `target`
 #'   carrying the same value columns as `data`, plus any identifier columns
 #'   (which are matched, so a per-year total works).
-#' @param key Column of `data` holding the codes at `from`; defaults as in
+#' @param key Column of `data` holding the codes at `source`; defaults as in
 #'   [`recast_scale()`].
 #' @param values Value columns to check. Default: the numeric columns common
 #'   to `data` and `totals`.
@@ -46,14 +46,14 @@ NULL
 #' @param balance What to do about the gap:
 #'   * `"none"` (default) -- report it and change nothing.
 #'   * `"residual"` -- return the data with each group's gap written onto its
-#'     declared residual unit at `from`. Needs exactly one residual per
+#'     declared residual unit at `source`. Needs exactly one residual per
 #'     affected group, and `rule = "sum"`.
 #'   * `"proportional"` -- return the data scaled by `target / aggregated`
 #'     within each group, so every group hits its total.
 #' @param tolerance Relative size below which a gap counts as rounding; sets
 #'   the `ok` column, and gaps within it are left alone when balancing.
 #'
-#' @return With `balance = "none"`, a long gap table: the `to` column, any
+#' @return With `balance = "none"`, a long gap table: the `target` column, any
 #'   identifiers, `value` (which column), `aggregated`, `target`, `gap`
 #'   (`target - aggregated`), `rel_gap` and `ok`. With a balancing method, the
 #'   adjusted data keyed as the input was, carrying that same table as its
@@ -73,36 +73,36 @@ NULL
 #' fine <- data.frame(unit = c("DE1", "DE2", "DE_XR"), gdp = c(400, 300, 0))
 #' published <- data.frame(country = "DE", gdp = 750)
 #'
-#' reconcile_scale(fine, s, from = "unit", to = "country", published)
+#' reconcile_scale(fine, s, source = "unit", target = "country", published)
 #'
 #' reconcile_scale(fine, s,
-#'   from = "unit", to = "country", published,
+#'   source = "unit", target = "country", published,
 #'   balance = "residual"
 #' )
 #' @export
-reconcile_scale <- function(data, x, from, to, totals,
+reconcile_scale <- function(data, x, source, target, totals,
                             key = NULL, values = NULL,
                             rule = "sum", weight = NULL,
                             balance = c("none", "residual", "proportional"),
                             tolerance = 1e-9) {
   balance <- match.arg(balance)
   .check_scale(x, "x")
-  .check_frame(x, from, "from")
-  .check_frame(x, to, "to")
-  if (scale_rank(x, to) >= scale_rank(x, from)) {
+  .check_frame(x, source, "source")
+  .check_frame(x, target, "target")
+  if (scale_rank(x, target) >= scale_rank(x, source)) {
     .stop(paste0(
-      "`to` must be coarser than `from`; reconciliation compares ",
+      "`target` must be coarser than `source`; reconciliation compares ",
       "fine data with a parent total (got from = \"%s\", ",
       "to = \"%s\")"
-    ), from, to)
+    ), source, target)
   }
   if (!is.data.frame(data)) data <- as.data.frame(data)
   totals <- as.data.frame(totals)
-  if (!to %in% names(totals)) {
-    .stop("`totals` has no `%s` column to identify the parent groups", to)
+  if (!target %in% names(totals)) {
+    .stop("`totals` has no `%s` column to identify the parent groups", target)
   }
 
-  if (is.null(key)) key <- if (from %in% names(data)) from else scale_key(x)
+  if (is.null(key)) key <- if (source %in% names(data)) source else scale_key(x)
   if (!key %in% names(data)) {
     .stop("the data has no column named `%s`; pass `key=`", key)
   }
@@ -110,7 +110,7 @@ reconcile_scale <- function(data, x, from, to, totals,
   if (is.null(values)) {
     num_d <- names(data)[vapply(data, is.numeric, logical(1))]
     num_t <- names(totals)[vapply(totals, is.numeric, logical(1))]
-    values <- setdiff(intersect(num_d, num_t), c(key, to, scale_frames(x)))
+    values <- setdiff(intersect(num_d, num_t), c(key, target, scale_frames(x)))
     if (length(values) == 0L) {
       .stop(paste0(
         "no numeric column is common to the data and `totals`; ",
@@ -129,25 +129,25 @@ reconcile_scale <- function(data, x, from, to, totals,
   # Identifiers present on BOTH sides -- a per-year total matches per year.
   id_cols <- intersect(
     setdiff(names(data), c(key, values, scale_frames(x))),
-    setdiff(names(totals), c(to, values))
+    setdiff(names(totals), c(target, values))
   )
 
   agg <- as.data.frame(suppressWarnings(
     recast_scale(data, x,
-      from = from, to = to, key = key, values = values,
+      source = source, target = target, key = key, values = values,
       rule = rule, weight = weight, diagnostics = "off"
     )
   ))
 
-  gap <- .reconcile_gap(agg, totals, to, id_cols, values, tolerance)
+  gap <- .reconcile_gap(agg, totals, target, id_cols, values, tolerance)
   if (identical(balance, "none")) {
     return(gap)
   }
 
   out <- switch(balance,
-    residual = .balance_residual(data, x, from, to, key, id_cols, gap, rule),
+    residual = .balance_residual(data, x, source, target, key, id_cols, gap, rule),
     proportional = .balance_proportional(
-      data, x, from, to, key, id_cols,
+      data, x, source, target, key, id_cols,
       gap
     )
   )
@@ -157,8 +157,8 @@ reconcile_scale <- function(data, x, from, to, totals,
 
 #' Long gap table: one row per (parent group, identifiers, value column)
 #' @noRd
-.reconcile_gap <- function(agg, totals, to, id_cols, values, tolerance) {
-  by <- c(id_cols, to)
+.reconcile_gap <- function(agg, totals, target, id_cols, values, tolerance) {
+  by <- c(id_cols, target)
   parts <- lapply(values, function(v) {
     a <- agg[, c(by, v), drop = FALSE]
     names(a)[ncol(a)] <- "aggregated"
@@ -177,7 +177,7 @@ reconcile_scale <- function(data, x, from, to, totals,
     by, "value", "aggregated", "target", "gap", "rel_gap",
     "ok"
   ), drop = FALSE]
-  out <- out[order(out$value, out[[to]]), , drop = FALSE]
+  out <- out[order(out$value, out[[target]]), , drop = FALSE]
   rownames(out) <- NULL
   out
 }
@@ -198,7 +198,7 @@ reconcile_scale <- function(data, x, from, to, totals,
 
 #' Write each group's gap onto its declared residual unit
 #' @noRd
-.balance_residual <- function(data, x, from, to, key, id_cols, gap, rule) {
+.balance_residual <- function(data, x, source, target, key, id_cols, gap, rule) {
   if (!identical(rule, "sum")) {
     .stop(paste0(
       "`balance = \"residual\"` needs `rule = \"sum\"`: a gap ",
@@ -206,18 +206,18 @@ reconcile_scale <- function(data, x, from, to, totals,
       "on a member"
     ))
   }
-  res <- scale_residuals(x, from)
+  res <- scale_residuals(x, source)
   if (length(res) == 0L) {
     .stop(paste0(
       "no residual is declared at `%s`, so the gap has nowhere to ",
       "go. Declare one when building the scale ",
       "(`residuals = list(%s = ...)`), or use ",
       "`balance = \"proportional\"`."
-    ), from, from)
+    ), source, source)
   }
 
   # Exactly one residual per parent group, or the gap has no single home.
-  fam <- scale_family(x, to, from)
+  fam <- scale_family(x, target, source)
   fam <- fam[fam$child %in% res, c("parent", "child"), drop = FALSE]
   dup <- unique(fam$parent[duplicated(fam$parent)])
   if (length(dup) > 0L) {
@@ -225,7 +225,7 @@ reconcile_scale <- function(data, x, from, to, totals,
       paste0(
         "%s group(s) have more than one declared residual at `%s`, ",
         "so the gap has no single home: %s"
-      ), to, from,
+      ), target, source,
       .preview(dup)
     )
   }
@@ -233,9 +233,9 @@ reconcile_scale <- function(data, x, from, to, totals,
   out <- data
   for (i in .gap_rows(gap)) {
     g <- gap[i, ]
-    unit <- fam$child[fam$parent == g[[to]]]
+    unit <- fam$child[fam$parent == g[[target]]]
     if (length(unit) != 1L) {
-      .stop("no declared residual at `%s` for %s `%s`", from, to, g[[to]])
+      .stop("no declared residual at `%s` for %s `%s`", source, target, g[[target]])
     }
     sel <- .gap_select(out, key, unit, id_cols, g)
     if (!any(sel)) {
@@ -251,8 +251,8 @@ reconcile_scale <- function(data, x, from, to, totals,
 
 #' NestedScale each group's children so the group hits its target
 #' @noRd
-.balance_proportional <- function(data, x, from, to, key, id_cols, gap) {
-  fam <- scale_family(x, to, from)
+.balance_proportional <- function(data, x, source, target, key, id_cols, gap) {
+  fam <- scale_family(x, target, source)
   out <- data
   for (i in .gap_rows(gap)) {
     g <- gap[i, ]
@@ -262,11 +262,11 @@ reconcile_scale <- function(data, x, from, to, totals,
           "%s `%s` aggregates to 0 for `%s`, so it cannot be scaled ",
           "to a target of %s. Park the gap on a residual instead, ",
           "or fix the data."
-        ), to, g[[to]], g$value,
+        ), target, g[[target]], g$value,
         format(g$target)
       )
     }
-    kids <- fam$child[fam$parent == g[[to]]]
+    kids <- fam$child[fam$parent == g[[target]]]
     sel <- .gap_select(out, key, kids, id_cols, g)
     out[sel, g$value] <- out[sel, g$value] * (g$target / g$aggregated)
   }

@@ -26,7 +26,7 @@ test_that("an eager input still gets its diagnostics", {
   d <- rbind(.ed(1), data.frame(unit = "NOPE", year = 1, value = 99))
   expect_warning(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value"
     ),
     "not present at"
@@ -42,13 +42,13 @@ test_that("a lazy input gets none, and forcing them back on works", {
 
   expect_no_warning(
     recast_scale(at, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value"
     )
   )
   expect_warning(
     recast_scale(at, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", diagnostics = "on"
     ),
     "not present at"
@@ -60,7 +60,7 @@ test_that("diagnostics = off silences an eager input too", {
   d <- rbind(.ed(1), data.frame(unit = "NOPE", year = 1, value = 99))
   expect_no_warning(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", diagnostics = "off"
     )
   )
@@ -72,7 +72,7 @@ test_that("errors that do not depend on the data fire whatever diagnostics says"
   for (dg in c("auto", "on", "off")) {
     expect_error(
       recast_scale(d, s,
-        from = "unit", to = "nope", rule = "sum",
+        source = "unit", target = "nope", rule = "sum",
         values = "value", diagnostics = dg
       ),
       "is not a frame",
@@ -82,7 +82,7 @@ test_that("errors that do not depend on the data fire whatever diagnostics says"
     bad$.ms_f <- 1
     expect_error(
       recast_scale(bad, s,
-        from = "unit", to = "class", rule = "sum",
+        source = "unit", target = "class", rule = "sum",
         values = "value", diagnostics = dg
       ),
       "reserved column name",
@@ -96,13 +96,13 @@ test_that("diagnostics never change the numbers", {
   d <- .ed()
   a <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", diagnostics = "on"
     )
   )
   b <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", diagnostics = "off"
     )
   )
@@ -124,11 +124,11 @@ test_that("missing_sources = ignore aggregates what is present", {
   s <- scale_example()
   partial <- data.frame(unit = "U1", value = 5, stringsAsFactors = FALSE)
   poisoned <- suppressWarnings(
-    recast_scale(partial, s, from = "unit", to = "class", rule = "sum")
+    recast_scale(partial, s, source = "unit", target = "class", rule = "sum")
   )
   ignored <- suppressWarnings(
     recast_scale(partial, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       missing_sources = "ignore"
     )
   )
@@ -141,13 +141,13 @@ test_that("missing_sources makes no difference when the data is complete", {
   d <- .ed()
   a <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value"
     )
   )
   b <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", missing_sources = "ignore"
     )
   )
@@ -161,14 +161,14 @@ test_that("batching gives exactly the unbatched result, in the same order", {
   d <- .ed(6)
   ref <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value"
     )
   )
   for (k in c(1, 2, 6, 7)) {
     got <- suppressWarnings(
       recast_scale(d, s,
-        from = "unit", to = "class", rule = "sum",
+        source = "unit", target = "class", rule = "sum",
         values = "value", batch = k, batch_by = "year"
       )
     )
@@ -185,14 +185,14 @@ test_that("batching holds for every rule", {
   for (r in c("sum", "mean", "weighted_mean", "sd")) {
     ref <- suppressWarnings(
       recast_scale(d, s,
-        from = "unit", to = "class", rule = r,
+        source = "unit", target = "class", rule = r,
         values = "value",
         weight = if (r == "weighted_mean") "size" else NULL
       )
     )
     got <- suppressWarnings(
       recast_scale(d, s,
-        from = "unit", to = "class", rule = r,
+        source = "unit", target = "class", rule = r,
         values = "value", batch = 2, batch_by = "year",
         weight = if (r == "weighted_mean") "size" else NULL
       )
@@ -210,7 +210,7 @@ test_that("batching preserves the partial-source NA law", {
   )
   got <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", batch = 1, batch_by = "year"
     )
   )
@@ -223,14 +223,14 @@ test_that("batch_by must be an identifier column", {
   d <- .ed()
   expect_error(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", batch = 2, batch_by = "unit"
     ),
     "must be an identifier column"
   )
   expect_error(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", batch = 2, batch_by = "value"
     ),
     "must be an identifier column"
@@ -246,7 +246,7 @@ test_that("batching a data-less-identifier job is refused clearly", {
   expect_error(
     suppressWarnings(
       recast_scale(d, s,
-        from = "unit", to = "class", rule = "sum",
+        source = "unit", target = "class", rule = "sum",
         batch = 2
       )
     ),
@@ -261,14 +261,14 @@ test_that("batching a lazy call is refused rather than silently collecting", {
   at <- arrow::arrow_table(.ed())
   expect_error(
     recast_scale(at, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", batch = 2, batch_by = "year"
     ),
     "Pass `collect = TRUE`"
   )
   expect_no_error(
     recast_scale(at, s,
-      from = "unit", to = "class", rule = "sum",
+      source = "unit", target = "class", rule = "sum",
       values = "value", batch = 2, batch_by = "year",
       collect = TRUE
     )
@@ -280,7 +280,7 @@ test_that("batching returns the input's class", {
   s <- scale_example()
   out <- suppressWarnings(
     recast_scale(tibble::as_tibble(.ed()), s,
-      from = "unit", to = "class",
+      source = "unit", target = "class",
       rule = "sum", values = "value", batch = 2,
       batch_by = "year"
     )
@@ -302,14 +302,14 @@ test_that("several weights in one call agree with one call per weight", {
 
   together <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = rules,
+      source = "unit", target = "class", rule = rules,
       weight = wts
     )
   )
   for (v in names(rules)) {
     alone <- suppressWarnings(
       recast_scale(d[, c("unit", v)], s,
-        from = "unit", to = "class",
+        source = "unit", target = "class",
         rule = rules[[v]], weight = wts[[v]]
       )
     )
@@ -327,7 +327,7 @@ test_that("two columns naming the same weight still fold correctly", {
   )
   out <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class",
+      source = "unit", target = "class",
       rule = c(a = "sum", b = "sum"),
       weight = c(a = "size", b = "size")
     )
@@ -341,7 +341,7 @@ test_that("a single weight is unaffected by the folding machinery", {
   d <- data.frame(unit = c("U1", "U2"), v = c(1, 2), stringsAsFactors = FALSE)
   out <- suppressWarnings(
     recast_scale(d, s,
-      from = "unit", to = "class", rule = "weighted_mean",
+      source = "unit", target = "class", rule = "weighted_mean",
       weight = "size"
     )
   )
@@ -350,32 +350,32 @@ test_that("a single weight is unaffected by the folding machinery", {
 
 # The combine helper -----------------------------------------------------------
 
-test_that(".ms_bind_rows() agrees on both branches", {
+test_that("backend_bind_rows() agrees on both branches", {
   parts <- list(
     data.frame(a = 1:2, b = c("x", "y"), stringsAsFactors = FALSE),
     data.frame(a = 3L, b = "z", stringsAsFactors = FALSE)
   )
-  base <- .ms_bind_rows(parts, use_dt = FALSE)
+  base <- backend_bind_rows(parts, use_dt = FALSE)
   expect_identical(nrow(base), 3L)
   expect_identical(base$a, 1:3)
 
   skip_if_not_installed("data.table")
-  expect_equal(.ms_bind_rows(parts, use_dt = TRUE), base)
+  expect_equal(backend_bind_rows(parts, use_dt = TRUE), base)
 })
 
-test_that(".ms_bind_rows() drops empty parts and handles the edges", {
-  expect_null(.ms_bind_rows(list()))
-  expect_null(.ms_bind_rows(list(NULL)))
+test_that("backend_bind_rows() drops empty parts and handles the edges", {
+  expect_null(backend_bind_rows(list()))
+  expect_null(backend_bind_rows(list(NULL)))
   one <- data.frame(a = 1)
-  expect_equal(.ms_bind_rows(list(one, one[0, , drop = FALSE])), one)
+  expect_equal(backend_bind_rows(list(one, one[0, , drop = FALSE])), one)
 })
 
-test_that(".ms_chunks() splits without losing or duplicating values", {
+test_that(".backend_chunks() splits without losing or duplicating values", {
   v <- letters[1:7]
   for (k in c(1, 3, 7, 100)) {
-    ch <- .ms_chunks(v, k)
+    ch <- .backend_chunks(v, k)
     expect_setequal(unlist(ch, use.names = FALSE), v)
     expect_true(all(lengths(ch) <= k))
   }
-  expect_length(.ms_chunks(character(), 3), 0L)
+  expect_length(.backend_chunks(character(), 3), 0L)
 })

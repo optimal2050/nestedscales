@@ -13,6 +13,8 @@ scale_from_leaftable(
   members = NULL,
   name = "",
   desc = "",
+  attributes = NULL,
+  aliases = NULL,
   ...
 )
 }
@@ -37,6 +39,12 @@ Defaults to the first entry of \code{weights}.}
 frame. Derived from \code{leaftable} when \code{NULL} (first-appearance order).}
 
 \item{name, desc}{Short name and description.}
+
+\item{attributes}{Optional table of per-member physical attributes keyed
+by \verb{(frame, unit)}; see \code{\link[=attach_attributes_scale]{attach_attributes_scale()}} for the columns.}
+
+\item{aliases}{Optional table of alternative labels keyed by
+\verb{(frame, unit)}; see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}} for the columns.}
 
 \item{...}{Further named entries merged into \code{meta} (e.g. \code{source},
 \code{labels}).}

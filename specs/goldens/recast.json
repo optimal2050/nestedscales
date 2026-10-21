@@ -1,5 +1,5 @@
 {
-  "generated_by": "nestedscales 0.1.1",
+  "generated_by": "nestedscales 0.1.1.9000",
   "cases": [
     {
       "fn": "recast_scale",
@@ -23,8 +23,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -72,8 +72,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -126,8 +126,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -159,8 +159,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -209,8 +209,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -278,8 +278,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -324,8 +324,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum"
       },
       "ordered": true,
@@ -368,8 +368,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": "value"
       },
@@ -431,8 +431,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -475,8 +475,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -524,8 +524,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -557,8 +557,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -602,8 +602,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -659,8 +659,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -700,8 +700,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sum"
       },
       "ordered": true,
@@ -740,8 +740,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sum",
         "values": "value"
       },
@@ -793,8 +793,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -842,8 +842,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -896,8 +896,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -929,8 +929,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -979,8 +979,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -1048,8 +1048,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -1094,8 +1094,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sum"
       },
       "ordered": true,
@@ -1138,8 +1138,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sum",
         "values": "value"
       },
@@ -1201,8 +1201,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"],
         "weight": "count"
@@ -1250,8 +1250,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"],
         "weight": "size"
@@ -1299,8 +1299,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -1348,8 +1348,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -1402,8 +1402,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -1435,8 +1435,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -1485,8 +1485,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -1554,8 +1554,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -1600,8 +1600,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean"
       },
       "ordered": true,
@@ -1644,8 +1644,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": "value"
       },
@@ -1707,8 +1707,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -1751,8 +1751,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -1800,8 +1800,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -1833,8 +1833,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -1878,8 +1878,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -1935,8 +1935,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -1976,8 +1976,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "mean"
       },
       "ordered": true,
@@ -2016,8 +2016,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "mean",
         "values": "value"
       },
@@ -2069,8 +2069,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -2118,8 +2118,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -2172,8 +2172,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -2205,8 +2205,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -2255,8 +2255,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -2324,8 +2324,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "mean",
         "values": ["cap", "eff"]
       },
@@ -2370,8 +2370,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "mean"
       },
       "ordered": true,
@@ -2414,8 +2414,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "mean",
         "values": "value"
       },
@@ -2477,8 +2477,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"],
         "weight": "count"
@@ -2526,8 +2526,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"],
         "weight": "size"
@@ -2575,8 +2575,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -2624,8 +2624,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -2678,8 +2678,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -2711,8 +2711,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -2761,8 +2761,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -2830,8 +2830,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -2876,8 +2876,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean"
       },
       "ordered": true,
@@ -2920,8 +2920,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": "value"
       },
@@ -2983,8 +2983,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -3027,8 +3027,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -3076,8 +3076,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -3109,8 +3109,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -3154,8 +3154,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -3211,8 +3211,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -3252,8 +3252,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "weighted_mean"
       },
       "ordered": true,
@@ -3292,8 +3292,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": "value"
       },
@@ -3345,8 +3345,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -3394,8 +3394,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -3448,8 +3448,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -3481,8 +3481,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -3531,8 +3531,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -3600,8 +3600,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "weighted_mean",
         "values": ["cap", "eff"]
       },
@@ -3646,8 +3646,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "weighted_mean"
       },
       "ordered": true,
@@ -3690,8 +3690,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "weighted_mean",
         "values": "value"
       },
@@ -3753,8 +3753,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "weight": "count"
@@ -3802,8 +3802,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "weight": "size"
@@ -3851,8 +3851,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -3884,8 +3884,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -3917,8 +3917,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -3950,8 +3950,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -3984,8 +3984,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -4016,8 +4016,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -4046,8 +4046,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy"
       },
       "ordered": true,
@@ -4090,8 +4090,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": "value"
       },
@@ -4122,8 +4122,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -4155,8 +4155,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -4188,8 +4188,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -4221,8 +4221,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -4255,8 +4255,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -4287,8 +4287,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -4317,8 +4317,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "copy"
       },
       "ordered": true,
@@ -4357,8 +4357,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "copy",
         "values": "value"
       },
@@ -4410,8 +4410,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -4443,8 +4443,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -4476,8 +4476,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -4509,8 +4509,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -4543,8 +4543,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -4575,8 +4575,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "copy",
         "values": ["cap", "eff"]
       },
@@ -4605,8 +4605,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "copy"
       },
       "ordered": true,
@@ -4649,8 +4649,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "copy",
         "values": "value"
       },
@@ -4681,8 +4681,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"],
         "weight": "count"
@@ -4714,8 +4714,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"],
         "weight": "size"
@@ -4747,8 +4747,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -4796,8 +4796,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -4850,8 +4850,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -4883,8 +4883,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -4933,8 +4933,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -5002,8 +5002,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -5048,8 +5048,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd"
       },
       "ordered": true,
@@ -5092,8 +5092,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": "value"
       },
@@ -5155,8 +5155,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -5199,8 +5199,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -5248,8 +5248,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -5281,8 +5281,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -5326,8 +5326,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -5383,8 +5383,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -5424,8 +5424,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sd"
       },
       "ordered": true,
@@ -5464,8 +5464,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "sd",
         "values": "value"
       },
@@ -5517,8 +5517,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -5566,8 +5566,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -5620,8 +5620,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -5653,8 +5653,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -5703,8 +5703,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -5772,8 +5772,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sd",
         "values": ["cap", "eff"]
       },
@@ -5818,8 +5818,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sd"
       },
       "ordered": true,
@@ -5862,8 +5862,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "group",
+        "source": "unit",
+        "target": "group",
         "rule": "sd",
         "values": "value"
       },
@@ -5925,8 +5925,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"],
         "weight": "count"
@@ -5974,8 +5974,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"],
         "weight": "size"
@@ -6021,8 +6021,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy"
       },
       "ordered": true,
@@ -6063,8 +6063,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "copy"
       },
       "ordered": true,
@@ -6094,8 +6094,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": {
           "cap": "sum",
           "eff": "weighted_mean"
@@ -6146,8 +6146,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "missing_sources": "ignore"
       },
@@ -6189,8 +6189,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "diagnostics": "off"
       },
@@ -6234,8 +6234,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -6280,13 +6280,13 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum"
       },
       "ordered": true,
       "error": true,
-      "message": "no rows matched frame `unit`; check `from=` and the `unit` column",
+      "message": "no rows matched frame `unit`; check `source=` and the `unit` column",
       "warnings": ["2 code(s) in the `unit` column are not present at frame `unit` and were dropped: ZZ, YY"]
     },
     {
@@ -6311,7 +6311,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -6358,8 +6358,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "values": ["cap", "eff"]
       },
       "ordered": true,
@@ -6389,8 +6389,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "sum",
         "na_action": "drop"
       },
@@ -6457,8 +6457,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "sum",
         "na_action": "keep"
       },
@@ -6525,8 +6525,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "mean",
         "na_action": "drop"
       },
@@ -6593,8 +6593,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "mean",
         "na_action": "keep"
       },
@@ -6661,8 +6661,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "weighted_mean",
         "na_action": "drop"
       },
@@ -6729,8 +6729,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "weighted_mean",
         "na_action": "keep"
       },
@@ -6797,8 +6797,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "copy",
         "na_action": "drop"
       },
@@ -6865,8 +6865,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "copy",
         "na_action": "keep"
       },
@@ -6933,8 +6933,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "sd",
         "na_action": "drop"
       },
@@ -7001,8 +7001,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "sd",
         "na_action": "keep"
       },
@@ -7069,8 +7069,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "sum",
         "weight": "count"
       },
@@ -7137,8 +7137,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "sum",
         "na_action": "drop"
       },
@@ -7185,8 +7185,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "sum",
         "na_action": "keep"
       },
@@ -7233,8 +7233,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "mean",
         "na_action": "drop"
       },
@@ -7281,8 +7281,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "mean",
         "na_action": "keep"
       },
@@ -7329,8 +7329,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "weighted_mean",
         "na_action": "drop"
       },
@@ -7377,8 +7377,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "weighted_mean",
         "na_action": "keep"
       },
@@ -7425,8 +7425,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "copy",
         "na_action": "drop"
       },
@@ -7473,8 +7473,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "copy",
         "na_action": "keep"
       },
@@ -7521,8 +7521,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "sd",
         "na_action": "drop"
       },
@@ -7569,8 +7569,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "sd",
         "na_action": "keep"
       },
@@ -7617,8 +7617,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "class",
+        "source": "sector",
+        "target": "class",
         "rule": "sum",
         "weight": "count"
       },
@@ -7665,8 +7665,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "sum",
         "na_action": "drop"
       },
@@ -7713,8 +7713,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "sum",
         "na_action": "keep"
       },
@@ -7761,8 +7761,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "mean",
         "na_action": "drop"
       },
@@ -7809,8 +7809,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "mean",
         "na_action": "keep"
       },
@@ -7857,8 +7857,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "weighted_mean",
         "na_action": "drop"
       },
@@ -7905,8 +7905,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "weighted_mean",
         "na_action": "keep"
       },
@@ -7953,8 +7953,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "copy",
         "na_action": "drop"
       },
@@ -7985,8 +7985,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "copy",
         "na_action": "keep"
       },
@@ -8017,8 +8017,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "sd",
         "na_action": "drop"
       },
@@ -8065,8 +8065,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "sd",
         "na_action": "keep"
       },
@@ -8113,8 +8113,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "group",
+        "source": "sector",
+        "target": "group",
         "rule": "sum",
         "weight": "count"
       },
@@ -8161,8 +8161,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "sum",
         "na_action": "drop"
       },
@@ -8229,8 +8229,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "sum",
         "na_action": "keep"
       },
@@ -8297,8 +8297,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "mean",
         "na_action": "drop"
       },
@@ -8365,8 +8365,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "mean",
         "na_action": "keep"
       },
@@ -8433,8 +8433,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "weighted_mean",
         "na_action": "drop"
       },
@@ -8501,8 +8501,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "weighted_mean",
         "na_action": "keep"
       },
@@ -8569,8 +8569,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "copy",
         "na_action": "drop"
       },
@@ -8637,8 +8637,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "copy",
         "na_action": "keep"
       },
@@ -8705,8 +8705,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "sd",
         "na_action": "drop"
       },
@@ -8773,8 +8773,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "sd",
         "na_action": "keep"
       },
@@ -8841,8 +8841,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "sum",
         "weight": "count"
       },
@@ -8909,8 +8909,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "sum",
         "na_action": "drop"
       },
@@ -8957,8 +8957,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "sum",
         "na_action": "keep"
       },
@@ -9005,8 +9005,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "mean",
         "na_action": "drop"
       },
@@ -9053,8 +9053,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "mean",
         "na_action": "keep"
       },
@@ -9101,8 +9101,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "weighted_mean",
         "na_action": "drop"
       },
@@ -9149,8 +9149,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "weighted_mean",
         "na_action": "keep"
       },
@@ -9197,8 +9197,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "copy",
         "na_action": "drop"
       },
@@ -9229,8 +9229,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "copy",
         "na_action": "keep"
       },
@@ -9261,8 +9261,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "sd",
         "na_action": "drop"
       },
@@ -9309,8 +9309,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "sd",
         "na_action": "keep"
       },
@@ -9357,8 +9357,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "group",
+        "source": "class",
+        "target": "group",
         "rule": "sum",
         "weight": "count"
       },
@@ -9405,8 +9405,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "sum",
         "na_action": "drop"
       },
@@ -9448,8 +9448,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "sum",
         "na_action": "keep"
       },
@@ -9491,8 +9491,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "mean",
         "na_action": "drop"
       },
@@ -9534,8 +9534,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "mean",
         "na_action": "keep"
       },
@@ -9577,8 +9577,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "weighted_mean",
         "na_action": "drop"
       },
@@ -9620,8 +9620,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "weighted_mean",
         "na_action": "keep"
       },
@@ -9663,8 +9663,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "copy",
         "na_action": "drop"
       },
@@ -9695,8 +9695,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "copy",
         "na_action": "keep"
       },
@@ -9727,8 +9727,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "sd",
         "na_action": "drop"
       },
@@ -9770,8 +9770,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "sd",
         "na_action": "keep"
       },
@@ -9813,8 +9813,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "sum",
         "weight": "count"
       },
@@ -9856,8 +9856,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "sum",
         "na_action": "drop"
       },
@@ -9904,8 +9904,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "sum",
         "na_action": "keep"
       },
@@ -9952,8 +9952,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "mean",
         "na_action": "drop"
       },
@@ -10000,8 +10000,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "mean",
         "na_action": "keep"
       },
@@ -10048,8 +10048,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "weighted_mean",
         "na_action": "drop"
       },
@@ -10096,8 +10096,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "weighted_mean",
         "na_action": "keep"
       },
@@ -10144,8 +10144,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "copy",
         "na_action": "drop"
       },
@@ -10176,8 +10176,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "copy",
         "na_action": "keep"
       },
@@ -10208,8 +10208,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "sd",
         "na_action": "drop"
       },
@@ -10256,8 +10256,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "sd",
         "na_action": "keep"
       },
@@ -10304,8 +10304,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "class",
+        "source": "group",
+        "target": "class",
         "rule": "sum",
         "weight": "count"
       },
@@ -10352,8 +10352,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "sum",
         "na_action": "drop"
       },
@@ -10420,8 +10420,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "sum",
         "na_action": "keep"
       },
@@ -10488,8 +10488,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "mean",
         "na_action": "drop"
       },
@@ -10556,8 +10556,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "mean",
         "na_action": "keep"
       },
@@ -10624,8 +10624,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "weighted_mean",
         "na_action": "drop"
       },
@@ -10692,8 +10692,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "weighted_mean",
         "na_action": "keep"
       },
@@ -10760,8 +10760,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "copy",
         "na_action": "drop"
       },
@@ -10828,8 +10828,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "copy",
         "na_action": "keep"
       },
@@ -10896,8 +10896,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "sd",
         "na_action": "drop"
       },
@@ -10964,8 +10964,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "sd",
         "na_action": "keep"
       },
@@ -11032,8 +11032,8 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "unit",
+        "source": "group",
+        "target": "unit",
         "rule": "sum",
         "weight": "count"
       },
@@ -11110,8 +11110,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "sum"
       },
       "ordered": true,
@@ -11187,8 +11187,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "sum",
         "weight": "count"
       },
@@ -11265,8 +11265,8 @@
         }
       },
       "args": {
-        "from": "sector",
-        "to": "unit",
+        "source": "sector",
+        "target": "unit",
         "rule": "sum"
       },
       "ordered": true,
@@ -11342,8 +11342,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum"
       },
       "ordered": true,
@@ -11399,8 +11399,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "unit",
+        "source": "class",
+        "target": "unit",
         "rule": "sum"
       },
       "ordered": true,
@@ -11430,8 +11430,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "share",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -11499,8 +11499,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "share",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -11568,8 +11568,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "share",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -11601,8 +11601,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "unit",
+        "source": "unit",
+        "target": "unit",
         "rule": "share",
         "values": ["cap", "eff"]
       },
@@ -11669,8 +11669,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "unit",
+        "source": "unit",
+        "target": "unit",
         "rule": "share",
         "values": ["cap", "eff"],
         "parent": "class"
@@ -11738,15 +11738,15 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "sector",
+        "source": "unit",
+        "target": "sector",
         "rule": "share",
         "values": ["cap", "eff"],
         "parent": "class"
       },
       "ordered": true,
       "error": true,
-      "message": "conflicting parents: `to = \"sector\"` vs `parent = \"class\"`; for rule \"share\" pass the parent once",
+      "message": "conflicting parents: `target = \"sector\"` vs `parent = \"class\"`; for rule \"share\" pass the parent once",
       "warnings": []
     },
     {
@@ -11773,8 +11773,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "logshare",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -11891,13 +11891,13 @@
         }
       },
       "args": {
-        "from": "group",
-        "to": "sector",
+        "source": "group",
+        "target": "sector",
         "rule": "share"
       },
       "ordered": true,
       "error": true,
-      "message": "rule \"share\": 1 unit(s) of `group` straddle more than one `sector` (GB); `from` must nest within the parent",
+      "message": "rule \"share\": 1 unit(s) of `group` straddle more than one `sector` (GB); `source` must nest within the parent",
       "warnings": []
     },
     {
@@ -11922,8 +11922,8 @@
         }
       },
       "args": {
-        "from": "class",
-        "to": "sector",
+        "source": "class",
+        "target": "sector",
         "rule": "share",
         "weight": "size"
       },
@@ -11970,8 +11970,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": {
           "cap": "share",
           "eff": "sum"
@@ -11979,7 +11979,7 @@
       },
       "ordered": true,
       "error": true,
-      "message": "rule \"share\" changes the output key to `from` and cannot be mixed with other rules in one call; recast the columns separately",
+      "message": "rule \"share\" changes the output key to `source` and cannot be mixed with other rules in one call; recast the columns separately",
       "warnings": []
     },
     {
@@ -12004,8 +12004,8 @@
         }
       },
       "args": {
-        "from": "unit",
-        "to": "class",
+        "source": "unit",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"],
         "parent": "sector"
@@ -12038,8 +12038,8 @@
         }
       },
       "args": {
-        "from": "grp",
-        "to": "unit",
+        "source": "grp",
+        "target": "unit",
         "rule": "sum"
       },
       "ordered": true,
@@ -12083,8 +12083,8 @@
         }
       },
       "args": {
-        "from": "grp",
-        "to": "unit",
+        "source": "grp",
+        "target": "unit",
         "rule": "copy"
       },
       "ordered": true,
@@ -12127,7 +12127,7 @@
         }
       },
       "args": {
-        "from": "unit",
+        "source": "unit",
         "to_scale": {
           "build": "scale_from_leaftable",
           "leaftable": {
@@ -12205,7 +12205,7 @@
         }
       },
       "args": {
-        "from": "class",
+        "source": "class",
         "to_scale": {
           "build": "scale_from_leaftable",
           "leaftable": {
@@ -12290,8 +12290,8 @@
             "n_overlap": "double"
           }
         },
-        "from": "month",
-        "to": "quarter",
+        "source": "month",
+        "target": "quarter",
         "rule": {
           "energy": "sum",
           "price": "weighted_mean"
@@ -12338,8 +12338,8 @@
             "n_overlap": "double"
           }
         },
-        "from": "month",
-        "to": "quarter",
+        "source": "month",
+        "target": "quarter",
         "rule": {
           "energy": "sum",
           "price": "weighted_mean"
@@ -12401,8 +12401,8 @@
             "w_from": "double"
           }
         },
-        "from": "month",
-        "to": "quarter",
+        "source": "month",
+        "target": "quarter",
         "rule": "sum"
       },
       "ordered": false,
@@ -12450,8 +12450,8 @@
             "year": "double"
           }
         },
-        "from": "month",
-        "to": "quarter",
+        "source": "month",
+        "target": "quarter",
         "values": ["energy", "price"],
         "rule": "sum",
         "by": "year"
@@ -12504,8 +12504,8 @@
             "n_overlap": "double"
           }
         },
-        "from": "month",
-        "to": "quarter",
+        "source": "month",
+        "target": "quarter",
         "rule": "sum"
       },
       "ordered": false,
@@ -12549,8 +12549,8 @@
             "n_overlap": "double"
           }
         },
-        "from": "month",
-        "to": "quarter",
+        "source": "month",
+        "target": "quarter",
         "rule": "share"
       },
       "ordered": false,
@@ -12580,7 +12580,7 @@
         }
       },
       "args": {
-        "from": "sector",
+        "source": "sector",
         "rule": "sum",
         "weight": "size"
       },
@@ -12648,7 +12648,7 @@
         }
       },
       "args": {
-        "from": "class",
+        "source": "class",
         "rule": {
           "cap": "sum",
           "eff": "weighted_mean"
@@ -12718,7 +12718,7 @@
         }
       },
       "args": {
-        "from": "group",
+        "source": "group",
         "rule": "sum",
         "attach_weight": false
       },
@@ -12780,7 +12780,7 @@
         }
       },
       "args": {
-        "from": "unit",
+        "source": "unit",
         "rule": "sum",
         "values": ["cap", "eff"]
       },
@@ -12854,7 +12854,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_rm": false
@@ -12902,7 +12902,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_rm": true
@@ -12952,7 +12952,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -13011,7 +13011,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -13082,7 +13082,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "sum",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -13114,7 +13114,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_rm": false
@@ -13162,7 +13162,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_rm": true
@@ -13212,7 +13212,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -13271,7 +13271,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -13342,7 +13342,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "mean",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -13374,7 +13374,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_rm": false
@@ -13422,7 +13422,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_rm": true
@@ -13472,7 +13472,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -13531,7 +13531,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -13602,7 +13602,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "weighted_mean",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -13634,7 +13634,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_rm": false
@@ -13666,7 +13666,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_rm": true
@@ -13700,7 +13700,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -13734,7 +13734,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -13768,7 +13768,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "copy",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -13800,7 +13800,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_rm": false
@@ -13848,7 +13848,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_rm": true
@@ -13898,7 +13898,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "drop"
@@ -13957,7 +13957,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "keep"
@@ -14028,7 +14028,7 @@
         }
       },
       "args": {
-        "to": "sector",
+        "target": "sector",
         "rule": "sd",
         "values": ["cap", "eff"],
         "na_action": "error"
@@ -14062,7 +14062,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": {
           "cap": "sum",
           "eff": "weighted_mean"
@@ -14109,7 +14109,7 @@
         }
       },
       "args": {
-        "to": "class",
+        "target": "class",
         "rule": "sum"
       },
       "ordered": true,

@@ -200,12 +200,12 @@ NULL
 .pass_order <- function(axes, targets) {
   ratio <- vapply(names(targets), function(a) {
     s <- axes[[a]]
-    to <- targets[[a]]
+    target <- targets[[a]]
     n_from <- nrow(S7::prop(s, "leaftable"))
-    n_to <- if (S7::S7_inherits(to, NestedScale)) {
-      nrow(S7::prop(to, "leaftable"))
+    n_to <- if (S7::S7_inherits(target, NestedScale)) {
+      nrow(S7::prop(target, "leaftable"))
     } else {
-      length(S7::prop(s, "members")[[to]])
+      length(S7::prop(s, "members")[[target]])
     }
     if (n_to <= 0) Inf else n_from / n_to
   }, numeric(1))
@@ -214,7 +214,7 @@ NULL
 
 #' Recast data indexed by a product of scales
 #'
-#' Converts one or more axes of a product in a single call. Axes named in `to`
+#' Converts one or more axes of a product in a single call. Axes named in `target`
 #' are converted; axes left out pass through untouched.
 #'
 #' Execution is a sequence of ordinary single-axis [`recast_scale()`] calls --
@@ -226,7 +226,7 @@ NULL
 #' @param data The data, in any supported backend, carrying one key column per
 #'   axis (see [`product_keys()`]) plus the value columns.
 #' @param x A [`ScaleProduct`].
-#' @param to Named list or character vector, one entry per axis to convert:
+#' @param target Named list or character vector, one entry per axis to convert:
 #'   either a frame name of that axis's scale, or another [`NestedScale`] to convert
 #'   into. Axes omitted pass through unchanged.
 #' @param values Value columns to convert. Default: all numeric columns that
@@ -262,15 +262,15 @@ NULL
 #' d$cap <- seq_len(nrow(d))
 #'
 #' # aggregate both axes at once
-#' recast_product(d, p, to = list(a = "sector", b = "era"), rules = "sum")
+#' recast_product(d, p, target = list(a = "sector", b = "era"), rules = "sum")
 #'
 #' # different rules per axis
 #' recast_product(d, p,
-#'   to = list(a = "sector", b = "era"),
+#'   target = list(a = "sector", b = "era"),
 #'   rules = list(cap = c(a = "sum", b = "weighted_mean"))
 #' )
 #' @export
-recast_product <- function(data, x, to,
+recast_product <- function(data, x, target,
                            values = NULL,
                            rules = NULL,
                            weights = NULL,
@@ -278,8 +278,8 @@ recast_product <- function(data, x, to,
                            collect = NULL) {
   na_action <- match.arg(na_action)
   .check_product(x, "x")
-  backend <- .ms_require_backend(data, "data")
-  schema <- .ms_schema(data)
+  backend <- backend_of(data, "data")
+  schema <- backend_schema(data)
   .check_ms_cols(schema)
 
   axes <- S7::prop(x, "axes")
@@ -287,19 +287,19 @@ recast_product <- function(data, x, to,
   ax <- names(axes)
 
   # -- targets ---------------------------------------------------------------
-  if (is.null(to) || length(to) == 0L) {
-    .stop("`to` must name at least one axis to convert")
+  if (is.null(target) || length(target) == 0L) {
+    .stop("`target` must name at least one axis to convert")
   }
-  if (!is.list(to)) to <- as.list(to)
-  if (is.null(names(to)) || any(!nzchar(names(to)))) {
-    .stop("`to` must be named by axis; one of: %s", paste(ax, collapse = ", "))
+  if (!is.list(target)) target <- as.list(target)
+  if (is.null(names(target)) || any(!nzchar(names(target)))) {
+    .stop("`target` must be named by axis; one of: %s", paste(ax, collapse = ", "))
   }
-  unknown <- setdiff(names(to), ax)
+  unknown <- setdiff(names(target), ax)
   if (length(unknown) > 0L) {
-    .stop("`to` names unknown axes: %s", .preview(unknown))
+    .stop("`target` names unknown axes: %s", .preview(unknown))
   }
-  for (a in names(to)) {
-    t <- to[[a]]
+  for (a in names(target)) {
+    t <- target[[a]]
     if (!S7::S7_inherits(t, NestedScale)) .check_frame(axes[[a]], t, paste0("to$", a))
   }
 
@@ -307,7 +307,7 @@ recast_product <- function(data, x, to,
   # The declared key when it is there, otherwise the one frame of that axis
   # present in the data -- so data keyed at a COARSER frame works here exactly
   # as it does in `recast_scale()`.
-  keys[names(to)] <- vapply(names(to), function(a) {
+  keys[names(target)] <- vapply(names(target), function(a) {
     .resolve_axis_key(axes[[a]], keys[[a]], schema, a)
   }, character(1))
 
@@ -318,14 +318,14 @@ recast_product <- function(data, x, to,
   if (length(values) == 0L) {
     .stop("no value columns to convert; specify `values=`")
   }
-  spec <- .product_rules(values, axes[names(to)], rules, weights)
-  .check_product_rules(spec, values, names(to))
-  .check_target_collisions(axes, to, keys)
+  spec <- .product_rules(values, axes[names(target)], rules, weights)
+  .check_product_rules(spec, values, names(target))
+  .check_target_collisions(axes, target, keys)
 
   # -- the pooled-sd columns take the joint path -----------------------------
   sd_cols <- values[vapply(values, function(v) {
     all(vapply(
-      names(to), function(a) spec[[a]]$rules[[v]] == "sd",
+      names(target), function(a) spec[[a]]$rules[[v]] == "sd",
       logical(1)
     ))
   }, logical(1))]
@@ -333,14 +333,14 @@ recast_product <- function(data, x, to,
 
   res <- NULL
   if (length(sep_cols) > 0L) {
-    res <- .product_sequential(data, backend, x, to, sep_cols, spec,
+    res <- .product_sequential(data, backend, x, target, sep_cols, spec,
       na_action, collect,
       keys = keys,
       all_values = values
     )
   }
   if (length(sd_cols) > 0L) {
-    joint <- .product_pooled_sd(data, backend, x, to, sd_cols, spec,
+    joint <- .product_pooled_sd(data, backend, x, target, sd_cols, spec,
       na_action, collect,
       keys = keys,
       all_values = values
@@ -349,8 +349,8 @@ recast_product <- function(data, x, to,
       joint
     } else {
       out_keys <- unname(vapply(
-        names(to),
-        function(a) .axis_target_name(to[[a]]),
+        names(target),
+        function(a) .axis_target_name(target[[a]]),
         character(1)
       ))
       id_cols <- setdiff(names(res), c(out_keys, sep_cols))
@@ -365,17 +365,17 @@ recast_product <- function(data, x, to,
 
 #' Separable path: one ordinary recast per axis, biggest reduction first
 #' @noRd
-.product_sequential <- function(data, backend, x, to, values, spec,
+.product_sequential <- function(data, backend, x, target, values, spec,
                                 na_action, collect, keys, all_values) {
   axes <- S7::prop(x, "axes")
-  order_ax <- .pass_order(axes, to)
+  order_ax <- .pass_order(axes, target)
 
   # Value columns bound for the OTHER path must be dropped, not carried: an
   # unconverted numeric column would be read as an identifier and would then
   # split every group.
   drop_cols <- setdiff(all_values, values)
   out <- if (length(drop_cols) > 0L) {
-    dplyr::select(.ms_lazy(data, backend), -dplyr::all_of(drop_cols))
+    dplyr::select(backend_lazy(data, backend), -dplyr::all_of(drop_cols))
   } else {
     data
   }
@@ -387,7 +387,7 @@ recast_product <- function(data, x, to,
     # pass honours `collect`, so a lazy input yields a lazy result.
     out <- recast_scale(
       out, axes[[a]],
-      from = NULL, to = to[[a]], key = keys[[a]],
+      source = NULL, target = target[[a]], key = keys[[a]],
       values = values,
       rule = rules_a,
       weight = spec[[a]]$weight,
@@ -412,9 +412,9 @@ recast_product <- function(data, x, to,
 #' would be dropped by the later pass. Caught here rather than discovered as a
 #' missing column.
 #' @noRd
-.check_target_collisions <- function(axes, to, keys) {
-  for (a in names(to)) {
-    tgt <- .axis_target_name(to[[a]])
+.check_target_collisions <- function(axes, target, keys) {
+  for (a in names(target)) {
+    tgt <- .axis_target_name(target[[a]])
     for (b in names(axes)) {
       if (identical(a, b)) next
       if (tgt %in% S7::prop(axes[[b]], "frames")) {
@@ -436,33 +436,33 @@ recast_product <- function(data, x, to,
 #' chained onto the data and one grouped summarise closes it out with
 #' `n = n_a * n_b`. The product crosswalk is never formed.
 #' @noRd
-.product_pooled_sd <- function(data, backend, x, to, values, spec,
+.product_pooled_sd <- function(data, backend, x, target, values, spec,
                                na_action, collect, keys, all_values) {
   axes <- S7::prop(x, "axes")
-  ax <- names(to)
+  ax <- names(target)
 
   # Identifiers are what is left once EVERY value column and key is removed --
   # the value columns handled by the separable path are not identifiers.
-  id_cols <- setdiff(names(.ms_schema(data)), c(unname(keys), all_values))
+  id_cols <- setdiff(names(backend_schema(data)), c(unname(keys), all_values))
   q <- dplyr::select(
-    .ms_lazy(data, backend),
+    backend_lazy(data, backend),
     dplyr::all_of(c(id_cols, unname(keys[ax]), values))
   )
   n_syms <- character(0)
 
   for (a in ax) {
     s <- axes[[a]]
-    if (S7::S7_inherits(to[[a]], NestedScale)) {
+    if (S7::S7_inherits(target[[a]], NestedScale)) {
       .stop(paste0(
         "pooled \"sd\" across a product needs frame targets; ",
         "axis `%s` targets another scale"
       ), a)
     }
-    from <- .infer_from(s, .ms_schema(data), keys[[a]])
-    m <- scale_map(s, from, to[[a]], weight = spec[[a]]$weight)
-    if (na_action != "keep") m <- m[!is.na(m[[to[[a]]]]), , drop = FALSE]
+    source <- .infer_source(s, backend_schema(data), keys[[a]])
+    m <- scale_map(s, source, target[[a]], weight = spec[[a]]$weight)
+    if (na_action != "keep") m <- m[!is.na(m[[target[[a]]]]), , drop = FALSE]
 
-    jm <- m[, c(from, to[[a]], "n_overlap")]
+    jm <- m[, c(source, target[[a]], "n_overlap")]
     n_col <- paste0(".ms_n_", a)
     names(jm) <- c(keys[[a]], paste0(".ms_to_", a), n_col)
     n_syms <- c(n_syms, n_col)
@@ -496,7 +496,7 @@ recast_product <- function(data, x, to,
     dplyr::summarise(!!!exprs, .groups = "drop")
 
   # like every other pass, the output is keyed by the TARGET frame name
-  tgts <- vapply(ax, function(a) .axis_target_name(to[[a]]), character(1))
+  tgts <- vapply(ax, function(a) .axis_target_name(target[[a]]), character(1))
   for (a in ax) {
     res <- dplyr::rename(
       res, !!rlang::sym(tgts[[a]]) := !!rlang::sym(paste0(".ms_to_", a))
@@ -507,10 +507,10 @@ recast_product <- function(data, x, to,
     dplyr::all_of(c(unname(tgts), id_cols, values))
   )
 
-  if (.ms_is_lazy(backend) && !isTRUE(collect)) {
+  if (backend_is_lazy(backend) && !isTRUE(collect)) {
     return(res)
   }
-  .ms_restore(res, backend, collect = collect)
+  backend_restore(res, backend, collect = collect)
 }
 
 # -----------------------------------------------------------------------------
@@ -518,7 +518,9 @@ recast_product <- function(data, x, to,
 # -----------------------------------------------------------------------------
 
 S7::method(recast, list(S7::class_any, ScaleProduct)) <-
-  function(x, from, to, ...) recast_product(data = x, x = from, to = to, ...)
+  function(x, scale, target, ...) {
+    recast_product(data = x, x = scale, target = target, ...)
+  }
 
 #' Attach every axis's labels to product-indexed data
 #'

@@ -1,5 +1,5 @@
 {
-  "generated_by": "nestedscales 0.1.1",
+  "generated_by": "nestedscales 0.1.1.9000",
   "cases": {
     "within": {
       "example": {
@@ -12,8 +12,8 @@
         },
         "calls": [
           {
-            "from": "sector",
-            "to": "class",
+            "source": "sector",
+            "target": "class",
             "weight": null,
             "error": false,
             "value": [
@@ -45,8 +45,8 @@
             "warnings": []
           },
           {
-            "from": "sector",
-            "to": "class",
+            "source": "sector",
+            "target": "class",
             "weight": "size",
             "error": false,
             "value": [
@@ -78,8 +78,8 @@
             "warnings": []
           },
           {
-            "from": "sector",
-            "to": "class",
+            "source": "sector",
+            "target": "class",
             "weight": "count",
             "error": false,
             "value": [
@@ -111,8 +111,8 @@
             "warnings": []
           },
           {
-            "from": "sector",
-            "to": "group",
+            "source": "sector",
+            "target": "group",
             "weight": null,
             "error": false,
             "value": [
@@ -152,8 +152,8 @@
             "warnings": []
           },
           {
-            "from": "sector",
-            "to": "group",
+            "source": "sector",
+            "target": "group",
             "weight": "size",
             "error": false,
             "value": [
@@ -193,8 +193,8 @@
             "warnings": []
           },
           {
-            "from": "sector",
-            "to": "group",
+            "source": "sector",
+            "target": "group",
             "weight": "count",
             "error": false,
             "value": [
@@ -234,8 +234,8 @@
             "warnings": []
           },
           {
-            "from": "sector",
-            "to": "unit",
+            "source": "sector",
+            "target": "unit",
             "weight": null,
             "error": false,
             "value": [
@@ -291,8 +291,8 @@
             "warnings": []
           },
           {
-            "from": "sector",
-            "to": "unit",
+            "source": "sector",
+            "target": "unit",
             "weight": "size",
             "error": false,
             "value": [
@@ -348,8 +348,8 @@
             "warnings": []
           },
           {
-            "from": "sector",
-            "to": "unit",
+            "source": "sector",
+            "target": "unit",
             "weight": "count",
             "error": false,
             "value": [
@@ -405,8 +405,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "sector",
+            "source": "class",
+            "target": "sector",
             "weight": null,
             "error": false,
             "value": [
@@ -438,8 +438,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "sector",
+            "source": "class",
+            "target": "sector",
             "weight": "size",
             "error": false,
             "value": [
@@ -471,8 +471,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "sector",
+            "source": "class",
+            "target": "sector",
             "weight": "count",
             "error": false,
             "value": [
@@ -504,8 +504,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "group",
+            "source": "class",
+            "target": "group",
             "weight": null,
             "error": false,
             "value": [
@@ -545,8 +545,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "group",
+            "source": "class",
+            "target": "group",
             "weight": "size",
             "error": false,
             "value": [
@@ -586,8 +586,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "group",
+            "source": "class",
+            "target": "group",
             "weight": "count",
             "error": false,
             "value": [
@@ -627,8 +627,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "unit",
+            "source": "class",
+            "target": "unit",
             "weight": null,
             "error": false,
             "value": [
@@ -684,8 +684,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "unit",
+            "source": "class",
+            "target": "unit",
             "weight": "size",
             "error": false,
             "value": [
@@ -741,8 +741,8 @@
             "warnings": []
           },
           {
-            "from": "class",
-            "to": "unit",
+            "source": "class",
+            "target": "unit",
             "weight": "count",
             "error": false,
             "value": [
@@ -798,8 +798,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "sector",
+            "source": "group",
+            "target": "sector",
             "weight": null,
             "error": false,
             "value": [
@@ -839,8 +839,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "sector",
+            "source": "group",
+            "target": "sector",
             "weight": "size",
             "error": false,
             "value": [
@@ -880,8 +880,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "sector",
+            "source": "group",
+            "target": "sector",
             "weight": "count",
             "error": false,
             "value": [
@@ -921,8 +921,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "class",
+            "source": "group",
+            "target": "class",
             "weight": null,
             "error": false,
             "value": [
@@ -962,8 +962,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "class",
+            "source": "group",
+            "target": "class",
             "weight": "size",
             "error": false,
             "value": [
@@ -1003,8 +1003,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "class",
+            "source": "group",
+            "target": "class",
             "weight": "count",
             "error": false,
             "value": [
@@ -1044,8 +1044,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "unit",
+            "source": "group",
+            "target": "unit",
             "weight": null,
             "error": false,
             "value": [
@@ -1101,8 +1101,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "unit",
+            "source": "group",
+            "target": "unit",
             "weight": "size",
             "error": false,
             "value": [
@@ -1158,8 +1158,8 @@
             "warnings": []
           },
           {
-            "from": "group",
-            "to": "unit",
+            "source": "group",
+            "target": "unit",
             "weight": "count",
             "error": false,
             "value": [
@@ -1215,8 +1215,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "sector",
+            "source": "unit",
+            "target": "sector",
             "weight": null,
             "error": false,
             "value": [
@@ -1280,8 +1280,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "sector",
+            "source": "unit",
+            "target": "sector",
             "weight": "size",
             "error": false,
             "value": [
@@ -1345,8 +1345,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "sector",
+            "source": "unit",
+            "target": "sector",
             "weight": "count",
             "error": false,
             "value": [
@@ -1410,8 +1410,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "class",
+            "source": "unit",
+            "target": "class",
             "weight": null,
             "error": false,
             "value": [
@@ -1475,8 +1475,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "class",
+            "source": "unit",
+            "target": "class",
             "weight": "size",
             "error": false,
             "value": [
@@ -1540,8 +1540,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "class",
+            "source": "unit",
+            "target": "class",
             "weight": "count",
             "error": false,
             "value": [
@@ -1605,8 +1605,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "group",
+            "source": "unit",
+            "target": "group",
             "weight": null,
             "error": false,
             "value": [
@@ -1670,8 +1670,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "group",
+            "source": "unit",
+            "target": "group",
             "weight": "size",
             "error": false,
             "value": [
@@ -1735,8 +1735,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "group",
+            "source": "unit",
+            "target": "group",
             "weight": "count",
             "error": false,
             "value": [
@@ -1811,8 +1811,8 @@
         },
         "calls": [
           {
-            "from": "era",
-            "to": "period",
+            "source": "era",
+            "target": "period",
             "weight": null,
             "error": false,
             "value": [
@@ -1852,8 +1852,8 @@
             "warnings": []
           },
           {
-            "from": "era",
-            "to": "period",
+            "source": "era",
+            "target": "period",
             "weight": "span",
             "error": false,
             "value": [
@@ -1893,8 +1893,8 @@
             "warnings": []
           },
           {
-            "from": "period",
-            "to": "era",
+            "source": "period",
+            "target": "era",
             "weight": null,
             "error": false,
             "value": [
@@ -1934,8 +1934,8 @@
             "warnings": []
           },
           {
-            "from": "period",
-            "to": "era",
+            "source": "period",
+            "target": "era",
             "weight": "span",
             "error": false,
             "value": [
@@ -1991,8 +1991,8 @@
         },
         "calls": [
           {
-            "from": "m",
-            "to": "h",
+            "source": "m",
+            "target": "h",
             "weight": null,
             "error": false,
             "value": [
@@ -2048,8 +2048,8 @@
             "warnings": []
           },
           {
-            "from": "m",
-            "to": "h",
+            "source": "m",
+            "target": "h",
             "weight": "hours",
             "error": false,
             "value": [
@@ -2105,8 +2105,8 @@
             "warnings": []
           },
           {
-            "from": "h",
-            "to": "m",
+            "source": "h",
+            "target": "m",
             "weight": null,
             "error": false,
             "value": [
@@ -2162,8 +2162,8 @@
             "warnings": []
           },
           {
-            "from": "h",
-            "to": "m",
+            "source": "h",
+            "target": "m",
             "weight": "hours",
             "error": false,
             "value": [
@@ -2233,8 +2233,8 @@
         },
         "calls": [
           {
-            "from": "grp",
-            "to": "unit",
+            "source": "grp",
+            "target": "unit",
             "weight": null,
             "error": false,
             "value": [
@@ -2266,8 +2266,8 @@
             "warnings": []
           },
           {
-            "from": "unit",
-            "to": "grp",
+            "source": "unit",
+            "target": "grp",
             "weight": null,
             "error": false,
             "value": [
@@ -2303,14 +2303,14 @@
     },
     "between": [
       {
-        "from": {
+        "source": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
           "key": null,
           "name": null
         },
-        "to": {
+        "target": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
@@ -2384,14 +2384,14 @@
         "warnings": []
       },
       {
-        "from": {
+        "source": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
           "key": null,
           "name": null
         },
-        "to": {
+        "target": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
@@ -2465,7 +2465,7 @@
         "warnings": []
       },
       {
-        "from": {
+        "source": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
@@ -2476,7 +2476,7 @@
           "key": "unit",
           "name": "other"
         },
-        "to": {
+        "target": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
@@ -2546,14 +2546,14 @@
         "warnings": []
       },
       {
-        "from": {
+        "source": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
           "key": null,
           "name": null
         },
-        "to": {
+        "target": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "top": ["T1", "T1", "T2"],
@@ -2626,7 +2626,7 @@
         "warnings": ["5 atom(s) of \"example\" have no counterpart in \"partial\"; their share is uncovered (NA target)"]
       },
       {
-        "from": {
+        "source": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "top": ["T1", "T1", "T2"],
@@ -2636,7 +2636,7 @@
           "key": "unit",
           "name": "partial"
         },
-        "to": {
+        "target": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
@@ -2674,14 +2674,14 @@
         "warnings": ["1 atom(s) of \"partial\" have no counterpart in \"example\"; their share is uncovered (NA target)"]
       },
       {
-        "from": {
+        "source": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
           "key": null,
           "name": null
         },
-        "to": {
+        "target": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "grp": ["A", "B"],

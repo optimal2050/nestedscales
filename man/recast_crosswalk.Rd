@@ -7,9 +7,9 @@
 recast_crosswalk(
   data,
   map,
-  from,
-  to,
-  key = from,
+  source,
+  target,
+  key = source,
   values = NULL,
   rule = NULL,
   ids = NULL,
@@ -26,9 +26,9 @@ or more numeric value columns.}
 
 \item{map}{The crosswalk, a \code{data.frame}.}
 
-\item{from, to}{Names of the source and target code columns of \code{map}.}
+\item{source, target}{Names of the source and target code columns of \code{map}.}
 
-\item{key}{Name of the code column of \code{data}. Defaults to \code{from}.}
+\item{key}{Name of the code column of \code{data}. Defaults to \code{source}.}
 
 \item{values}{Value columns. Default: every numeric column that is neither
 \code{key} nor in \code{ids}.}
@@ -70,7 +70,7 @@ on any supported backend.
 \details{
 The crosswalk is a data frame with one row per (source, target) pair:
 \itemize{
-\item the source and target codes, in the columns named by \code{from} and \code{to};
+\item the source and target codes, in the columns named by \code{source} and \code{target};
 \item \code{n_from}, the number of atoms (grid points) in the source code, and
 \code{n_overlap}, the number of them that fall in the target;
 \item optionally \code{w}, the weight of the pair for \code{"weighted_mean"} -- by default
@@ -95,7 +95,7 @@ d <- data.frame(
   price = c(10, 20)
 )
 recast_crosswalk(d, map,
-  from = "month", to = "quarter",
+  source = "month", target = "quarter",
   rule = c(energy = "sum", price = "weighted_mean")
 )
 }

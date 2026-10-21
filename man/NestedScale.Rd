@@ -4,7 +4,15 @@
 \alias{NestedScale}
 \title{NestedScale (S7 class)}
 \usage{
-NestedScale(leaftable, frames, members, key = "unit", meta = list())
+NestedScale(
+  leaftable,
+  frames,
+  members,
+  key = "unit",
+  meta = list(),
+  attributes = NULL,
+  aliases = NULL
+)
 }
 \arguments{
 \item{leaftable}{\code{data.frame} with a unique key column, one column per frame
@@ -22,6 +30,12 @@ as a set.}
 \item{meta}{Named list of attributes (\code{name}, \code{desc}, \code{weights},
 \code{default_weight}, \code{residuals} (see \code{\link[=scale_residuals]{scale_residuals()}}), \code{labels},
 \code{source}, sample bookkeeping).}
+
+\item{attributes}{Optional table of per-member physical attributes keyed
+by \verb{(frame, unit)}; see \code{\link[=attach_attributes_scale]{attach_attributes_scale()}} for the columns.}
+
+\item{aliases}{Optional table of alternative labels keyed by
+\verb{(frame, unit)}; see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}} for the columns.}
 }
 \value{
 A \code{NestedScale} object.
@@ -29,7 +43,7 @@ A \code{NestedScale} object.
 \description{
 A nested discrete partition: a flat table of atoms plus the ordered
 hierarchy of frames that groups them. The dimension is not named -- time and
-space are the subclasses \code{timescales::Calendar} and \code{geoscales::Geoscale};
+space are the subclasses \code{Calendar} (timescales) and \code{Geoscale} (geoscales);
 anything else (industries, income brackets, temperature regimes, technology
 vintages) is declared directly.
 }

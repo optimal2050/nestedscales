@@ -75,7 +75,7 @@ test_that("an adjacency graph constrains which units may merge", {
   units <- scale_units(s)
   # a path graph: u1-u2-...-u8, so clusters must be path segments
   adj <- data.frame(
-    from = units[-8], to = units[-1],
+    source = units[-8], target = units[-1],
     stringsAsFactors = FALSE
   )
   cl <- cluster_contiguous(three_group_data(), s, k = 3, adjacency = adj)
@@ -96,8 +96,8 @@ test_that("an unreachable k is refused with the component count", {
   units <- scale_units(s)
   # two components of four: {u1..u4} and {u5..u8}
   adj <- data.frame(
-    from = c(units[1:3], units[5:7]),
-    to = c(units[2:4], units[6:8]),
+    source = c(units[1:3], units[5:7]),
+    target = c(units[2:4], units[6:8]),
     stringsAsFactors = FALSE
   )
   expect_error(
@@ -112,7 +112,7 @@ test_that("an unreachable k is refused with the component count", {
 
 test_that("adjacency naming unknown units is an error", {
   s <- three_group_scale()
-  adj <- data.frame(from = "nope", to = "u2", stringsAsFactors = FALSE)
+  adj <- data.frame(source = "nope", target = "u2", stringsAsFactors = FALSE)
   expect_error(
     cluster_contiguous(three_group_data(), s, k = 2, adjacency = adj),
     "not at this frame"
@@ -142,7 +142,7 @@ test_that("the constrained result is a scale like any other", {
     v = seq_len(12), stringsAsFactors = FALSE
   )
   out <- recast_scale(d, cl,
-    from = "period", to = "cluster",
+    source = "period", target = "cluster",
     rule = "sum"
   )
   expect_equal(sum(out$v), sum(d$v))

@@ -79,7 +79,7 @@ test_that("cross-object maps need distinct names and shared keys", {
 test_that("scale_atom_pairs() is the documented seam", {
   s <- scale_example()
   d <- scale_atom_pairs(s, "class", "group")
-  expect_named(d, c("from", "to", "w"))
+  expect_named(d, c("source", "target", "w"))
   expect_identical(nrow(d), 7L)
 })
 

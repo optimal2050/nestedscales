@@ -1,0 +1,7 @@
+"frame","unit","attribute","kind","value","lower","upper","unit_of_measure","source","note"
+"fuel","Anthracite","lhv","property",26.7,21.6,32.2,"GJ/t","example",
+"fuel","Lignite","lhv","property",11.9,5.5,21.6,"GJ/t","example",
+"carrier","Oil","lhv","property",42.5,40,45,"GJ/t","example",
+"group","Bio","lhv","property",15,7.9,31,"GJ/t","example",
+"fuel","Anthracite","ef_co2","factor",98300,94600,101000,"kg/TJ","example",
+"carrier","Gas","ef_co2","factor",56100,54300,58300,"kg/TJ","example",

@@ -16,7 +16,7 @@
 
 test_that("sum and weighted_mean aggregate through the crosswalk", {
   out <- recast_crosswalk(.xd(), .xw(),
-    from = "month", to = "quarter",
+    source = "month", target = "quarter",
     rule = c(energy = "sum", price = "weighted_mean")
   )
   expect_named(out, c("quarter", "energy", "price"))
@@ -35,19 +35,19 @@ test_that("sum splits by n_overlap / n_from, or by w / w_from when given", {
     n_overlap = c(4, 6)
   )
   d <- data.frame(src = "A", v = 100)
-  out <- recast_crosswalk(d, map, from = "src", to = "tgt", rule = "sum")
+  out <- recast_crosswalk(d, map, source = "src", target = "tgt", rule = "sum")
   expect_equal(out$v, c(40, 60))
 
   map$w <- c(1, 3)
   map$w_from <- 4
-  out <- recast_crosswalk(d, map, from = "src", to = "tgt", rule = "sum")
+  out <- recast_crosswalk(d, map, source = "src", target = "tgt", rule = "sum")
   expect_equal(out$v, c(25, 75))
 
   # w_from without w: the count split applies, and `w` must not be read as
   # `w_from` by partial matching (which gave a factor of 1 for every pair)
   map$w <- NULL
   expect_no_warning(
-    out <- recast_crosswalk(d, map, from = "src", to = "tgt", rule = "sum")
+    out <- recast_crosswalk(d, map, source = "src", target = "tgt", rule = "sum")
   )
   expect_equal(out$v, c(40, 60))
 })
@@ -62,7 +62,7 @@ test_that("identifiers are kept as groups and `by` matches crosswalk columns", {
     )
   )
   out <- recast_crosswalk(d, map,
-    from = "month", to = "quarter",
+    source = "month", target = "quarter",
     values = "energy", rule = "sum", ids = "year",
     by = "year"
   )
@@ -70,7 +70,7 @@ test_that("identifiers are kept as groups and `by` matches crosswalk columns", {
   expect_equal(sort(q1), c(59, 90))
   expect_error(
     recast_crosswalk(.xd(), map,
-      from = "month", to = "quarter",
+      source = "month", target = "quarter",
       rule = "sum", by = "year"
     ),
     "not identifier columns"
@@ -79,7 +79,7 @@ test_that("identifiers are kept as groups and `by` matches crosswalk columns", {
 
 test_that("targets completes the result to the full vocabulary", {
   out <- recast_crosswalk(.xd(), .xw(),
-    from = "month", to = "quarter",
+    source = "month", target = "quarter",
     values = "energy", rule = "sum", ids = character(),
     targets = c("Q1", "Q2", "Q3", "Q4", NA)
   )
@@ -90,12 +90,12 @@ test_that("targets completes the result to the full vocabulary", {
 test_that("a partly supplied target is NA unless missing sources are ignored", {
   d <- .xd()[-2, ]
   out <- recast_crosswalk(d, .xw(),
-    from = "month", to = "quarter",
+    source = "month", target = "quarter",
     values = "energy", rule = "sum", ids = character()
   )
   expect_true(is.na(out$energy[out$quarter == "Q1"]))
   out <- recast_crosswalk(d, .xw(),
-    from = "month", to = "quarter",
+    source = "month", target = "quarter",
     values = "energy", rule = "sum", ids = character(),
     missing_sources = "ignore"
   )
@@ -105,7 +105,7 @@ test_that("a partly supplied target is NA unless missing sources are ignored", {
 test_that("copy errors in the caller's vocabulary", {
   expect_error(
     recast_crosswalk(.xd(), .xw(),
-      from = "month", to = "quarter",
+      source = "month", target = "quarter",
       values = "price", rule = "copy",
       ids = character(),
       unit = "timeslice"
@@ -116,13 +116,13 @@ test_that("copy errors in the caller's vocabulary", {
 
 test_that("share rules and malformed crosswalks are refused", {
   expect_error(recast_crosswalk(.xd(), .xw(),
-    from = "month", to = "quarter",
+    source = "month", target = "quarter",
     rule = "share"
   ), "not supported")
   expect_error(
     recast_crosswalk(.xd(), .xw()[1:3],
-      from = "month",
-      to = "quarter", rule = "sum"
+      source = "month",
+      target = "quarter", rule = "sum"
     ),
     "missing column"
   )
@@ -131,8 +131,8 @@ test_that("share rules and malformed crosswalks are refused", {
 test_that("a lazy input returns a query", {
   skip_if_not_installed("arrow")
   q <- recast_crosswalk(arrow::arrow_table(.xd()), .xw(),
-    from = "month",
-    to = "quarter", values = "energy", rule = "sum",
+    source = "month",
+    target = "quarter", values = "energy", rule = "sum",
     ids = character()
   )
   expect_false(is.data.frame(q))

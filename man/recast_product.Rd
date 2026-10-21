@@ -7,7 +7,7 @@
 recast_product(
   data,
   x,
-  to,
+  target,
   values = NULL,
   rules = NULL,
   weights = NULL,
@@ -21,7 +21,7 @@ axis (see \code{\link[=product_keys]{product_keys()}}) plus the value columns.}
 
 \item{x}{A \code{\link{ScaleProduct}}.}
 
-\item{to}{Named list or character vector, one entry per axis to convert:
+\item{target}{Named list or character vector, one entry per axis to convert:
 either a frame name of that axis's scale, or another \code{\link{NestedScale}} to convert
 into. Axes omitted pass through unchanged.}
 
@@ -48,7 +48,7 @@ The recast data in the input's class, keyed by the converted axes'
 target units.
 }
 \description{
-Converts one or more axes of a product in a single call. Axes named in \code{to}
+Converts one or more axes of a product in a single call. Axes named in \code{target}
 are converted; axes left out pass through untouched.
 }
 \details{
@@ -73,11 +73,11 @@ d <- merge(
 d$cap <- seq_len(nrow(d))
 
 # aggregate both axes at once
-recast_product(d, p, to = list(a = "sector", b = "era"), rules = "sum")
+recast_product(d, p, target = list(a = "sector", b = "era"), rules = "sum")
 
 # different rules per axis
 recast_product(d, p,
-  to = list(a = "sector", b = "era"),
+  target = list(a = "sector", b = "era"),
   rules = list(cap = c(a = "sum", b = "weighted_mean"))
 )
 }

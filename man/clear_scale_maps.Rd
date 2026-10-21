@@ -4,7 +4,11 @@
 \alias{clear_scale_maps}
 \title{Clear the registered crosswalks}
 \usage{
-clear_scale_maps()
+clear_scale_maps(name = NULL)
+}
+\arguments{
+\item{name}{Registry keys to remove (as listed by \code{\link[=list_scale_maps]{list_scale_maps()}});
+\code{NULL} (default) clears every registered crosswalk.}
 }
 \value{
 Invisibly \code{NULL}.

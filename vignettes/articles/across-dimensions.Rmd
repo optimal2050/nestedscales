@@ -1,0 +1,253 @@
+---
+title: "Fuels, regions and months"
+description: "One table, three scales: attach the shipped fuel scale, a GeoScale and a Calendar to fuel-use data, match labels from a statistical source, convert mass to energy to CO2, aggregate along any dimension, and draw it with energypal's colours."
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
+                      fig.width = 7, fig.height = 4)
+library(nestedscales)
+library(dplyr, warn.conflicts = FALSE)
+# The dimension packages built on nestedscales 0.2.0 are the 0.7 releases;
+# until they are installed the chunks below are shown, not run.
+has_all <- requireNamespace("geoscales", quietly = TRUE) &&
+  packageVersion("geoscales") >= "0.7.0" &&
+  requireNamespace("timescales", quietly = TRUE) &&
+  packageVersion("timescales") >= "0.7.0" &&
+  requireNamespace("energypal", quietly = TRUE) &&
+  requireNamespace("ggplot2", quietly = TRUE)
+if (has_all) {
+  library(geoscales)
+  library(timescales)
+  library(ggplot2)
+}
+```
+
+```{r, eval = !has_all, echo = FALSE, results = "asis"}
+cat("This article needs geoscales and timescales 0.7 or later, energypal ",
+    "and ggplot2 installed; its outputs appear on the package site once ",
+    "they are available.\n")
+```
+
+## Three scales, one vocabulary
+
+A fuel-use table has three dimensions a model cares about: *which fuel*,
+*where*, *when*. Each is a nested scale -- the fuel taxonomy the core ships,
+and the classes of two sibling packages built on the same core -- and each
+attaches to a table under its own name:
+
+```{r scales, eval = has_all}
+es  <- read_scale("carriers")          # fuels:   group > carrier > fuel
+gs  <- geoscale_example()              # regions: country > state > zone > atom
+cal <- calendar("m12")                 # time:    MONTH
+
+scale_units(es, "carrier")
+geoscale_regions(gs, "country")
+calendar_timeslices(cal)
+```
+
+## A fuel-use table
+
+Twelve months of fuel use in six regions for five fuels, in kilotonnes. The
+numbers are made up but shaped: coal and gas follow a heating season, the
+size of each region scales its use.
+
+```{r use, eval = has_all}
+use <- expand.grid(
+  atom = geoscale_regions(gs)[geoscale_regions(gs) != "ROW"],
+  timeslice = calendar_timeslices(cal),
+  fuel = c("Anthracite", "Lignite", "DistillateFuelOil", "NaturalGas",
+           "Biodiesel"),
+  stringsAsFactors = FALSE
+)
+base <- c(Anthracite = 2, Lignite = 6, DistillateFuelOil = 1.5,
+          NaturalGas = 4, Biodiesel = 0.3)
+seasonal <- c(Anthracite = 0.6, Lignite = 0.6, DistillateFuelOil = 0.1,
+              NaturalGas = 0.8, Biodiesel = 0)
+size <- geoscale_leaftable(gs) |>
+  transmute(atom, size = km2 / mean(km2))
+use <- use |>
+  left_join(size, by = "atom") |>
+  mutate(
+    month = match(timeslice, calendar_timeslices(cal)),
+    kt = base[fuel] * size *
+      (1 + seasonal[fuel] * cos(2 * pi * (month - 1) / 12))
+  ) |>
+  select(atom, timeslice, fuel, kt)
+head(use)
+```
+
+## Attach all three
+
+Each join adds columns prefixed by the scale's name, so the three never
+collide and a reader can see which scale a column came from:
+
+```{r join, eval = has_all}
+labelled <- use |>
+  join_scale(es, frame = "fuel", attach = TRUE) |>
+  join_geoscale(gs = gs, geoframe = "atom", geoframes = TRUE) |>
+  join_calendar(calendar = cal, meta = TRUE)
+names(labelled)
+head(labelled, 3)
+```
+
+`carriers.carrier` and `carriers.group` come from the fuel scale,
+`example.country` and friends from the GeoScale, `m12.share` and
+`m12.weight` (hours) from the Calendar.
+
+## Mass to energy to CO2
+
+The fuel scale carries the IPCC 2006 net calorific value (GJ/t) and CO2
+factor (kg/TJ) for these five fuels. Each conversion is one call, keyed by
+fuel, and the factor applied is reported alongside the result:
+
+```{r convert, eval = has_all}
+energy <- use |>
+  mutate(t = kt * 1e3) |>
+  select(atom, timeslice, fuel, t) |>
+  convert_scale(es, "lhv", from_unit = "t", to_unit = "GJ") |>
+  transmute(atom, timeslice, fuel, tj = t / 1e3)
+
+co2 <- energy |>
+  convert_scale(es, "ef_co2", from_unit = "TJ", to_unit = "kg") |>
+  rename(kg_co2 = tj) |>                 # the converted column: kg CO2
+  transmute(atom, timeslice, fuel, tj = energy$tj, kt_co2 = kg_co2 / 1e6)
+head(co2, 3)
+```
+
+## Aggregate along any dimension
+
+Every scale aggregates with the same verb and the same rules. Columns the
+scale does not know (the other dimensions' keys) are carried through as
+identifiers. One registration covers all three dimensions:
+
+```{r rules, eval = has_all}
+register_scale_rule("tj", "sum")
+register_scale_rule("kt_co2", "sum")
+```
+
+**By carrier and month** -- the fuel dimension collapses, region and month
+stay:
+
+```{r by-carrier, eval = has_all}
+by_carrier <- co2 |>
+  recast_scale(es, source = "fuel", target = "carrier",
+               missing_sources = "ignore") |>
+  filter(!is.na(tj))
+head(by_carrier, 3)
+sum(by_carrier$tj) - sum(co2$tj)
+```
+
+The table reports five of the 71 fuels. With `missing_sources = "ignore"`
+the others count as unused rather than unknown, and the total is conserved
+-- the difference above is zero.
+
+**By country** -- the pipeline verb `recast()` dispatches on whichever scale
+it is handed, so the two aggregations chain:
+
+```{r by-country, eval = has_all}
+by_country <- co2 |>
+  recast(es, target = "carrier", missing_sources = "ignore") |>
+  filter(!is.na(tj)) |>
+  recast(gs, target = "country")
+by_country |>
+  group_by(country) |>
+  summarise(tj = sum(tj), kt_co2 = sum(kt_co2))
+```
+
+**By quarter** -- a calendar recast needs the year, to place the months on
+real dates:
+
+```{r by-quarter, eval = has_all}
+by_quarter <- by_carrier |>
+  select(carrier, atom, timeslice, tj, kt_co2) |>
+  recast_calendar(source = cal, target = calendar("q4"), year = 2024)
+head(by_quarter, 4)
+sum(by_quarter$tj) - sum(by_carrier$tj)
+```
+
+## Draw it with energypal's colours
+
+energypal's `carriers` palette is the same taxonomy, so the carrier ids map
+straight onto its colours with no relabelling:
+
+```{r energy-by-month, eval = has_all}
+by_carrier |>
+  group_by(timeslice, carrier) |>
+  summarise(tj = sum(tj), .groups = "drop") |>
+  ggplot(aes(x = timeslice, y = tj, fill = carrier)) +
+  geom_col() +
+  energypal::scale_fill_energy(palette = "carriers",
+                               label_style = "short") +
+  labs(x = NULL, y = "TJ", fill = NULL,
+       title = "Energy use by month and carrier") +
+  theme_minimal()
+```
+
+```{r co2-by-country, eval = has_all}
+by_country |>
+  group_by(country, carrier) |>
+  summarise(kt_co2 = sum(kt_co2), .groups = "drop") |>
+  ggplot(aes(x = country, y = kt_co2, fill = carrier)) +
+  geom_col() +
+  energypal::scale_fill_energy(palette = "carriers",
+                               label_style = "short") +
+  labs(x = NULL, y = "kt CO2", fill = NULL,
+       title = "CO2 by country and carrier") +
+  theme_minimal()
+```
+
+The GeoScale draws its own hierarchy with data attached -- CO2 summed to
+every geoframe at once:
+
+```{r co2-icicle, eval = has_all}
+co2_by_atom <- co2 |>
+  group_by(atom) |>
+  summarise(kt_co2 = sum(kt_co2), .groups = "drop")
+geoscale_autoplot(gs, data = co2_by_atom, z = "kt_co2", rule = "sum")
+```
+
+## Matching labels from a statistical source
+
+Real sources spell carriers their own way. energypal ships a slice of Our
+World in Data's electricity mix; its `source` labels resolve against the
+fuel scale's names and aliases exactly, with `frame = "carrier"` settling
+the names that exist at two frames (`Nuclear`, `Other`):
+
+```{r match, eval = has_all}
+mix <- energypal::owid_energy_mix
+matched <- scale_match(es, unique(mix$source), frame = "carrier")
+matched
+```
+
+Join the resolved id on and the palette applies:
+
+```{r generation-mix, eval = has_all}
+mix |>
+  filter(year == 2024) |>
+  left_join(matched |> select(source = label, carrier = unit),
+            by = "source") |>
+  ggplot(aes(x = country, y = generation_twh, fill = carrier)) +
+  geom_col(position = "fill") +
+  energypal::scale_fill_energy(palette = "carriers",
+                               label_style = "short") +
+  labs(x = NULL, y = "share of generation", fill = NULL,
+       title = "Electricity generation mix, 2024 (OWID)") +
+  theme_minimal()
+```
+
+```{r cleanup, include = FALSE, eval = has_all}
+clear_scale_rules()
+```
+
+## What each package did
+
+| | package | contributed |
+|---|---|---|
+| fuels | nestedscales (`carriers`) | the taxonomy, calorific values, CO2 factors, label matching |
+| regions | geoscales | the region hierarchy, aggregation to countries, the icicle |
+| time | timescales | month shares and hours, aggregation to quarters |
+| colours | energypal | one palette for every figure, by carrier id |
+
+The core is what lets one table carry all three and lets `recast()` chain
+across them.

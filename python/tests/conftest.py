@@ -18,9 +18,10 @@ def load_golden(name):
 def build_scale(k):
     """Rebuild a scale from a golden's `construct` entry."""
     if k["build"] == "scale_from_leaftable":
+        tables = {t: golden_table(k[t]) for t in ("attributes", "aliases") if k.get(t)}
         return ns.scale_from_leaftable(pa.table(k["leaftable"]), frames=k["frames"],
                                        key=k["key"], name=k["name"],
-                                       residuals=k.get("residuals"))
+                                       residuals=k.get("residuals"), **tables)
     return getattr(ns, k["build"])()
 
 
@@ -57,18 +58,10 @@ def rowset(t):
     return set(rows(t))
 
 
-# R still spells source/target as from/to (the rename lands after CRAN
-# accepts 0.1.1); until then the goldens are translated on the way in.
-R_ARGS = {"from": "source", "to": "target"}
-R_MESSAGE = [("`from`", "`source`"), ("`to`", "`target`"),
-             ("`from=`", "`source=`"), ("`to=`", "`target=`"),
-             ("`from = ", "`source = "), ("`to = ", "`target = ")]
-
-
+# Since R 0.2.0 both bindings spell source/target the same way, so golden
+# arguments and messages are replayed verbatim; a difference is a defect.
 def r_message(msg):
-    """An R message in the binding's argument names."""
-    for a, b in R_MESSAGE:
-        msg = msg.replace(a, b)
+    """An R message, verbatim."""
     return msg
 
 
@@ -78,7 +71,7 @@ def call_args(args):
     if isinstance(args, list):
         return list(args), {}
     pos = [v for k, v in args.items() if k.isdigit()]
-    kw = {R_ARGS.get(k, k): v for k, v in args.items() if not k.isdigit()}
+    kw = {k: v for k, v in args.items() if not k.isdigit()}
     return pos, kw
 
 

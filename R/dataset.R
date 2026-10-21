@@ -10,16 +10,18 @@
 #     data/                 hive-partitioned .arrow files
 #       year=2021/part-0.arrow
 #     _scales/
-#       manifest.yaml       what the scales are: axes, keys, frames, meta
+#       manifest.json       what the scales are: one definition header per axis
 #       <axis>-leaftable.arrow
+#       <axis>-attributes.arrow, <axis>-aliases.arrow   (when not inlined)
 #
-# The leaftables are stored as Arrow so they stay readable from any language;
-# the structural metadata is YAML for the same reason. A scale whose `meta`
-# holds objects YAML cannot represent (an sf CRS, a function) is refused at
-# write time rather than silently half-saved.
+# Each axis is described by the same header `write_scale()` writes (see
+# R/definition.R), with its leaftable as an Arrow file; the manifest is JSON
+# so any language reads it with Arrow and a JSON parser. A store written by
+# an earlier version carries `manifest.yaml`, which is still read.
 # =============================================================================
 
 #' @include product-class.R
+#' @include definition.R
 NULL
 
 #' @noRd
@@ -60,44 +62,33 @@ NULL
   }
 }
 
-#' Meta entries that survive a round trip through YAML
+#' Describe one axis for the manifest: its definition header, leaftable as
+#' an Arrow file, attributes and aliases inline when small
 #' @noRd
-.serialisable_meta <- function(meta, nm) {
-  ok <- vapply(meta, function(z) {
-    is.null(z) || is.character(z) || is.numeric(z) || is.logical(z) ||
-      (is.list(z) && all(vapply(z, function(y) {
-        is.character(y) || is.numeric(y) || is.logical(y)
-      }, logical(1))))
-  }, logical(1))
-  if (!all(ok)) {
-    .stop(
-      paste0(
-        "the `meta` of scale \"%s\" holds value(s) that cannot be ",
-        "written as YAML: %s. Drop them before writing, or store ",
-        "them alongside the dataset yourself."
-      ),
-      nm, .preview(names(meta)[!ok])
-    )
-  }
-  meta
-}
-
-#' Describe one scale for the manifest
-#' @noRd
-.scale_manifest <- function(s) {
-  nm <- .scale_name(s, require = FALSE)
-  list(
-    name    = if (nzchar(nm)) nm else NULL,
-    key     = scale_key(s),
-    frames  = as.list(scale_frames(s)),
-    members = lapply(S7::prop(s, "members"), as.list),
-    meta    = .serialisable_meta(S7::prop(s, "meta"), nm)
+.axis_header <- function(s, axis, sdir, compression) {
+  s <- .upgrade_scale(s)
+  arrow::write_feather(
+    arrow::as_arrow_table(scale_leaftable(s)),
+    file.path(sdir, paste0(axis, "-leaftable.arrow")),
+    compression = compression
   )
+  refs <- list(leaftable = list(
+    file = paste0(axis, "-leaftable.arrow"), format = "arrow"
+  ))
+  for (what in c("attributes", "aliases")) {
+    df <- if (what == "attributes") .attr_table(s) else .alias_table(s)
+    refs[[what]] <- if (nrow(df) <= .INLINE_MAX_ROWS) {
+      list(inline = .table_inline(df))
+    } else {
+      .table_to_file(df, sdir, paste0(axis, "-", what), "arrow")
+    }
+  }
+  .scale_header(s, refs)
 }
 
-#' Rebuild a scale from its manifest entry and leaftable
+#' Rebuild a scale from a LEGACY (manifest.yaml) entry and its leaftable
 #' @noRd
-.scale_from_manifest <- function(entry, leaftable) {
+.scale_from_legacy_manifest <- function(entry, leaftable) {
   members <- lapply(entry$members, function(z) as.character(unlist(z)))
   meta <- entry$meta %||% list()
   # YAML gives back plain lists; the validator wants atomic vectors for the
@@ -129,7 +120,9 @@ NULL
 #'
 #' The data is written as a hive-partitioned Arrow IPC dataset and the scales
 #' travel with it, so [`open_scale_dataset()`] gives back both and the result
-#' can be recast without re-declaring anything.
+#' can be recast without re-declaring anything. Each scale is stored as the
+#' definition [`write_scale()`] writes, so its attributes and aliases travel
+#' too.
 #'
 #' @param data The table to write, in any supported backend.
 #' @param x The [`NestedScale`] or [`ScaleProduct`] the data is indexed by.
@@ -153,8 +146,7 @@ NULL
 #' )
 #' d$v <- 1:4
 #' dir <- file.path(tempdir(), "store")
-#' if (requireNamespace("arrow", quietly = TRUE) &&
-#'   requireNamespace("yaml", quietly = TRUE)) {
+#' if (requireNamespace("arrow", quietly = TRUE)) {
 #'   write_scale_dataset(d, p, dir, overwrite = TRUE)
 #'   ds <- open_scale_dataset(dir)
 #'   ds
@@ -163,13 +155,12 @@ NULL
 write_scale_dataset <- function(data, x, path, partitioning = NULL,
                                 compression = "zstd", overwrite = FALSE) {
   .need_arrow("write_scale_dataset()")
-  .need_yaml("write_scale_dataset()")
 
   is_prod <- S7::S7_inherits(x, ScaleProduct)
   if (!is_prod) .check_scale(x, "x")
 
-  backend <- .ms_require_backend(data, "data")
-  d <- as.data.frame(dplyr::collect(.ms_lazy(data, backend)))
+  backend <- backend_of(data, "data")
+  d <- as.data.frame(dplyr::collect(backend_lazy(data, backend)))
 
   axes <- if (is_prod) {
     S7::prop(x, "axes")
@@ -203,6 +194,13 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
   codec <- .ipc_codec(compression)
   feather_compression <- if (is.null(codec)) "uncompressed" else compression
 
+  # Scales first, and their headers before any file: if a meta cannot be
+  # serialised, fail before writing gigabytes of data that would then
+  # describe nothing.
+  for (a in names(axes)) {
+    .meta_encode(S7::prop(axes[[a]], "meta"), a)
+  }
+
   if (dir.exists(path)) {
     if (!isTRUE(overwrite)) {
       .stop("`%s` already exists; pass overwrite = TRUE to replace it", path)
@@ -213,22 +211,17 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
   sdir <- file.path(path, "_scales")
   dir.create(sdir, showWarnings = FALSE)
 
-  # Scales first: if one of them cannot be serialised, fail before writing
-  # gigabytes of data that would then describe nothing.
+  headers <- lapply(names(axes), function(a) {
+    .axis_header(axes[[a]], a, sdir, feather_compression)
+  })
+  names(headers) <- names(axes)
   manifest <- list(
     nestedscales = as.character(utils::packageVersion("nestedscales")),
     kind = if (is_prod) "product" else "scale",
     keys = as.list(keys),
-    axes = lapply(axes, .scale_manifest)
+    axes = headers
   )
-  for (a in names(axes)) {
-    arrow::write_feather(
-      arrow::as_arrow_table(scale_leaftable(axes[[a]])),
-      file.path(sdir, paste0(a, "-leaftable.arrow")),
-      compression = feather_compression
-    )
-  }
-  yaml::write_yaml(manifest, file.path(sdir, "manifest.yaml"))
+  .write_header(manifest, file.path(sdir, "manifest.json"), "json")
 
   ddir <- file.path(path, "data")
   args <- list(d,
@@ -238,6 +231,23 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
   if (!is.null(codec)) args$codec <- codec
   do.call(arrow::write_dataset, args)
   invisible(path)
+}
+
+#' Read a store's manifest: JSON, or the legacy YAML
+#' @noRd
+.read_manifest <- function(path) {
+  sdir <- file.path(path, "_scales")
+  mj <- file.path(sdir, "manifest.json")
+  my <- file.path(sdir, "manifest.yaml")
+  if (file.exists(mj)) {
+    return(list(manifest = jsonlite::fromJSON(mj, simplifyVector = FALSE),
+                legacy = FALSE))
+  }
+  if (file.exists(my)) {
+    .need_yaml("reading a store with a legacy manifest.yaml")
+    return(list(manifest = yaml::read_yaml(my), legacy = TRUE))
+  }
+  .stop("`%s` is not a scale dataset (no _scales/manifest.json)", path)
 }
 
 #' Open a scale-aware dataset
@@ -254,19 +264,19 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
 #' @export
 open_scale_dataset <- function(path) {
   .need_arrow("open_scale_dataset()")
-  .need_yaml("open_scale_dataset()")
+  m <- .read_manifest(path)
+  manifest <- m$manifest
   sdir <- file.path(path, "_scales")
-  mf <- file.path(sdir, "manifest.yaml")
-  if (!file.exists(mf)) {
-    .stop("`%s` is not a scale dataset (no _scales/manifest.yaml)", path)
-  }
-  manifest <- yaml::read_yaml(mf)
 
   scales <- lapply(names(manifest$axes), function(a) {
-    lt <- as.data.frame(arrow::read_feather(
-      file.path(sdir, paste0(a, "-leaftable.arrow"))
-    ))
-    .scale_from_manifest(manifest$axes[[a]], lt)
+    if (m$legacy) {
+      lt <- as.data.frame(arrow::read_feather(
+        file.path(sdir, paste0(a, "-leaftable.arrow"))
+      ))
+      .scale_from_legacy_manifest(manifest$axes[[a]], lt)
+    } else {
+      .scale_from_header(manifest$axes[[a]], sdir)
+    }
   })
   names(scales) <- names(manifest$axes)
 
@@ -300,12 +310,7 @@ open_scale_dataset <- function(path) {
 #' # see write_scale_dataset()
 #' @export
 scale_dataset_info <- function(path) {
-  .need_yaml("scale_dataset_info()")
-  mf <- file.path(path, "_scales", "manifest.yaml")
-  if (!file.exists(mf)) {
-    .stop("`%s` is not a scale dataset (no _scales/manifest.yaml)", path)
-  }
-  manifest <- yaml::read_yaml(mf)
+  manifest <- .read_manifest(path)$manifest
   files <- list.files(file.path(path, "data"),
     recursive = TRUE,
     full.names = TRUE

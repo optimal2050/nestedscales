@@ -37,7 +37,9 @@ Arrow build, the files are written uncompressed with a warning.}
 \description{
 The data is written as a hive-partitioned Arrow IPC dataset and the scales
 travel with it, so \code{\link[=open_scale_dataset]{open_scale_dataset()}} gives back both and the result
-can be recast without re-declaring anything.
+can be recast without re-declaring anything. Each scale is stored as the
+definition \code{\link[=write_scale]{write_scale()}} writes, so its attributes and aliases travel
+too.
 }
 \examples{
 p <- scale_product(a = scale_example(), b = scale_example2())
@@ -47,8 +49,7 @@ d <- merge(
 )
 d$v <- 1:4
 dir <- file.path(tempdir(), "store")
-if (requireNamespace("arrow", quietly = TRUE) &&
-  requireNamespace("yaml", quietly = TRUE)) {
+if (requireNamespace("arrow", quietly = TRUE)) {
   write_scale_dataset(d, p, dir, overwrite = TRUE)
   ds <- open_scale_dataset(dir)
   ds

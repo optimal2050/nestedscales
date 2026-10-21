@@ -102,7 +102,7 @@ test_that("as_scale_table() checks the array's shape", {
 
 test_that("a product dataset round-trips through the store", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   p <- .sp()
   d <- .sd()
   dir <- withr::local_tempdir()
@@ -122,7 +122,7 @@ test_that("a product dataset round-trips through the store", {
 
 test_that("an unavailable codec falls back to uncompressed IPC", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   dir <- withr::local_tempdir()
   path <- file.path(dir, "store")
 
@@ -136,7 +136,7 @@ test_that("an unavailable codec falls back to uncompressed IPC", {
 
 test_that("the reopened scales are the same scales", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   p <- .sp()
   dir <- withr::local_tempdir()
   write_scale_dataset(.sd(), p, file.path(dir, "s"))
@@ -159,7 +159,7 @@ test_that("the reopened scales are the same scales", {
 
 test_that("a stored dataset can be recast without re-declaring anything", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   p <- .sp()
   d <- .sd()
   dir <- withr::local_tempdir()
@@ -168,13 +168,13 @@ test_that("a stored dataset can be recast without re-declaring anything", {
 
   out <- suppressWarnings(
     recast_product(ds$data, ds$scale,
-      to = list(a = "sector"),
+      target = list(a = "sector"),
       values = "v", rules = "sum", collect = TRUE
     )
   )
   ref <- suppressWarnings(
     recast_product(d, p,
-      to = list(a = "sector"), values = "v",
+      target = list(a = "sector"), values = "v",
       rules = "sum"
     )
   )
@@ -186,7 +186,7 @@ test_that("a stored dataset can be recast without re-declaring anything", {
 
 test_that("a single NestedScale round-trips too", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   s <- scale_example()
   d <- data.frame(unit = c("U1", "U2"), v = c(1, 2), stringsAsFactors = FALSE)
   dir <- withr::local_tempdir()
@@ -198,7 +198,7 @@ test_that("a single NestedScale round-trips too", {
 
 test_that("partitioning writes a pruned layout", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   p <- .sp()
   d <- .sd()
   d$year <- rep(c(2020, 2021), length.out = nrow(d))
@@ -217,7 +217,7 @@ test_that("partitioning writes a pruned layout", {
 
 test_that("the store refuses to clobber and to write junk", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   p <- .sp()
   dir <- withr::local_tempdir()
   path <- file.path(dir, "s")
@@ -241,7 +241,7 @@ test_that("the store refuses to clobber and to write junk", {
 
 test_that("meta that cannot be written as YAML is refused up front", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   s <- scale_example()
   meta <- S7::prop(s, "meta")
   meta$callback <- function() NULL
@@ -250,14 +250,14 @@ test_that("meta that cannot be written as YAML is refused up front", {
   dir <- withr::local_tempdir()
   expect_error(
     write_scale_dataset(d, s, file.path(dir, "s")),
-    "cannot be written as YAML"
+    "cannot be written"
   )
   # and nothing was left behind
   expect_false(dir.exists(file.path(dir, "s", "data")))
 })
 
 test_that("opening a folder that is not a store says so", {
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   dir <- withr::local_tempdir()
   expect_error(open_scale_dataset(dir), "not a scale dataset")
   expect_error(scale_dataset_info(dir), "not a scale dataset")
@@ -265,7 +265,7 @@ test_that("opening a folder that is not a store says so", {
 
 test_that("print() describes the store", {
   skip_if_not_installed("arrow")
-  skip_if_not_installed("yaml")
+  skip_if_not_installed("jsonlite")
   p <- .sp()
   dir <- withr::local_tempdir()
   write_scale_dataset(.sd(), p, file.path(dir, "s"))

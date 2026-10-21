@@ -50,7 +50,7 @@ as_backend <- function(df, bk) {
       !inherits(out, "data.table"),
     "tibble" = inherits(out, "tbl_df"),
     "data.table" = inherits(out, "data.table"),
-    # .ms_restore: collected dtplyr -> data.table,
+    # backend_restore: collected dtplyr -> data.table,
     # collected arrow -> whatever collect() returns (a data.frame)
     "dtplyr" = if (collected) {
       inherits(out, "data.table")

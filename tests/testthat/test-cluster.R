@@ -120,7 +120,7 @@ test_that("the cluster frame works with the rest of nestedscales", {
     stringsAsFactors = FALSE
   )
   out <- recast_scale(d, cl,
-    from = "unit", to = "cluster",
+    source = "unit", target = "cluster",
     rule = "sum"
   )
   expect_equal(sum(out$cap), sum(d$cap))
@@ -177,4 +177,27 @@ test_that("kmeans is reproducible through seed", {
     "clustering"
   )
   expect_equal(a, b)
+})
+
+test_that("clustering keeps the concrete class and its member tables", {
+  s <- attach_attributes_scale(
+    three_group_scale(),
+    data.frame(frame = "top", unit = scale_units(three_group_scale(), "top")[1],
+               attribute = "density", value = 1, unit_of_measure = "t/m3"),
+    source = "t", kind = "property"
+  )
+  cl <- cluster_scale(three_group_data(), s, k = 3)
+  expect_identical(nrow(scale_attributes(cl)), 1L)
+  expect_identical(S7::prop(cl, "meta")[["name"]],
+                   S7::prop(s, "meta")[["name"]])
+  # a subclass comes back as itself
+  Tagged <- S7::new_class("Tagged", parent = scale_class(),
+                          properties = list(tag = S7::class_character))
+  t <- Tagged(leaftable = scale_leaftable(s), frames = scale_frames(s),
+              members = S7::prop(s, "members"), key = scale_key(s),
+              meta = S7::prop(s, "meta"), tag = "keep me")
+  clt <- cluster_scale(three_group_data(), t, k = 3)
+  expect_true(S7::S7_inherits(clt, Tagged))
+  expect_identical(clt@tag, "keep me")
+  expect_identical(scale_frames(clt), c("top", "cluster", "unit"))
 })

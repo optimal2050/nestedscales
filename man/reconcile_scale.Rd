@@ -7,8 +7,8 @@
 reconcile_scale(
   data,
   x,
-  from,
-  to,
+  source,
+  target,
   totals,
   key = NULL,
   values = NULL,
@@ -19,18 +19,18 @@ reconcile_scale(
 )
 }
 \arguments{
-\item{data}{The fine data, keyed at \code{from}.}
+\item{data}{The fine data, keyed at \code{source}.}
 
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{from, to}{Frame names: where the data is, and the coarser frame whose
+\item{source, target}{Frame names: where the data is, and the coarser frame whose
 totals it is checked against.}
 
-\item{totals}{The independent parent figures: a table keyed at \code{to}
+\item{totals}{The independent parent figures: a table keyed at \code{target}
 carrying the same value columns as \code{data}, plus any identifier columns
 (which are matched, so a per-year total works).}
 
-\item{key}{Column of \code{data} holding the codes at \code{from}; defaults as in
+\item{key}{Column of \code{data} holding the codes at \code{source}; defaults as in
 \code{\link[=recast_scale]{recast_scale()}}.}
 
 \item{values}{Value columns to check. Default: the numeric columns common
@@ -46,7 +46,7 @@ to \code{data} and \code{totals}.}
 \itemize{
 \item \code{"none"} (default) -- report it and change nothing.
 \item \code{"residual"} -- return the data with each group's gap written onto its
-declared residual unit at \code{from}. Needs exactly one residual per
+declared residual unit at \code{source}. Needs exactly one residual per
 affected group, and \code{rule = "sum"}.
 \item \code{"proportional"} -- return the data scaled by \code{target / aggregated}
 within each group, so every group hits its total.
@@ -56,14 +56,14 @@ within each group, so every group hits its total.
 the \code{ok} column, and gaps within it are left alone when balancing.}
 }
 \value{
-With \code{balance = "none"}, a long gap table: the \code{to} column, any
+With \code{balance = "none"}, a long gap table: the \code{target} column, any
 identifiers, \code{value} (which column), \code{aggregated}, \code{target}, \code{gap}
 (\code{target - aggregated}), \code{rel_gap} and \code{ok}. With a balancing method, the
 adjusted data keyed as the input was, carrying that same table as its
 \code{"reconciliation"} attribute.
 }
 \description{
-Aggregates \code{data} from \code{from} to \code{to} and compares the result with
+Aggregates \code{data} from \code{source} to \code{target} and compares the result with
 \code{totals}, the parent figure from another source. Reports the gap by
 default; can also close it.
 }
@@ -81,10 +81,10 @@ s <- scale_from_leaftable(lf,
 fine <- data.frame(unit = c("DE1", "DE2", "DE_XR"), gdp = c(400, 300, 0))
 published <- data.frame(country = "DE", gdp = 750)
 
-reconcile_scale(fine, s, from = "unit", to = "country", published)
+reconcile_scale(fine, s, source = "unit", target = "country", published)
 
 reconcile_scale(fine, s,
-  from = "unit", to = "country", published,
+  source = "unit", target = "country", published,
   balance = "residual"
 )
 }

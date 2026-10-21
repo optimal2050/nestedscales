@@ -13,16 +13,14 @@ get_scale_distance(name)
 
 list_scale_distances()
 
-clear_scale_distances(names = NULL)
+clear_scale_distances(name = NULL)
 }
 \arguments{
-\item{name}{Name to register under.}
+\item{name}{Distances to remove; \code{NULL} clears every registered one.
+Built-ins cannot be removed.}
 
 \item{fn}{A function of the unit-by-feature matrix returning a
 \link[stats:dist]{stats::dist} object (or a square matrix) over its rows.}
-
-\item{names}{Distances to remove; \code{NULL} clears every registered one.
-Built-ins cannot be removed.}
 }
 \value{
 Invisibly, \code{name}.

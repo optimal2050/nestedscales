@@ -32,7 +32,7 @@ The package covers three things:
    dimensions, grouping units into new levels, and storing data with its
    scales.
 
-## Available now (0.1.0)
+## Available now (0.2.0)
 
 ### Structure
 
@@ -86,16 +86,35 @@ The package covers three things:
 * Every operation accepts a `data.frame`, tibble, `data.table`, dtplyr table
   or arrow dataset and returns the same class; lazy inputs return a query.
 
+### Attributes, aliases and definitions
+
+* A scale may carry **attributes**, physical values keyed by `(frame, unit)`
+  at any level (a calorific value on a fuel, on its carrier or on its
+  group), each with a `kind`, bounds, unit of measure and source.
+  `scale_attributes()` resolves one value per member along the hierarchy
+  and says where it came from; `convert_scale()` converts a table row by
+  row with it. Attributes are never weights and are never recast.
+* **Aliases** are alternative labels per member; `scale_match()` resolves
+  labels exactly, case-insensitively, and reports ambiguity.
+* **Definition files.** `write_scale()` and `read_scale()` exchange a scale
+  as a JSON header with inline tables, or a bundle with Arrow or CSV tables,
+  readable by every binding; YAML is accepted. `scale_catalog()` lists the
+  definitions installed packages ship, and `read_scale("carriers")` opens
+  the one the core ships: the energypal fuel taxonomy with the IPCC 2006
+  default calorific values and CO2 factors (`?shipped_scales`).
+
 ### Dimension packages
 
 * [timescales](https://github.com/optimal2050/timescales): `Calendar`, a
   nested scale of time. A catalog of standard calendars, construction from
   tokens, conversion from datetimes, sampled and fiscal calendars, calendar
   plots.
-* [geoscales](https://github.com/optimal2050/geoscales): `Geoscale`, a
+* [geoscales](https://github.com/optimal2050/geoscales): `GeoScale`, a
   nested scale of space. Region hierarchies from data providers, geometry
   and area weights, maps.
-* `vignette("dimension-package")` shows how to write another one.
+* The *Building a dimension package* section of the reference lists the
+  hooks a subclass fills, including how it stores and restores its payload
+  in a definition file.
 
 Both are designed for optimization and simulation models, where the labelled
 time slices and regions become the index sets of variables and constraints
@@ -126,9 +145,12 @@ The order is not fixed; items move up as the modelling packages need them.
   continuous variable. Today they are binned by hand before
   `scale_from_leaftable()`; a constructor taking breakpoints, with the
   interval bounds kept as weights, would build them directly.
-* **More dimension packages.** Industry classifications and technology
-  vintages are used directly from tables today; shipped classifications
-  with their own vocabulary are the obvious next packages.
+* **More shipped definitions.** `carriers` is the first classification the
+  core ships. Industry classifications (NACE, ISIC) and technology vintages
+  follow as definition files under `inst/scales/`, moving to a separate
+  data package only if their size demands it. Regional values of an
+  attribute (a national calorific value) belong to a product of the scale
+  with a `GeoScale`, attached under their own source; not built yet.
 
 ## Not planned
 

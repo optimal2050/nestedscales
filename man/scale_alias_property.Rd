@@ -14,8 +14,8 @@ An S7 property.
 }
 \description{
 Builds a getter/setter property that reads and writes an inherited property
-under a different name -- how \code{timescales::Calendar} keeps \verb{@timeframes} and
-\code{geoscales::Geoscale} keeps \verb{@geoframes} working over the inherited
+under a different name -- how timescales' \code{Calendar} keeps \verb{@timeframes} and
+geoscales' \code{Geoscale} keeps \verb{@geoframes} working over the inherited
 \verb{@frames}, so no existing code has to change when they become subclasses.
 }
 \details{

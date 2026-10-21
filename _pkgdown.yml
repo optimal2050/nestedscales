@@ -11,19 +11,25 @@ footer:
   components:
     blank: ""
 
-# No Articles dropdown. The intro (vignettes/nestedscales.Rmd, package-named)
-# surfaces as "Get started" on its own; the roadmap is an online-only article
-# (vignettes/articles/, build-ignored) with a navbar item of its own.
+# The intro (vignettes/nestedscales.Rmd, package-named) surfaces as
+# "Get started" on its own. The other vignettes and the online-only articles
+# (vignettes/articles/, build-ignored) sit in the Articles dropdown.
 navbar:
   structure:
-    left: [intro, reference, roadmap, news]
-  components:
-    roadmap:
-      text: Roadmap
-      href: articles/roadmap.html
+    left: [intro, reference, articles, news]
 
 articles:
+  - title: "The object"
+    navbar: ~
+    contents:
+      - anatomy
+      - attributes
+  - title: "Across dimensions"
+    navbar: "Across dimensions"
+    contents:
+      - articles/across-dimensions
   - title: "Roadmap"
+    navbar: "Roadmap"
     contents:
       - articles/roadmap
 
@@ -63,6 +69,16 @@ reference:
   contents:
   - filter_scale
   - prune_scale
+- title: Attributes and aliases
+  desc: Values that belong to members but are not weights, alternative labels, strict matching, and row-wise conversion.
+  contents:
+  - attach_attributes_scale
+  - scale_attributes
+  - SCALE_ATTRIBUTE_KINDS
+  - attach_aliases_scale
+  - scale_aliases
+  - scale_match
+  - convert_scale
 - title: Conversion
   desc: Recast data between resolutions, attach labels, and declare rules.
   contents:
@@ -110,6 +126,12 @@ reference:
   - scale_distance
   - SCALE_DISTANCES
   - register_scale_distance
+- title: Definitions and catalogue
+  desc: Language-neutral definition files, the registry of shipped ones, and the definitions this package ships.
+  contents:
+  - write_scale
+  - scale_catalog
+  - shipped_scales
 - title: Arrays and storage
   contents:
   - as_scale_array
@@ -122,8 +144,10 @@ reference:
   - scale_alias_property
   - scale_vocab
   - scale_payload_slice
+  - scale_payload_collapse
+  - scale_payload_io
   - scale_atom_pairs
-  - starts_with(".ms_")
+  - starts_with("backend_")
 - title: Package
   contents:
   - nestedscales-package

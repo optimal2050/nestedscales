@@ -33,7 +33,7 @@ call <- function(fn, scale, data, ..., ordered = TRUE) {
   args <- list(...)
   run_args <- args
   if (!is.null(args$to_scale)) {
-    run_args$to <- build_r(args$to_scale)
+    run_args$target <- build_r(args$to_scale)
     run_args$to_scale <- NULL
     args$to_scale <- construct_r(args$to_scale)
   }
@@ -98,40 +98,40 @@ CV <- c("cap", "eff")
 # recast_scale: up -------------------------------------------------------------
 
 for (r in RULES) {
-  for (to in c("class", "sector", "group")) {
+  for (target in c("class", "sector", "group")) {
     for (na in c("drop", "keep", "error")) {
-      call("recast_scale", ex, d_unit, from = "unit", to = to, rule = r,
+      call("recast_scale", ex, d_unit, source = "unit", target = target, rule = r,
            values = CV, na_action = na)
     }
-    call("recast_scale", ex, d_unit6, from = "unit", to = to, rule = r,
+    call("recast_scale", ex, d_unit6, source = "unit", target = target, rule = r,
          values = CV)
-    call("recast_scale", ex, d_panel, from = "unit", to = to, rule = r,
+    call("recast_scale", ex, d_panel, source = "unit", target = target, rule = r,
          values = CV)
-    call("recast_scale", ex, d_na, from = "unit", to = to, rule = r,
+    call("recast_scale", ex, d_na, source = "unit", target = target, rule = r,
          values = CV)
-    call("recast_scale", ex, d_partial, from = "unit", to = to, rule = r)
-    call("recast_scale", ex, d_partial_panel, from = "unit", to = to, rule = r,
+    call("recast_scale", ex, d_partial, source = "unit", target = target, rule = r)
+    call("recast_scale", ex, d_partial_panel, source = "unit", target = target, rule = r,
          values = "value")
   }
   for (w in c("count", "size")) {
-    call("recast_scale", ex, d_unit, from = "unit", to = "class", rule = r,
+    call("recast_scale", ex, d_unit, source = "unit", target = "class", rule = r,
          values = CV, weight = w)
   }
 }
-call("recast_scale", ex, d_copy_ok, from = "unit", to = "class", rule = "copy")
-call("recast_scale", ex, d_copy_bad, from = "unit", to = "class", rule = "copy")
-call("recast_scale", ex, d_unit, from = "unit", to = "class",
+call("recast_scale", ex, d_copy_ok, source = "unit", target = "class", rule = "copy")
+call("recast_scale", ex, d_copy_bad, source = "unit", target = "class", rule = "copy")
+call("recast_scale", ex, d_unit, source = "unit", target = "class",
      rule = list(cap = "sum", eff = "weighted_mean"),
      weight = list(cap = "size", eff = "count"))
-call("recast_scale", ex, d_partial, from = "unit", to = "class", rule = "sum",
+call("recast_scale", ex, d_partial, source = "unit", target = "class", rule = "sum",
      missing_sources = "ignore")
-call("recast_scale", ex, d_partial, from = "unit", to = "class", rule = "sum",
+call("recast_scale", ex, d_partial, source = "unit", target = "class", rule = "sum",
      diagnostics = "off")
-call("recast_scale", ex, d_unknown, from = "unit", to = "class", rule = "sum",
+call("recast_scale", ex, d_unknown, source = "unit", target = "class", rule = "sum",
      values = CV)
-call("recast_scale", ex, d_none, from = "unit", to = "class", rule = "sum")
-call("recast_scale", ex, d_unit, to = "class", rule = "sum", values = CV)
-call("recast_scale", ex, d_unit, from = "unit", to = "class", values = CV)
+call("recast_scale", ex, d_none, source = "unit", target = "class", rule = "sum")
+call("recast_scale", ex, d_unit, target = "class", rule = "sum", values = CV)
+call("recast_scale", ex, d_unit, source = "unit", target = "class", values = CV)
 
 # recast_scale: down and across -------------------------------------------------
 
@@ -141,56 +141,56 @@ down <- list(
   list(d_group, "group", c("class", "unit"))
 )
 for (dn in down) {
-  for (to in dn[[3]]) {
+  for (target in dn[[3]]) {
     for (r in RULES) {
       for (na in c("drop", "keep")) {
-        call("recast_scale", ex, dn[[1]], from = dn[[2]], to = to, rule = r,
+        call("recast_scale", ex, dn[[1]], source = dn[[2]], target = target, rule = r,
              na_action = na)
       }
     }
-    call("recast_scale", ex, dn[[1]], from = dn[[2]], to = to, rule = "sum",
+    call("recast_scale", ex, dn[[1]], source = dn[[2]], target = target, rule = "sum",
          weight = "count")
   }
 }
 
 # residuals --------------------------------------------------------------------
 
-call("recast_scale", ex_res, d_class, from = "class", to = "unit", rule = "sum")
-call("recast_scale", ex_res, d_class, from = "class", to = "unit", rule = "sum",
+call("recast_scale", ex_res, d_class, source = "class", target = "unit", rule = "sum")
+call("recast_scale", ex_res, d_class, source = "class", target = "unit", rule = "sum",
      weight = "count")
-call("recast_scale", ex_res, d_sector, from = "sector", to = "unit", rule = "sum")
-call("recast_scale", ex_res, d_unit6, from = "unit", to = "class", rule = "sum")
-call("recast_scale", ex_dead, d_class, from = "class", to = "unit", rule = "sum")
+call("recast_scale", ex_res, d_sector, source = "sector", target = "unit", rule = "sum")
+call("recast_scale", ex_res, d_unit6, source = "unit", target = "class", rule = "sum")
+call("recast_scale", ex_dead, d_class, source = "class", target = "unit", rule = "sum")
 
 # share ------------------------------------------------------------------------
 
 for (na in c("drop", "keep", "error")) {
-  call("recast_scale", ex, d_unit, from = "unit", to = "sector", rule = "share",
+  call("recast_scale", ex, d_unit, source = "unit", target = "sector", rule = "share",
        values = CV, na_action = na)
 }
-call("recast_scale", ex, d_unit6, from = "unit", to = "unit", rule = "share",
+call("recast_scale", ex, d_unit6, source = "unit", target = "unit", rule = "share",
      values = CV)
-call("recast_scale", ex, d_unit6, from = "unit", to = "unit", rule = "share",
+call("recast_scale", ex, d_unit6, source = "unit", target = "unit", rule = "share",
      values = CV, parent = "class")
-call("recast_scale", ex, d_unit6, from = "unit", to = "sector", rule = "share",
+call("recast_scale", ex, d_unit6, source = "unit", target = "sector", rule = "share",
      values = CV, parent = "class")
-call("recast_scale", ex, d_panel, from = "unit", to = "class", rule = "logshare",
+call("recast_scale", ex, d_panel, source = "unit", target = "class", rule = "logshare",
      values = CV, na_action = "keep")
-call("recast_scale", ex, d_group, from = "group", to = "sector", rule = "share")
-call("recast_scale", ex, d_class, from = "class", to = "sector", rule = "share",
+call("recast_scale", ex, d_group, source = "group", target = "sector", rule = "share")
+call("recast_scale", ex, d_class, source = "class", target = "sector", rule = "share",
      weight = "size")
-call("recast_scale", ex, d_unit, from = "unit", to = "class",
+call("recast_scale", ex, d_unit, source = "unit", target = "class",
      rule = list(cap = "share", eff = "sum"))
-call("recast_scale", ex, d_unit, from = "unit", to = "class", rule = "sum",
+call("recast_scale", ex, d_unit, source = "unit", target = "class", rule = "sum",
      values = CV, parent = "sector")
 
 # no weights, cross-object -----------------------------------------------------
 
-call("recast_scale", noweights, d_nw, from = "grp", to = "unit", rule = "sum")
-call("recast_scale", noweights, d_nw, from = "grp", to = "unit", rule = "copy")
-call("recast_scale", ex, d_unit, from = "unit", to_scale = other, rule = "sum",
+call("recast_scale", noweights, d_nw, source = "grp", target = "unit", rule = "sum")
+call("recast_scale", noweights, d_nw, source = "grp", target = "unit", rule = "copy")
+call("recast_scale", ex, d_unit, source = "unit", to_scale = other, rule = "sum",
      values = CV)
-call("recast_scale", ex, d_class, from = "class", to_scale = other, rule = "sum")
+call("recast_scale", ex, d_class, source = "class", to_scale = other, rule = "sum")
 
 # recast_crosswalk -------------------------------------------------------------
 
@@ -198,49 +198,49 @@ cw <- data.frame(month = c("m01", "m02"), quarter = "Q1",
                  n_from = c(31, 28), n_overlap = c(31, 28))
 d_month <- data.frame(month = c("m01", "m02"), energy = c(310, 280),
                       price = c(10, 20))
-call("recast_crosswalk", NULL, d_month, map = cw, from = "month", to = "quarter",
+call("recast_crosswalk", NULL, d_month, map = cw, source = "month", target = "quarter",
      rule = list(energy = "sum", price = "weighted_mean"), ordered = FALSE)
-call("recast_crosswalk", NULL, d_month, map = cw, from = "month", to = "quarter",
+call("recast_crosswalk", NULL, d_month, map = cw, source = "month", target = "quarter",
      rule = list(energy = "sum", price = "weighted_mean"),
      targets = c("Q1", "Q2", NA))
 cw_w <- transform(cw, w = c(1, 3), w_from = c(1, 3))
-call("recast_crosswalk", NULL, d_month, map = cw_w, from = "month",
-     to = "quarter", rule = "sum", ordered = FALSE)
+call("recast_crosswalk", NULL, d_month, map = cw_w, source = "month",
+     target = "quarter", rule = "sum", ordered = FALSE)
 cw_y <- rbind(cbind(cw, year = 2020), cbind(transform(cw, quarter = "Q2"),
                                             year = 2021))
 d_month_y <- rbind(cbind(d_month, year = 2020), cbind(d_month, year = 2021))
-call("recast_crosswalk", NULL, d_month_y, map = cw_y, from = "month",
-     to = "quarter", values = c("energy", "price"), rule = "sum", by = "year",
+call("recast_crosswalk", NULL, d_month_y, map = cw_y, source = "month",
+     target = "quarter", values = c("energy", "price"), rule = "sum", by = "year",
      ordered = FALSE)
-call("recast_crosswalk", NULL, d_month[1, ], map = cw, from = "month",
-     to = "quarter", rule = "sum", ordered = FALSE)
-call("recast_crosswalk", NULL, d_month, map = cw, from = "month", to = "quarter",
+call("recast_crosswalk", NULL, d_month[1, ], map = cw, source = "month",
+     target = "quarter", rule = "sum", ordered = FALSE)
+call("recast_crosswalk", NULL, d_month, map = cw, source = "month", target = "quarter",
      rule = "share", ordered = FALSE)
 
 # the atom halves --------------------------------------------------------------
 
-call("recast_to_atoms", ex, d_sector, from = "sector", rule = "sum",
+call("recast_to_atoms", ex, d_sector, source = "sector", rule = "sum",
      weight = "size", ordered = FALSE)
-call("recast_to_atoms", ex, d_class, from = "class",
+call("recast_to_atoms", ex, d_class, source = "class",
      rule = list(cap = "sum", eff = "weighted_mean"), ordered = FALSE)
-call("recast_to_atoms", ex, d_group, from = "group", rule = "sum",
+call("recast_to_atoms", ex, d_group, source = "group", rule = "sum",
      attach_weight = FALSE, ordered = FALSE)
-call("recast_to_atoms", ex, d_unit, from = "unit", rule = "sum", values = CV,
+call("recast_to_atoms", ex, d_unit, source = "unit", rule = "sum", values = CV,
      ordered = FALSE)
 for (r in RULES) {
   for (na_rm in c(FALSE, TRUE)) {
-    call("recast_from_atoms", ex, d_na, to = "class", rule = r, values = CV,
+    call("recast_from_atoms", ex, d_na, target = "class", rule = r, values = CV,
          na_rm = na_rm)
   }
   for (na in c("drop", "keep", "error")) {
-    call("recast_from_atoms", ex, d_panel, to = "sector", rule = r,
+    call("recast_from_atoms", ex, d_panel, target = "sector", rule = r,
          values = CV, na_action = na)
   }
 }
-atoms <- recast_to_atoms(d_class, scale_example(), from = "class",
+atoms <- recast_to_atoms(d_class, scale_example(), source = "class",
                          rule = list(cap = "sum", eff = "weighted_mean"))
-call("recast_from_atoms", ex, atoms, to = "class",
+call("recast_from_atoms", ex, atoms, target = "class",
      rule = list(cap = "sum", eff = "weighted_mean"))
-call("recast_from_atoms", ex, d_partial, to = "class", rule = "sum")
+call("recast_from_atoms", ex, d_partial, target = "class", rule = "sum")
 
 write_golden(calls, "recast.json")

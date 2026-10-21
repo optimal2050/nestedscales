@@ -4,11 +4,11 @@
 \alias{clear_scale_rules}
 \title{Clear the rule registry}
 \usage{
-clear_scale_rules(param = NULL, scope = NULL)
+clear_scale_rules(name = NULL, scope = NULL)
 }
 \arguments{
-\item{param}{Optional character vector of names to remove. \code{NULL} (default)
-clears everything in \code{scope}.}
+\item{name}{Optional character vector of parameter names to remove. \code{NULL}
+(default) clears everything in \code{scope}.}
 
 \item{scope}{Optional dimension namespace.}
 }

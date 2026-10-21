@@ -26,6 +26,11 @@ The package defines:
   to a dataset, subsetting, combining several scales into one
   multi-dimensional index, clustering units into new levels, and storing
   data together with its scales.
+- **Attributes and definitions**: values that belong to a member but are
+  not weights (a calorific value, an emission factor) and alternative
+  labels, resolved along the hierarchy and applied row by row; and
+  language-neutral definition files, with a catalogue of the ones
+  installed packages ship.
 
 The package is dimension-agnostic. Time and space are provided by two
 packages built on it, designed for optimization and simulation models,
@@ -35,7 +40,7 @@ variables and constraints:
 - [timescales](https://github.com/optimal2050/timescales): `Calendar`,
   labeled discrete time slices (hours, days, seasons, representative
   days).
-- [geoscales](https://github.com/optimal2050/geoscales): `Geoscale`,
+- [geoscales](https://github.com/optimal2050/geoscales): `GeoScale`,
   labeled geographical regions with geometry.
 
 Both classes are subclasses of `NestedScale`. Any other dimension
@@ -54,7 +59,7 @@ pak::pkg_install("optimal2050/nestedscales")
 ```
 
 The package is pure R; its non-base runtime dependencies are dplyr,
-rlang and S7.
+rlang, S7 and jsonlite.
 
 ## A scale in one call
 
@@ -127,13 +132,45 @@ x <- data.frame(
   wage  = c(31, 29, 27, 45, 40)
 )
 
-recast_scale(x, ind, from = "class", to = "section",
+recast_scale(x, ind, source = "class", target = "section",
              rule = c(jobs = "sum", wage = "weighted_mean"),
              weight = "gva")
 #>   section jobs     wage
 #> 1       C   25 29.61224
 #> 2       D   50 43.33333
 ```
+
+## A shipped definition
+
+Scales travel as definition files (a JSON header with the tables inline,
+or a bundle with Arrow or CSV tables) that the Python binding reads as
+well. The package ships one: the energypal fuel taxonomy with the IPCC
+2006 default calorific values and CO2 factors attached as attributes.
+
+``` r
+carriers <- read_scale("carriers")
+carriers
+#> NestedScale: carriers
+#> Description: Energy carriers: fuels and energy vectors with subtypes, from energypal's carriers palette (IPCC 2006 / IEA classifications) 
+#> Frames (3, coarsest first):
+#>   - group (8)
+#>     - carrier (17)
+#>       - fuel (71)
+#> Atoms: 71
+#> Attributes: lhv, ef_co2 (sources: IPCC2006) -- 26 at fuel
+#> Aliases: 136 (energypal, commodity)
+#> Source: energypal carriers.yml
+
+fuel_use <- data.frame(fuel = c("Anthracite", "NaturalGas"), t = c(100, 100))
+convert_scale(fuel_use, carriers, "lhv", from_unit = "t", to_unit = "GJ")
+#>         fuel    t  lhv lhv.origin_frame
+#> 1 Anthracite 2670 26.7             fuel
+#> 2 NaturalGas 4800 48.0             fuel
+```
+
+`scale_attributes()` resolves a value for every member of a frame,
+walking to the nearest coarser level that holds one; `scale_match()`
+resolves labels and model codes through the alias table, strictly.
 
 ## Design
 
@@ -142,6 +179,9 @@ recast_scale(x, ind, from = "class", to = "section",
   atom layer.
 - **Weights are named and plural.** A scale can carry `gva`,
   `employment` and `count` side by side, with one declared default.
+- **Attributes are not weights.** A weight says how big an atom is and
+  drives aggregation; an attribute is a per-member factor, consumed row
+  by row and never summed.
 - **Partial coverage is first class.** An atom with no code at a frame
   is `NA`, not an error, and a subset records what fraction of its
   parent it keeps.

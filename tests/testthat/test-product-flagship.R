@@ -61,7 +61,7 @@ test_that("the flagship recast runs and is keyed by both targets", {
 
   out <- recast_product(
     d, p,
-    to = list(time = "day", space = "country"),
+    target = list(time = "day", space = "country"),
     rules = list(load_mw = c(time = "weighted_mean", space = "sum"))
   )
 
@@ -75,7 +75,7 @@ test_that("the two axes really do apply different arithmetic", {
   d <- .load()
   out <- recast_product(
     d, p,
-    to = list(time = "day", space = "country"),
+    target = list(time = "day", space = "country"),
     rules = list(load_mw = c(time = "weighted_mean", space = "sum"))
   )
 
@@ -95,25 +95,25 @@ test_that("swapping the pass order changes nothing", {
   d <- .load()
 
   time_first <- recast_scale(d, cl,
-    from = "slice", to = "day", key = "slice",
+    source = "slice", target = "day", key = "slice",
     values = "load_mw", rule = "weighted_mean"
   ) |>
     recast_scale(gr,
-      from = "zone", to = "country", key = "zone",
+      source = "zone", target = "country", key = "zone",
       values = "load_mw", rule = "sum"
     )
   space_first <- recast_scale(d, gr,
-    from = "zone", to = "country",
+    source = "zone", target = "country",
     key = "zone", values = "load_mw",
     rule = "sum"
   ) |>
     recast_scale(cl,
-      from = "slice", to = "day", key = "slice",
+      source = "slice", target = "day", key = "slice",
       values = "load_mw", rule = "weighted_mean"
     )
   one_call <- recast_product(
     d, p,
-    to = list(time = "day", space = "country"),
+    target = list(time = "day", space = "country"),
     rules = list(load_mw = c(time = "weighted_mean", space = "sum"))
   )
 
@@ -132,7 +132,7 @@ test_that("energy is conserved when time is treated as extensive", {
   d <- .load()
   # summing on BOTH axes is total energy: it must survive aggregation
   out <- recast_product(d, p,
-    to = list(time = "season", space = "market"),
+    target = list(time = "season", space = "market"),
     rules = "sum"
   )
   expect_equal(sum(out$load_mw), sum(d$load_mw))
@@ -153,7 +153,7 @@ test_that("a coarse bound broadcasts down to every product cell", {
   cap$max_cf <- 0.8
 
   fine <- recast_product(cap, p,
-    to = list(time = "slice", space = "zone"),
+    target = list(time = "slice", space = "zone"),
     rules = list(max_cf = "copy")
   )
   expect_identical(nrow(fine), 24L * 3L * 6L)
@@ -175,7 +175,7 @@ test_that("per-axis weights change the spatial split going down", {
   nat$load_mw <- 100
 
   out <- recast_product(nat, p,
-    to = list(space = "zone"),
+    target = list(space = "zone"),
     rules = list(load_mw = c(space = "sum")),
     weights = c(space = "pop")
   )
@@ -195,7 +195,7 @@ test_that("the flagship runs lazily on arrow without materialising", {
 
   lazy <- recast_product(
     arrow::arrow_table(d), p,
-    to = list(time = "day", space = "country"),
+    target = list(time = "day", space = "country"),
     rules = list(load_mw = c(time = "weighted_mean", space = "sum"))
   )
   expect_false(is.data.frame(lazy)) # still a query
@@ -203,7 +203,7 @@ test_that("the flagship runs lazily on arrow without materialising", {
   got <- as.data.frame(dplyr::collect(lazy))
   ref <- recast_product(
     d, p,
-    to = list(time = "day", space = "country"),
+    target = list(time = "day", space = "country"),
     rules = list(load_mw = c(time = "weighted_mean", space = "sum"))
   )
   got <- got[order(got$country, got$day), ]
@@ -219,7 +219,7 @@ test_that("the product never materialises its atoms to do any of this", {
   expect_error(product_atoms(p, limit = 10), "above `limit`")
   expect_no_error(
     recast_product(.load(), p,
-      to = list(time = "day", space = "country"),
+      target = list(time = "day", space = "country"),
       rules = list(load_mw = c(
         time = "weighted_mean",
         space = "sum"

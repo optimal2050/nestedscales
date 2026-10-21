@@ -218,19 +218,12 @@ withr_seed <- function(seed, envir = parent.frame()) {
   new_frames <- append(fr, new_frame, after = at - 1L)
 
   meta <- S7::prop(x, "meta")
-  out <- scale_from_leaftable(
-    lt,
-    frames = new_frames, key = scale_key(x),
-    weights = scale_weights(x),
-    default_weight = meta[["default_weight"]],
-    name = meta[["name"]] %||% "", desc = meta[["desc"]] %||% ""
-  )
-  # keep everything the constructor does not take (source, labels, sampling)
-  keep <- setdiff(names(meta), c("name", "desc", "weights", "default_weight"))
-  if (length(keep) > 0L) {
-    full <- utils::modifyList(S7::prop(out, "meta"), meta[keep])
-    S7::prop(out, "meta") <- full
-  }
+  members <- S7::prop(x, "members")
+  members[[new_frame]] <- unique(stats::na.omit(as.character(lt[[new_frame]])))
+  members <- members[new_frames]
+  # the rows are unchanged, so the concrete class, its payload and every
+  # meta field survive as they are
+  out <- .reconstruct(x, lt, new_frames, members, meta)
 
   tab <- data.frame(
     unit = units, cluster = unname(code),

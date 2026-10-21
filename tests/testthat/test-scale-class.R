@@ -262,7 +262,7 @@ test_that("summary() returns the classed quantitative view", {
     "name", "desc", "frames", "unassigned", "n_atoms",
     "weights", "weight_totals", "default_weight",
     "coverage", "sampled", "parent_name", "nesting",
-    "source", "vocab"
+    "attributes", "aliases", "source", "vocab"
   ))
   expect_identical(sm$n_atoms, 7L)
   expect_false(sm$sampled)

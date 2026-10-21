@@ -1,3 +1,65 @@
+# nestedscales 0.1.1.9000
+
+## Breaking changes
+
+* `from` and `to` are now `source` and `target` everywhere: the frame
+  arguments of `recast_scale()`, `recast_crosswalk()`, `recast_to_atoms()`,
+  `recast_from_atoms()`, `reconcile_scale()`, `recast_product()` and the
+  navigation functions, the scale arguments and label columns of
+  `scale_map()`, `scale_map_between()` and their registry, and the columns of
+  `scale_atom_pairs()`. `recast()` takes the scale as `scale` and the source
+  frame as `source`. The crosswalk columns `n_from` and `w_from` are
+  unchanged. No deprecation aliases.
+* `clear_scale_rules()`, `clear_scale_maps()` and `clear_scale_distances()`
+  take `name` (and `scope` where it applies); `clear_scale_maps()` can now
+  remove named keys.
+* The backend helpers `.ms_*` are now the `backend_*` functions: `backend_of()`
+  (errors on an unsupported input), `backend_is_lazy()`, `backend_schema()`,
+  `backend_lazy()`, `backend_pull()`, `backend_restore()` and
+  `backend_bind_rows()`, plus the new `backend_scan()` and
+  `backend_distinct()`. They are documented together under `?backend`.
+
+## New features
+
+* Member attributes and aliases. A scale carries two optional long tables
+  keyed by `(frame, unit)`: `attributes` (a value with its `kind`, bounds,
+  `unit_of_measure`, `source` and `note`) and `aliases` (alternative labels).
+  `scale_from_leaftable()` takes them as `attributes=` and `aliases=`;
+  `attach_attributes_scale()` and `attach_aliases_scale()` append rows and
+  never overwrite; `scale_attributes()` reads them, resolved along the
+  hierarchy when a frame is given; `scale_aliases()` and `scale_match()`
+  resolve labels exactly and report ambiguity. `convert_scale()` converts
+  value columns row by row with a resolved attribute: a `property` is
+  invertible, a `factor` is one-way (`SCALE_ATTRIBUTE_KINDS`). Both tables
+  survive `filter_scale()`, `[`, `prune_scale()` and clustering, which now
+  keep a subclass as well; `scale_payload_collapse()` is the hook a subclass
+  with a positional payload overrides for `prune_scale()`. Objects saved by
+  0.1.x load unchanged.
+* Definition files. `write_scale()` and `read_scale()` exchange a scale as a
+  language-neutral definition: a JSON header with the tables inline, or a
+  `<name>.scale/` bundle with Arrow IPC or CSV tables; YAML is accepted as
+  input and as an output option. `scale_write_payload()`,
+  `scale_read_payload()` and `register_scale_class()` let a dimension
+  package store and restore its subclass.
+* Catalogue. `register_scale_dir()`, `list_scale_dirs()`,
+  `clear_scale_dirs()` and `scale_catalog()` list the definitions shipped by
+  installed packages; `read_scale(id)` takes a catalogue id.
+* Shipped definition `carriers`: 71 fuels in `group > carrier > fuel` from
+  the energypal taxonomy, with the IPCC 2006 default net calorific values
+  and CO2 emission factors as attributes and energypal's spellings and model
+  commodity codes as aliases (`?shipped_scales`). The IPCC tables ship as
+  `inst/extdata/ipcc2006_fuel_defaults.csv`.
+* `write_scale_dataset()` writes `_scales/manifest.json`; a legacy
+  `manifest.yaml` is still read. jsonlite is a new import.
+
+## Documentation
+
+* New vignettes: `vignette("anatomy")` (the object, its tables and what the
+  validator guarantees) and `vignette("attributes")` (attributes, aliases
+  and conversion on the shipped `carriers`). The article *Fuels, regions
+  and months* on the package site joins a fuel scale, a `GeoScale` and a
+  `Calendar` on one table.
+
 # nestedscales 0.1.1
 
 * `write_scale_dataset()` now falls back to uncompressed Arrow IPC files, with

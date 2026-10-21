@@ -9,12 +9,12 @@ scale_atom_pairs(x, ...)
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{...}{Method arguments: \code{from} and \code{to} (frame names of \code{x}), \code{weight}
+\item{...}{Method arguments: \code{source} and \code{target} (frame names of \code{x}), \code{weight}
 (a weight column, or \code{NULL} for the scale's default), and whatever else
 the dimension needs to generate its atoms -- \code{year} for a calendar.}
 }
 \value{
-A \code{data.frame} with columns \code{from}, \code{to}, \code{w}, plus any extra
+A \code{data.frame} with columns \code{source}, \code{target}, \code{w}, plus any extra
 identifier columns the dimension carries. The extra columns must be named
 in the \code{by} argument of the caller.
 }

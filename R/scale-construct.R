@@ -30,6 +30,10 @@
 #' @param members Optional named list giving the ordered code vocabulary per
 #'   frame. Derived from `leaftable` when `NULL` (first-appearance order).
 #' @param name,desc Short name and description.
+#' @param attributes Optional table of per-member physical attributes keyed
+#'   by `(frame, unit)`; see [`attach_attributes_scale()`] for the columns.
+#' @param aliases Optional table of alternative labels keyed by
+#'   `(frame, unit)`; see [`attach_aliases_scale()`] for the columns.
 #' @param ... Further named entries merged into `meta` (e.g. `source`,
 #'   `labels`).
 #'
@@ -52,6 +56,8 @@ scale_from_leaftable <- function(leaftable,
                                  members = NULL,
                                  name = "",
                                  desc = "",
+                                 attributes = NULL,
+                                 aliases = NULL,
                                  ...) {
   if (!is.data.frame(leaftable)) {
     .stop("`leaftable` must be a data.frame")
@@ -163,11 +169,13 @@ scale_from_leaftable <- function(leaftable,
   )
 
   NestedScale(
-    leaftable = leaftable,
-    frames    = frames,
-    members   = members,
-    key       = key,
-    meta      = meta
+    leaftable  = leaftable,
+    frames     = frames,
+    members    = members,
+    key        = key,
+    meta       = meta,
+    attributes = .as_attributes(attributes),
+    aliases    = .as_aliases(aliases)
   )
 }
 

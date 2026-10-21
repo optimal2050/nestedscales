@@ -4,17 +4,17 @@
 \alias{recast}
 \title{Recast data through a scale}
 \usage{
-recast(x, from, ...)
+recast(x, scale, ...)
 }
 \arguments{
 \item{x}{The data to recast.}
 
-\item{from}{The scale to recast through.}
+\item{scale}{The scale to recast through.}
 
-\item{...}{Passed to the dispatched method: for a \code{\link{NestedScale}} the arguments of
-\code{\link[=recast_scale]{recast_scale()}}, with \code{to} the target frame and \code{from_frame} the source
-frame (inferred when omitted); for a \code{\link{ScaleProduct}} those of
-\code{\link[=recast_product]{recast_product()}}.}
+\item{...}{Passed to the dispatched method: for a \code{\link{NestedScale}} the
+arguments of \code{\link[=recast_scale]{recast_scale()}}, with \code{target} the target frame and
+\code{source} the source frame (inferred when omitted); for a
+\code{\link{ScaleProduct}} those of \code{\link[=recast_product]{recast_product()}}.}
 }
 \value{
 The recast data, in the input's class.
@@ -27,9 +27,9 @@ generic. \code{\link[=recast_scale]{recast_scale()}} and \code{\link[=recast_pro
 workers.
 }
 \details{
-\code{from} is the SCALE, matching the convention the dimension packages
-established. The source FRAME -- \code{recast_scale()}'s own \code{from} -- is
-\code{from_frame} here, mirroring \code{geoscales}' \code{from_geoframe}.
+The scale is \code{scale}; the source frame is \code{source} and the target \code{target},
+as in \code{\link[=recast_scale]{recast_scale()}}, so a call reads the same through the generic and
+through the worker.
 }
 \examples{
 s <- scale_example()
@@ -37,5 +37,5 @@ d <- data.frame(
   unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
   capacity = c(1, 2, 3, 4, 5, 6)
 )
-recast(d, s, to = "sector", rule = "sum")
+recast(d, s, target = "sector", rule = "sum")
 }

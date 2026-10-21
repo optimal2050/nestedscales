@@ -8,8 +8,8 @@
 # data.frame / data.table / arrow backends.
 #
 # Two shapes:
-#   * within ONE scale -- `from`/`to` are frame names of `x`;
-#   * across TWO scales -- `from`/`to` are NestedScale objects, matched on shared
+#   * within ONE scale -- `source`/`target` are frame names of `x`;
+#   * across TWO scales -- `source`/`target` are NestedScale objects, matched on shared
 #     atom keys.
 #
 # The ADAPTER SEAM is `scale_atom_pairs()`: a dimension supplies the atom-level
@@ -34,11 +34,11 @@ NULL
 #' identifier, e.g. per grid instant and year).
 #'
 #' @param x A [`NestedScale`].
-#' @param ... Method arguments: `from` and `to` (frame names of `x`), `weight`
+#' @param ... Method arguments: `source` and `target` (frame names of `x`), `weight`
 #'   (a weight column, or `NULL` for the scale's default), and whatever else
 #'   the dimension needs to generate its atoms -- `year` for a calendar.
 #'
-#' @return A `data.frame` with columns `from`, `to`, `w`, plus any extra
+#' @return A `data.frame` with columns `source`, `target`, `w`, plus any extra
 #'   identifier columns the dimension carries. The extra columns must be named
 #'   in the `by` argument of the caller.
 #'
@@ -47,13 +47,13 @@ NULL
 #' @export
 scale_atom_pairs <- S7::new_generic("scale_atom_pairs", "x")
 
-S7::method(scale_atom_pairs, NestedScale) <- function(x, from, to, weight = NULL,
+S7::method(scale_atom_pairs, NestedScale) <- function(x, source, target, weight = NULL,
                                                 ...) {
   leaves <- S7::prop(x, "leaftable")
   wcol <- .map_weight(x, weight)
   data.frame(
-    from = as.character(leaves[[from]]),
-    to = as.character(leaves[[to]]),
+    source = as.character(leaves[[source]]),
+    target = as.character(leaves[[target]]),
     w = if (is.null(wcol)) 1 else as.numeric(leaves[[wcol]]),
     stringsAsFactors = FALSE
   )
@@ -64,20 +64,20 @@ S7::method(scale_atom_pairs, NestedScale) <- function(x, from, to, weight = NULL
 #' Materialises the `from -> atoms -> to` route as a table: one row per pair of
 #' overlapping units with
 #'
-#' * `n_from` -- atoms in the `from` unit (its full set, before any target
+#' * `n_from` -- atoms in the `source` unit (its full set, before any target
 #'   coverage is considered),
 #' * `n_overlap` -- atoms the pair shares,
 #' * `w` -- the weight of the overlap (summed atom weights, chosen weight
 #'   column), the quantity `"weighted_mean"` aggregation uses,
-#' * `w_from` -- the full weight of the `from` unit; `w / w_from` is the split
+#' * `w_from` -- the full weight of the `source` unit; `w / w_from` is the split
 #'   share `"sum"` disaggregation uses.
 #'
 #' The two label columns are named by the frames; rows with an `NA` target
-#' label are atoms `to` does not cover. A crosswalk registered with
+#' label are atoms `target` does not cover. A crosswalk registered with
 #' [`register_scale_map()`] is returned as-is instead of being derived.
 #'
 #' @param x The [`NestedScale`] the frames belong to.
-#' @param from,to Frame names of `x`.
+#' @param source,target Frame names of `x`.
 #' @param weight Weight column for `w`. `NULL` uses the default weight; when
 #'   the object declares no weights at all, every atom gets weight 1 (an equal
 #'   split).
@@ -86,7 +86,7 @@ S7::method(scale_atom_pairs, NestedScale) <- function(x, from, to, weight = NULL
 #' @param ... Passed to [`scale_atom_pairs()`].
 #'
 #' @return A `data.frame` with columns `<from>`, `<to>` (`NA` = uncovered by
-#'   `to`), `n_from`, `n_overlap`, `w`, `w_from`, plus any `by` columns.
+#'   `target`), `n_from`, `n_overlap`, `w`, `w_from`, plus any `by` columns.
 #'
 #' @seealso [`scale_map_between()`] for the map between two scales.
 #' @examples
@@ -94,44 +94,44 @@ S7::method(scale_atom_pairs, NestedScale) <- function(x, from, to, weight = NULL
 #' scale_map(s, "class", "group")
 #' scale_map(s, "sector", "class", weight = "count")
 #' @export
-scale_map <- function(x, from, to, weight = NULL, by = character(), ...) {
-  if (S7::S7_inherits(from, NestedScale) || S7::S7_inherits(to, NestedScale)) {
+scale_map <- function(x, source, target, weight = NULL, by = character(), ...) {
+  if (S7::S7_inherits(source, NestedScale) || S7::S7_inherits(target, NestedScale)) {
     .stop(paste0(
-      "`from` and `to` are frame names of `x`; for the map between two ",
+      "`source` and `target` are frame names of `x`; for the map between two ",
       "scales use `scale_map_between()`"
     ))
   }
   .check_scale(x, "x")
-  .check_frame(x, from, "from")
-  .check_frame(x, to, "to")
-  if (identical(from, to)) {
+  .check_frame(x, source, "source")
+  .check_frame(x, target, "target")
+  if (identical(source, target)) {
     v <- scale_vocab(x)
     .stop(paste0(
-      "`from` and `to` are the same %s (\"%s\"); the map's ",
+      "`source` and `target` are the same %s (\"%s\"); the map's ",
       "label columns are named by the %s"
-    ), v$frame, from, v$frames)
+    ), v$frame, source, v$frames)
   }
 
-  reg <- .get_scale_map(from, to, .scale_name(x, require = FALSE))
+  reg <- .get_scale_map(source, target, .scale_name(x, require = FALSE))
   if (!is.null(reg)) {
     return(reg)
   }
 
-  d <- scale_atom_pairs(x, from = from, to = to, weight = weight, ...)
-  .finish_map(d, from, to, by = by)
+  d <- scale_atom_pairs(x, source = source, target = target, weight = weight, ...)
+  .finish_map(d, source, target, by = by)
 }
 
 #' Crosswalk between two scales through their shared atoms
 #'
 #' The counterpart of [`scale_map()`] for two scales: atoms are matched on
-#' their keys, so a unit of `from` overlaps a unit of `to` where they contain
+#' their keys, so a unit of `source` overlaps a unit of `target` where they contain
 #' the same atoms. Same columns as [`scale_map()`], with the two label columns
-#' named after the scales. Atoms of `from` absent from `to` get an `NA` target
+#' named after the scales. Atoms of `source` absent from `target` get an `NA` target
 #' (with a warning). A crosswalk registered with
 #' [`register_scale_map_between()`] is returned as-is instead of being derived.
 #'
-#' @param from,to Two named [`NestedScale`] objects whose atom keys overlap.
-#' @param weight Weight column of `from` for `w`; `NULL` uses its default
+#' @param source,target Two named [`NestedScale`] objects whose atom keys overlap.
+#' @param weight Weight column of `source` for `w`; `NULL` uses its default
 #'   weight, or weight 1 per atom when it declares none.
 #'
 #' @return A `data.frame` with columns `<from name>`, `<to name>`, `n_from`,
@@ -148,15 +148,15 @@ scale_map <- function(x, from, to, weight = NULL, by = character(), ...) {
 #' )
 #' scale_map_between(a, b)
 #' @export
-scale_map_between <- function(from, to, weight = NULL) {
-  .check_scale(from, "from")
-  .check_scale(to, "to")
-  from_nm <- .scale_name(from, arg = "from")
-  to_nm <- .scale_name(to, arg = "to")
+scale_map_between <- function(source, target, weight = NULL) {
+  .check_scale(source, "source")
+  .check_scale(target, "target")
+  from_nm <- .scale_name(source, arg = "source")
+  to_nm <- .scale_name(target, arg = "target")
   if (identical(from_nm, to_nm)) {
     .stop(
       paste0(
-        "`from` and `to` have the same name (\"%s\"); the map's ",
+        "`source` and `target` have the same name (\"%s\"); the map's ",
         "label columns are named by the scales -- rename one"
       ),
       from_nm
@@ -167,14 +167,14 @@ scale_map_between <- function(from, to, weight = NULL) {
     return(reg)
   }
 
-  kf <- scale_key(from)
-  kt <- scale_key(to)
-  lf <- S7::prop(from, "leaftable")
-  lt <- S7::prop(to, "leaftable")
+  kf <- scale_key(source)
+  kt <- scale_key(target)
+  lf <- S7::prop(source, "leaftable")
+  lt <- S7::prop(target, "leaftable")
   shared <- intersect(lf[[kf]], lt[[kt]])
   if (length(shared) == 0L) {
     keys <- if (identical(kf, kt)) sprintf("`%s` keys", kf) else "keys"
-    hint <- scale_vocab(from)$register_map %||% "register_scale_map_between()"
+    hint <- scale_vocab(source)$register_map %||% "register_scale_map_between()"
     .stop(
       paste0(
         "the atom layers of \"%s\" and \"%s\" share no %s; ",
@@ -190,10 +190,10 @@ scale_map_between <- function(from, to, weight = NULL) {
       "share is uncovered (NA target)"
     ), n_miss, from_nm, to_nm)
   }
-  wcol <- .map_weight(from, weight)
+  wcol <- .map_weight(source, weight)
   d <- data.frame(
-    from = lf[[kf]],
-    to = ifelse(lf[[kf]] %in% shared, lf[[kf]], NA_character_),
+    source = lf[[kf]],
+    target = ifelse(lf[[kf]] %in% shared, lf[[kf]], NA_character_),
     w = if (is.null(wcol)) 1 else as.numeric(lf[[wcol]]),
     stringsAsFactors = FALSE
   )
@@ -213,16 +213,16 @@ scale_map_between <- function(from, to, weight = NULL) {
 #' schema
 #' @noRd
 .finish_map <- function(d, from_lab, to_lab, by = character()) {
-  miss <- setdiff(c("from", "to", "w", by), names(d))
+  miss <- setdiff(c("source", "target", "w", by), names(d))
   if (length(miss) > 0L) {
     .stop("the atom correspondence is missing column(s): %s", .preview(miss))
   }
-  d <- d[!is.na(d$from), , drop = FALSE]
+  d <- d[!is.na(d$source), , drop = FALSE]
   if (nrow(d) == 0L) {
-    .stop("no atoms carry a code at `from`; the map would be empty")
+    .stop("no atoms carry a code at `source`; the map would be empty")
   }
   d$w[is.na(d$w)] <- 0
-  grp <- c(by, "from", "to")
+  grp <- c(by, "source", "target")
   map <- d |>
     dplyr::group_by(dplyr::across(dplyr::all_of(grp))) |>
     dplyr::summarise(
@@ -235,13 +235,13 @@ scale_map_between <- function(from, to, weight = NULL) {
     ) |>
     dplyr::ungroup() |>
     as.data.frame()
-  ord <- do.call(order, c(map[c(by, "from", "to")], list(na.last = TRUE)))
-  map <- map[ord, c(by, "from", "to", "n_from", "n_overlap", "w", "w_from"),
+  ord <- do.call(order, c(map[c(by, "source", "target")], list(na.last = TRUE)))
+  map <- map[ord, c(by, "source", "target", "n_from", "n_overlap", "w", "w_from"),
     drop = FALSE
   ]
   rownames(map) <- NULL
-  names(map)[names(map) == "from"] <- from_lab
-  names(map)[names(map) == "to"] <- to_lab
+  names(map)[names(map) == "source"] <- from_lab
+  names(map)[names(map) == "target"] <- to_lab
   map
 }
 
@@ -260,7 +260,7 @@ scale_map_between <- function(from, to, weight = NULL) {
 #' `get_scale_map_between()` handle a pair of scales.
 #'
 #' @param x The [`NestedScale`] the frames belong to, or its name.
-#' @param from,to For the within-scale functions, frame names of `x`. For the
+#' @param source,target For the within-scale functions, frame names of `x`. For the
 #'   `_between` functions, two [`NestedScale`] objects or their names.
 #' @param map A `data.frame` shaped like a [`scale_map()`] result: the two
 #'   label columns named after the frames (or scales), plus `n_from`,
@@ -282,17 +282,17 @@ scale_map_between <- function(from, to, weight = NULL) {
 #' register_scale_map(s, "class", "group", NULL) # remove
 #' clear_scale_maps()
 #' @export
-register_scale_map <- function(x, from, to, map) {
+register_scale_map <- function(x, source, target, map) {
   .register_map(
-    .map_name_of(x, "x"), .frame_label(from, "from"), .frame_label(to, "to"),
+    .map_name_of(x, "x"), .frame_label(source, "source"), .frame_label(target, "target"),
     map
   )
 }
 
 #' @rdname register_scale_map
 #' @export
-register_scale_map_between <- function(from, to, map) {
-  .register_map("", .map_name_of(from, "from"), .map_name_of(to, "to"), map)
+register_scale_map_between <- function(source, target, map) {
+  .register_map("", .map_name_of(source, "source"), .map_name_of(target, "target"), map)
 }
 
 #' @noRd
@@ -350,16 +350,16 @@ register_scale_map_between <- function(from, to, map) {
 
 #' @rdname register_scale_map
 #' @export
-get_scale_map <- function(x, from, to) {
-  .get_scale_map(.frame_label(from, "from"), .frame_label(to, "to"),
+get_scale_map <- function(x, source, target) {
+  .get_scale_map(.frame_label(source, "source"), .frame_label(target, "target"),
     scope = .map_name_of(x, "x")
   )
 }
 
 #' @rdname register_scale_map
 #' @export
-get_scale_map_between <- function(from, to) {
-  .get_scale_map(.map_name_of(from, "from"), .map_name_of(to, "to"))
+get_scale_map_between <- function(source, target) {
+  .get_scale_map(.map_name_of(source, "source"), .map_name_of(target, "target"))
 }
 
 #' @rdname register_scale_map
@@ -373,11 +373,16 @@ list_scale_maps <- function() {
 #'
 #' Mainly useful in tests.
 #'
+#' @param name Registry keys to remove (as listed by [`list_scale_maps()`]);
+#'   `NULL` (default) clears every registered crosswalk.
+#'
 #' @examples
 #' clear_scale_maps()
 #' @return Invisibly `NULL`.
 #' @export
-clear_scale_maps <- function() {
-  rm(list = ls(envir = .MAP_REGISTRY, all.names = TRUE), envir = .MAP_REGISTRY)
+clear_scale_maps <- function(name = NULL) {
+  present <- ls(envir = .MAP_REGISTRY, all.names = TRUE)
+  drop <- if (is.null(name)) present else intersect(name, present)
+  if (length(drop) > 0L) rm(list = drop, envir = .MAP_REGISTRY)
   invisible(NULL)
 }

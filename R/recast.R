@@ -194,7 +194,7 @@ utils::globalVariables(c(
     paste0(".ms_mx_", copy_cols), paste0(".ms_mn_", copy_cols),
     copy_cols
   )
-  chk <- .ms_pull(dplyr::select(res, dplyr::all_of(cols)))
+  chk <- backend_pull(dplyr::select(res, dplyr::all_of(cols)))
   for (v in copy_cols) {
     rng <- chk[[paste0(".ms_mx_", v)]] - chk[[paste0(".ms_mn_", v)]]
     ok <- !is.na(rng) & !is.na(chk[[v]])
@@ -226,7 +226,7 @@ utils::globalVariables(c(
 
 #' Infer the source frame from `x`'s columns
 #' @noRd
-.infer_from <- function(x, schema, key) {
+.infer_source <- function(x, schema, key) {
   fr <- S7::prop(x, "frames")
   v <- scale_vocab(x)
   if (!is.null(key) && key %in% fr) {
@@ -237,7 +237,7 @@ utils::globalVariables(c(
     .stop(
       paste0(
         "cannot infer the source %s from the data's columns ",
-        "(found: %s); pass `from=`"
+        "(found: %s); pass `source=`"
       ),
       v$frame, if (length(hit) == 0L) "none" else .preview(hit)
     )
@@ -257,7 +257,7 @@ utils::globalVariables(c(
 #' @noRd
 .want_diagnostics <- function(diagnostics, backend) {
   switch(diagnostics,
-    auto = !.ms_is_lazy(backend),
+    auto = !backend_is_lazy(backend),
     on   = TRUE,
     off  = FALSE,
     .stop("`diagnostics` must be \"auto\", \"on\" or \"off\"")
@@ -283,7 +283,7 @@ utils::globalVariables(c(
 #' Recast values from one resolution to another
 #'
 #' The central conversion verb: takes a table keyed by unit code at frame
-#' `from` and returns one keyed at `to` -- a frame name of the same
+#' `source` and returns one keyed at `target` -- a frame name of the same
 #' [`NestedScale`], or ANOTHER NestedScale (whose atom layer is the target, matched on
 #' shared atom keys). Handles both aggregation (fine to coarse) and
 #' disaggregation (coarse to fine) with one rule per value column; frames that
@@ -309,12 +309,12 @@ utils::globalVariables(c(
 #'   named by `key` plus one or more numeric value columns; other columns are
 #'   preserved as identifiers.
 #' @param x The [`NestedScale`] the codes in `data` belong to.
-#' @param from Frame name the codes belong to. `NULL` (default) is inferred:
+#' @param source Frame name the codes belong to. `NULL` (default) is inferred:
 #'   `key` when it is a frame name, else the single frame name appearing among
 #'   the data's columns.
-#' @param to Target frame name of `x`, or another (named) [`NestedScale`] -- then
+#' @param target Target frame name of `x`, or another (named) [`NestedScale`] -- then
 #'   the target is that object's atom layer, matched on shared atom keys.
-#' @param key Name of the code column in `data`. Defaults to `from` when that
+#' @param key Name of the code column in `data`. Defaults to `source` when that
 #'   column exists, otherwise the scale's own key.
 #' @param values Character vector of value columns to convert. Default: all
 #'   numeric columns other than the key and the scale's frame columns. Numeric
@@ -329,13 +329,13 @@ utils::globalVariables(c(
 #'   falling back to the object's default weight; when the object declares no
 #'   weights at all, atoms weigh 1 (an equal split, warned about when it is
 #'   material).
-#' @param na_action What to do with atoms that have no code at `from` or `to`:
+#' @param na_action What to do with atoms that have no code at `source` or `target`:
 #'   `"drop"` (default, with a warning -- the affected source share is
 #'   genuinely lost), `"error"`, or `"keep"` (retain an explicit `NA` row so
 #'   totals conserve).
 #' @param parent `rule = "share"` only: the frame defining the groups the
-#'   shares are taken within. `NULL` (default) uses `to` when it differs from
-#'   `from`, else the frame immediately above `from`.
+#'   shares are taken within. `NULL` (default) uses `target` when it differs from
+#'   `source`, else the frame immediately above `source`.
 #' @param collect For lazy inputs: materialise the result (`TRUE`) or return
 #'   the uncollected query (default).
 #' @param diagnostics Whether to run the checks that need a scan of the data:
@@ -369,9 +369,9 @@ utils::globalVariables(c(
 #' two differ exactly when atom weights differ. `"copy"` requires a constant
 #' value per target unit; `"sd"` is aggregation-only.
 #'
-#' `"share"` inverts the output contract: the result stays keyed at `from`,
+#' `"share"` inverts the output contract: the result stays keyed at `source`,
 #' and each value becomes that unit's share of the total over its parent
-#' group. `from` must nest within the parent. It cannot be combined with other
+#' group. `source` must nest within the parent. It cannot be combined with other
 #' rules in one call, and `weight=` is ignored -- the observed values
 #' themselves are the weights.
 #'
@@ -383,24 +383,24 @@ utils::globalVariables(c(
 #'   unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
 #'   capacity = c(1, 2, 3, 4, 5, 6)
 #' )
-#' recast_scale(d, s, from = "unit", to = "sector", rule = "sum")
+#' recast_scale(d, s, source = "unit", target = "sector", rule = "sum")
 #'
 #' # Coarse -> fine: split proportionally to size
 #' y <- data.frame(sector = c("P", "S"), capacity = c(10, 20))
 #' recast_scale(y, s,
-#'   from = "sector", to = "class",
+#'   source = "sector", target = "class",
 #'   rule = "sum", weight = "size"
 #' )
 #'
 #' # Share within parent: result stays at the atoms, sums to 1 per sector
 #' recast_scale(
 #'   d, s,
-#'   from = "unit", to = "sector",
+#'   source = "unit", target = "sector",
 #'   rule = "share",
 #'   na_action = "keep"
 #' )
 #' @export
-recast_scale <- function(data, x, from = NULL, to,
+recast_scale <- function(data, x, source = NULL, target,
                          key = NULL,
                          values = NULL,
                          rule = NULL,
@@ -418,19 +418,19 @@ recast_scale <- function(data, x, from = NULL, to,
   .check_scale(x, "x")
   v <- scale_vocab(x)
 
-  backend <- .ms_require_backend(data, "data")
-  schema <- .ms_schema(data)
+  backend <- backend_of(data, "data")
+  schema <- backend_schema(data)
   .check_ms_cols(schema)
 
-  if (is.null(from)) from <- .infer_from(x, schema, key)
-  .check_frame(x, from, "from")
-  if (is.null(key)) key <- if (from %in% names(schema)) from else scale_key(x)
+  if (is.null(source)) source <- .infer_source(x, schema, key)
+  .check_frame(x, source, "source")
+  if (is.null(key)) key <- if (source %in% names(schema)) source else scale_key(x)
   if (!key %in% names(schema)) {
     .stop("the data has no column named `%s`; pass `key=`", key)
   }
 
-  # -- cross-object route: `to` is another NestedScale ------------------------------
-  if (S7::S7_inherits(to, NestedScale)) {
+  # -- cross-object route: `target` is another NestedScale ------------------------------
+  if (S7::S7_inherits(target, NestedScale)) {
     if (any(rule %in% .SHARE_RULES)) {
       .stop(paste0(
         "rule \"share\" needs a parent frame of the same scale; ",
@@ -438,16 +438,16 @@ recast_scale <- function(data, x, from = NULL, to,
       ))
     }
     g <- recast_to_atoms(data, x,
-      from = from, key = key, values = values,
+      source = source, key = key, values = values,
       rule = rule, weight = weight, collect = collect
     )
-    return(recast_from_atoms(g, to,
-      to = .atom_level(to),
+    return(recast_from_atoms(g, target,
+      target = .atom_level(target),
       values = values, rule = rule,
       na_action = na_action, collect = collect
     ))
   }
-  .check_frame(x, to, "to")
+  .check_frame(x, target, "target")
 
   frames_all <- S7::prop(x, "frames")
   values <- .values_for(schema, key, frames_all, values)
@@ -464,7 +464,7 @@ recast_scale <- function(data, x, from = NULL, to,
   # seen unbatched. Chunking by anything else would split groups and silently
   # change numbers.
   if (!is.null(batch)) {
-    if (.ms_is_lazy(backend) && !isTRUE(collect)) {
+    if (backend_is_lazy(backend) && !isTRUE(collect)) {
       .stop(paste0(
         "`batch` applies when materialising; this call returns a ",
         "query. Pass `collect = TRUE` to batch it."
@@ -490,7 +490,7 @@ recast_scale <- function(data, x, from = NULL, to,
     return(.recast_batched(
       data, backend, batch, batch_by,
       args = list(
-        x = x, from = from, to = to, key = key, values = values,
+        x = x, source = source, target = target, key = key, values = values,
         rule = rule, weight = weight, na_action = na_action,
         parent = parent, diagnostics = diagnostics,
         missing_sources = missing_sources, ...
@@ -506,14 +506,14 @@ recast_scale <- function(data, x, from = NULL, to,
   # it is a diagnostic and obeys `diagnostics=`.
   src_keys <- NULL
   if (do_diag) {
-    src_keys <- .ms_pull(
+    src_keys <- backend_pull(
       dplyr::distinct(dplyr::select(
-        .ms_lazy(data, backend),
+        backend_lazy(data, backend),
         dplyr::all_of(key)
       ))
     )[[key]]
     src_keys <- unique(stats::na.omit(as.character(src_keys)))
-    known <- unique(stats::na.omit(as.character(leaves[[from]])))
+    known <- unique(stats::na.omit(as.character(leaves[[source]])))
     unknown <- setdiff(src_keys, known)
     if (length(unknown) > 0L) {
       .warn(
@@ -521,23 +521,23 @@ recast_scale <- function(data, x, from = NULL, to,
           "%d code(s) in the `%s` column are not present at %s `%s` ",
           "and were dropped: %s"
         ),
-        length(unknown), key, v$frame, from, .preview(unknown)
+        length(unknown), key, v$frame, source, .preview(unknown)
       )
     }
     if (length(intersect(src_keys, known)) == 0L) {
       .stop(paste0(
-        "no rows matched %s `%s`; check `from=` and the `%s` ",
+        "no rows matched %s `%s`; check `source=` and the `%s` ",
         "column"
-      ), v$frame, from, key)
+      ), v$frame, source, key)
     }
   }
 
-  # -- share within parent: result keyed at `from`, one rule for all ---------
+  # -- share within parent: result keyed at `source`, one rule for all ---------
   is_share <- vapply(rules, function(r) r$rule %in% .SHARE_RULES, logical(1))
   if (any(is_share)) {
     if (!all(is_share)) {
       .stop(paste0(
-        "rule \"share\" changes the output key to `from` and ",
+        "rule \"share\" changes the output key to `source` and ",
         "cannot be mixed with other rules in one call; recast the ",
         "columns separately"
       ))
@@ -546,7 +546,7 @@ recast_scale <- function(data, x, from = NULL, to,
       .warn("`weight` is ignored by rule \"share\": the values are the weights")
     }
     return(.recast_share(
-      data, backend, x, from, to, key, values, id_cols,
+      data, backend, x, source, target, key, values, id_cols,
       parent, na_action, collect
     ))
   }
@@ -555,14 +555,14 @@ recast_scale <- function(data, x, from = NULL, to,
   }
 
   if (na_action == "error") {
-    n_bad <- sum(is.na(leaves[[from]]) | is.na(leaves[[to]]))
+    n_bad <- sum(is.na(leaves[[source]]) | is.na(leaves[[target]]))
     if (n_bad > 0L) {
       .stop(
         paste0(
           "%d atom(s) have no code at %s `%s` or `%s`; use ",
           "na_action = \"drop\" or \"keep\""
         ),
-        n_bad, v$frame, from, to
+        n_bad, v$frame, source, target
       )
     }
   }
@@ -574,12 +574,12 @@ recast_scale <- function(data, x, from = NULL, to,
     r$rule %in% c("sum", "weighted_mean")
   }, logical(1))
   if (no_declared && is.null(weight) && any(need_split) &&
-    scale_rank(x, to) > scale_rank(x, from)) {
+    scale_rank(x, target) > scale_rank(x, source)) {
     .warn(paste0(
       "no weight column declared; splitting `%s` equally across ",
       "the atoms of each `%s`. Declare a weight for a ",
       "size-proportional split."
-    ), to, from)
+    ), target, source)
   }
 
   # One crosswalk per distinct weight, folded into a single table: the
@@ -588,23 +588,23 @@ recast_scale <- function(data, x, from = NULL, to,
   # (plus a join of the large intermediates) into one pass, always.
   wts <- unique(wt_of)
   maps <- lapply(wts, function(wt) {
-    scale_map(x, from, to, weight = if (nzchar(wt)) wt else NULL, ...)
+    scale_map(x, source, target, weight = if (nzchar(wt)) wt else NULL, ...)
   })
   names(maps) <- wts
   map_by <- setdiff(
     names(maps[[1L]]),
-    c(from, to, "n_from", "n_overlap", "w", "w_from")
+    c(source, target, "n_from", "n_overlap", "w", "w_from")
   )
 
   # Coverage is a property of the atoms, so it is the same in every one of
   # these crosswalks; decide it once and apply it to all of them.
-  uncovered <- is.na(maps[[1L]][[to]])
+  uncovered <- is.na(maps[[1L]][[target]])
   uncovered_any <- any(uncovered)
   if (uncovered_any && na_action == "drop") {
     # The warning is diagnostic; DROPPING the uncovered rows is semantics and
     # happens either way.
     if (do_diag) {
-      affected <- intersect(unique(maps[[1L]][[from]][uncovered]), src_keys)
+      affected <- intersect(unique(maps[[1L]][[source]][uncovered]), src_keys)
       if (length(affected) > 0L) {
         .warn(
           paste0(
@@ -612,39 +612,39 @@ recast_scale <- function(data, x, from = NULL, to,
             "source unit(s) falling in them is dropped (%s). Use ",
             "na_action = \"keep\" to conserve totals."
           ),
-          sum(maps[[1L]]$n_overlap[uncovered]), v$frame, to,
+          sum(maps[[1L]]$n_overlap[uncovered]), v$frame, target,
           length(affected), .preview(affected)
         )
       }
     }
     maps <- lapply(maps, function(m) m[!uncovered, , drop = FALSE])
   }
-  retained_from <- unique(maps[[1L]][[from]])
+  retained_from <- unique(maps[[1L]][[source]])
 
   # Residual protection applies only when DISAGGREGATING. Aggregating INTO a
   # coarse residual is legitimate -- it collects its own fine parts -- so the
   # guard must not fire in that direction.
-  res_targets <- if (scale_rank(x, to) > scale_rank(x, from)) {
-    scale_residuals(x, to)
+  res_targets <- if (scale_rank(x, target) > scale_rank(x, source)) {
+    scale_residuals(x, target)
   } else {
     character()
   }
-  wide <- .widen_maps(maps, from, to, key, wt_of, res_targets)
+  wide <- .widen_maps(maps, source, target, key, wt_of, res_targets)
   res <- .recast_pipeline(data, backend, wide$jmap, key, values, rules,
     id_cols, map_by, missing_sources, wide$sfx,
     unit = v$unit,
-    check_copy = !(.ms_is_lazy(backend) && !isTRUE(collect))
+    check_copy = !(backend_is_lazy(backend) && !isTRUE(collect))
   )
 
-  if (!identical(key, to)) {
-    res <- dplyr::rename(res, !!rlang::sym(to) := !!rlang::sym(key))
+  if (!identical(key, target)) {
+    res <- dplyr::rename(res, !!rlang::sym(target) := !!rlang::sym(key))
   }
 
   # LAZY RETURN. Nothing below this line may run for a lazy caller: everything
   # after it either scans the data for a diagnostic or materialises the
   # result, and a caller asking for a query wants neither.
-  if (.ms_is_lazy(backend) && !isTRUE(collect)) {
-    return(dplyr::select(res, dplyr::all_of(c(to, id_cols, values))))
+  if (backend_is_lazy(backend) && !isTRUE(collect)) {
+    return(dplyr::select(res, dplyr::all_of(c(target, id_cols, values))))
   }
 
   # Missing-source diagnostic: crosswalk units absent from an identifier
@@ -653,9 +653,9 @@ recast_scale <- function(data, x, from = NULL, to,
   # only produces a warning, so it is the first thing `diagnostics=` turns off.
   if (do_diag) {
     all_missing <- if (length(id_cols) > 0L) {
-      keysets <- .ms_pull(dplyr::distinct(
+      keysets <- backend_pull(dplyr::distinct(
         dplyr::select(
-          .ms_lazy(data, backend),
+          backend_lazy(data, backend),
           dplyr::all_of(c(id_cols, key))
         )
       ))
@@ -681,8 +681,8 @@ recast_scale <- function(data, x, from = NULL, to,
   }
 
   idc <- if (length(id_cols) > 0L) {
-    .ms_pull(dplyr::distinct(dplyr::select(
-      .ms_lazy(data, backend),
+    backend_pull(dplyr::distinct(dplyr::select(
+      backend_lazy(data, backend),
       dplyr::all_of(id_cols)
     )))
   } else {
@@ -690,11 +690,11 @@ recast_scale <- function(data, x, from = NULL, to,
   }
 
   res <- as.data.frame(dplyr::collect(res))
-  target_keys <- S7::prop(x, "members")[[to]]
+  target_keys <- S7::prop(x, "members")[[target]]
   keep_na_row <- na_action == "keep" && uncovered_any
   out_keys <- c(target_keys, if (keep_na_row) NA_character_)
-  out <- .recast_complete(res, idc, out_keys, to, id_cols, values)
-  .ms_restore(out, backend, collect = collect)
+  out <- .recast_complete(res, idc, out_keys, target, id_cols, values)
+  backend_restore(out, backend, collect = collect)
 }
 
 #' Run a recast in chunks of identifier values and bind the results
@@ -702,25 +702,25 @@ recast_scale <- function(data, x, from = NULL, to,
 #' Diagnostics are forced OFF inside chunks, and not to save time: a source
 #' unit absent from one chunk is usually present in another, so per-chunk
 #' diagnostics would report missing sources that are not missing from the
-#' data. The result is bound with [`.ms_bind_rows()`].
+#' data. The result is bound with [`backend_bind_rows()`].
 #' @noRd
 .recast_batched <- function(data, backend, batch, batch_by, args) {
-  vals <- .ms_pull(dplyr::distinct(dplyr::select(
-    .ms_lazy(data, backend), dplyr::all_of(batch_by)
+  vals <- backend_pull(dplyr::distinct(dplyr::select(
+    backend_lazy(data, backend), dplyr::all_of(batch_by)
   )))[[batch_by]]
   vals <- unique(vals)
-  chunks <- .ms_chunks(vals, batch)
+  chunks <- .backend_chunks(vals, batch)
 
   bsym <- rlang::sym(batch_by)
   args$diagnostics <- "off"
   args$collect <- TRUE
 
   parts <- lapply(chunks, function(ch) {
-    d <- dplyr::filter(.ms_lazy(data, backend), !!bsym %in% ch)
+    d <- dplyr::filter(backend_lazy(data, backend), !!bsym %in% ch)
     do.call(recast_scale, c(list(data = d), args))
   })
-  out <- .ms_bind_rows(parts)
-  .ms_restore(out, backend, collect = TRUE)
+  out <- backend_bind_rows(parts)
+  backend_restore(out, backend, collect = TRUE)
 }
 
 #' Registry scope for a scale: its dimension, not its name
@@ -732,58 +732,58 @@ recast_scale <- function(data, x, from = NULL, to,
 
 #' Resolve the parent frame for rule "share"
 #'
-#' Explicit `parent=` wins, then `to` when it differs from `from`, then the
-#' frame immediately above `from` (frames are ordered coarsest first).
+#' Explicit `parent=` wins, then `target` when it differs from `source`, then the
+#' frame immediately above `source` (frames are ordered coarsest first).
 #' @noRd
-.share_parent <- function(x, from, to, parent) {
+.share_parent <- function(x, source, target, parent) {
   if (!is.null(parent)) {
     .check_frame(x, parent, "parent")
-    if (!identical(to, from) && !identical(to, parent)) {
+    if (!identical(target, source) && !identical(target, parent)) {
       .stop(paste0(
-        "conflicting parents: `to = \"%s\"` vs `parent = \"%s\"`; ",
+        "conflicting parents: `target = \"%s\"` vs `parent = \"%s\"`; ",
         "for rule \"share\" pass the parent once"
-      ), to, parent)
+      ), target, parent)
     }
-  } else if (!identical(to, from)) {
-    parent <- to
+  } else if (!identical(target, source)) {
+    parent <- target
   } else {
     fr <- S7::prop(x, "frames")
-    i <- match(from, fr)
+    i <- match(source, fr)
     if (is.na(i) || i <= 1L) {
-      .stop("`%s` has no coarser frame; pass `parent=`", from)
+      .stop("`%s` has no coarser frame; pass `parent=`", source)
     }
     parent <- fr[[i - 1L]]
   }
-  if (scale_rank(x, parent) >= scale_rank(x, from)) {
+  if (scale_rank(x, parent) >= scale_rank(x, source)) {
     .stop(paste0(
       "rule \"share\": parent `%s` must be coarser than ",
-      "`from = \"%s\"`"
-    ), parent, from)
+      "`source = \"%s\"`"
+    ), parent, source)
   }
   parent
 }
 
 #' rule = "share": each source unit's value over its parent-group total.
-#' Output is keyed at `from` -- the one rule that does not change the key.
+#' Output is keyed at `source` -- the one rule that does not change the key.
 #' @noRd
-.recast_share <- function(data, backend, x, from, to, key, values, id_cols,
+.recast_share <- function(data, backend, x, source, target, key, values, id_cols,
                           parent, na_action, collect) {
-  parent <- .share_parent(x, from, to, parent)
+  parent <- .share_parent(x, source, target, parent)
   v <- scale_vocab(x)
 
-  map <- scale_map(x, from, parent)
-  mem <- unique(map[, c(from, parent)])
+  map <- scale_map(x, source, parent)
+  mem <- unique(map[, c(source, parent)])
 
-  # shares within a parent are only well-defined when `from` nests in it
-  n_par <- table(mem[[from]][!is.na(mem[[parent]])])
+  # shares within a parent are only well-defined when `source` nests in it
+  n_par <- table(mem[[source]][!is.na(mem[[parent]])])
   split_codes <- names(n_par)[n_par > 1L]
   if (length(split_codes) > 0L) {
     .stop(
       paste0(
         "rule \"share\": %d unit(s) of `%s` straddle more than one ",
-        "`%s` (%s); `from` must nest within the parent"
+        "`%s` (%s); `source` must nest within the parent"
       ),
-      length(split_codes), from, parent, .preview(split_codes)
+      length(split_codes), source, parent, .preview(split_codes)
     )
   }
 
@@ -795,7 +795,7 @@ recast_scale <- function(data, x, from = NULL, to,
           "%d unit(s) of `%s` have no code at parent `%s`; use ",
           "na_action = \"drop\" or \"keep\""
         ),
-        sum(orphan), from, parent
+        sum(orphan), source, parent
       )
     }
     if (na_action == "drop") {
@@ -805,7 +805,7 @@ recast_scale <- function(data, x, from = NULL, to,
           "NA shares (%s). Use na_action = \"keep\" to treat them ",
           "as one group."
         ),
-        sum(orphan), from, parent, .preview(mem[[from]][orphan])
+        sum(orphan), source, parent, .preview(mem[[source]][orphan])
       )
       mem <- mem[!orphan, , drop = FALSE]
     }
@@ -815,7 +815,7 @@ recast_scale <- function(data, x, from = NULL, to,
   names(jmem) <- c(key, ".ms_parent")
 
   xq <- dplyr::select(
-    .ms_lazy(data, backend),
+    backend_lazy(data, backend),
     dplyr::all_of(c(id_cols, key, values))
   )
   joined <- dplyr::inner_join(xq, jmem, by = key)
@@ -838,38 +838,38 @@ recast_scale <- function(data, x, from = NULL, to,
     dplyr::left_join(tot, by = c(id_cols, ".ms_parent"), na_matches = "na") |>
     dplyr::mutate(!!!share_exprs) |>
     dplyr::select(dplyr::all_of(c(key, id_cols, values)))
-  if (!identical(key, from)) {
-    res <- dplyr::rename(res, !!rlang::sym(from) := !!rlang::sym(key))
+  if (!identical(key, source)) {
+    res <- dplyr::rename(res, !!rlang::sym(source) := !!rlang::sym(key))
   }
 
-  if (.ms_is_lazy(backend) && !isTRUE(collect)) {
-    return(dplyr::select(res, dplyr::all_of(c(from, id_cols, values))))
+  if (backend_is_lazy(backend) && !isTRUE(collect)) {
+    return(dplyr::select(res, dplyr::all_of(c(source, id_cols, values))))
   }
 
   idc <- if (length(id_cols) > 0L) {
-    .ms_pull(dplyr::distinct(dplyr::select(
-      .ms_lazy(data, backend),
+    backend_pull(dplyr::distinct(dplyr::select(
+      backend_lazy(data, backend),
       dplyr::all_of(id_cols)
     )))
   } else {
     data.frame()
   }
   res <- as.data.frame(dplyr::collect(res))
-  out_keys <- S7::prop(x, "members")[[from]]
-  out <- .recast_complete(res, idc, out_keys, from, id_cols, values)
-  .ms_restore(out, backend, collect = collect)
+  out_keys <- S7::prop(x, "members")[[source]]
+  out <- .recast_complete(res, idc, out_keys, source, id_cols, values)
+  backend_restore(out, backend, collect = collect)
 }
 
 #' Fold the per-weight crosswalks into ONE
 #'
-#' `from`, `to`, `n_from` and `n_overlap` do not depend on the weight -- they
+#' `source`, `target`, `n_from` and `n_overlap` do not depend on the weight -- they
 #' come from grouping the atoms, which the weight never touches -- so the
 #' crosswalks for several weights differ only in `w`/`w_from`. Carrying each
 #' weight's split factor as its own column therefore lets one join and one
 #' summarise do what used to take a full pass over the data per weight, plus a
 #' join of the large intermediates.
 #' @noRd
-.widen_maps <- function(maps, from, to, key, wt_of,
+.widen_maps <- function(maps, source, target, key, wt_of,
                         residual_targets = character()) {
   wts <- names(maps)
   base <- maps[[1L]]
@@ -885,8 +885,8 @@ recast_scale <- function(data, x, from = NULL, to,
   }
 
   jmap <- base[shared]
-  names(jmap)[names(jmap) == from] <- key
-  names(jmap)[names(jmap) == to] <- ".ms_to"
+  names(jmap)[names(jmap) == source] <- key
+  names(jmap)[names(jmap) == target] <- ".ms_to"
   names(jmap)[names(jmap) == "n_from"] <- ".ms_n_from"
   names(jmap)[names(jmap) == "n_overlap"] <- ".ms_n_overlap"
 
@@ -915,7 +915,7 @@ recast_scale <- function(data, x, from = NULL, to,
             "every target of `%s` is a declared residual, so a ",
             "figure at `%s` has nowhere allocable to go: %s"
           ),
-          from, from, .preview(unique(grp[dead]))
+          source, source, .preview(unique(grp[dead]))
         )
       }
       f <- ifelse(is_res, 0, ifelse(w_tot > 0, w_ok / w_tot, n_ok / n_tot))
@@ -950,7 +950,7 @@ recast_scale <- function(data, x, from = NULL, to,
   # inject NA rows for absent (identifier, source) pairs, and the counting
   # repair below reproduces its effect from the aggregate instead.
   xq <- dplyr::select(
-    .ms_lazy(data, backend),
+    backend_lazy(data, backend),
     dplyr::all_of(c(id_cols, key, values))
   )
   joined <- dplyr::inner_join(xq, jmap, by = c(shared_ids, key))
@@ -1037,7 +1037,7 @@ recast_scale <- function(data, x, from = NULL, to,
 #'
 #' The crosswalk is a data frame with one row per (source, target) pair:
 #'
-#' * the source and target codes, in the columns named by `from` and `to`;
+#' * the source and target codes, in the columns named by `source` and `target`;
 #' * `n_from`, the number of atoms (grid points) in the source code, and
 #'   `n_overlap`, the number of them that fall in the target;
 #' * optionally `w`, the weight of the pair for `"weighted_mean"` -- by default
@@ -1053,8 +1053,8 @@ recast_scale <- function(data, x, from = NULL, to,
 #' @param data The data, in any supported backend, with a code column and one
 #'   or more numeric value columns.
 #' @param map The crosswalk, a `data.frame`.
-#' @param from,to Names of the source and target code columns of `map`.
-#' @param key Name of the code column of `data`. Defaults to `from`.
+#' @param source,target Names of the source and target code columns of `map`.
+#' @param key Name of the code column of `data`. Defaults to `source`.
 #' @param values Value columns. Default: every numeric column that is neither
 #'   `key` nor in `ids`.
 #' @param rule One of [`SCALE_RULES`] other than the share rules, for every
@@ -1087,21 +1087,21 @@ recast_scale <- function(data, x, from = NULL, to,
 #'   price = c(10, 20)
 #' )
 #' recast_crosswalk(d, map,
-#'   from = "month", to = "quarter",
+#'   source = "month", target = "quarter",
 #'   rule = c(energy = "sum", price = "weighted_mean")
 #' )
 #' @export
-recast_crosswalk <- function(data, map, from, to, key = from,
+recast_crosswalk <- function(data, map, source, target, key = source,
                              values = NULL, rule = NULL, ids = NULL,
                              by = character(), targets = NULL,
                              missing_sources = c("na", "ignore"),
                              unit = "unit", collect = NULL) {
   missing_sources <- match.arg(missing_sources)
-  backend <- .ms_require_backend(data, "data")
-  schema <- .ms_schema(data)
+  backend <- backend_of(data, "data")
+  schema <- backend_schema(data)
   .check_ms_cols(schema)
   if (!is.data.frame(map)) .stop("`map` must be a data.frame")
-  need <- c(from, to, "n_from", "n_overlap", by)
+  need <- c(source, target, "n_from", "n_overlap", by)
   absent <- setdiff(need, names(map))
   if (length(absent) > 0L) {
     .stop("`map` is missing column(s): %s", .preview(absent))
@@ -1123,7 +1123,7 @@ recast_crosswalk <- function(data, map, from, to, key = from,
   .no_share(rules, "recast_crosswalk")
 
   map <- as.data.frame(map)
-  jmap <- map[c(from, to, "n_from", "n_overlap", by)]
+  jmap <- map[c(source, target, "n_from", "n_overlap", by)]
   names(jmap)[1:4] <- c(key, ".ms_to", ".ms_n_from", ".ms_n_overlap")
   # Weighted split needs both `w` and `w_from`; `[[` because `map$w` would
   # partial-match `w_from` when `w` is absent.
@@ -1139,30 +1139,30 @@ recast_crosswalk <- function(data, map, from, to, key = from,
   res <- .recast_pipeline(data, backend, jmap, key, values, rules, ids,
     map_by = by, missing_sources = missing_sources,
     unit = unit,
-    check_copy = !(.ms_is_lazy(backend) && !isTRUE(collect))
+    check_copy = !(backend_is_lazy(backend) && !isTRUE(collect))
   )
-  if (!identical(key, to)) {
-    res <- dplyr::rename(res, !!rlang::sym(to) := !!rlang::sym(key))
+  if (!identical(key, target)) {
+    res <- dplyr::rename(res, !!rlang::sym(target) := !!rlang::sym(key))
   }
 
-  if (.ms_is_lazy(backend) && !isTRUE(collect)) {
-    return(dplyr::select(res, dplyr::all_of(c(to, ids, values))))
+  if (backend_is_lazy(backend) && !isTRUE(collect)) {
+    return(dplyr::select(res, dplyr::all_of(c(target, ids, values))))
   }
   res <- as.data.frame(dplyr::collect(res))
   out <- if (is.null(targets)) {
-    res[, c(to, ids, values), drop = FALSE]
+    res[, c(target, ids, values), drop = FALSE]
   } else {
     idc <- if (length(ids) > 0L) {
-      .ms_pull(dplyr::distinct(dplyr::select(
-        .ms_lazy(data, backend),
+      backend_pull(dplyr::distinct(dplyr::select(
+        backend_lazy(data, backend),
         dplyr::all_of(ids)
       )))
     } else {
       data.frame()
     }
-    .recast_complete(res, idc, targets, to, ids, values)
+    .recast_complete(res, idc, targets, target, ids, values)
   }
-  .ms_restore(out, backend, collect = collect)
+  backend_restore(out, backend, collect = collect)
 }
 
 # -----------------------------------------------------------------------------
@@ -1176,7 +1176,7 @@ recast_crosswalk <- function(data, map, from, to, key = from,
 #' row per atom), and `recast_from_atoms()` aggregates atom-keyed data UP into
 #' a frame's units. Their composition is [`recast_scale()`], and because the
 #' atom rows are keyed by the atom IDs,
-#' `recast_from_atoms(recast_to_atoms(data, a), b, to)` recasts across two
+#' `recast_from_atoms(recast_to_atoms(data, a), b, target)` recasts across two
 #' scales that share atom keys.
 #'
 #' Going down, extensive columns (rule `"sum"`) are split across a unit's
@@ -1185,11 +1185,11 @@ recast_crosswalk <- function(data, map, from, to, key = from,
 #' return trip's `"weighted_mean"` reproduces the source weighting exactly.
 #'
 #' @param data The data: for `recast_to_atoms()` keyed by unit code at frame
-#'   `from`; for `recast_from_atoms()` keyed by atom IDs.
+#'   `source`; for `recast_from_atoms()` keyed by atom IDs.
 #' @param x The [`NestedScale`] the data is keyed in, or aggregated into.
-#' @param from `to_atoms` only: frame name the codes belong to. `NULL`
+#' @param source `to_atoms` only: frame name the codes belong to. `NULL`
 #'   (default) is inferred as in [`recast_scale()`].
-#' @param to `from_atoms` only: target frame name.
+#' @param target `from_atoms` only: target frame name.
 #' @param key The key column; defaults as in [`recast_scale()`].
 #' @param values,rule As in [`recast_scale()`].
 #' @param weight `to_atoms`: a declared weight column of `x`. `from_atoms`:
@@ -1201,7 +1201,7 @@ recast_crosswalk <- function(data, map, from, to, key = from,
 #' @param na_rm `from_atoms` only: read an `NA` value as "this member says
 #'   nothing" rather than as an unknown that makes the whole group `NA`.
 #' @param na_action `from_atoms` only: what to do with atoms that have no code
-#'   at `to`.
+#'   at `target`.
 #' @param collect For lazy inputs: materialise (`TRUE`) or return the query.
 #'
 #' @return `recast_to_atoms()`: one row per (atom x identifier combination).
@@ -1212,28 +1212,28 @@ recast_crosswalk <- function(data, map, from, to, key = from,
 #' s <- scale_example()
 #' d <- data.frame(sector = c("P", "S"), capacity = c(10, 20))
 #' atoms <- recast_to_atoms(d, s,
-#'   from = "sector", rule = "sum",
+#'   source = "sector", rule = "sum",
 #'   weight = "size"
 #' )
 #' head(atoms)
 #' recast_from_atoms(
 #'   atoms, s,
-#'   to = "class",
+#'   target = "class",
 #'   rule = "sum",
 #'   na_action = "keep"
 #' )
 #' @export
-recast_to_atoms <- function(data, x, from = NULL, key = NULL, values = NULL,
+recast_to_atoms <- function(data, x, source = NULL, key = NULL, values = NULL,
                             rule = NULL, weight = NULL, attach_weight = TRUE,
                             collect = NULL) {
   .check_scale(x, "x")
-  backend <- .ms_require_backend(data, "data")
-  schema <- .ms_schema(data)
+  backend <- backend_of(data, "data")
+  schema <- backend_schema(data)
   .check_ms_cols(schema)
 
-  if (is.null(from)) from <- .infer_from(x, schema, key)
-  .check_frame(x, from, "from")
-  if (is.null(key)) key <- if (from %in% names(schema)) from else scale_key(x)
+  if (is.null(source)) source <- .infer_source(x, schema, key)
+  .check_frame(x, source, "source")
+  if (is.null(key)) key <- if (source %in% names(schema)) source else scale_key(x)
   if (!key %in% names(schema)) {
     .stop("the data has no column named `%s`; pass `key=`", key)
   }
@@ -1252,7 +1252,7 @@ recast_to_atoms <- function(data, x, from = NULL, key = NULL, values = NULL,
   wcol <- .map_weight(x, weight)
 
   atoms <- data.frame(
-    .from = as.character(leaves[[from]]),
+    .from = as.character(leaves[[source]]),
     .atom = as.character(leaves[[akey]]),
     .w = if (is.null(wcol)) 1 else as.numeric(leaves[[wcol]]),
     stringsAsFactors = FALSE
@@ -1286,7 +1286,7 @@ recast_to_atoms <- function(data, x, from = NULL, key = NULL, values = NULL,
   names(down_exprs) <- values
 
   xq <- dplyr::select(
-    .ms_lazy(data, backend),
+    backend_lazy(data, backend),
     dplyr::all_of(c(id_cols, key, values))
   )
   out <- dplyr::inner_join(
@@ -1298,23 +1298,23 @@ recast_to_atoms <- function(data, x, from = NULL, key = NULL, values = NULL,
       c(akey, id_cols, values, if (attach_weight) "weight")
     ))
 
-  if (.ms_is_lazy(backend) && !isTRUE(collect)) {
+  if (backend_is_lazy(backend) && !isTRUE(collect)) {
     return(out)
   }
-  .ms_restore(out, backend, collect = collect)
+  backend_restore(out, backend, collect = collect)
 }
 
 #' @rdname recast_to_atoms
 #' @export
-recast_from_atoms <- function(data, x, to, key = NULL, values = NULL,
+recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
                               rule = NULL, weight = NULL, na_rm = FALSE,
                               na_action = c("drop", "error", "keep"),
                               collect = NULL) {
   na_action <- match.arg(na_action)
   .check_scale(x, "x")
-  .check_frame(x, to, "to")
-  backend <- .ms_require_backend(data, "data")
-  schema <- .ms_schema(data)
+  .check_frame(x, target, "target")
+  backend <- backend_of(data, "data")
+  schema <- backend_schema(data)
   .check_ms_cols(schema)
 
   akey <- scale_key(x)
@@ -1347,7 +1347,7 @@ recast_from_atoms <- function(data, x, to, key = NULL, values = NULL,
   leaves <- S7::prop(x, "leaftable")
   jmem <- data.frame(
     k = as.character(leaves[[akey]]),
-    t = as.character(leaves[[to]]),
+    t = as.character(leaves[[target]]),
     stringsAsFactors = FALSE
   )
   uncovered_any <- any(is.na(jmem$t))
@@ -1355,13 +1355,13 @@ recast_from_atoms <- function(data, x, to, key = NULL, values = NULL,
     if (na_action == "error") {
       .stop(
         "%d atom(s) have no code at `%s`; use na_action = \"drop\" or \"keep\"",
-        sum(is.na(jmem$t)), to
+        sum(is.na(jmem$t)), target
       )
     }
     if (na_action == "drop") {
       .warn(
         "%d atom(s) have no code at `%s` and were dropped",
-        sum(is.na(jmem$t)), to
+        sum(is.na(jmem$t)), target
       )
       jmem <- jmem[!is.na(jmem$t), , drop = FALSE]
     }
@@ -1369,7 +1369,7 @@ recast_from_atoms <- function(data, x, to, key = NULL, values = NULL,
   names(jmem) <- c(key, ".ms_to")
 
   xq <- dplyr::select(
-    .ms_lazy(data, backend),
+    backend_lazy(data, backend),
     dplyr::all_of(c(
       id_cols, key, values,
       if (!is.null(wt_col)) wt_col
@@ -1405,22 +1405,22 @@ recast_from_atoms <- function(data, x, to, key = NULL, values = NULL,
     dplyr::group_by(dplyr::across(dplyr::all_of(grp_cols))) |>
     dplyr::summarise(!!!exprs, .groups = "drop")
   if (length(copy_cols) > 0L) {
-    if (!(.ms_is_lazy(backend) && !isTRUE(collect))) {
+    if (!(backend_is_lazy(backend) && !isTRUE(collect))) {
       .check_copy_result(res, copy_cols, backend, scale_vocab(x)$unit)
     }
     res <- dplyr::select(res, -dplyr::any_of(
       c(paste0(".ms_mx_", copy_cols), paste0(".ms_mn_", copy_cols))
     ))
   }
-  res <- dplyr::rename(res, !!rlang::sym(to) := !!rlang::sym(".ms_to"))
+  res <- dplyr::rename(res, !!rlang::sym(target) := !!rlang::sym(".ms_to"))
 
-  if (.ms_is_lazy(backend) && !isTRUE(collect)) {
-    return(dplyr::select(res, dplyr::all_of(c(to, id_cols, values))))
+  if (backend_is_lazy(backend) && !isTRUE(collect)) {
+    return(dplyr::select(res, dplyr::all_of(c(target, id_cols, values))))
   }
 
   idc <- if (length(id_cols) > 0L) {
-    .ms_pull(dplyr::distinct(dplyr::select(
-      .ms_lazy(data, backend),
+    backend_pull(dplyr::distinct(dplyr::select(
+      backend_lazy(data, backend),
       dplyr::all_of(id_cols)
     )))
   } else {
@@ -1428,11 +1428,11 @@ recast_from_atoms <- function(data, x, to, key = NULL, values = NULL,
   }
   res <- as.data.frame(dplyr::collect(res))
   out_keys <- c(
-    S7::prop(x, "members")[[to]],
+    S7::prop(x, "members")[[target]],
     if (na_action == "keep" && uncovered_any) NA_character_
   )
-  out <- .recast_complete(res, idc, out_keys, to, id_cols, values)
-  .ms_restore(out, backend, collect = collect)
+  out <- .recast_complete(res, idc, out_keys, target, id_cols, values)
+  backend_restore(out, backend, collect = collect)
 }
 
 # -----------------------------------------------------------------------------
@@ -1447,16 +1447,16 @@ recast_from_atoms <- function(data, x, to, key = NULL, values = NULL,
 #' generic. [`recast_scale()`] and [`recast_product()`] are the explicit
 #' workers.
 #'
-#' `from` is the SCALE, matching the convention the dimension packages
-#' established. The source FRAME -- `recast_scale()`'s own `from` -- is
-#' `from_frame` here, mirroring `geoscales`' `from_geoframe`.
+#' The scale is `scale`; the source frame is `source` and the target `target`,
+#' as in [`recast_scale()`], so a call reads the same through the generic and
+#' through the worker.
 #'
 #' @param x The data to recast.
-#' @param from The scale to recast through.
-#' @param ... Passed to the dispatched method: for a [`NestedScale`] the arguments of
-#'   [`recast_scale()`], with `to` the target frame and `from_frame` the source
-#'   frame (inferred when omitted); for a [`ScaleProduct`] those of
-#'   [`recast_product()`].
+#' @param scale The scale to recast through.
+#' @param ... Passed to the dispatched method: for a [`NestedScale`] the
+#'   arguments of [`recast_scale()`], with `target` the target frame and
+#'   `source` the source frame (inferred when omitted); for a
+#'   [`ScaleProduct`] those of [`recast_product()`].
 #'
 #' @return The recast data, in the input's class.
 #'
@@ -1466,11 +1466,11 @@ recast_from_atoms <- function(data, x, to, key = NULL, values = NULL,
 #'   unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
 #'   capacity = c(1, 2, 3, 4, 5, 6)
 #' )
-#' recast(d, s, to = "sector", rule = "sum")
+#' recast(d, s, target = "sector", rule = "sum")
 #' @export
-recast <- S7::new_generic("recast", dispatch_args = c("x", "from"))
+recast <- S7::new_generic("recast", dispatch_args = c("x", "scale"))
 
 S7::method(recast, list(S7::class_any, NestedScale)) <-
-  function(x, from, to, from_frame = NULL, ...) {
-    recast_scale(data = x, x = from, from = from_frame, to = to, ...)
+  function(x, scale, target, source = NULL, ...) {
+    recast_scale(data = x, x = scale, source = source, target = target, ...)
   }

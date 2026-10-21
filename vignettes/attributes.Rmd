@@ -1,0 +1,289 @@
+---
+title: "Attributes, aliases and conversion"
+description: "Why attributes are not weights, how a value resolves along the hierarchy, explicit sources, strict label matching, and converting mass to energy to emissions with the shipped IPCC defaults."
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Attributes, aliases and conversion}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(nestedscales)
+```
+
+## What problem does this solve?
+
+Energy models, statistics and inventories carve fuels into categories, and
+every source carves differently: the IPCC lists fifty-odd fuels, a model has
+a handful of commodity codes, a chart wants a dozen colours. The numbers
+that turn one quantity into another -- a net calorific value in GJ/t, a CO2
+factor in kg/TJ -- are published per category, for *some* categories, and
+the category a figure is published for is rarely the one the data is keyed
+by.
+
+A nested scale keeps such numbers as **attributes**: values that belong to
+a member at whatever level they are published, resolved down the hierarchy
+when a finer member has none of its own, and applied row by row. The same
+mechanism serves any dimension -- an area per region, an hour count per
+time slice -- but fuels are where it earns its keep, so this vignette works
+on the shipped fuel taxonomy.
+
+## The shipped taxonomy
+
+`carriers` is the fuel taxonomy of the energypal palettes, frozen as a
+definition file: 71 fuels under 17 carriers under 8 groups.
+
+```{r carriers}
+carriers <- read_scale("carriers")
+carriers
+scale_units(carriers, "carrier")
+scale_children(carriers, "carrier", "FossilCoal")
+```
+
+Codes repeat across frames (`Nuclear` is a group *and* the carrier inside
+it), so every lookup names its frame.
+
+It carries the IPCC 2006 default net calorific values and CO2 factors for
+the fuels whose definition matches an IPCC fuel. Where there is no match,
+there is no number -- the package never fills one in:
+
+```{r lhv}
+lhv <- scale_attributes(carriers, "lhv", frame = "fuel")
+lhv[!is.na(lhv$value), c("unit", "value", "unit_of_measure", "source")]
+```
+
+## Attributes are not weights
+
+A weight says *how big an atom is*: hours in a time slice, area of a
+region, consumption of a fuel. Weights drive aggregation (`weighted_mean`
+up) and disaggregation (`sum` split down). They are declared on the
+leaftable and sum over the scale.
+
+A calorific value is none of those things. It is a *conversion factor*: it
+turns a tonne of this fuel into gigajoules, row by row, and summing it over
+fuels is meaningless. So a scale keeps attributes in a separate table,
+keyed by `(frame, unit)`, and consumes them only in `convert_scale()`.
+The constructor promotes numeric leaftable columns to weights; a calorific
+value passed as a column would become a weight and be summed. Pass it as
+`attributes=`.
+
+Averaging an attribute over a fuel mix *is* a legitimate aggregation -- the
+mean calorific value of "coal" given how much of each coal is burnt. That is
+an ordinary recast of a resolved attribute with the `weighted_mean` rule,
+and the weight is where weights live: on the scale, as the consumption of
+each fuel.
+
+```{r mix}
+coal <- filter_scale(carriers, "carrier", "FossilCoal")
+lt <- scale_leaftable(coal)
+lt$tj <- c(100, 300, 50, 400, 20, 0)
+mix <- scale_from_leaftable(
+  lt, frames = c("group", "carrier", "fuel"), key = "fuel",
+  attributes = scale_attributes(coal), name = "mix"
+)
+lhv_coal <- scale_attributes(mix, "lhv", frame = "fuel")
+recast_scale(
+  data.frame(fuel = lhv_coal$unit, lhv = lhv_coal$value), mix,
+  source = "fuel", target = "carrier", rule = "weighted_mean", weight = "tj"
+)
+```
+
+(`filter_scale()` keeps only the attribute rows of the surviving members,
+so the subset's table is exactly what the new scale may take.)
+
+## Attributes live at any frame, and resolve by nearest ancestor
+
+A value may be stored on a fuel, on a carrier or on a group. When a fuel has
+no value of its own, `scale_attributes()` walks to the nearest coarser frame
+that holds one and reports where the value came from. The shipped data
+stores everything at the fuel level; a carrier-level figure from another
+source fills the gaps below it without touching the fuels that have their
+own:
+
+```{r inherit}
+gas <- attach_attributes_scale(
+  carriers,
+  data.frame(frame = "carrier", unit = "FossilGas", attribute = "lhv",
+             kind = "property", value = 46, unit_of_measure = "GJ/t"),
+  source = "example"
+)
+res <- scale_attributes(gas, "lhv", frame = "fuel")
+res[res$unit %in% scale_children(gas, "carrier", "FossilGas"),
+    c("unit", "value", "source", "origin_frame", "origin_unit")]
+```
+
+`NaturalGas` keeps its IPCC value; its siblings inherit the carrier's.
+Nothing is guessed from a sibling or an average.
+
+Two situations are refused rather than resolved:
+
+* **Ambiguity across a cross-cutting frame.** When the walk reaches a frame
+  where the member has several ancestors and one of them holds the
+  attribute, it cannot pick one and errors; if none does, it continues to
+  the next coarser frame. `vignette("anatomy")` builds a scale with such a
+  frame.
+* **Several sources.** Two sources publishing the same attribute for the
+  same member is an error unless `source=` chooses. The walk stays within
+  the chosen source: a source that lacks a fuel reports `NA` rather than
+  borrowing another's figure.
+
+```{r sources, error = TRUE}
+two <- attach_attributes_scale(
+  carriers,
+  data.frame(frame = "fuel", unit = "Anthracite", attribute = "lhv",
+             kind = "property", value = 27.5, unit_of_measure = "GJ/t"),
+  source = "other"
+)
+scale_attributes(two, "lhv", frame = "fuel")
+other <- scale_attributes(two, "lhv", frame = "fuel", source = "other")
+other[!is.na(other$value), c("unit", "value", "source")]
+```
+
+## Sources and provenance
+
+Every attribute row names its `source` and `unit_of_measure`. Attaching
+never overwrites: a row with the same `(frame, unit, attribute, source)` is
+an error, so the way to add a better number is to attach it under its own
+source name and select it. Every attribute name carries a `kind`
+(`SCALE_ATTRIBUTE_KINDS`): a `property` is an invertible ratio, a `factor`
+converts one way only. Any attribute name is accepted.
+
+## Mass to energy, with the calorific value
+
+`convert_scale()` multiplies each row by the attribute resolved for its
+fuel. `lhv` is stored in GJ/t, so the direction is tonnes to gigajoules; the
+result reports which factor was applied and where it came from.
+
+```{r convert}
+use <- data.frame(
+  fuel = c("Anthracite", "Lignite", "NaturalGas", "Biodiesel"),
+  kt   = c(120, 900, 0, 15)
+)
+use$t <- use$kt * 1e3                 # kt -> t: no prefix arithmetic is done
+energy <- convert_scale(use[c("fuel", "t")], carriers, "lhv",
+                        from_unit = "t", to_unit = "GJ")
+energy
+```
+
+A fuel without a value is an error, not a silent zero. Pass
+`na_action = "keep"` to carry `NA` instead. A `property` converts both ways:
+
+```{r invert}
+convert_scale(energy[c("fuel", "t")], carriers, "lhv",
+              from_unit = "GJ", to_unit = "t")
+```
+
+## Aggregate to carriers
+
+Aggregation is a recast with an explicit rule; `sum` conserves the total.
+Register the rule once per column, or pass `rule=` each time.
+
+One decision has to be stated. The table reports four fuels against a
+taxonomy of 71. By default an absent fuel is *unknown*, and every carrier
+that contains one aggregates to `NA` with a warning -- the safe reading for
+incomplete data. Fuel statistics usually mean the other thing, that an
+unreported fuel was not used, and `missing_sources = "ignore"` says so.
+
+```{r recast}
+tj <- data.frame(fuel = energy$fuel, tj = energy$t / 1e3)   # GJ -> TJ
+register_scale_rule("tj", "sum")
+by_carrier <- recast_scale(tj, carriers, source = "fuel", target = "carrier",
+                           missing_sources = "ignore")
+by_carrier[by_carrier$tj > 0, ]
+sum(by_carrier$tj, na.rm = TRUE) == sum(tj$tj)
+```
+
+## Emissions, one-way
+
+An emission factor converts energy to CO2 and nothing else:
+`convert_scale()` refuses the inverse because `ef_co2` is stored with kind
+`factor`, not `property`.
+
+```{r emissions}
+co2 <- convert_scale(tj, carriers, "ef_co2", from_unit = "TJ", to_unit = "kg")
+names(co2)[names(co2) == "tj"] <- "co2_kg"
+co2
+```
+
+```{r emissions-inverse, error = TRUE}
+convert_scale(tj, carriers, "ef_co2", from_unit = "kg", to_unit = "TJ")
+```
+
+## Where the numbers come from
+
+Every IPCC row ships, with its mapping status, so the choice to attach a
+figure to a fuel is inspectable:
+
+```{r ipcc}
+ipcc <- read.csv(system.file("extdata", "ipcc2006_fuel_defaults.csv",
+                             package = "nestedscales"))
+table(ipcc$attribute, ipcc$mapping_status)
+review <- ipcc[ipcc$mapping_status == "review" & ipcc$attribute == "lhv", ]
+review[c("ipcc_fuel", "unit", "value")]
+```
+
+A different source -- a country-specific calorific value, a plant-level
+measurement -- is attached under its own `source` and chosen with `source=`
+when reading; nothing is overwritten.
+
+```{r plant}
+mine <- attach_attributes_scale(
+  carriers,
+  data.frame(frame = "fuel", unit = "Lignite", attribute = "lhv",
+             kind = "property", value = 8.4, unit_of_measure = "GJ/t"),
+  source = "plant"
+)
+plant <- scale_attributes(mine, "lhv", frame = "fuel", source = "plant")
+plant[!is.na(plant$value), c("unit", "value", "source")]
+```
+
+## Model commodity codes
+
+Models key fuels by short codes. `scale_match()` resolves them through the
+alias table, exactly and case-insensitively, first against member names and
+then against aliases, and reports ambiguity instead of guessing. There is
+no fuzzy or substring stage: a model input is not the place for a near
+miss.
+
+```{r match}
+scale_match(carriers, c("GAS", "LIG", "ELC", "Hydrogen"))
+scale_match(carriers, "Hydrogen", frame = "carrier")
+```
+
+## Attaching the hierarchy, and colours
+
+A table keyed by fuel gets its carrier and group with one join; the added
+columns are prefixed by the scale's name, so a second scale on the same
+table never collides with the first.
+
+```{r join}
+join_scale(use[c("fuel", "kt")], carriers, frame = "fuel", attach = TRUE)
+```
+
+Colours are presentation and stay in energypal, which remains the editable
+source of the taxonomy's names, labels and aliases; `carriers` is a snapshot
+of it. When a figure needs colours, join them from energypal by member name
+-- the article *Fuels, regions and months* on the package site does so.
+
+## Country-specific values
+
+The IPCC defaults are global. A calorific value for hard coal in Poland is
+the same attribute at the same fuel with a different *region* -- a second
+dimension, not a deeper frame. That belongs to a `scale_product()` of the
+fuel scale and a `GeoScale` from geoscales, with the regional values attached as
+their own source; it is not built in this version.
+
+```{r cleanup, include = FALSE}
+clear_scale_rules()
+```
+
+## Where next
+
+* `vignette("anatomy")` takes the object apart: its tables, what the
+  validator guarantees, definition files, the registry.
+* The article *Fuels, regions and months* on the package site joins the
+  fuel scale with a `GeoScale` and a `Calendar` on one table and draws the
+  result with energypal's colours.
+* `?shipped_scales` documents `carriers` and the IPCC tables.

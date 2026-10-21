@@ -102,7 +102,7 @@ def test_store_refusals(tmp_path):
     s = ns.scale_example()
     bad = ns.NestedScale(leaftable=s.leaftable, frames=s.frames, members=s.members,
                          key=s.key, meta={**s.meta, "crs": object()})
-    with pytest.raises(NestedScalesError, match="cannot be written as YAML: crs"):
+    with pytest.raises(NestedScalesError, match="cannot be written: crs"):
         ns.write_scale_dataset(single_data(), bad, tmp_path / "u")
     with pytest.raises(NestedScalesError, match="is not a scale dataset"):
         ns.open_scale_dataset(tmp_path)

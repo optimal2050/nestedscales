@@ -8,20 +8,20 @@
 \alias{list_scale_maps}
 \title{Register / look up a direct crosswalk}
 \usage{
-register_scale_map(x, from, to, map)
+register_scale_map(x, source, target, map)
 
-register_scale_map_between(from, to, map)
+register_scale_map_between(source, target, map)
 
-get_scale_map(x, from, to)
+get_scale_map(x, source, target)
 
-get_scale_map_between(from, to)
+get_scale_map_between(source, target)
 
 list_scale_maps()
 }
 \arguments{
 \item{x}{The \code{\link{NestedScale}} the frames belong to, or its name.}
 
-\item{from, to}{For the within-scale functions, frame names of \code{x}. For the
+\item{source, target}{For the within-scale functions, frame names of \code{x}. For the
 \verb{_between} functions, two \code{\link{NestedScale}} objects or their names.}
 
 \item{map}{A \code{data.frame} shaped like a \code{\link[=scale_map]{scale_map()}} result: the two

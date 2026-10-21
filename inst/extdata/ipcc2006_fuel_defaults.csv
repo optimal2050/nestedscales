@@ -1,0 +1,107 @@
+"ipcc_fuel","attribute","kind","value","lower","upper","unit_of_measure","table","source","frame","unit","mapping_status","primary"
+"Crude Oil","lhv","property",42.3,40.1,44.8,"GJ/t","1.2","IPCC2006","fuel","Crude","mapped",TRUE
+"Crude Oil","ef_co2","factor",73300,71100,75500,"kg/TJ","1.4","IPCC2006","fuel","Crude","mapped",TRUE
+"Orimulsion","lhv","property",27.5,27.5,28.3,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Orimulsion","ef_co2","factor",77000,69300,85400,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Natural Gas Liquids","lhv","property",44.2,40.9,46.9,"GJ/t","1.2","IPCC2006","fuel","LPG_NGL","mapped",FALSE
+"Natural Gas Liquids","ef_co2","factor",64200,58300,70400,"kg/TJ","1.4","IPCC2006","fuel","LPG_NGL","mapped",FALSE
+"Motor Gasoline","lhv","property",44.3,42.5,44.8,"GJ/t","1.2","IPCC2006","fuel","MotorGasoline","mapped",TRUE
+"Motor Gasoline","ef_co2","factor",69300,67500,73000,"kg/TJ","1.4","IPCC2006","fuel","MotorGasoline","mapped",TRUE
+"Aviation Gasoline","lhv","property",44.3,42.5,44.8,"GJ/t","1.2","IPCC2006",,,"review",FALSE
+"Aviation Gasoline","ef_co2","factor",70000,67500,73000,"kg/TJ","1.4","IPCC2006",,,"review",FALSE
+"Jet Gasoline","lhv","property",44.3,42.5,44.8,"GJ/t","1.2","IPCC2006",,,"review",FALSE
+"Jet Gasoline","ef_co2","factor",70000,67500,73000,"kg/TJ","1.4","IPCC2006",,,"review",FALSE
+"Jet Kerosene","lhv","property",44.1,42,45,"GJ/t","1.2","IPCC2006","fuel","JetFuel","mapped",TRUE
+"Jet Kerosene","ef_co2","factor",71500,69700,74400,"kg/TJ","1.4","IPCC2006","fuel","JetFuel","mapped",TRUE
+"Other Kerosene","lhv","property",43.8,42.4,45.2,"GJ/t","1.2","IPCC2006",,,"review",FALSE
+"Other Kerosene","ef_co2","factor",71900,70800,73700,"kg/TJ","1.4","IPCC2006",,,"review",FALSE
+"Shale Oil","lhv","property",38.1,32.1,45.2,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Shale Oil","ef_co2","factor",73300,67800,79200,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Gas/Diesel Oil","lhv","property",43,41.4,43.3,"GJ/t","1.2","IPCC2006","fuel","DistillateFuelOil","mapped",TRUE
+"Gas/Diesel Oil","ef_co2","factor",74100,72600,74800,"kg/TJ","1.4","IPCC2006","fuel","DistillateFuelOil","mapped",TRUE
+"Residual Fuel Oil","lhv","property",40.4,39.8,41.7,"GJ/t","1.2","IPCC2006","fuel","ResidualFuelOil","mapped",TRUE
+"Residual Fuel Oil","ef_co2","factor",77400,75500,78800,"kg/TJ","1.4","IPCC2006","fuel","ResidualFuelOil","mapped",TRUE
+"Liquefied Petroleum Gases","lhv","property",47.3,44.8,52.2,"GJ/t","1.2","IPCC2006","fuel","LPG_NGL","mapped",TRUE
+"Liquefied Petroleum Gases","ef_co2","factor",63100,61600,65600,"kg/TJ","1.4","IPCC2006","fuel","LPG_NGL","mapped",TRUE
+"Ethane","lhv","property",46.4,44.9,48.8,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Ethane","ef_co2","factor",61600,56500,68600,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Naphtha","lhv","property",44.5,41.8,46.5,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Naphtha","ef_co2","factor",73300,69300,76300,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Bitumen","lhv","property",40.2,33.5,41.2,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Bitumen","ef_co2","factor",80700,73000,89900,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Lubricants","lhv","property",40.2,33.5,42.3,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Lubricants","ef_co2","factor",73300,71900,75200,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Petroleum Coke","lhv","property",32.5,29.7,41.9,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Petroleum Coke","ef_co2","factor",97500,82900,115000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Refinery Feedstocks","lhv","property",43,36.3,46.4,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Refinery Feedstocks","ef_co2","factor",73300,68900,76600,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Refinery Gas","lhv","property",49.5,47.5,50.6,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Refinery Gas","ef_co2","factor",57600,48200,69000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Paraffin Waxes","lhv","property",40.2,33.7,48.2,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Paraffin Waxes","ef_co2","factor",73300,72200,74400,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"White Spirit and SBP","lhv","property",40.2,33.7,48.2,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"White Spirit and SBP","ef_co2","factor",73300,72200,74400,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Other Petroleum Products","lhv","property",40.2,33.7,48.2,"GJ/t","1.2","IPCC2006","fuel","OtherFossilOil","review",FALSE
+"Other Petroleum Products","ef_co2","factor",73300,72200,74400,"kg/TJ","1.4","IPCC2006","fuel","OtherFossilOil","review",FALSE
+"Anthracite","lhv","property",26.7,21.6,32.2,"GJ/t","1.2","IPCC2006","fuel","Anthracite","mapped",TRUE
+"Anthracite","ef_co2","factor",98300,94600,101000,"kg/TJ","1.4","IPCC2006","fuel","Anthracite","mapped",TRUE
+"Coking Coal","lhv","property",28.2,24,31,"GJ/t","1.2","IPCC2006","fuel","Bituminous","mapped",FALSE
+"Coking Coal","ef_co2","factor",94600,87300,101000,"kg/TJ","1.4","IPCC2006","fuel","Bituminous","mapped",FALSE
+"Other Bituminous Coal","lhv","property",25.8,19.9,30.5,"GJ/t","1.2","IPCC2006","fuel","Bituminous","mapped",TRUE
+"Other Bituminous Coal","ef_co2","factor",94600,89500,99700,"kg/TJ","1.4","IPCC2006","fuel","Bituminous","mapped",TRUE
+"Sub-Bituminous Coal","lhv","property",18.9,11.5,26,"GJ/t","1.2","IPCC2006","fuel","SubBituminous","mapped",TRUE
+"Sub-Bituminous Coal","ef_co2","factor",96100,92800,1e+05,"kg/TJ","1.4","IPCC2006","fuel","SubBituminous","mapped",TRUE
+"Lignite","lhv","property",11.9,5.5,21.6,"GJ/t","1.2","IPCC2006","fuel","Lignite","mapped",TRUE
+"Lignite","ef_co2","factor",101000,90900,115000,"kg/TJ","1.4","IPCC2006","fuel","Lignite","mapped",TRUE
+"Oil Shale and Tar Sands","lhv","property",8.9,7.1,11.1,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Oil Shale and Tar Sands","ef_co2","factor",107000,90200,125000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Brown Coal Briquettes","lhv","property",20.7,15.1,32,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Brown Coal Briquettes","ef_co2","factor",97500,87300,109000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Patent Fuel","lhv","property",20.7,15.1,32,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Patent Fuel","ef_co2","factor",97500,87300,109000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Coke Oven Coke and Lignite Coke","lhv","property",28.2,25.1,30.2,"GJ/t","1.2","IPCC2006","fuel","Coke","mapped",TRUE
+"Coke Oven Coke and Lignite Coke","ef_co2","factor",107000,95700,119000,"kg/TJ","1.4","IPCC2006","fuel","Coke","mapped",TRUE
+"Gas Coke","lhv","property",28.2,25.1,30.2,"GJ/t","1.2","IPCC2006","fuel","Coke","mapped",FALSE
+"Gas Coke","ef_co2","factor",107000,95700,119000,"kg/TJ","1.4","IPCC2006","fuel","Coke","mapped",FALSE
+"Coal Tar","lhv","property",28,14.1,55,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Coal Tar","ef_co2","factor",80700,68200,95300,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Gas Works Gas","lhv","property",38.7,19.6,77,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Gas Works Gas","ef_co2","factor",44400,37300,54100,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Coke Oven Gas","lhv","property",38.7,19.6,77,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Coke Oven Gas","ef_co2","factor",44400,37300,54100,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Blast Furnace Gas","lhv","property",2.47,1.2,5,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Blast Furnace Gas","ef_co2","factor",260000,219000,308000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Oxygen Steel Furnace Gas","lhv","property",7.06,3.8,15,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Oxygen Steel Furnace Gas","ef_co2","factor",182000,145000,202000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Natural Gas","lhv","property",48,46.5,50.4,"GJ/t","1.2","IPCC2006","fuel","NaturalGas","mapped",TRUE
+"Natural Gas","ef_co2","factor",56100,54300,58300,"kg/TJ","1.4","IPCC2006","fuel","NaturalGas","mapped",TRUE
+"Municipal Wastes (non-biomass fraction)","lhv","property",10,7,18,"GJ/t","1.2","IPCC2006","fuel","Waste","review",FALSE
+"Municipal Wastes (non-biomass fraction)","ef_co2","factor",91700,73300,121000,"kg/TJ","1.4","IPCC2006","fuel","Waste","review",FALSE
+"Industrial Wastes","lhv","property",,,,"GJ/t","1.2","IPCC2006","fuel","Waste","review",FALSE
+"Industrial Wastes","ef_co2","factor",143000,110000,183000,"kg/TJ","1.4","IPCC2006","fuel","Waste","review",FALSE
+"Waste Oil","lhv","property",40.2,20.3,80,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Waste Oil","ef_co2","factor",73300,72200,74400,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Peat","lhv","property",9.76,7.8,12.5,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Peat","ef_co2","factor",106000,1e+05,108000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Wood/Wood Waste","lhv","property",15.6,7.9,31,"GJ/t","1.2","IPCC2006","fuel","SolidBiomass","review",FALSE
+"Wood/Wood Waste","ef_co2","factor",112000,95000,132000,"kg/TJ","1.4","IPCC2006","fuel","SolidBiomass","review",FALSE
+"Sulphite lyes (black liquor)","lhv","property",11.8,5.9,23,"GJ/t","1.2","IPCC2006",,,"unmapped",FALSE
+"Sulphite lyes (black liquor)","ef_co2","factor",95300,80700,110000,"kg/TJ","1.4","IPCC2006",,,"unmapped",FALSE
+"Other Primary Solid Biomass","lhv","property",11.6,5.9,23,"GJ/t","1.2","IPCC2006","fuel","SolidBiomass","review",FALSE
+"Other Primary Solid Biomass","ef_co2","factor",1e+05,84700,117000,"kg/TJ","1.4","IPCC2006","fuel","SolidBiomass","review",FALSE
+"Charcoal","lhv","property",29.5,14.9,58,"GJ/t","1.2","IPCC2006","fuel","SolidBiomass","review",FALSE
+"Charcoal","ef_co2","factor",112000,95000,132000,"kg/TJ","1.4","IPCC2006","fuel","SolidBiomass","review",FALSE
+"Biogasoline","lhv","property",27,13.6,54,"GJ/t","1.2","IPCC2006","fuel","Ethanol","review",FALSE
+"Biogasoline","ef_co2","factor",70800,59800,84300,"kg/TJ","1.4","IPCC2006","fuel","Ethanol","review",FALSE
+"Biodiesels","lhv","property",27,13.6,54,"GJ/t","1.2","IPCC2006","fuel","Biodiesel","mapped",TRUE
+"Biodiesels","ef_co2","factor",70800,59800,84300,"kg/TJ","1.4","IPCC2006","fuel","Biodiesel","mapped",TRUE
+"Other Liquid Biofuels","lhv","property",27.4,13.8,54,"GJ/t","1.2","IPCC2006","fuel","OtherBioenergy","review",FALSE
+"Other Liquid Biofuels","ef_co2","factor",79600,67100,95300,"kg/TJ","1.4","IPCC2006","fuel","OtherBioenergy","review",FALSE
+"Landfill Gas","lhv","property",50.4,25.4,100,"GJ/t","1.2","IPCC2006","fuel","Biogas","review",FALSE
+"Landfill Gas","ef_co2","factor",54600,46200,66000,"kg/TJ","1.4","IPCC2006","fuel","Biogas","review",FALSE
+"Sludge Gas","lhv","property",50.4,25.4,100,"GJ/t","1.2","IPCC2006","fuel","Biogas","review",FALSE
+"Sludge Gas","ef_co2","factor",54600,46200,66000,"kg/TJ","1.4","IPCC2006","fuel","Biogas","review",FALSE
+"Other Biogas","lhv","property",50.4,25.4,100,"GJ/t","1.2","IPCC2006","fuel","Biogas","review",FALSE
+"Other Biogas","ef_co2","factor",54600,46200,66000,"kg/TJ","1.4","IPCC2006","fuel","Biogas","review",FALSE
+"Municipal Wastes (biomass fraction)","lhv","property",11.6,6.8,18,"GJ/t","1.2","IPCC2006","fuel","Waste","review",FALSE
+"Municipal Wastes (biomass fraction)","ef_co2","factor",1e+05,84700,117000,"kg/TJ","1.4","IPCC2006","fuel","Waste","review",FALSE

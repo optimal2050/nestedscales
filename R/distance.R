@@ -126,12 +126,12 @@ list_scale_distances <- function() {
 }
 
 #' @rdname register_scale_distance
-#' @param names Distances to remove; `NULL` clears every registered one.
+#' @param name Distances to remove; `NULL` clears every registered one.
 #'   Built-ins cannot be removed.
 #' @export
-clear_scale_distances <- function(names = NULL) {
+clear_scale_distances <- function(name = NULL) {
   present <- ls(envir = .DISTANCE_REGISTRY, all.names = TRUE)
-  drop <- if (is.null(names)) present else intersect(names, present)
+  drop <- if (is.null(name)) present else intersect(name, present)
   if (length(drop) > 0L) rm(list = drop, envir = .DISTANCE_REGISTRY)
   invisible(NULL)
 }

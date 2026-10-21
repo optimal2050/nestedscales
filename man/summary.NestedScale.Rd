@@ -25,7 +25,8 @@
 counts), \code{n_atoms}, \code{weights}, \code{weight_totals}, \code{default_weight},
 \code{coverage} (see \code{\link[=scale_coverage]{scale_coverage()}}), \code{sampled}, \code{parent_name}, \code{nesting}
 (adjacent-pair table with offender counts, see \code{\link[=scale_nests]{scale_nests()}}),
-\code{source}, \code{vocab}.
+\code{attributes} (a \code{data.frame} of row counts by \code{attribute}, \code{frame} and
+\code{source}), \code{aliases} (counts by \code{source}), \code{source}, \code{vocab}.
 }
 \description{
 Complements \code{\link[=print]{print()}} with the quantitative view: per-weight totals and

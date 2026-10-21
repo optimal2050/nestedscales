@@ -137,7 +137,7 @@ test_that("children and parents step one frame by default", {
   expect_identical(scale_children(s, "sector", "P"), c("G1", "G2"))
   expect_identical(scale_parents(s, "class", "G1"), "P")
   expect_identical(
-    scale_children(s, "sector", "P", to = "unit"),
+    scale_children(s, "sector", "P", target = "unit"),
     c("U1", "U2", "U3", "U4")
   )
 })
@@ -178,4 +178,44 @@ test_that("scale_ancestry() does not manufacture false relationships", {
 test_that("navigation validates unknown codes", {
   s <- scale_example()
   expect_error(scale_children(s, "sector", "NOPE"), "not found at frame")
+})
+
+test_that("filter keeps only the surviving members' attribute and alias rows", {
+  es <- .fuels()
+  fossil <- filter_scale(es, "group", "Fossil")
+  at <- scale_attributes(fossil)
+  expect_false("Bio" %in% at$unit)           # the group is gone
+  expect_equal(nrow(at), 5L)
+  al <- scale_aliases(fossil)
+  expect_false("Electricity" %in% al$unit)
+  expect_equal(nrow(al), 2L)
+  expect_identical(es["group", "Bio"], filter_scale(es, "group", "Bio"))
+  # a frame dropped entirely takes its rows with it
+  es2 <- attach_attributes_scale(
+    es, data.frame(frame = "phase", unit = "gas", attribute = "lhv",
+                   value = 48, unit_of_measure = "GJ/t"),
+    source = "x", kind = "property")
+  expect_error(filter_scale(es2, "group", "Power"), "drop_empty_frames")
+  p <- filter_scale(es2, "group", "Power", drop_empty_frames = TRUE)
+  expect_identical(scale_frames(p), c("group", "carrier", "fuel"))
+  expect_false("phase" %in% scale_attributes(p)$frame)
+})
+
+test_that("prune keeps coarser attribute rows, drops finer ones, resolves", {
+  es <- .fuels_tree()
+  p <- prune_scale(es, "carrier")
+  expect_true(scale_is(p))
+  expect_identical(scale_frames(p), c("group", "carrier"))
+  expect_setequal(scale_leaftable(p)$fuel, scale_units(es, "carrier"))
+  at <- scale_attributes(p)
+  expect_false("fuel" %in% at$frame)
+  expect_setequal(at$unit, c("Oil", "Bio", "Gas"))
+  expect_setequal(scale_aliases(p)$unit, c("Coal", "Electricity"))
+  r <- scale_attributes(p, "lhv", frame = "carrier")
+  expect_equal(r$value[r$unit == "Biomass"], 15.0)   # still inherited
+  expect_identical(S7::prop(p, "meta")[["name"]], "tree@carrier")
+  expect_identical(S7::prop(p, "meta")[["parent_name"]], "tree")
+  # a cross-cutting frame between group and carrier makes Biomass three
+  # atoms, which the key uniqueness rule refuses
+  expect_error(prune_scale(.fuels(), "carrier"), "must be unique")
 })

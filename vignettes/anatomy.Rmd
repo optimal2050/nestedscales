@@ -1,0 +1,267 @@
+---
+title: "The NestedScale object"
+description: "Anatomy of a NestedScale: the leaftable, frames, members, the attribute and alias tables and meta; what the validator guarantees; definition files; the rule registry."
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{The NestedScale object}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(nestedscales)
+```
+
+This vignette takes one object apart. The example is a small fuel
+classification with every awkward feature: a code reused at two frames, a
+frame that cross-cuts another, an atom with no code at one frame, and
+attributes stored at three different levels.
+
+```{r fuels}
+lt <- data.frame(
+  group   = c("Fossil", "Fossil", "Fossil", "Fossil", "Fossil",
+              "Bio", "Bio", "Bio", "Power"),
+  phase   = c("solid", "solid", "liquid", "liquid", "gas",
+              "solid", "liquid", "gas", NA),
+  carrier = c("Coal", "Coal", "Oil", "Oil", "Gas",
+              "Biomass", "Biomass", "Biomass", "Electricity"),
+  fuel    = c("Anthracite", "Lignite", "Diesel", "Gasoline", "NaturalGas",
+              "Wood", "Biodiesel", "Biogas", "Electricity")
+)
+at <- data.frame(
+  frame     = c("fuel", "fuel", "carrier", "group", "fuel", "carrier"),
+  unit      = c("Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"),
+  attribute = c("lhv", "lhv", "lhv", "lhv", "ef_co2", "ef_co2"),
+  kind      = c(rep("property", 4), "factor", "factor"),
+  value     = c(26.7, 11.9, 42.5, 15.0, 98300, 56100),
+  unit_of_measure = c(rep("GJ/t", 4), "kg/TJ", "kg/TJ"),
+  source    = "example"
+)
+al <- data.frame(
+  frame  = c("fuel", "carrier", "fuel", "carrier", "carrier"),
+  unit   = c("Anthracite", "Coal", "Electricity", "Electricity", "Electricity"),
+  alias  = c("hard coal", "coal", "elc", "elc", "power"),
+  source = "example"
+)
+x <- scale_from_leaftable(
+  lt, frames = c("group", "phase", "carrier", "fuel"), key = "fuel",
+  attributes = at, aliases = al, name = "fuels"
+)
+x
+```
+
+## The object
+
+A `NestedScale` is an S7 object with seven properties:
+
+```{r props}
+S7::prop_names(x)
+```
+
+| property | type | holds |
+|---|---|---|
+| `leaftable` | `data.frame` | one row per atom: one column per frame, the key column, weight columns |
+| `frames` | `character` | the hierarchy, ordered coarsest first |
+| `members` | named `list` | the ordered code vocabulary at each frame |
+| `key` | `character` | the name of the atom column (`"unit"` by default) |
+| `meta` | `list` | `name`, `desc`, `weights`, `default_weight`, and whatever the builder adds |
+| `attributes` | `data.frame` | values keyed by `(frame, unit)`: `attribute`, `kind`, `value`, `lower`, `upper`, `unit_of_measure`, `source`, `note` |
+| `aliases` | `data.frame` | alternative labels keyed by `(frame, unit)`: `alias`, `source` |
+
+Everything else -- parent/child tables, ancestry, shares, resolved
+attributes -- is derived on demand; nothing is cached on the object. The
+two tables are empty unless the builder fills them; a scale saved by an
+earlier version, which had no such properties, loads and validates
+unchanged.
+
+## The leaftable
+
+```{r leaftable}
+scale_leaftable(x)
+```
+
+Each row is one atom. The key column (`fuel` here) is unique and complete.
+Frame columns may hold `NA`: `Electricity` has no physical state, so it does
+not participate at the `phase` frame, and `na_action=` decides what recasts
+do about it. The key may share its name with the finest frame, as here and
+in the shipped `carriers`: there the frame column *is* the key column.
+
+## Frames, members, ranks
+
+```{r frames}
+scale_frames(x)
+scale_atom_level(x)              # the finest frame, or the key
+scale_units(x, "carrier")        # the members at one frame
+scale_units(x)                   # the atoms
+scale_rank(x, "carrier")
+```
+
+Codes are **not unique across frames**: `Electricity` is a group and a
+carrier here, and `Nuclear`, `Heat`, `Storage`, `Other` are each a group
+and a carrier in `carriers`. Every function that takes a code therefore
+takes its frame as well.
+
+Navigation is derived from the leaftable and routed through the atoms, so a
+frame that cross-cuts another reports overlap rather than invented
+containment:
+
+```{r navigate}
+scale_nests(x, "carrier", "fuel")    # a tree
+scale_nests(x, "phase", "carrier")   # Biomass is solid, liquid and gas
+scale_parents(x, "carrier", "Biomass", target = "phase")
+scale_ancestors(x, "fuel", "Biogas")
+scale_descendants(x, "group", "Fossil")
+head(scale_ancestry(x), 4)
+```
+
+## The attribute table
+
+Physical attributes live in one long table, and a row may sit on **any**
+member, not only on an atom:
+
+```{r attributes}
+scale_attributes(x)
+```
+
+Reading with a `frame` resolves one value per member, walking to the
+nearest coarser frame when a member has none of its own, and says where the
+value came from:
+
+```{r resolve}
+scale_attributes(x, "lhv", frame = "fuel")[
+  c("unit", "value", "unit_of_measure", "origin_frame", "origin_unit")]
+```
+
+Attributes are **not weights**. A weight says how big an atom is and drives
+aggregation; an attribute is a per-member conversion factor and is consumed
+only by `convert_scale()`. The constructor promotes numeric leaftable
+columns to weights, so a calorific value must be passed as `attributes=`,
+never as a leaftable column. Every attribute name carries a `kind`:
+`property` (an invertible ratio) or `factor` (one-way).
+
+```{r kinds}
+SCALE_ATTRIBUTE_KINDS
+```
+
+`vignette("attributes")` has the reasoning and the full account of
+inheritance, sources and conversion.
+
+## The alias table
+
+```{r aliases}
+scale_aliases(x)
+scale_match(x, c("hard coal", "elc", "Lignite"))
+```
+
+One alias may point at several members (`elc` above); matching reports that
+as ambiguous unless `frame=` narrows it. Matching is exact and
+case-insensitive, with no fuzzy stage.
+
+## Weights and meta
+
+```{r meta}
+scale_weights(x)                        # none declared here
+S7::prop(x, "meta")[c("name", "desc")]
+carriers <- read_scale("carriers")
+scale_weights(carriers)
+S7::prop(carriers, "meta")[c("name", "source", "palette_version")]
+head(S7::prop(carriers, "meta")$labels, 4)
+```
+
+`meta$name` is load-bearing: `join_scale()` prefixes the columns it attaches
+with `"<name>."`, `scale_map_between()` names its label columns after the
+objects, and `write_scale()` needs a name for the definition. The shipped
+`carriers` keeps energypal's short and long labels in `meta$labels`; colours
+are not stored.
+
+## What the validator guarantees
+
+`scale_from_leaftable()` and every operation that rebuilds a scale enforce:
+
+- the key column is present, unique and complete; every frame is a
+  leaftable column and `members` are exactly its non-`NA` values, in a
+  stable order;
+- weights are numeric and finite;
+- every attribute and alias row names a `(frame, unit)` that is a member;
+  `value` is finite; `lower <= value <= upper` where given; `kind` is one
+  of `SCALE_ATTRIBUTE_KINDS` and one attribute name has one kind;
+  `unit_of_measure` and `source` are non-empty; no duplicate
+  `(frame, unit, attribute, source)` rows and no duplicate alias rows.
+
+The order of `frames` is a convention, coarsest first; the
+direction-dependent rules (`share`, residuals, reconciliation) follow it.
+
+Subsetting keeps the tables consistent: `filter_scale()` and `[` keep the
+attribute and alias rows of every surviving member at every frame, and
+`prune_scale()` keeps the rows at the frames that survive the collapse.
+
+```{r subset}
+fossil <- x["group", "Fossil"]
+scale_attributes(fossil)[c("frame", "unit", "attribute", "value")]
+```
+
+`prune_scale()` needs the frames above the new atom level to nest, so the
+cross-cutting `phase` has to go first:
+
+```{r prune}
+tree <- scale_from_leaftable(
+  lt[c("group", "carrier", "fuel")], frames = c("group", "carrier", "fuel"),
+  key = "fuel", attributes = at, aliases = al, name = "tree"
+)
+scale_aliases(prune_scale(tree, "carrier"))
+```
+
+## Definition files
+
+A scale is stored as a definition, not as an R object: a JSON header with
+the three tables inline, or, for large scales, a `<name>.scale/` bundle
+directory holding the header and the tables as Arrow IPC or CSV files. The
+Python binding reads and writes the same files.
+
+```{r definition}
+path <- file.path(tempdir(), "fuels.json")
+write_scale(x, path)
+cat(head(readLines(path), 12), sep = "\n")
+back <- read_scale(path)
+identical(scale_frames(back), scale_frames(x))
+identical(scale_attributes(back), scale_attributes(x))
+```
+
+`write_scale(format = "yaml")` writes the same header as YAML, and
+`read_scale()` accepts either. Installed packages register directories of
+definitions; `scale_catalog()` lists them and `read_scale(id)` opens one by
+its id:
+
+```{r catalog}
+scale_catalog()[c("id", "name", "kind", "frames", "n_atoms", "package")]
+```
+
+```{r cleanup, include = FALSE}
+unlink(path)
+```
+
+## The registry
+
+One package-level registry changes behaviour explicitly. **Rules** map
+value-column names to their aggregation rule; there is no fallback, and an
+unregistered column without `rule=` is an error:
+
+```{r rules}
+SCALE_RULES
+register_scale_rule("tj", "sum")
+register_scale_rule("price", "weighted_mean", weight = "tj")
+get_scale_rule("price")
+list_scale_rules()
+clear_scale_rules()
+```
+
+A rule may be scoped to one dimension with `scope=`, so a model's `tj`
+column aggregates the same way over fuels, regions and months without
+being registered three times -- or differently, when it should.
+
+## Where to next?
+
+- `vignette("nestedscales")` -- the tour of the main functions.
+- `vignette("attributes")` -- attributes, aliases and conversion on the
+  shipped `carriers`.

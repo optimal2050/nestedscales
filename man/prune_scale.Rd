@@ -22,6 +22,9 @@ frame. Weights are summed over the collapsed atoms.
 The result is renamed \code{"name@frame"} with the parent recorded in
 \code{meta$parent_name}; every other meta field is preserved. Atoms with no code
 at \code{frame} are dropped, and that loss is reflected in \code{meta$coverage}.
+The concrete class is kept: a subclass comes back as itself, its
+attribute and alias rows at the surviving frames kept, and a positional
+payload merged through \code{\link[=scale_payload_collapse]{scale_payload_collapse()}}.
 }
 \examples{
 prune_scale(scale_example(), "class")

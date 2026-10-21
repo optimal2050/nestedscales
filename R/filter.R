@@ -49,6 +49,7 @@ NULL
 #' @noRd
 .rebuild <- function(x, keep, fr, drop_empty_frames = FALSE,
                      meta = S7::prop(x, "meta")) {
+  x <- .upgrade_scale(x)
   leaves <- S7::prop(x, "leaftable")[keep, , drop = FALSE]
   rownames(leaves) <- NULL
 
@@ -81,9 +82,51 @@ NULL
     leaftable = leaves, frames = fr, members = members,
     meta = meta, .check = FALSE
   )
+  out <- .slice_member_tables(out)
   out <- scale_payload_slice(out, keep)
   S7::validate(out)
   out
+}
+
+#' Rebuild a NestedScale from a NEW leaftable, keeping the concrete class
+#'
+#' The companion of `.rebuild()` for operations that write a fresh table --
+#' a collapse to a coarser frame, an added cluster frame -- rather than keep
+#' a row subset. Like `.rebuild()` it updates a copy of `x` itself, so a
+#' subclass and its extra properties survive; the core's own attribute and
+#' alias tables are re-keyed by membership, and a subclass's positional
+#' payload goes through `scale_payload_collapse()` when rows merged (`map`,
+#' one new row index per OLD row, `NA` = dropped). Validated once at the end.
+#' @noRd
+.reconstruct <- function(x, leaftable, frames, members, meta, map = NULL) {
+  x <- .upgrade_scale(x)
+  rownames(leaftable) <- NULL
+  out <- S7::set_props(x,
+    leaftable = leaftable, frames = frames, members = members,
+    meta = meta, .check = FALSE
+  )
+  out <- .slice_member_tables(out)
+  if (!is.null(map)) out <- scale_payload_collapse(out, map)
+  S7::validate(out)
+  out
+}
+
+#' Keep the attribute and alias rows of the members that still exist
+#'
+#' The core's own payload is keyed by `(frame, unit)`, so a subset is a
+#' membership test, never a positional one -- correct under
+#' `drop_empty_frames = TRUE` and for a collapse alike. Written unchecked:
+#' the caller validates once everything is consistent.
+#' @noRd
+.slice_member_tables <- function(x) {
+  keep <- .member_keys(x)
+  at <- .attr_table(x)
+  al <- .alias_table(x)
+  at <- at[paste(at$frame, at$unit, sep = "\r") %in% keep, , drop = FALSE]
+  al <- al[paste(al$frame, al$unit, sep = "\r") %in% keep, , drop = FALSE]
+  rownames(at) <- NULL
+  rownames(al) <- NULL
+  S7::set_props(x, attributes = at, aliases = al, .check = FALSE)
 }
 
 #' Subset a NestedScale by unit
@@ -184,6 +227,9 @@ filter_scale <- function(x, frame, unit, drop_empty_frames = FALSE) {
 #' The result is renamed `"name@frame"` with the parent recorded in
 #' `meta$parent_name`; every other meta field is preserved. Atoms with no code
 #' at `frame` are dropped, and that loss is reflected in `meta$coverage`.
+#' The concrete class is kept: a subclass comes back as itself, its
+#' attribute and alias rows at the surviving frames kept, and a positional
+#' payload merged through [`scale_payload_collapse()`].
 #'
 #' @param x A [`NestedScale`].
 #' @param frame The frame to become the new atom layer.
@@ -233,17 +279,16 @@ prune_scale <- function(x, frame) {
   new_meta$parent_name <- meta[["name"]] %||% ""
   new_meta$name <- paste0(meta[["name"]] %||% "", "@", frame)
 
-  s <- scale_from_leaftable(
-    out,
-    frames = keep_fr, key = akey, weights = wts,
-    default_weight = meta[["default_weight"]],
-    name = new_meta$name, desc = meta[["desc"]] %||% ""
-  )
-  full_meta <- utils::modifyList(new_meta, S7::prop(s, "meta")[
-    c("weights", "default_weight")
-  ])
-  S7::prop(s, "meta") <- full_meta
-  s
+  # members keep their canonical order; the frames below `frame` are gone
+  members <- lapply(keep_fr, function(f) {
+    old <- S7::prop(x, "members")[[f]]
+    old[old %in% unique(stats::na.omit(as.character(out[[f]])))]
+  })
+  names(members) <- keep_fr
+  # the new row index of every OLD atom (NA = dropped), for the payload hook
+  map <- rep(NA_integer_, nrow(leaves0))
+  map[covered] <- match(gkey, gkey[idx])
+  .reconstruct(x, out, keep_fr, members, new_meta, map = map)
 }
 
 #' Weight shares within a frame

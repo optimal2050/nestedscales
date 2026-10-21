@@ -22,7 +22,7 @@ writes the cases, and every binding replays them.
 | summary | `summary(x)` | `scale_summary(x)` |
 | print | `print(x)` | `str(x)`; `repr(x)` is the one-line `format()` |
 | subclass hook | S7 generic | `functools.singledispatch` |
-| source / target argument | `from` / `to` until 0.2.0 | `source` / `target` |
+| source / target argument | `source` / `target` | `source` / `target` |
 | named vector argument (`rule = c(a = "sum")`) | named vector or list | `dict` |
 | lazy input | arrow Dataset / dtplyr | `pyarrow.dataset.Dataset`, polars `LazyFrame` |
 | `x[frame, unit]` | `[.NestedScale` | `x[frame, unit]` (`__getitem__`) |
@@ -56,21 +56,20 @@ Known differences:
 
 Status: **R** = in the R package; **Py** = in the Python binding.
 
-Signatures are the agreed ones. Three renames are already in Python and land
-in R 0.2.0, after CRAN accepts 0.1.1; R keeps the old spellings as deprecated
-aliases for one release:
+Signatures are the agreed ones. Three renames landed in R 0.2.0 with no
+deprecation aliases (the R package is pre-1.0), matching Python:
 
-* `from` / `to` become `source` / `target` everywhere: frames, scales,
+* `from` / `to` became `source` / `target` everywhere: frames, scales,
   crosswalk columns, navigation, and the atom-pair columns. In `recast()`,
   the scale argument is `scale` and the source frame `source`;
 * the `clear_*` functions take `name` (registry names or keys) and `scope`;
-* the backend helpers `.ms_*` become the `backend_*` functions below.
+* the backend helpers `.ms_*` became the `backend_*` functions below.
 
 ### Construct and inspect
 
 | Function | Arguments | Returns | R | Py |
 |---|---|---|---|---|
-| `scale_from_leaftable` | `leaftable, frames, key=NULL, weights=NULL, default_weight=NULL, members=NULL, name="", desc="", ...` | scale | ✓ | ✓ |
+| `scale_from_leaftable` | `leaftable, frames, key=NULL, weights=NULL, default_weight=NULL, members=NULL, name="", desc="", attributes=NULL, aliases=NULL, ...` | scale | ✓ | ✓ |
 | `scale_example` | | scale (7 atoms) | ✓ | ✓ |
 | `scale_example2` | | scale (4 atoms) | ✓ | ✓ |
 | `is_valid_frame` | `x` | logical per name | ✓ | ✓ |
@@ -85,6 +84,7 @@ aliases for one release:
 | `scale_coverage` | `x, weight=NULL` | weight → fraction, or one fraction | ✓ | ✓ |
 | `scale_vocab` | `x` | dimension words for messages | ✓ | ✓ |
 | `scale_payload_slice` | `x, i` | `x` with payload subset | ✓ | ✓ |
+| `scale_payload_collapse` | `x, map` | `x` with payload collapsed by `map` (old row → new row, missing = dropped); default identity | ✓ | ✓ |
 | `scale_alias_property` | `name` | alias property for subclasses | ✓ | ✓ |
 | `scale_is` | `x` | logical | ✓ | ✓ |
 | `scale_class` | | the class | ✓ | ✓ |
@@ -162,6 +162,24 @@ target does not cover. The split share of `sum` disaggregation is
 
 `as_factor = TRUE` gives an R factor, and a dictionary column in Python.
 
+### Attributes and aliases
+
+Member attributes (a calorific value, an emission factor) and aliases
+(alternative labels) are long tables on the scale keyed by `(frame, unit)`.
+Attributes are never weights and are never recast; `convert_scale()` applies
+them row by row. A `kind` travels with every attribute row: `property` is an
+invertible ratio, `factor` is one-way.
+
+| Function | Arguments | Returns | R | Py |
+|---|---|---|---|---|
+| `SCALE_ATTRIBUTE_KINDS` | | `property, factor` | ✓ | ✓ |
+| `attach_attributes_scale` | `x, attributes, source=NULL, kind=NULL` | `x` with rows appended; an existing `(frame, unit, attribute, source)` row is an error | ✓ | ✓ |
+| `scale_attributes` | `x, attribute=NULL, frame=NULL, source=NULL, inherit=TRUE` | stored rows; with `frame=` one row per member and attribute, resolved along the hierarchy (`origin_frame`, `origin_unit`) | ✓ | ✓ |
+| `attach_aliases_scale` | `x, aliases, source=NULL` | `x` with rows appended | ✓ | ✓ |
+| `scale_aliases` | `x, frame=NULL, source=NULL` | alias rows | ✓ | ✓ |
+| `scale_match` | `x, labels, frame=NULL, source=NULL` | table `label, frame, unit, method, candidates`; `method` = `exact`, `alias`, `ambiguous`, `none` | ✓ | ✓ |
+| `convert_scale` | `data, x, attribute, from_unit, to_unit, key=NULL, frame=NULL, values=NULL, source=NULL, na_action="error", collect=NULL` | `data` with value columns converted plus `<attribute>` and `<attribute>.origin_frame` | ✓ | ✓ |
+
 ### Backends
 
 For dimension packages: accept the same inputs as the core verbs and return
@@ -169,14 +187,15 @@ results in the caller's type.
 
 | Function | Arguments | Returns | R | Py |
 |---|---|---|---|---|
-| `backend_of` | `data, arg="data"` | the backend (errors on an unsupported input) | `.ms_backend` | ✓ |
-| `backend_is_lazy` | `backend` | logical | `.ms_is_lazy` | ✓ |
-| `backend_schema` | `data, backend=NULL` | column names and types, no scan | `.ms_schema` | ✓ |
-| `backend_scan` | `data, backend=NULL, columns=NULL, filter=NULL` | the needed columns and rows | `.ms_lazy` + `.ms_pull` | ✓ |
-| `backend_pull` | `data` | an in-memory table | `.ms_pull` | ✓ |
-| `backend_restore` | `table, backend, collect=NULL` | the caller's type | `.ms_restore` | ✓ |
-| `backend_bind_rows` | `parts` | one table | `.ms_bind_rows` | ✓ |
-| `backend_distinct` | `table, columns` | distinct rows, first-appearance order | — | ✓ |
+| `backend_of` | `data, arg="data"` | the backend (errors on an unsupported input) | ✓ | ✓ |
+| `backend_is_lazy` | `backend` | logical | ✓ | ✓ |
+| `backend_schema` | `data, backend=NULL` | column names and types, no scan | ✓ | ✓ |
+| `backend_scan` | `data, backend=NULL, columns=NULL, filter=NULL` | the needed columns and rows | ✓ | ✓ |
+| `backend_pull` | `table` | an in-memory table | ✓ | ✓ |
+| `backend_restore` | `table, backend, collect=NULL` | the caller's type | ✓ | ✓ |
+| `backend_bind_rows` | `parts` | one table | ✓ | ✓ |
+| `backend_distinct` | `data, columns, backend=NULL` | distinct rows, first-appearance order | ✓ | ✓ |
+| `backend_lazy` | `data, backend=NULL` | a dplyr carrier for a pipeline (R's lazy lift; Python has no need for it) | ✓ | — |
 
 ### Store
 
@@ -185,6 +204,32 @@ results in the caller's type.
 | `write_scale_dataset` | `data, x, path, partitioning=NULL, compression="zstd", overwrite=FALSE` | `path` | ✓ | ✓ |
 | `open_scale_dataset` | `path` | `data` (lazy) + `scale` | ✓ | ✓ |
 | `scale_dataset_info` | `path` | kind, axes, keys, files, bytes | ✓ | ✓ |
+
+The store's manifest is `_scales/manifest.json` (one definition header per
+axis); a legacy `manifest.yaml` is still read.
+
+### Definitions and catalogue
+
+A definition is a language-neutral file: a JSON header (`schema_version`,
+`class`, `name`, `key`, `frames`, `members`, `meta`, `tables`, `payload`) with
+the leaftable, attribute and alias tables inline (column-wise, typed) or, in a
+`<name>.scale/` bundle directory, as Arrow IPC or CSV files. YAML is accepted
+as input and optional output. The core ships `carriers` (fuels and energy
+carriers with IPCC 2006 defaults) and reads definitions from every registered
+directory.
+
+| Function | Arguments | Returns | R | Py |
+|---|---|---|---|---|
+| `write_scale` | `x, path, format="json", tables="auto", overwrite=FALSE` | `path`; `.json`/`.yaml` = one file, otherwise a bundle directory | ✓ | ✓ |
+| `read_scale` | `path, package=NULL, class="stored"` | the scale (a registered subclass, or the core with `class="core"`); `path` may be a catalogue id | ✓ | ✓ |
+| `scale_catalog` | | table `id, name, kind, key, frames, n_atoms, package, path` | ✓ | ✓ |
+| `register_scale_dir` | `path, package=NULL` | registry key | ✓ | ✓ |
+| `list_scale_dirs` | | registered directories | ✓ | ✓ |
+| `clear_scale_dirs` | | nothing | ✓ | ✓ |
+| `register_scale_class` | `class` | registry key (qualified class name) | ✓ | ✓ |
+| `list_scale_classes` | | registered class names | ✓ | ✓ |
+| `scale_write_payload` | `x, dir, header` | the header with payload entries (subclass hook; default identity) | ✓ | ✓ |
+| `scale_read_payload` | `x, dir, header` | the subclass object (subclass hook; default identity) | ✓ | ✓ |
 
 ### Products
 

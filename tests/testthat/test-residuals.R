@@ -74,7 +74,7 @@ test_that("residuals survive the dataset store round trip", {
 
 test_that("a residual still aggregates upward -- that is its purpose", {
   s <- .res_scale()
-  out <- recast_scale(.gdp(), s, from = "atom", to = "country", rule = "sum")
+  out <- recast_scale(.gdp(), s, source = "atom", target = "country", rule = "sum")
   expect_equal(out$gdp[out$country == "DE"], 750)
   expect_equal(out$gdp[out$country == "FR"], 690)
   expect_equal(sum(out$gdp), sum(.gdp()$gdp))
@@ -83,12 +83,12 @@ test_that("a residual still aggregates upward -- that is its purpose", {
 test_that("declaring residuals does not change any aggregation", {
   d <- .gdp()
   a <- recast_scale(d, .res_scale(),
-    from = "atom", to = "country",
+    source = "atom", target = "country",
     rule = "sum"
   )
   b <- recast_scale(d, .res_scale(residuals = FALSE),
-    from = "atom",
-    to = "country", rule = "sum"
+    source = "atom",
+    target = "country", rule = "sum"
   )
   expect_equal(a, b)
 })
@@ -96,7 +96,7 @@ test_that("declaring residuals does not change any aggregation", {
 test_that("the unallocated part surfaces at the regionalized frame", {
   s <- .res_scale()
   out <- recast_scale(.gdp(), s,
-    from = "atom", to = "nuts1", rule = "sum",
+    source = "atom", target = "nuts1", rule = "sum",
     na_action = "keep"
   )
   expect_true(anyNA(out$nuts1))
@@ -114,7 +114,7 @@ test_that("a zero-weight residual receives nothing when splitting down", {
   )
   out <- suppressWarnings(
     recast_scale(nat, s,
-      from = "country", to = "atom", rule = "sum",
+      source = "country", target = "atom", rule = "sum",
       weight = "pop"
     )
   )
@@ -133,7 +133,7 @@ test_that("a positive-weight residual is protected AND the total is kept", {
   )
   out <- suppressWarnings(
     recast_scale(nat, s,
-      from = "country", to = "atom", rule = "sum",
+      source = "country", target = "atom", rule = "sum",
       weight = "pop"
     )
   )
@@ -156,7 +156,7 @@ test_that("a scale with NO declared weights protects residuals too", {
   )
   nat <- data.frame(country = "DE", inv = 90, stringsAsFactors = FALSE)
   out <- suppressWarnings(
-    recast_scale(nat, s, from = "country", to = "atom", rule = "sum")
+    recast_scale(nat, s, source = "country", target = "atom", rule = "sum")
   )
   expect_equal(out$inv[out$atom == "DE_XR"], 0)
   expect_equal(out$inv[out$atom == "DE1"], 45)
@@ -174,7 +174,7 @@ test_that("undeclared residuals are NOT protected -- the guard is opt-in", {
   )
   nat <- data.frame(country = "DE", inv = 90, stringsAsFactors = FALSE)
   out <- suppressWarnings(
-    recast_scale(nat, s, from = "country", to = "atom", rule = "sum")
+    recast_scale(nat, s, source = "country", target = "atom", rule = "sum")
   )
   expect_equal(out$inv[out$atom == "DE_XR"], 30)
 })
@@ -195,7 +195,7 @@ test_that("a group that is ALL residual has nowhere allocable to go", {
   )
   expect_error(
     suppressWarnings(recast_scale(nat, s,
-      from = "country", to = "atom",
+      source = "country", target = "atom",
       rule = "sum", weight = "pop"
     )),
     "nowhere allocable"
@@ -219,7 +219,7 @@ test_that("protection does not fire when aggregating INTO a coarse residual", {
     atom = c("a1", "x1", "x2"), v = c(1, 2, 3),
     stringsAsFactors = FALSE
   )
-  out <- recast_scale(d, s, from = "atom", to = "grp", rule = "sum")
+  out <- recast_scale(d, s, source = "atom", target = "grp", rule = "sum")
   expect_equal(out$v[out$grp == "XR"], 5)
   expect_equal(sum(out$v), 6)
 })

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "nestedscales": "0.1.1.9000",
+  "class": "nestedscales::NestedScale",
+  "name": "example",
+  "key": "unit",
+  "frames": ["sector", "class", "group", "unit"],
+  "members": {
+    "sector": ["P", "S"],
+    "class": ["G1", "G2", "S1"],
+    "group": ["G1", "GB", "GC"],
+    "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+  },
+  "meta": {
+    "name": "example",
+    "desc": "Synthetic example: reused code, non-nesting frame pair, and an unassigned atom",
+    "weights": ["size", "count"],
+    "default_weight": "size"
+  },
+  "tables": {
+    "leaftable": {
+      "inline": {
+        "columns": {
+          "sector": ["P", "P", "P", "P", "S", "S", null],
+          "class": ["G1", "G1", "G2", "G2", "S1", "S1", null],
+          "group": ["G1", "G1", "GB", "GB", "GB", "GC", null],
+          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+          "size": [100, 200, 300, 400, 500, 600, 1000],
+          "count": [10, 90, 30, 70, 50, 50, 0]
+        },
+        "types": {
+          "sector": "string",
+          "class": "string",
+          "group": "string",
+          "unit": "string",
+          "size": "double",
+          "count": "double"
+        }
+      }
+    },
+    "attributes": {
+      "inline": {
+        "columns": {
+          "frame": [],
+          "unit": [],
+          "attribute": [],
+          "kind": [],
+          "value": [],
+          "lower": [],
+          "upper": [],
+          "unit_of_measure": [],
+          "source": [],
+          "note": []
+        },
+        "types": {
+          "frame": "string",
+          "unit": "string",
+          "attribute": "string",
+          "kind": "string",
+          "value": "double",
+          "lower": "double",
+          "upper": "double",
+          "unit_of_measure": "string",
+          "source": "string",
+          "note": "string"
+        }
+      }
+    },
+    "aliases": {
+      "inline": {
+        "columns": {
+          "frame": [],
+          "unit": [],
+          "alias": [],
+          "source": []
+        },
+        "types": {
+          "frame": "string",
+          "unit": "string",
+          "alias": "string",
+          "source": "string"
+        }
+      }
+    }
+  },
+  "payload": {}
+}

@@ -8,13 +8,13 @@
 \alias{scale_ancestors}
 \title{Navigate a NestedScale's hierarchy}
 \usage{
-scale_children(x, frame, unit, to = NULL)
+scale_children(x, frame, unit, target = NULL)
 
-scale_parents(x, frame, unit, to = NULL)
+scale_parents(x, frame, unit, target = NULL)
 
-scale_descendants(x, frame, unit, to = NULL)
+scale_descendants(x, frame, unit, target = NULL)
 
-scale_ancestors(x, frame, unit, to = NULL)
+scale_ancestors(x, frame, unit, target = NULL)
 }
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
@@ -23,7 +23,7 @@ scale_ancestors(x, frame, unit, to = NULL)
 
 \item{unit}{Character vector of codes.}
 
-\item{to}{Target frame. \code{NULL} uses the adjacent frame (children/parents)
+\item{target}{Target frame. \code{NULL} uses the adjacent frame (children/parents)
 or every finer/coarser frame (descendants/ancestors).}
 }
 \value{
