@@ -1,0 +1,13 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  articles/across-dimensions: across-dimensions.html
+  anatomy: anatomy.html
+  attributes: attributes.html
+  nestedscales: nestedscales.html
+  articles/roadmap: roadmap.html
+last_built: 2026-10-21T16:37Z
+urls:
+  reference: https://optimal2050.github.io/nestedscales/r/reference
+  article: https://optimal2050.github.io/nestedscales/r/articles

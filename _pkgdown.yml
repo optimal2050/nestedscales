@@ -1,4 +1,5 @@
-url: https://optimal2050.github.io/nestedscales/
+url: https://optimal2050.github.io/nestedscales/r/
+destination: docs/r
 
 home:
   sidebar:
@@ -17,6 +18,11 @@ footer:
 navbar:
   structure:
     left: [intro, reference, articles, news]
+    right: [search, python, github, lightswitch]
+  components:
+    python:
+      text: Python
+      href: ../python/
 
 articles:
   - title: "The object"

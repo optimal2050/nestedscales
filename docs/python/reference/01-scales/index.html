@@ -1,0 +1,2666 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://optimal2050.github.io/nestedscales/python/reference/01-scales/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../02-navigation-and-shares/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Scales - nestedscales for Python</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scales" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="nestedscales for Python" class="md-header__button md-logo" aria-label="nestedscales for Python" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            nestedscales for Python
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Scales
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/optimal2050/nestedscales" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="nestedscales for Python" class="md-nav__button md-logo" aria-label="nestedscales for Python" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    nestedscales for Python
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/optimal2050/nestedscales" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scales
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_from_leaftable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_from_leaftable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_example2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_example2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.NestedScale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NestedScale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NestedScale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.NestedScale.__getitem__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __getitem__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_class
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="scale_class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.SCALE_ATTRIBUTE_KINDS" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SCALE_ATTRIBUTE_KINDS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.NestedScale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NestedScale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NestedScale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.NestedScale.__getitem__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __getitem__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.ScaleSummary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ScaleSummary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_alias_property" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_alias_property
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_atom_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_atom_level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_frames
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_leaftable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_leaftable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_payload_slice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_payload_slice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_rank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_rank
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_residuals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_residuals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_vocab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_vocab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_product_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_product_class
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_is_product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_is_product
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_frames
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_units
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_key
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_leaftable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_leaftable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_weights
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_rank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_rank
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_atom_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_atom_level
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_residuals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_residuals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.is_valid_frame" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_valid_frame
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-navigation-and-shares/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Navigation and shares
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-subsetting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subsetting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-attributes-and-aliases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attributes and aliases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-conversion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conversion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-crosswalks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Crosswalks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-products-of-scales/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Products of scales
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-definitions-and-catalogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Definitions and catalogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-arrays-and-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays and storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-building-a-dimension-package/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building a dimension package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-python-only/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python only
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../r/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    R package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../r/API.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-language API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_from_leaftable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_from_leaftable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_example2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_example2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.NestedScale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NestedScale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NestedScale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.NestedScale.__getitem__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __getitem__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_class
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="scale_class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.SCALE_ATTRIBUTE_KINDS" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SCALE_ATTRIBUTE_KINDS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.NestedScale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NestedScale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NestedScale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.NestedScale.__getitem__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __getitem__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.ScaleSummary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ScaleSummary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_alias_property" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_alias_property
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_atom_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_atom_level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_frames
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_leaftable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_leaftable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_payload_slice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_payload_slice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_rank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_rank
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_residuals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_residuals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_vocab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_vocab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedscales.scale_class.scale_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_product_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_product_class
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_is_product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_is_product
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_frames
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_units
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_key
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_leaftable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_leaftable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_weights
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_rank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_rank
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_atom_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_atom_level
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_residuals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_residuals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.is_valid_frame" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_valid_frame
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nestedscales.scale_summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scale_summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="scales">Scales</h1>
+<p>Build a scale and read its structure.</p>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_from_leaftable" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_from_leaftable</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_from_leaftable</span><span class="p">(</span>
+    <span class="n">leaftable</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">frames</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">default_weight</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">members</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">aliases</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">meta</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NestedScale</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Build a NestedScale from a flat table of atoms.</p>
+<p><code>leaftable</code> has one row per atom, one column per name in <code>frames</code>
+(coarsest first) and optionally numeric weight columns. Blank strings in
+frame columns become null: that atom has no code at that frame.</p>
+<p><code>key</code> defaults to <code>"unit"</code> when that column exists, else the finest frame.
+<code>weights</code> defaults to every numeric column that is neither a frame, the
+key, nor a reserved name. <code>members</code> defaults to first-appearance order.
+Extra keyword arguments are merged into <code>meta</code> (e.g. <code>source</code>, <code>labels</code>).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_example" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_example</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_example</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">NestedScale</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A small example scale with three awkward real-world features.</p>
+<ul>
+<li>a code ("G1") reused at two frames, so lookups must name the frame;</li>
+<li>a non-nesting pair -- group "GB" draws units from two classes;</li>
+<li>a unit ("OTH") with no code at any coarser frame.</li>
+</ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_example2" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_example2</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_example2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">NestedScale</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>A second small, well-behaved example scale (frames era/period).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="nestedscales.NestedScale" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">NestedScale</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>A nested discrete partition: a table of atoms plus the frames grouping them.</p>
+<p>Construct with <code>scale_from_leaftable()</code>. Treat as immutable: every verb
+returns a new object.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.NestedScale.__getitem__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__getitem__</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__getitem__</span><span class="p">(</span><span class="n">idx</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NestedScale</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p><code>x[frame, unit]</code> is <code>filter_scale(x, frame, unit)</code>, as in R.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="nestedscales.scale_class" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">scale_class</span>
+
+
+</h2>
+
+    <div class="doc doc-contents first">
+
+        <p>NestedScale -- the dimension-agnostic core type (port of R/scale-class.R).</p>
+<p>A <code>NestedScale</code> is a nested partition of a set of atoms, in any dimension:</p>
+<ul>
+<li><code>leaftable</code> -- one row per atom: a column per frame, a unique key column
+  (named by <code>key</code>) and zero or more numeric weight columns</li>
+<li><code>frames</code>    -- frame names, COARSEST first</li>
+<li><code>members</code>   -- frame -&gt; the ordered code vocabulary at that frame</li>
+<li><code>key</code>       -- name of the atom key column (default <code>"unit"</code>)</li>
+<li><code>meta</code>      -- name, desc, weights, default_weight, residuals, labels,
+                 source, and the sample bookkeeping (coverage,
+                 parent_totals, parent_name)</li>
+</ul>
+<p>Frames are partitions of the atoms, not necessarily a tree; conversion always
+routes through the atoms. Anything derivable is computed on demand.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="nestedscales.scale_class.SCALE_ATTRIBUTE_KINDS" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">SCALE_ATTRIBUTE_KINDS</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">SCALE_ATTRIBUTE_KINDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'property'</span><span class="p">,</span> <span class="s1">'factor'</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p><code>property</code> = an invertible ratio (lhv, density); <code>factor</code> = one-way (an
+emission factor, a loss factor).</p>
+
+    </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="nestedscales.scale_class.NestedScale" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">NestedScale</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>A nested discrete partition: a table of atoms plus the frames grouping them.</p>
+<p>Construct with <code>scale_from_leaftable()</code>. Treat as immutable: every verb
+returns a new object.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="nestedscales.scale_class.NestedScale.__getitem__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__getitem__</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__getitem__</span><span class="p">(</span><span class="n">idx</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NestedScale</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p><code>x[frame, unit]</code> is <code>filter_scale(x, frame, unit)</code>, as in R.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="nestedscales.scale_class.ScaleSummary" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ScaleSummary</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>The quantitative view of a scale (R: <code>summary()</code> -&gt; <code>summary_Scale</code>).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_alias_property" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_alias_property</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_alias_property</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">property</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A read-only property exposing an inherited field under another name.</p>
+<p>How a <code>Calendar</code> keeps <code>timeframes</code> and a <code>Geoscale</code> keeps <code>geoframes</code>
+over the inherited <code>frames</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_atom_level" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_atom_level</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_atom_level</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The finest frame when it has one code per atom, otherwise the key.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_class" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_class</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_class</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">NestedScale</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The NestedScale class, for subclassing and dispatch.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_frames" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_frames</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_frames</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">finest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Frame names, coarsest first; only the finest when <code>finest=True</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_is" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_is</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_is</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Is <code>x</code> a NestedScale (or a subclass)?</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_key" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_key</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_key</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The atom key column name.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_leaftable" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_leaftable</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_leaftable</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pa</span><span class="o">.</span><span class="n">Table</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The one-row-per-atom table the scale is built on.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_payload_slice" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_payload_slice</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_payload_slice</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NestedScale</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Subset a subclass's per-atom payload to the kept leaftable rows <code>i</code>.</p>
+<p>The <code>NestedScale</code> default has no payload and returns <code>x</code> unchanged.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_rank" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_rank</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_rank</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">list</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Position of a frame in the hierarchy; 1 is the coarsest.</p>
+<p>The key ranks one past the last frame when it is not itself a frame. Names
+that are not frames give None.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_residuals" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_residuals</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_residuals</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Residual units: the frame -&gt; codes mapping, or one frame's codes.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_summary" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_summary</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_summary</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScaleSummary</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Per-weight totals, coverage and the adjacent-frame nesting table.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_units" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_units</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_units</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The code vocabulary at one frame, in canonical order (default: atoms).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_vocab" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_vocab</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_vocab</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>The words engine messages use for this scale's dimension.</p>
+<p>Subclasses register their own implementation with
+<code>scale_vocab.register(Subclass)</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="nestedscales.scale_class.scale_weights" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_weights</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_weights</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Weight column names (possibly empty).</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_product_class" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_product_class</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_product_class</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">ScaleProduct</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_is" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_is</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_is</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Is <code>x</code> a NestedScale (or a subclass)?</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_is_product" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_is_product</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_is_product</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_frames" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_frames</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_frames</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">finest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Frame names, coarsest first; only the finest when <code>finest=True</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_units" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_units</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_units</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>The code vocabulary at one frame, in canonical order (default: atoms).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_key" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_key</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_key</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>The atom key column name.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_leaftable" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_leaftable</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_leaftable</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pa</span><span class="o">.</span><span class="n">Table</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>The one-row-per-atom table the scale is built on.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_weights" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_weights</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_weights</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Weight column names (possibly empty).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_rank" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_rank</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_rank</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">list</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Position of a frame in the hierarchy; 1 is the coarsest.</p>
+<p>The key ranks one past the last frame when it is not itself a frame. Names
+that are not frames give None.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_atom_level" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_atom_level</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_atom_level</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>The finest frame when it has one code per atom, otherwise the key.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_residuals" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_residuals</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_residuals</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Residual units: the frame -&gt; codes mapping, or one frame's codes.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.is_valid_frame" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">is_valid_frame</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_valid_frame</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Validate frame names.</p>
+<p>Returns a bool for a single string, a list of bools for a sequence.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="nestedscales.scale_summary" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">scale_summary</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">scale_summary</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">NestedScale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScaleSummary</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Per-weight totals, coverage and the adjacent-frame nesting table.</p>
+
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
