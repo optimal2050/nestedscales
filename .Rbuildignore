@@ -36,3 +36,4 @@
 ^CLAUDE\.md$
 ^tools$
 ^README\.html$
+^\.ruff_cache$

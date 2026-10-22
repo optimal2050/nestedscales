@@ -9,6 +9,10 @@ A character vector of length 7.
 \usage{
 SCALE_RULES
 }
+\value{
+A character vector of the seven rule names accepted by the \code{rule}
+argument of \code{\link[=recast_scale]{recast_scale()}} and \code{\link[=register_scale_rule]{register_scale_rule()}}.
+}
 \description{
 Each rule defines behaviour in \strong{both} directions. Direction is taken from
 the frame ranks, so aggregation and disaggregation are one operation:

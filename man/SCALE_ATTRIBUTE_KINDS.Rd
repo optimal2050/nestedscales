@@ -9,6 +9,11 @@ A character vector of length 2.
 \usage{
 SCALE_ATTRIBUTE_KINDS
 }
+\value{
+A character vector of the two attribute kinds accepted in the
+\code{kind} column of \code{\link[=attach_attributes_scale]{attach_attributes_scale()}}: \code{"property"} and
+\code{"factor"}.
+}
 \description{
 Every attribute name carries a kind, which \code{\link[=convert_scale]{convert_scale()}} consults:
 }

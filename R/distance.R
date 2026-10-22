@@ -25,6 +25,9 @@
 #' }
 #'
 #' @format A character vector.
+#' @returns A character vector of the six built-in distance names accepted by
+#'   the `method` argument of [scale_distance()]; [list_scale_distances()] adds
+#'   any registered with [register_scale_distance()].
 #' @examples
 #' SCALE_DISTANCES
 #' @export

@@ -4,7 +4,9 @@
 # Usage (from the repository root):
 #   Rscript tools/site/build_site.R
 #
-#   docs/index.html  landing page (tools/site/index.html)
+#   docs/index.html  landing page: rendered from docs/index.qmd with Quarto
+#                    when that exists, else tools/site/index.html (plus the
+#                    logo from man/figures/logo.png when there is one)
 #   docs/r/          pkgdown site (_pkgdown.yml: destination docs/r)
 #   docs/python/     MkDocs site (python/mkdocs.yml, written by
 #                    tools/site/python_reference.py)
@@ -17,8 +19,9 @@ py <- normalizePath(file.path("python", ".venv",
                               if (.Platform$OS.type == "windows") "Scripts/python.exe"
                               else "bin/python"), mustWork = TRUE)
 
-unlink("docs", recursive = TRUE)
-dir.create("docs")
+# docs/ also holds files this script does not write (a landing page source,
+# a README): it is never cleared; each step rebuilds its own part.
+dir.create("docs", showWarnings = FALSE)
 
 pkgdown::build_site(".", preview = FALSE, install = TRUE)
 
@@ -31,7 +34,17 @@ run <- function(args, wd = ".") {
 run("tools/site/python_reference.py")
 run(c("-m", "mkdocs", "build", "--clean", "--quiet"), wd = "python")
 
-file.copy(file.path("tools", "site", "index.html"), file.path("docs", "index.html"),
-          overwrite = TRUE)
+if (file.exists(file.path("docs", "index.qmd"))) {
+  if (!identical(system2("quarto", c("render", "docs/index.qmd")), 0L)) {
+    stop("failed: quarto render docs/index.qmd")
+  }
+} else {
+  file.copy(file.path("tools", "site", "index.html"),
+            file.path("docs", "index.html"), overwrite = TRUE)
+  logo <- file.path("man", "figures", "logo.png")
+  if (file.exists(logo)) {
+    file.copy(logo, file.path("docs", "logo.png"), overwrite = TRUE)
+  }
+}
 file.create(file.path("docs", ".nojekyll"))
 cat("site written to docs/: r/, python/, index.html\n")

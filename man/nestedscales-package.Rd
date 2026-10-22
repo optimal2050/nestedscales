@@ -40,7 +40,7 @@ choosing one for you.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://optimal2050.github.io/nestedscales/}
+  \item \url{https://optimal2050.github.io/nestedscales/r/}
   \item \url{https://github.com/optimal2050/nestedscales}
   \item Report bugs at \url{https://github.com/optimal2050/nestedscales/issues}
 }

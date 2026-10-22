@@ -9,6 +9,11 @@ A character vector.
 \usage{
 SCALE_DISTANCES
 }
+\value{
+A character vector of the six built-in distance names accepted by
+the \code{method} argument of \code{\link[=scale_distance]{scale_distance()}}; \code{\link[=list_scale_distances]{list_scale_distances()}} adds
+any registered with \code{\link[=register_scale_distance]{register_scale_distance()}}.
+}
 \description{
 \describe{
 \item{\code{euclidean}, \code{manhattan}, \code{maximum}}{Straight to

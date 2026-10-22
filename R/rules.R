@@ -42,6 +42,8 @@
 #' }
 #'
 #' @format A character vector of length 7.
+#' @returns A character vector of the seven rule names accepted by the `rule`
+#'   argument of [recast_scale()] and [register_scale_rule()].
 #' @examples
 #' SCALE_RULES
 #' @export

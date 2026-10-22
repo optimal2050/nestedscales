@@ -34,6 +34,9 @@ NULL
 #' }
 #'
 #' @format A character vector of length 2.
+#' @returns A character vector of the two attribute kinds accepted in the
+#'   `kind` column of [attach_attributes_scale()]: `"property"` and
+#'   `"factor"`.
 #' @examples
 #' SCALE_ATTRIBUTE_KINDS
 #' @export
