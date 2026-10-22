@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nestedscales"
-version = "0.1.0.dev0"
+dynamic = ["version"]
 description = "Nested scales and multi-dimensional indexes for modeling"
 readme = "README.md"
 license = "Apache-2.0"
@@ -24,6 +24,9 @@ docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.5", "mkdocstrings[python]>=0.26", 
 
 [project.urls]
 Homepage = "https://github.com/optimal2050/nestedscales"
+
+[tool.hatch.version]
+path = "src/nestedscales/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/nestedscales"]

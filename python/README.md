@@ -73,6 +73,14 @@ recast engine (`recast_scale`, `recast_crosswalk`, `recast_to_atoms`,
 and the `ScaleProduct` container. R only for now: `recast_product()` and the
 other product verbs, `reconcile_scale()`, and clustering.
 
+## Provenance
+
+The R package is the original implementation. This Python binding was
+translated from it with the AI coding assistant Claude Code, function by
+function, and is checked against results generated from the R sources
+(`specs/goldens/`). Human review and contributions are very welcome; issues and pull
+requests go to <https://github.com/optimal2050/nestedscales>.
+
 ## Development
 
 ```sh

@@ -362,6 +362,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#development" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -900,6 +911,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#development" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -992,6 +1014,12 @@ recast engine (<code>recast_scale</code>, <code>recast_crosswalk</code>, <code>r
 <code>recast_from_atoms</code>), filter/prune/share/join, 1-D arrays, the dataset store,
 and the <code>ScaleProduct</code> container. R only for now: <code>recast_product()</code> and the
 other product verbs, <code>reconcile_scale()</code>, and clustering.</p>
+<h2 id="provenance">Provenance</h2>
+<p>The R package is the original implementation. This Python binding was
+translated from it with the AI coding assistant Claude Code, function by
+function, and is checked against results generated from the R sources
+(<code>specs/goldens/</code>). Human review and contributions are very welcome; issues and pull
+requests go to <a href="https://github.com/optimal2050/nestedscales">https://github.com/optimal2050/nestedscales</a>.</p>
 <h2 id="development">Development</h2>
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.venv/Scripts/python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[test,polars,pandas]"</span>
 .venv/Scripts/python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>-q

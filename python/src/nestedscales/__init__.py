@@ -115,7 +115,7 @@ from .scale_class import (
 )
 from .scale_construct import scale_example, scale_example2, scale_from_leaftable
 
-__version__ = "0.1.0.dev0"
+__version__ = "0.2.0"
 
 __all__ = [
     "ScaleDataset", "open_scale_dataset", "scale_dataset_info",
