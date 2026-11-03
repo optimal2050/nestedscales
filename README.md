@@ -5,6 +5,10 @@
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/nestedscales)](https://CRAN.R-project.org/package=nestedscales)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/nestedscales)](https://cran.r-project.org/package=nestedscales)
 <!-- badges: end -->
 
 nestedscales represents a discrete data dimension at multiple

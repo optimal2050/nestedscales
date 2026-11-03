@@ -16,11 +16,11 @@ import pyarrow.compute as pc
 from ._utils import _as_str_tuple, _preview, _stop
 from .scale_class import (
     NestedScale,
-    _slice_member_tables,
     _check_frame,
     _check_scale,
     _finite_sum,
     _resolve_weight,
+    _slice_member_tables,
     _strings,
     scale_key,
     scale_payload_slice,

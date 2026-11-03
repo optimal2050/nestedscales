@@ -1,6 +1,6 @@
 Package: nestedscales
 Title: Nested Scales and Multi-Dimensional Indexes for Modeling
-Version: 0.2.0
+Version: 0.2.0.9000
 URL: https://optimal2050.github.io/nestedscales/r/,
     https://github.com/optimal2050/nestedscales
 BugReports: https://github.com/optimal2050/nestedscales/issues
