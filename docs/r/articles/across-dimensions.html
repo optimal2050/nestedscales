@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nestedscales</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9000</span>
       </span>
     </div>
 
@@ -109,9 +109,6 @@
 
     
     
-<p>This article needs geoscales and timescales 0.7 or later, energypal
-and ggplot2 installed; its outputs appear on the package site once they
-are available.</p>
 <div class="section level2">
 <h2 id="three-scales-one-vocabulary">Three scales, one vocabulary<a class="anchor" aria-label="anchor" href="#three-scales-one-vocabulary"></a>
 </h2>
@@ -126,8 +123,16 @@ name:</p>
 <span><span class="va">cal</span> <span class="op">&lt;-</span> <span class="fu">calendar</span><span class="op">(</span><span class="st">"m12"</span><span class="op">)</span>                 <span class="co"># time:    MONTH</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/scale_units.html">scale_units</a></span><span class="op">(</span><span class="va">es</span>, <span class="st">"carrier"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "FossilCoal"          "FossilOil"           "FossilGas"          </span></span>
+<span><span class="co">#&gt;  [4] "Bioenergy"           "Hydro"               "Wind"               </span></span>
+<span><span class="co">#&gt;  [7] "Solar"               "Geothermal"          "OtherRenewables"    </span></span>
+<span><span class="co">#&gt; [10] "Nuclear"             "Electricity"         "Heat"               </span></span>
+<span><span class="co">#&gt; [13] "Hydrogen"            "HydrogenDerivatives" "SyntheticFuels"     </span></span>
+<span><span class="co">#&gt; [16] "Storage"             "Other"</span></span>
 <span><span class="fu">geoscale_regions</span><span class="op">(</span><span class="va">gs</span>, <span class="st">"country"</span><span class="op">)</span></span>
-<span><span class="fu">calendar_timeslices</span><span class="op">(</span><span class="va">cal</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "N" "S"</span></span>
+<span><span class="fu">calendar_timeslices</span><span class="op">(</span><span class="va">cal</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "m01" "m02" "m03" "m04" "m05" "m06" "m07" "m08" "m09" "m10" "m11" "m12"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="a-fuel-use-table">A fuel-use table<a class="anchor" aria-label="anchor" href="#a-fuel-use-table"></a>
@@ -157,7 +162,14 @@ heating season, the size of each region scales its use.</p>
 <span>      <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">seasonal</span><span class="op">[</span><span class="va">fuel</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="op">(</span><span class="va">month</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">/</span> <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">atom</span>, <span class="va">timeslice</span>, <span class="va">fuel</span>, <span class="va">kt</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">use</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">use</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   atom timeslice       fuel        kt</span></span>
+<span><span class="co">#&gt; 1   A1       m01 Anthracite 0.7225806</span></span>
+<span><span class="co">#&gt; 2   A2       m01 Anthracite 1.4451613</span></span>
+<span><span class="co">#&gt; 3   A3       m01 Anthracite 2.1677419</span></span>
+<span><span class="co">#&gt; 4   A4       m01 Anthracite 2.8903226</span></span>
+<span><span class="co">#&gt; 5   A5       m01 Anthracite 3.6129032</span></span>
+<span><span class="co">#&gt; 6   A6       m01 Anthracite 4.3354839</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="attach-all-three">Attach all three<a class="anchor" aria-label="anchor" href="#attach-all-three"></a>
@@ -170,7 +182,23 @@ never collide and a reader can see which scale a column came from:</p>
 <span>  <span class="fu">join_geoscale</span><span class="op">(</span>gs <span class="op">=</span> <span class="va">gs</span>, geoframe <span class="op">=</span> <span class="st">"atom"</span>, geoframes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">join_calendar</span><span class="op">(</span>calendar <span class="op">=</span> <span class="va">cal</span>, meta <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">labelled</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">labelled</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "atom"             "timeslice"        "fuel"             "kt"              </span></span>
+<span><span class="co">#&gt;  [5] "carriers.group"   "carriers.carrier" "carriers"         "example.country" </span></span>
+<span><span class="co">#&gt;  [9] "example.state"    "example.zone"     "example"          "m12"             </span></span>
+<span><span class="co">#&gt; [13] "m12.share"        "m12.weight"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">labelled</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   atom timeslice       fuel        kt carriers.group carriers.carrier</span></span>
+<span><span class="co">#&gt; 1   A1       m01 Anthracite 0.7225806    FossilFuels       FossilCoal</span></span>
+<span><span class="co">#&gt; 2   A2       m01 Anthracite 1.4451613    FossilFuels       FossilCoal</span></span>
+<span><span class="co">#&gt; 3   A3       m01 Anthracite 2.1677419    FossilFuels       FossilCoal</span></span>
+<span><span class="co">#&gt;     carriers example.country example.state example.zone example m12  m12.share</span></span>
+<span><span class="co">#&gt; 1 Anthracite               N            N1           N1      A1 m01 0.08493151</span></span>
+<span><span class="co">#&gt; 2 Anthracite               N            N1           N1      A2 m01 0.08493151</span></span>
+<span><span class="co">#&gt; 3 Anthracite               N            N2           ZB      A3 m01 0.08493151</span></span>
+<span><span class="co">#&gt;   m12.weight</span></span>
+<span><span class="co">#&gt; 1        744</span></span>
+<span><span class="co">#&gt; 2        744</span></span>
+<span><span class="co">#&gt; 3        744</span></span></code></pre></div>
 <p><code>carriers.carrier</code> and <code>carriers.group</code> come
 from the fuel scale, <code>example.country</code> and friends from the
 GeoScale, <code>m12.share</code> and <code>m12.weight</code> (hours)
@@ -194,7 +222,11 @@ result:</p>
 <span>  <span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">es</span>, <span class="st">"ef_co2"</span>, from_unit <span class="op">=</span> <span class="st">"TJ"</span>, to_unit <span class="op">=</span> <span class="st">"kg"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">rename</span><span class="op">(</span>kg_co2 <span class="op">=</span> <span class="va">tj</span><span class="op">)</span> <span class="op">|&gt;</span>                 <span class="co"># the converted column: kg CO2</span></span>
 <span>  <span class="fu">transmute</span><span class="op">(</span><span class="va">atom</span>, <span class="va">timeslice</span>, <span class="va">fuel</span>, tj <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">tj</span>, kt_co2 <span class="op">=</span> <span class="va">kg_co2</span> <span class="op">/</span> <span class="fl">1e6</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">co2</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">co2</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   atom timeslice       fuel       tj   kt_co2</span></span>
+<span><span class="co">#&gt; 1   A1       m01 Anthracite 19.29290 1.896492</span></span>
+<span><span class="co">#&gt; 2   A2       m01 Anthracite 38.58581 3.792985</span></span>
+<span><span class="co">#&gt; 3   A3       m01 Anthracite 57.87871 5.689477</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="aggregate-along-any-dimension">Aggregate along any dimension<a class="anchor" aria-label="anchor" href="#aggregate-along-any-dimension"></a>
@@ -212,8 +244,15 @@ region and month stay:</p>
 <span>  <span class="fu"><a href="../reference/recast_scale.html">recast_scale</a></span><span class="op">(</span><span class="va">es</span>, source <span class="op">=</span> <span class="st">"fuel"</span>, target <span class="op">=</span> <span class="st">"carrier"</span>,</span>
 <span>               missing_sources <span class="op">=</span> <span class="st">"ignore"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">tj</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: 66 source unit(s) present in the scale but missing from the data (e.g.</span></span>
+<span><span class="co">#&gt; Ammonia, AssociatedGas, Battery, ... (66 total)); produced NAs</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">by_carrier</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">by_carrier</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">co2</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt;      carrier atom timeslice       tj   kt_co2</span></span>
+<span><span class="co">#&gt; 1 FossilCoal   A1       m01 45.08903 4.501901</span></span>
+<span><span class="co">#&gt; 2  FossilOil   A1       m01 16.02097 1.187154</span></span>
+<span><span class="co">#&gt; 3  FossilGas   A1       m01 78.03871 4.377972</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">by_carrier</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">co2</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 <p>The table reports five of the 71 fuels. With
 <code>missing_sources = "ignore"</code> the others count as unused
 rather than unknown, and the total is conserved – the difference above
@@ -226,9 +265,16 @@ chain:</p>
 <span>  <span class="fu"><a href="../reference/recast.html">recast</a></span><span class="op">(</span><span class="va">es</span>, target <span class="op">=</span> <span class="st">"carrier"</span>, missing_sources <span class="op">=</span> <span class="st">"ignore"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">tj</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/recast.html">recast</a></span><span class="op">(</span><span class="va">gs</span>, target <span class="op">=</span> <span class="st">"country"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: 66 source unit(s) present in the scale but missing from the data (e.g.</span></span>
+<span><span class="co">#&gt; Ammonia, AssociatedGas, Battery, ... (66 total)); produced NAs</span></span>
 <span><span class="va">by_country</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">country</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">summarise</span><span class="op">(</span>tj <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">tj</span><span class="op">)</span>, kt_co2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">kt_co2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">summarise</span><span class="op">(</span>tj <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">tj</span><span class="op">)</span>, kt_co2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">kt_co2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 3</span></span></span>
+<span><span class="co">#&gt;   country     tj kt_co2</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> N       <span style="text-decoration: underline;">10</span>551.   775.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> S       <span style="text-decoration: underline;">11</span>607.   852.</span></span></code></pre></div>
 <p><strong>By quarter</strong> – a calendar recast needs the year, to
 place the months on real dates:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -236,7 +282,13 @@ place the months on real dates:</p>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">carrier</span>, <span class="va">atom</span>, <span class="va">timeslice</span>, <span class="va">tj</span>, <span class="va">kt_co2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">recast_calendar</span><span class="op">(</span>source <span class="op">=</span> <span class="va">cal</span>, target <span class="op">=</span> <span class="fu">calendar</span><span class="op">(</span><span class="st">"q4"</span><span class="op">)</span>, year <span class="op">=</span> <span class="fl">2024</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">by_quarter</span>, <span class="fl">4</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">by_quarter</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">by_carrier</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt;   timeslice    carrier atom        tj    kt_co2</span></span>
+<span><span class="co">#&gt; 1        Q1 FossilCoal   A1 124.54761 12.435420</span></span>
+<span><span class="co">#&gt; 2        Q2 FossilCoal   A1  61.44465  6.134923</span></span>
+<span><span class="co">#&gt; 3        Q3 FossilCoal   A1  44.53626  4.446710</span></span>
+<span><span class="co">#&gt; 4        Q4 FossilCoal   A1 107.63922 10.747207</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">by_quarter</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">by_carrier</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="draw-it-with-energypals-colours">Draw it with energypal’s colours<a class="anchor" aria-label="anchor" href="#draw-it-with-energypals-colours"></a>
@@ -254,6 +306,7 @@ the carrier ids map straight onto its colours with no relabelling:</p>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"TJ"</span>, fill <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>       title <span class="op">=</span> <span class="st">"Energy use by month and carrier"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="across-dimensions_files/figure-html/energy-by-month-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">by_country</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">country</span>, <span class="va">carrier</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -265,6 +318,7 @@ the carrier ids map straight onto its colours with no relabelling:</p>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"kt CO2"</span>, fill <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>       title <span class="op">=</span> <span class="st">"CO2 by country and carrier"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="across-dimensions_files/figure-html/co2-by-country-1.png" class="r-plt" alt="" width="672"></p>
 <p>The GeoScale draws its own hierarchy with data attached – CO2 summed
 to every geoframe at once:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -272,6 +326,7 @@ to every geoframe at once:</p>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">atom</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">summarise</span><span class="op">(</span>kt_co2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">kt_co2</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
 <span><span class="fu">geoscale_autoplot</span><span class="op">(</span><span class="va">gs</span>, data <span class="op">=</span> <span class="va">co2_by_atom</span>, z <span class="op">=</span> <span class="st">"kt_co2"</span>, rule <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="across-dimensions_files/figure-html/co2-icicle-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="matching-labels-from-a-statistical-source">Matching labels from a statistical source<a class="anchor" aria-label="anchor" href="#matching-labels-from-a-statistical-source"></a>
@@ -284,7 +339,17 @@ frames (<code>Nuclear</code>, <code>Other</code>):</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mix</span> <span class="op">&lt;-</span> <span class="fu">energypal</span><span class="fu">::</span><span class="va"><a href="https://optimal2050.github.io/energypal/reference/owid_energy_mix.html" class="external-link">owid_energy_mix</a></span></span>
 <span><span class="va">matched</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_match.html">scale_match</a></span><span class="op">(</span><span class="va">es</span>, <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">mix</span><span class="op">$</span><span class="va">source</span><span class="op">)</span>, frame <span class="op">=</span> <span class="st">"carrier"</span><span class="op">)</span></span>
-<span><span class="va">matched</span></span></code></pre></div>
+<span><span class="va">matched</span></span>
+<span><span class="co">#&gt;         label   frame       unit method candidates</span></span>
+<span><span class="co">#&gt; 1   Bioenergy carrier  Bioenergy  exact       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2        Coal carrier FossilCoal  alias       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3       Hydro carrier      Hydro  exact       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4 Natural Gas carrier  FossilGas  alias       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5     Nuclear carrier    Nuclear  exact       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6         Oil carrier  FossilOil  alias       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 7       Solar carrier      Solar  exact       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 8        Wind carrier       Wind  exact       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 9       Other carrier      Other  exact       &lt;NA&gt;</span></span></code></pre></div>
 <p>Join the resolved id on and the palette applies:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mix</span> <span class="op">|&gt;</span></span>
@@ -298,6 +363,7 @@ frames (<code>Nuclear</code>, <code>Other</code>):</p>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"share of generation"</span>, fill <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>       title <span class="op">=</span> <span class="st">"Electricity generation mix, 2024 (OWID)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="across-dimensions_files/figure-html/generation-mix-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="what-each-package-did">What each package did<a class="anchor" aria-label="anchor" href="#what-each-package-did"></a>

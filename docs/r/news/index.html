@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nestedscales</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9000</span>
       </span>
     </div>
 
@@ -77,9 +77,12 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.1.1.9000" id="nestedscales-0119000">nestedscales 0.1.1.9000<a class="anchor" aria-label="anchor" href="#nestedscales-0119000"></a></h2>
+<h2 class="page-header" data-toc-text="development version" id="nestedscales-development-version">nestedscales (development version)<a class="anchor" aria-label="anchor" href="#nestedscales-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.0" id="nestedscales-020">nestedscales 0.2.0<a class="anchor" aria-label="anchor" href="#nestedscales-020"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-0-1-1-9000">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-1-9000"></a></h3>
+<h3 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
 <ul><li>
 <code>from</code> and <code>to</code> are now <code>source</code> and <code>target</code> everywhere: the frame arguments of <code><a href="../reference/recast_scale.html">recast_scale()</a></code>, <code><a href="../reference/recast_crosswalk.html">recast_crosswalk()</a></code>, <code><a href="../reference/recast_to_atoms.html">recast_to_atoms()</a></code>, <code><a href="../reference/recast_to_atoms.html">recast_from_atoms()</a></code>, <code><a href="../reference/reconcile_scale.html">reconcile_scale()</a></code>, <code><a href="../reference/recast_product.html">recast_product()</a></code> and the navigation functions, the scale arguments and label columns of <code><a href="../reference/scale_map.html">scale_map()</a></code>, <code><a href="../reference/scale_map_between.html">scale_map_between()</a></code> and their registry, and the columns of <code><a href="../reference/scale_atom_pairs.html">scale_atom_pairs()</a></code>. <code><a href="../reference/recast.html">recast()</a></code> takes the scale as <code>scale</code> and the source frame as <code>source</code>. The crosswalk columns <code>n_from</code> and <code>w_from</code> are unchanged. No deprecation aliases.</li>
 <li>
@@ -87,7 +90,7 @@
 <li>The backend helpers <code>.ms_*</code> are now the <code>backend_*</code> functions: <code><a href="../reference/backend.html">backend_of()</a></code> (errors on an unsupported input), <code><a href="../reference/backend.html">backend_is_lazy()</a></code>, <code><a href="../reference/backend.html">backend_schema()</a></code>, <code><a href="../reference/backend.html">backend_lazy()</a></code>, <code><a href="../reference/backend.html">backend_pull()</a></code>, <code><a href="../reference/backend.html">backend_restore()</a></code> and <code><a href="../reference/backend.html">backend_bind_rows()</a></code>, plus the new <code><a href="../reference/backend.html">backend_scan()</a></code> and <code><a href="../reference/backend.html">backend_distinct()</a></code>. They are documented together under <code><a href="../reference/backend.html">?backend</a></code>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="new-features-0-1-1-9000">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1-9000"></a></h3>
+<h3 id="new-features-0-2-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
 <ul><li>Member attributes and aliases. A scale carries two optional long tables keyed by <code>(frame, unit)</code>: <code>attributes</code> (a value with its <code>kind</code>, bounds, <code>unit_of_measure</code>, <code>source</code> and <code>note</code>) and <code>aliases</code> (alternative labels). <code><a href="../reference/scale_from_leaftable.html">scale_from_leaftable()</a></code> takes them as <code>attributes=</code> and <code>aliases=</code>; <code><a href="../reference/attach_attributes_scale.html">attach_attributes_scale()</a></code> and <code><a href="../reference/attach_aliases_scale.html">attach_aliases_scale()</a></code> append rows and never overwrite; <code><a href="../reference/scale_attributes.html">scale_attributes()</a></code> reads them, resolved along the hierarchy when a frame is given; <code><a href="../reference/scale_aliases.html">scale_aliases()</a></code> and <code><a href="../reference/scale_match.html">scale_match()</a></code> resolve labels exactly and report ambiguity. <code><a href="../reference/convert_scale.html">convert_scale()</a></code> converts value columns row by row with a resolved attribute: a <code>property</code> is invertible, a <code>factor</code> is one-way (<code>SCALE_ATTRIBUTE_KINDS</code>). Both tables survive <code><a href="../reference/filter_scale.html">filter_scale()</a></code>, <code>[</code>, <code><a href="../reference/prune_scale.html">prune_scale()</a></code> and clustering, which now keep a subclass as well; <code><a href="../reference/scale_payload_collapse.html">scale_payload_collapse()</a></code> is the hook a subclass with a positional payload overrides for <code><a href="../reference/prune_scale.html">prune_scale()</a></code>. Objects saved by 0.1.x load unchanged.</li>
 <li>Definition files. <code><a href="../reference/write_scale.html">write_scale()</a></code> and <code><a href="../reference/write_scale.html">read_scale()</a></code> exchange a scale as a language-neutral definition: a JSON header with the tables inline, or a <code>&lt;name&gt;.scale/</code> bundle with Arrow IPC or CSV tables; YAML is accepted as input and as an output option. <code><a href="../reference/scale_payload_io.html">scale_write_payload()</a></code>, <code><a href="../reference/scale_payload_io.html">scale_read_payload()</a></code> and <code><a href="../reference/scale_payload_io.html">register_scale_class()</a></code> let a dimension package store and restore its subclass.</li>
 <li>Catalogue. <code><a href="../reference/scale_catalog.html">register_scale_dir()</a></code>, <code><a href="../reference/scale_catalog.html">list_scale_dirs()</a></code>, <code><a href="../reference/scale_catalog.html">clear_scale_dirs()</a></code> and <code><a href="../reference/scale_catalog.html">scale_catalog()</a></code> list the definitions shipped by installed packages; <code>read_scale(id)</code> takes a catalogue id.</li>
@@ -96,7 +99,7 @@
 <code><a href="../reference/write_scale_dataset.html">write_scale_dataset()</a></code> writes <code>_scales/manifest.json</code>; a legacy <code>manifest.yaml</code> is still read. jsonlite is a new import.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-0-1-1-9000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-1-1-9000"></a></h3>
+<h3 id="documentation-0-2-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0"></a></h3>
 <ul><li>New vignettes: <code><a href="../articles/anatomy.html">vignette("anatomy")</a></code> (the object, its tables and what the validator guarantees) and <code><a href="../articles/attributes.html">vignette("attributes")</a></code> (attributes, aliases and conversion on the shipped <code>carriers</code>). The article <em>Fuels, regions and months</em> on the package site joins a fuel scale, a <code>GeoScale</code> and a <code>Calendar</code> on one table.</li>
 </ul></div>
 </div>
