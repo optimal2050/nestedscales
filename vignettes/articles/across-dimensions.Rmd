@@ -11,7 +11,7 @@ library(dplyr, warn.conflicts = FALSE)
 # The dimension packages built on nestedscales 0.2.0 are the 0.7 releases;
 # until they are installed the chunks below are shown, not run.
 has_all <- requireNamespace("geoscales", quietly = TRUE) &&
-  packageVersion("geoscales") >= "0.7.0" &&
+  packageVersion("geoscales") >= "0.7.2" &&
   requireNamespace("timescales", quietly = TRUE) &&
   packageVersion("timescales") >= "0.7.0" &&
   requireNamespace("energypal", quietly = TRUE) &&
@@ -204,7 +204,7 @@ every geoframe at once:
 co2_by_atom <- co2 |>
   group_by(atom) |>
   summarise(kt_co2 = sum(kt_co2), .groups = "drop")
-geoscale_autoplot(gs, data = co2_by_atom, z = "kt_co2", rule = "sum")
+gg_geoscale(gs, data = co2_by_atom, z = "kt_co2", rule = "sum")
 ```
 
 ## Matching labels from a statistical source
