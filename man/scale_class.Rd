@@ -13,14 +13,13 @@ scale_product_class()
 The S7 class object.
 }
 \description{
-\code{scale_class()} returns the \code{\link{NestedScale}} class, also available as
-\code{class_nested_scale}. \code{scale_product_class()} returns the \code{\link{ScaleProduct}}
-class, also available as \code{class_scale_product}. Use either form as the
-parent of an S7 subclass or to register an S7 method.
+\code{scale_class()} returns \code{\link{NestedScale}} and \code{scale_product_class()} returns
+\code{\link{ScaleProduct}}. Use these classes to define a subclass with
+\code{S7::new_class(..., parent = scale_class())} or to register an S7 method.
 }
 \details{
-S7 1.0.0 uses the exported aliases when a subclass in another package
-calls its parent constructor.
+S7 1.0.0 uses the exported parent class when another package relies on
+an automatically generated subclass constructor.
 To merely ask what an object is, use \code{\link[=scale_is]{scale_is()}}.
 }
 \examples{

@@ -73,6 +73,7 @@
 #' @examples
 #' scale_example()
 #' @keywords internal
+#' @export
 NestedScale <- S7::new_class(
   "NestedScale",
   package = "nestedscales",
@@ -350,10 +351,6 @@ NestedScale <- S7::new_class(
     if (length(errs) == 0L) NULL else errs
   }
 )
-
-#' @rdname NestedScale
-#' @export
-class_nested_scale <- NestedScale
 
 # Dimension vocabulary ---------------------------------------------------------
 
@@ -1093,13 +1090,12 @@ scale_is_product <- function(x) {
 
 #' The scale classes, for subclassing and dispatch
 #'
-#' `scale_class()` returns the [`NestedScale`] class, also available as
-#' `class_nested_scale`. `scale_product_class()` returns the [`ScaleProduct`]
-#' class, also available as `class_scale_product`. Use either form as the
-#' parent of an S7 subclass or to register an S7 method.
+#' `scale_class()` returns [`NestedScale`] and `scale_product_class()` returns
+#' [`ScaleProduct`]. Use these classes to define a subclass with
+#' `S7::new_class(..., parent = scale_class())` or to register an S7 method.
 #'
-#' S7 1.0.0 uses the exported aliases when a subclass in another package
-#' calls its parent constructor.
+#' S7 1.0.0 uses the exported parent class when another package relies on
+#' an automatically generated subclass constructor.
 #' To merely ask what an object is, use [`scale_is()`].
 #'
 #' @return The S7 class object.

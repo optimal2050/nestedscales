@@ -43,6 +43,7 @@ NULL
 #' @examples
 #' scale_product(a = scale_example(), b = scale_example2())
 #' @keywords internal
+#' @export
 ScaleProduct <- S7::new_class(
   "ScaleProduct",
   package = "nestedscales",
@@ -149,10 +150,6 @@ ScaleProduct <- S7::new_class(
     if (length(errs) == 0L) NULL else errs
   }
 )
-
-#' @rdname ScaleProduct
-#' @export
-class_scale_product <- ScaleProduct
 
 #' Combine scales into a product index
 #'

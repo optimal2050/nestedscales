@@ -1,6 +1,6 @@
 # nestedscales (development version)
 
-* Exported `class_nested_scale` and `class_scale_product` so other packages can subclass the scale classes with S7 1.0.0.
+* Exported `NestedScale` and `ScaleProduct` so other packages can subclass them with S7 1.0.0.
 
 # nestedscales 0.2.0
 
