@@ -2,6 +2,27 @@
 # them as NULL. They must still validate and flow through every verb, and
 # come out of a rebuild carrying real tables.
 
+test_that("other packages can subclass the scale classes", {
+  child_scale <- S7::new_class(
+    "ChildScale", parent = scale_class(), package = "scale_extension"
+  )
+  child_product <- S7::new_class(
+    "ChildProduct", parent = scale_product_class(), package = "scale_extension"
+  )
+  scale <- scale_example()
+  scale_child <- child_scale(
+    leaftable = scale_leaftable(scale),
+    frames = scale_frames(scale),
+    members = S7::prop(scale, "members")
+  )
+  product_child <- child_product(
+    axes = list(a = scale, b = scale_example2()),
+    keys = c(a = "a", b = "b")
+  )
+  expect_s3_class(scale_child, "scale_extension::ChildScale")
+  expect_s3_class(product_child, "scale_extension::ChildProduct")
+})
+
 .old_scale <- function() {
   s <- scale_example()
   attr(s, "attributes") <- NULL
@@ -37,15 +58,14 @@ test_that("every verb runs on an old object", {
 })
 
 test_that("the 0.1.1 fixture still loads and behaves", {
-  # A saved S7 object embeds its class: this one's knows nothing of the
-  # attribute and alias properties, so S7 itself refuses prop() on them.
-  # The accessors read around that, and the write paths refresh the class.
+  # The saved class predates the attribute and alias properties. Accessors
+  # supply empty tables, and the write paths refresh the class.
   path <- test_path("fixtures", "scale-0.1.1.rds")
   skip_if_not(file.exists(path))
   s <- readRDS(path)
   expect_true(scale_is(s))
-  expect_false("attributes" %in% names(attr(s, "S7_class")@properties))
-  expect_error(S7::prop(s, "attributes"), "Can't find property")
+  expect_false(S7::prop_exists(s, "attributes"))
+  expect_false(S7::prop_exists(s, "aliases"))
   expect_no_error(S7::validate(s))
   expect_identical(nrow(scale_attributes(s)), 0L)
   expect_identical(nrow(scale_aliases(s)), 0L)
@@ -55,7 +75,7 @@ test_that("the 0.1.1 fixture still loads and behaves", {
                                rule = "sum"))
   f <- filter_scale(s, "sector", "P")
   expect_identical(scale_units(f, "sector"), "P")
-  expect_true("attributes" %in% names(attr(f, "S7_class")@properties))
+  expect_true(S7::prop_exists(f, "attributes"))
   expect_s3_class(S7::prop(f, "attributes"), "data.frame")
   s2 <- attach_attributes_scale(
     s, data.frame(frame = "sector", unit = "P", attribute = "density",

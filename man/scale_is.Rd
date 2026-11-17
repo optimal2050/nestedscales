@@ -17,9 +17,8 @@ A single \code{TRUE} or \code{FALSE}. A product is NOT a scale: it holds
 several and materialises no atoms of its own.
 }
 \description{
-The classes themselves are not exported (the package's surface is its
-functions), so these are how calling code asks. Build a scale with
-\code{\link[=scale_from_leaftable]{scale_from_leaftable()}} and a product with \code{\link[=scale_product]{scale_product()}}.
+Build a scale with \code{\link[=scale_from_leaftable]{scale_from_leaftable()}} and a product with
+\code{\link[=scale_product]{scale_product()}}.
 }
 \details{
 Named with the object prefix rather than \code{is_scale()}, which \code{ggplot2}
