@@ -2,6 +2,17 @@
 # them as NULL. They must still validate and flow through every verb, and
 # come out of a rebuild carrying real tables.
 
+test_that("other packages can subclass the scale classes", {
+  child_scale <- S7::new_class(
+    "ChildScale", parent = scale_class(), package = "scale_extension"
+  )
+  child_product <- S7::new_class(
+    "ChildProduct", parent = scale_product_class(), package = "scale_extension"
+  )
+  expect_s3_class(child_scale, "S7_class")
+  expect_s3_class(child_product, "S7_class")
+})
+
 .old_scale <- function() {
   s <- scale_example()
   attr(s, "attributes") <- NULL
@@ -44,8 +55,8 @@ test_that("the 0.1.1 fixture still loads and behaves", {
   skip_if_not(file.exists(path))
   s <- readRDS(path)
   expect_true(scale_is(s))
-  expect_false("attributes" %in% names(attr(s, "S7_class")@properties))
-  expect_error(S7::prop(s, "attributes"), "Can't find property")
+  expect_false("attributes" %in% S7::prop_names(s))
+  expect_error(S7::prop(s, "attributes"), "Can't find property|Property not found")
   expect_no_error(S7::validate(s))
   expect_identical(nrow(scale_attributes(s)), 0L)
   expect_identical(nrow(scale_aliases(s)), 0L)
@@ -55,7 +66,7 @@ test_that("the 0.1.1 fixture still loads and behaves", {
                                rule = "sum"))
   f <- filter_scale(s, "sector", "P")
   expect_identical(scale_units(f, "sector"), "P")
-  expect_true("attributes" %in% names(attr(f, "S7_class")@properties))
+  expect_true("attributes" %in% S7::prop_names(f))
   expect_s3_class(S7::prop(f, "attributes"), "data.frame")
   s2 <- attach_attributes_scale(
     s, data.frame(frame = "sector", unit = "P", attribute = "density",

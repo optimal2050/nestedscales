@@ -150,6 +150,10 @@ ScaleProduct <- S7::new_class(
   }
 )
 
+#' @rdname ScaleProduct
+#' @export
+class_scale_product <- ScaleProduct
+
 #' Combine scales into a product index
 #'
 #' @param ... Two or more named [`NestedScale`] objects; the argument names become

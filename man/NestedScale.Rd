@@ -2,9 +2,20 @@
 % Please edit documentation in R/scale-class.R
 \name{NestedScale}
 \alias{NestedScale}
+\alias{class_nested_scale}
 \title{NestedScale (S7 class)}
 \usage{
 NestedScale(
+  leaftable,
+  frames,
+  members,
+  key = "unit",
+  meta = list(),
+  attributes = NULL,
+  aliases = NULL
+)
+
+class_nested_scale(
   leaftable,
   frames,
   members,

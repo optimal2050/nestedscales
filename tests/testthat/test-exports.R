@@ -34,12 +34,12 @@ test_that("unrelated packages share no export name at all", {
   }
 })
 
-test_that("the classes are deliberately NOT exported", {
-  # The surface is functions: classes are reached through scale_class(), and
-  # a bare `recast` would mask the generic timescales owns.
+test_that("the scale classes have exported aliases", {
   ours <- getNamespaceExports("nestedscales")
   expect_false("NestedScale" %in% ours)
   expect_false("ScaleProduct" %in% ours)
+  expect_identical(nestedscales::class_nested_scale, scale_class())
+  expect_identical(nestedscales::class_scale_product, scale_product_class())
   expect_true("recast" %in% ours) # owned here, re-exported by the twins
   expect_true(all(c("scale_class", "scale_is", "recast_scale") %in% ours))
 })

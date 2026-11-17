@@ -2,9 +2,12 @@
 % Please edit documentation in R/product-class.R
 \name{ScaleProduct}
 \alias{ScaleProduct}
+\alias{class_scale_product}
 \title{A product of several scales (S7 class)}
 \usage{
 ScaleProduct(axes, keys, joint_weights = NULL, meta = list())
+
+class_scale_product(axes, keys, joint_weights = NULL, meta = list())
 }
 \arguments{
 \item{axes}{Named list of \code{\link{NestedScale}} objects; the names are the axis names.}

@@ -351,6 +351,10 @@ NestedScale <- S7::new_class(
   }
 )
 
+#' @rdname NestedScale
+#' @export
+class_nested_scale <- NestedScale
+
 # Dimension vocabulary ---------------------------------------------------------
 
 #' The dimension vocabulary of a scale
@@ -1063,9 +1067,8 @@ S7::method(names, NestedScale) <- names.NestedScale
 
 #' Is this a scale, or a product of scales?
 #'
-#' The classes themselves are not exported (the package's surface is its
-#' functions), so these are how calling code asks. Build a scale with
-#' [`scale_from_leaftable()`] and a product with [`scale_product()`].
+#' Build a scale with [`scale_from_leaftable()`] and a product with
+#' [`scale_product()`].
 #'
 #' Named with the object prefix rather than `is_scale()`, which `ggplot2`
 #' already exports.
@@ -1090,10 +1093,13 @@ scale_is_product <- function(x) {
 
 #' The scale classes, for subclassing and dispatch
 #'
-#' The classes are not exported under their own names (the package's surface
-#' is its functions), so these return them. Needed to build a subclass
-#' (`S7::new_class(..., parent = scale_class())`, which is what
-#' [`scale_alias_property()`] is for) or to register an S7 method against one.
+#' `scale_class()` returns the [`NestedScale`] class, also available as
+#' `class_nested_scale`. `scale_product_class()` returns the [`ScaleProduct`]
+#' class, also available as `class_scale_product`. Use either form as the
+#' parent of an S7 subclass or to register an S7 method.
+#'
+#' S7 1.0.0 uses the exported aliases when a subclass in another package
+#' calls its parent constructor.
 #' To merely ask what an object is, use [`scale_is()`].
 #'
 #' @return The S7 class object.
