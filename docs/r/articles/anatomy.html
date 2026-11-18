@@ -156,11 +156,42 @@ attributes stored at three different levels.</p>
 <div class="section level2">
 <h2 id="the-object">The object<a class="anchor" aria-label="anchor" href="#the-object"></a>
 </h2>
-<p>A <code>NestedScale</code> is an S7 object with seven properties:</p>
+<p>A <code>NestedScale</code> is an S7 object with eight properties.
+<code><a href="https://rdrr.io/r/utils/str.html" class="external-link">str()</a></code> lists them with their size and purpose:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;nestedscales::NestedScale&gt; fuels@b8098798</span></span>
+<span><span class="co">#&gt;  @ leaftable  : data.frame [9 x 4]   one row per atom: key, frame codes, weights</span></span>
+<span><span class="co">#&gt;                 group, phase, carrier, fuel</span></span>
+<span><span class="co">#&gt;  @ frames     : chr [4]              frame names, coarsest first</span></span>
+<span><span class="co">#&gt;                 group, phase, carrier, fuel</span></span>
+<span><span class="co">#&gt;  @ members    : list [4]             the codes at each frame</span></span>
+<span><span class="co">#&gt;                 group, phase, carrier, fuel</span></span>
+<span><span class="co">#&gt;  @ key        : chr [1]              name of the atom key column</span></span>
+<span><span class="co">#&gt;                 fuel</span></span>
+<span><span class="co">#&gt;  @ meta       : list [4]             name, description, weights, bookkeeping</span></span>
+<span><span class="co">#&gt;                 name, desc, weights, default_weight</span></span>
+<span><span class="co">#&gt;  @ attributes : data.frame [6 x 10]  member values, by (frame, unit)</span></span>
+<span><span class="co">#&gt;                 frame, unit, attribute, kind, value, lower, upper, unit_of_measure, ... (10 total)</span></span>
+<span><span class="co">#&gt;  @ aliases    : data.frame [5 x 4]   alternative spellings, by (frame, unit)</span></span>
+<span><span class="co">#&gt;                 frame, unit, alias, source</span></span>
+<span><span class="co">#&gt;  @ labels     : data.frame [0 x 4]   display names, by (frame, unit, variant)</span></span>
+<span><span class="co">#&gt;                 frame, unit, variant, label</span></span></code></pre></div>
+<p>The standard S7 tools apply: <code>S7::prop_names(x)</code> gives the
+names, <code>x@frames</code> or <code>S7::prop(x, "frames")</code> reads
+one property, and <code>S7::props(x)</code> returns all of them as a
+list.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">S7</span><span class="fu">::</span><span class="fu"><a href="https://rconsortium.github.io/S7/reference/prop_names.html" class="external-link">prop_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "leaftable"  "frames"     "members"    "key"        "meta"      </span></span>
-<span><span class="co">#&gt; [6] "attributes" "aliases"</span></span></code></pre></div>
+<span><span class="co">#&gt; [6] "attributes" "aliases"    "labels"</span></span>
+<span><span class="va">x</span><span class="op">@</span><span class="va">frames</span></span>
+<span><span class="co">#&gt; [1] "group"   "phase"   "carrier" "fuel"</span></span></code></pre></div>
+<p>The object is a <strong>definition</strong>: the atoms, the frames
+that group them, and the weights that say how big each atom is. It never
+holds data. Data stays in ordinary tables, and a table is tied to a
+scale by its code columns; see <a href="#the-data-link">The data
+link</a> below.</p>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -214,22 +245,29 @@ columns</td>
 <tr class="odd">
 <td><code>aliases</code></td>
 <td><code>data.frame</code></td>
-<td>alternative labels keyed by <code>(frame, unit)</code>:
+<td>alternative spellings keyed by <code>(frame, unit)</code>:
 <code>alias</code>, <code>source</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>labels</code></td>
+<td><code>data.frame</code></td>
+<td>display names keyed by <code>(frame, unit, variant)</code>:
+<code>label</code>
 </td>
 </tr>
 </tbody>
 </table>
 <p>Everything else – parent/child tables, ancestry, shares, resolved
 attributes – is derived on demand; nothing is cached on the object. The
-two tables are empty unless the builder fills them; a scale saved by an
-earlier version, which had no such properties, loads and validates
+three tables are empty unless the builder fills them; a scale saved by
+an earlier version, which had no such properties, loads and validates
 unchanged.</p>
 </div>
 <div class="section level2">
 <h2 id="the-leaftable">The leaftable<a class="anchor" aria-label="anchor" href="#the-leaftable"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_leaftable.html">scale_leaftable</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    group  phase     carrier        fuel</span></span>
 <span><span class="co">#&gt; 1 Fossil  solid        Coal  Anthracite</span></span>
@@ -252,7 +290,7 @@ the frame column <em>is</em> the key column.</p>
 <div class="section level2">
 <h2 id="frames-members-ranks">Frames, members, ranks<a class="anchor" aria-label="anchor" href="#frames-members-ranks"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_frames.html">scale_frames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "group"   "phase"   "carrier" "fuel"</span></span>
 <span><span class="fu"><a href="../reference/scale_atom_level.html">scale_atom_level</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>              <span class="co"># the finest frame, or the key</span></span>
@@ -273,7 +311,7 @@ its frame as well.</p>
 <p>Navigation is derived from the leaftable and routed through the
 atoms, so a frame that cross-cuts another reports overlap rather than
 invented containment:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_nests.html">scale_nests</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"carrier"</span>, <span class="st">"fuel"</span><span class="op">)</span>    <span class="co"># a tree</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/scale_nests.html">scale_nests</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"phase"</span>, <span class="st">"carrier"</span><span class="op">)</span>   <span class="co"># Biomass is solid, liquid and gas</span></span>
@@ -312,7 +350,7 @@ invented containment:</p>
 </h2>
 <p>Physical attributes live in one long table, and a row may sit on
 <strong>any</strong> member, not only on an atom:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     frame       unit attribute     kind   value lower upper unit_of_measure</span></span>
 <span><span class="co">#&gt; 1    fuel Anthracite       lhv property    26.7    NA    NA            GJ/t</span></span>
@@ -331,7 +369,7 @@ invented containment:</p>
 <p>Reading with a <code>frame</code> resolves one value per member,
 walking to the nearest coarser frame when a member has none of its own,
 and says where the value came from:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span><span class="op">)</span><span class="op">[</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"unit_of_measure"</span>, <span class="st">"origin_frame"</span>, <span class="st">"origin_unit"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;          unit value unit_of_measure origin_frame origin_unit</span></span>
@@ -352,7 +390,7 @@ calorific value must be passed as <code>attributes=</code>, never as a
 leaftable column. Every attribute name carries a <code>kind</code>:
 <code>property</code> (an invertible ratio) or <code>factor</code>
 (one-way).</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SCALE_ATTRIBUTE_KINDS</span></span>
 <span><span class="co">#&gt; [1] "property" "factor"</span></span></code></pre></div>
 <p><code><a href="../articles/attributes.html">vignette("attributes")</a></code> has the reasoning and the full
@@ -361,7 +399,7 @@ account of inheritance, sources and conversion.</p>
 <div class="section level2">
 <h2 id="the-alias-table">The alias table<a class="anchor" aria-label="anchor" href="#the-alias-table"></a>
 </h2>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_aliases.html">scale_aliases</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     frame        unit     alias  source</span></span>
 <span><span class="co">#&gt; 1    fuel  Anthracite hard coal example</span></span>
@@ -379,9 +417,40 @@ matching reports that as ambiguous unless <code>frame=</code> narrows
 it. Matching is exact and case-insensitive, with no fuzzy stage.</p>
 </div>
 <div class="section level2">
+<h2 id="the-label-table">The label table<a class="anchor" aria-label="anchor" href="#the-label-table"></a>
+</h2>
+<p>Labels are display names. A label belongs to a member and to a named
+<em>variant</em>, so one member may carry a full name, a short one and a
+translation, while another frame carries none at all and is shown by its
+codes. A row with <code>unit = NA</code> names the frame itself.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/attach_labels_scale.html">attach_labels_scale</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    frame <span class="op">=</span> <span class="st">"carrier"</span>,</span>
+<span>    unit  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coal"</span>, <span class="st">"Electricity"</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
+<span>    label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coal and coal products"</span>, <span class="st">"Electric power"</span>, <span class="st">"Energy carrier"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  variant <span class="op">=</span> <span class="st">"long"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/scale_labels.html">scale_labels</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     frame        unit variant                  label</span></span>
+<span><span class="co">#&gt; 1 carrier        Coal    long Coal and coal products</span></span>
+<span><span class="co">#&gt; 2 carrier Electricity    long         Electric power</span></span>
+<span><span class="co">#&gt; 3 carrier        &lt;NA&gt;    long         Energy carrier</span></span>
+<span><span class="fu"><a href="../reference/scale_label.html">scale_label</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coal"</span>, <span class="st">"Electricity"</span><span class="op">)</span>, frame <span class="op">=</span> <span class="st">"carrier"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Coal and coal products" "Electric power"</span></span>
+<span><span class="fu"><a href="../reference/scale_label.html">scale_label</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="../reference/scale_units.html">scale_units</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"group"</span><span class="op">)</span>, frame <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span>   <span class="co"># no labels: codes</span></span>
+<span><span class="co">#&gt; [1] "Fossil" "Bio"    "Power"</span></span></code></pre></div>
+<p>Aliases and labels answer different questions. An alias is a spelling
+to be <em>recognised</em> (<code><a href="../reference/scale_match.html">scale_match()</a></code>); a label is a
+name to be <em>shown</em> (<code><a href="../reference/scale_label.html">scale_label()</a></code>,
+<code>join_scale(labels = )</code>).</p>
+</div>
+<div class="section level2">
 <h2 id="weights-and-meta">Weights and meta<a class="anchor" aria-label="anchor" href="#weights-and-meta"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_weights.html">scale_weights</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>                        <span class="co"># none declared here</span></span>
 <span><span class="co">#&gt; character(0)</span></span>
 <span><span class="fu">S7</span><span class="fu">::</span><span class="fu"><a href="https://rconsortium.github.io/S7/reference/prop.html" class="external-link">prop</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"meta"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"desc"</span><span class="op">)</span><span class="op">]</span></span>
@@ -416,6 +485,44 @@ The shipped <code>carriers</code> keeps energypal’s short and long
 labels in <code>meta$labels</code>; colours are not stored.</p>
 </div>
 <div class="section level2">
+<h2 id="the-data-link">The data link<a class="anchor" aria-label="anchor" href="#the-data-link"></a>
+</h2>
+<p>A table of data is tied to a scale by its code columns. Unbound, the
+tie is the column name alone: a column called <code>carrier</code> is
+read as codes at the <code>carrier</code> frame. Two scales can share
+frame names and codes, so the name does not say <em>which</em> scale the
+data is on. <code><a href="../reference/bind_scale.html">bind_scale()</a></code> records it on the column itself,
+together with the scale’s identity:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_id.html">scale_id</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "fuels@b8098798"</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>fuel <span class="op">=</span> <span class="fu"><a href="../reference/scale_units.html">scale_units</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, pj <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="fu"><a href="../reference/scale_units.html">scale_units</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bind_scale.html">bind_scale</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">x</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/bind_scale.html">scale_link</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   column scale frame             id</span></span>
+<span><span class="co">#&gt; 1   fuel fuels  fuel fuels@b8098798</span></span></code></pre></div>
+<p><code><a href="../reference/scale_id.html">scale_id()</a></code> is the scale’s name plus a hash of its
+structure – key, frames and memberships. Weights, attributes, aliases
+and labels do not enter, so enriching a scale does not detach the data
+bound to it; a subset or a re-grouping is a different scale.</p>
+<p>A bound column is still a character vector. It keeps the link through
+row subsetting, <code>mutate()</code>, grouping, joins and row binding,
+and the verbs use it: the source frame is taken from the link, the
+result is bound to the target frame, and data bound to another scale is
+refused.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/register_scale_rule.html">register_scale_rule</a></span><span class="op">(</span><span class="st">"pj"</span>, <span class="st">"sum"</span><span class="op">)</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recast_scale.html">recast_scale</a></span><span class="op">(</span><span class="va">b</span>, <span class="va">x</span>, target <span class="op">=</span> <span class="st">"carrier"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/bind_scale.html">scale_link</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    column scale   frame             id</span></span>
+<span><span class="co">#&gt; 1 carrier fuels carrier fuels@b8098798</span></span>
+<span><span class="fu"><a href="../reference/clear_scale_rules.html">clear_scale_rules</a></span><span class="op">(</span><span class="st">"pj"</span><span class="op">)</span></span></code></pre></div>
+<p>Unbound data behaves as before, and its results stay unbound. A lazy
+table (arrow, dtplyr) cannot carry the link in memory;
+<code><a href="../reference/write_scale_dataset.html">write_scale_dataset()</a></code> records it in the store and
+<code><a href="../reference/bind_scale.html">scale_link()</a></code> reads it back.</p>
+</div>
+<div class="section level2">
 <h2 id="what-the-validator-guarantees">What the validator guarantees<a class="anchor" aria-label="anchor" href="#what-the-validator-guarantees"></a>
 </h2>
 <p><code><a href="../reference/scale_from_leaftable.html">scale_from_leaftable()</a></code> and every operation that rebuilds
@@ -441,7 +548,7 @@ reconciliation) follow it.</p>
 and <code>[</code> keep the attribute and alias rows of every surviving
 member at every frame, and <code><a href="../reference/prune_scale.html">prune_scale()</a></code> keeps the rows at
 the frames that survive the collapse.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fossil</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="st">"group"</span>, <span class="st">"Fossil"</span><span class="op">]</span></span>
 <span><span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">fossil</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"frame"</span>, <span class="st">"unit"</span>, <span class="st">"attribute"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;     frame       unit attribute   value</span></span>
@@ -452,7 +559,7 @@ the frames that survive the collapse.</p>
 <span><span class="co">#&gt; 5 carrier        Gas    ef_co2 56100.0</span></span></code></pre></div>
 <p><code><a href="../reference/prune_scale.html">prune_scale()</a></code> needs the frames above the new atom level
 to nest, so the cross-cutting <code>phase</code> has to go first:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_from_leaftable.html">scale_from_leaftable</a></span><span class="op">(</span></span>
 <span>  <span class="va">lt</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span>, <span class="st">"carrier"</span>, <span class="st">"fuel"</span><span class="op">)</span><span class="op">]</span>, frames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span>, <span class="st">"carrier"</span>, <span class="st">"fuel"</span><span class="op">)</span>,</span>
 <span>  key <span class="op">=</span> <span class="st">"fuel"</span>, attributes <span class="op">=</span> <span class="va">at</span>, aliases <span class="op">=</span> <span class="va">al</span>, name <span class="op">=</span> <span class="st">"tree"</span></span>
@@ -471,7 +578,7 @@ with the three tables inline, or, for large scales, a
 <code>&lt;name&gt;.scale/</code> bundle directory holding the header and
 the tables as Arrow IPC or CSV files. The Python binding reads and
 writes the same files.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"fuels.json"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/write_scale.html">write_scale</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">path</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>, <span class="fl">12</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span>
@@ -496,7 +603,7 @@ writes the same files.</p>
 YAML, and <code><a href="../reference/write_scale.html">read_scale()</a></code> accepts either. Installed packages
 register directories of definitions; <code><a href="../reference/scale_catalog.html">scale_catalog()</a></code> lists
 them and <code>read_scale(id)</code> opens one by its id:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_catalog.html">scale_catalog</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"name"</span>, <span class="st">"kind"</span>, <span class="st">"frames"</span>, <span class="st">"n_atoms"</span>, <span class="st">"package"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;         id     name        kind             frames n_atoms      package</span></span>
 <span><span class="co">#&gt; 1 carriers carriers NestedScale group/carrier/fuel      71 nestedscales</span></span></code></pre></div>
@@ -508,7 +615,7 @@ them and <code>read_scale(id)</code> opens one by its id:</p>
 <strong>Rules</strong> map value-column names to their aggregation rule;
 there is no fallback, and an unregistered column without
 <code>rule=</code> is an error:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SCALE_RULES</span></span>
 <span><span class="co">#&gt; [1] "sum"           "weighted_mean" "mean"          "copy"         </span></span>
 <span><span class="co">#&gt; [5] "sd"            "share"         "logshare"</span></span>

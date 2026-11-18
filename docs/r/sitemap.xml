@@ -12,9 +12,12 @@
 <url><loc>https://optimal2050.github.io/nestedscales/r/LICENSE-text.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/news/index.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/as_scale_array.html</loc></url>
+<url><loc>https://optimal2050.github.io/nestedscales/r/reference/as_scale_unit.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/attach_aliases_scale.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/attach_attributes_scale.html</loc></url>
+<url><loc>https://optimal2050.github.io/nestedscales/r/reference/attach_labels_scale.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/backend.html</loc></url>
+<url><loc>https://optimal2050.github.io/nestedscales/r/reference/bind_scale.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/clear_scale_maps.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/clear_scale_rules.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/cluster_contiguous.html</loc></url>
@@ -70,10 +73,14 @@
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_family.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_frames.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_from_leaftable.html</loc></url>
+<url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_id.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_is.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_is_uniform.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_key.html</loc></url>
+<url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_label.html</loc></url>
+<url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_labels.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_leaftable.html</loc></url>
+<url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_link_enter.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_map.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_map_between.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_match.html</loc></url>
@@ -91,6 +98,7 @@
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_vocab.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/scale_weights.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/shipped_scales.html</loc></url>
+<url><loc>https://optimal2050.github.io/nestedscales/r/reference/str.NestedScale.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/sub-.NestedScale.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/summary.NestedScale.html</loc></url>
 <url><loc>https://optimal2050.github.io/nestedscales/r/reference/summary.ScaleProduct.html</loc></url>

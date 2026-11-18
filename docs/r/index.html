@@ -226,6 +226,8 @@
 </h2>
 <ul>
 <li>
+<strong>A scale is a definition, not a container.</strong> It holds the atoms, the frames that group them and the weights that size them. Data stays in ordinary tables; <code><a href="reference/bind_scale.html">bind_scale()</a></code> records on the code columns which scale and frame they are on, and the verbs check it.</li>
+<li>
 <strong>Atoms are the ground truth.</strong> Frames are partitions of the atoms, not necessarily a strict tree; conversion always routes through the atom layer.</li>
 <li>
 <strong>Weights are named and plural.</strong> A scale can carry <code>gva</code>, <code>employment</code> and <code>count</code> side by side, with one declared default.</li>

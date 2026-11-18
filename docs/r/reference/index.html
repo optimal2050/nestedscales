@@ -144,6 +144,10 @@
         </td>
         <td><p>Summarize a NestedScale</p></td>
       </tr><tr><td>
+          <p><code><a href="str.NestedScale.html">str(<i>&lt;NestedScale&gt;</i>)</a></code> <code><a href="str.NestedScale.html">str(<i>&lt;nestedscales::NestedScale&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Show the structure of a scale</p></td>
+      </tr><tr><td>
           <p><code><a href="sub-.NestedScale.html">`[`(<i>&lt;NestedScale&gt;</i>)</a></code> <code><a href="sub-.NestedScale.html">`[`(<i>&lt;nestedscales::NestedScale&gt;</i>)</a></code> </p>
         </td>
         <td><p>Subset a NestedScale</p></td>
@@ -224,9 +228,37 @@
         </td>
         <td><p>Match labels to members, strictly</p></td>
       </tr><tr><td>
+          <p><code><a href="attach_labels_scale.html">attach_labels_scale()</a></code> </p>
+        </td>
+        <td><p>Attach labels to a scale</p></td>
+      </tr><tr><td>
+          <p><code><a href="scale_labels.html">scale_labels()</a></code> </p>
+        </td>
+        <td><p>Read the label table</p></td>
+      </tr><tr><td>
+          <p><code><a href="scale_label.html">scale_label()</a></code> </p>
+        </td>
+        <td><p>Look up the labels of members</p></td>
+      </tr><tr><td>
           <p><code><a href="convert_scale.html">convert_scale()</a></code> </p>
         </td>
         <td><p>Convert unit-keyed quantities with a member attribute</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="the-data-link">The data link <a href="#the-data-link" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Record which scale and frame a table’s code columns are on.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="bind_scale.html">bind_scale()</a></code> <code><a href="bind_scale.html">unbind_scale()</a></code> <code><a href="bind_scale.html">scale_link()</a></code> </p>
+        </td>
+        <td><p>Bind a table to a scale</p></td>
+      </tr><tr><td>
+          <p><code><a href="scale_id.html">scale_id()</a></code> </p>
+        </td>
+        <td><p>The identity of a scale</p></td>
+      </tr><tr><td>
+          <p><code><a href="as_scale_unit.html">as_scale_unit()</a></code> <code><a href="as_scale_unit.html">is_scale_unit()</a></code> </p>
+        </td>
+        <td><p>Codes bound to a scale</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="conversion">Conversion <a href="#conversion" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Recast data between resolutions, attach labels, and declare rules.</p>
@@ -447,6 +479,10 @@
           <p><code><a href="scale_atom_pairs.html">scale_atom_pairs()</a></code> </p>
         </td>
         <td><p>Atom-level correspondence between two frames</p></td>
+      </tr><tr><td>
+          <p><code><a href="scale_link_enter.html">scale_link_enter()</a></code> <code><a href="scale_link_enter.html">scale_link_exit()</a></code> </p>
+        </td>
+        <td><p>The data link, for dimension packages</p></td>
       </tr><tr><td>
           <p><code><a href="backend.html">backend_of()</a></code> <code><a href="backend.html">backend_is_lazy()</a></code> <code><a href="backend.html">backend_schema()</a></code> <code><a href="backend.html">backend_lazy()</a></code> <code><a href="backend.html">backend_scan()</a></code> <code><a href="backend.html">backend_distinct()</a></code> <code><a href="backend.html">backend_pull()</a></code> <code><a href="backend.html">backend_restore()</a></code> <code><a href="backend.html">backend_bind_rows()</a></code> </p>
         </td>

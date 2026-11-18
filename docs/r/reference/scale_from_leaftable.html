@@ -95,6 +95,7 @@
 <span>  desc <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  attributes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  aliases <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -148,9 +149,13 @@ by <code>(frame, unit)</code>; see <code><a href="attach_attributes_scale.html">
 <code>(frame, unit)</code>; see <code><a href="attach_aliases_scale.html">attach_aliases_scale()</a></code> for the columns.</p></dd>
 
 
+<dt id="arg-labels">labels<a class="anchor" aria-label="anchor" href="#arg-labels"></a></dt>
+<dd><p>Optional table of display names keyed by
+<code>(frame, unit, variant)</code>; see <code><a href="attach_labels_scale.html">attach_labels_scale()</a></code> for the columns.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Further named entries merged into <code>meta</code> (e.g. <code>source</code>,
-<code>labels</code>).</p></dd>
+<dd><p>Further named entries merged into <code>meta</code> (e.g. <code>source</code>).</p></dd>
 
 </dl></div>
     <div id="value">

@@ -325,7 +325,7 @@ to every geoframe at once:</p>
 <code class="sourceCode R"><span><span class="va">co2_by_atom</span> <span class="op">&lt;-</span> <span class="va">co2</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">atom</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">summarise</span><span class="op">(</span>kt_co2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">kt_co2</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
-<span><span class="fu">geoscale_autoplot</span><span class="op">(</span><span class="va">gs</span>, data <span class="op">=</span> <span class="va">co2_by_atom</span>, z <span class="op">=</span> <span class="st">"kt_co2"</span>, rule <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">gg_geoscale</span><span class="op">(</span><span class="va">gs</span>, data <span class="op">=</span> <span class="va">co2_by_atom</span>, z <span class="op">=</span> <span class="st">"kt_co2"</span>, rule <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="across-dimensions_files/figure-html/co2-icicle-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">

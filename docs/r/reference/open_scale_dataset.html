@@ -109,7 +109,8 @@
     <p>A <code>scale_dataset</code>: a list with <code>data</code> (a lazily-read arrow
 Dataset) and <code>scale</code> (the <code><a href="NestedScale.html">NestedScale</a></code> or <code><a href="ScaleProduct.html">ScaleProduct</a></code> it is indexed
 by). Feed them to the verbs as
-<code>recast_scale(ds$data, ds$scale, ...)</code>.</p>
+<code>recast_scale(ds$data, ds$scale, ...)</code>. <code><a href="bind_scale.html">scale_link()</a></code> reports which
+columns of the stored data are on which scale and frame.</p>
     </div>
 
     <div id="ref-examples">

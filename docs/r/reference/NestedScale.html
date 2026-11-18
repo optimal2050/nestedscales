@@ -97,7 +97,8 @@ vintages) is declared directly.</p>
 <span>  key <span class="op">=</span> <span class="st">"unit"</span>,</span>
 <span>  meta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  attributes <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  aliases <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  aliases <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labels <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -127,8 +128,8 @@ as a set.</p></dd>
 
 <dt id="arg-meta">meta<a class="anchor" aria-label="anchor" href="#arg-meta"></a></dt>
 <dd><p>Named list of attributes (<code>name</code>, <code>desc</code>, <code>weights</code>,
-<code>default_weight</code>, <code>residuals</code> (see <code><a href="scale_residuals.html">scale_residuals()</a></code>), <code>labels</code>,
-<code>source</code>, sample bookkeeping).</p></dd>
+<code>default_weight</code>, <code>residuals</code> (see <code><a href="scale_residuals.html">scale_residuals()</a></code>),
+<code>default_label</code>, <code>source</code>, sample bookkeeping).</p></dd>
 
 
 <dt id="arg-attributes">attributes<a class="anchor" aria-label="anchor" href="#arg-attributes"></a></dt>
@@ -139,6 +140,11 @@ by <code>(frame, unit)</code>; see <code><a href="attach_attributes_scale.html">
 <dt id="arg-aliases">aliases<a class="anchor" aria-label="anchor" href="#arg-aliases"></a></dt>
 <dd><p>Optional table of alternative labels keyed by
 <code>(frame, unit)</code>; see <code><a href="attach_aliases_scale.html">attach_aliases_scale()</a></code> for the columns.</p></dd>
+
+
+<dt id="arg-labels">labels<a class="anchor" aria-label="anchor" href="#arg-labels"></a></dt>
+<dd><p>Optional table of display names keyed by
+<code>(frame, unit, variant)</code>; see <code><a href="attach_labels_scale.html">attach_labels_scale()</a></code> for the columns.</p></dd>
 
 </dl></div>
     <div id="value">

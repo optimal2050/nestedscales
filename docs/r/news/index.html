@@ -78,9 +78,19 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="development version" id="nestedscales-development-version">nestedscales (development version)<a class="anchor" aria-label="anchor" href="#nestedscales-development-version"></a></h2>
+<div class="section level3">
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li>Labels. A scale carries an optional table of display names keyed by <code>(frame, unit, variant)</code>: a member may have several named variants, a frame may have none, and a row with <code>unit = NA</code> names the frame itself. <code><a href="../reference/scale_from_leaftable.html">scale_from_leaftable()</a></code> takes it as <code>labels=</code>; <code><a href="../reference/attach_labels_scale.html">attach_labels_scale()</a></code> adds rows and sets the default variant, <code><a href="../reference/scale_labels.html">scale_labels()</a></code> reads the table and <code><a href="../reference/scale_label.html">scale_label()</a></code> looks names up, returning the code where there is no label. <code>join_scale(labels = )</code> attaches them as <code>"&lt;name&gt;.label"</code>. Subsets keep the labels of the members that remain, and <code><a href="../reference/write_scale.html">write_scale()</a></code> / <code><a href="../reference/write_scale.html">read_scale()</a></code> carry the table.</li>
+<li>The data link. <code><a href="../reference/bind_scale.html">bind_scale()</a></code> records on a table’s code columns which scale and frame they are on; <code><a href="../reference/bind_scale.html">scale_link()</a></code> reports it and <code><a href="../reference/bind_scale.html">unbind_scale()</a></code> removes it. A bound column is a character vector of class <code>scale_unit</code> (<code><a href="../reference/as_scale_unit.html">as_scale_unit()</a></code>, <code><a href="../reference/as_scale_unit.html">is_scale_unit()</a></code>) that keeps the link through subsetting, joins and row binding. <code><a href="../reference/recast_scale.html">recast_scale()</a></code>, <code><a href="../reference/recast.html">recast()</a></code>, <code><a href="../reference/recast_to_atoms.html">recast_to_atoms()</a></code>, <code><a href="../reference/recast_to_atoms.html">recast_from_atoms()</a></code> and <code><a href="../reference/join_scale.html">join_scale()</a></code> take the source frame from the link, stop when the data is bound to another scale, and bind their result; unbound data is handled as before. <code><a href="../reference/write_scale_dataset.html">write_scale_dataset()</a></code> records the link in the store.</li>
+<li>
+<code><a href="../reference/scale_id.html">scale_id()</a></code> gives the identity of a scale: its name and a hash of its structure. A link compares the hash alone, so objects with the same structure under different names are interchangeable.</li>
+<li>
+<code><a href="https://rdrr.io/r/utils/str.html" class="external-link">str()</a></code> on a scale lists its properties with their size and purpose.</li>
+<li>The classes <code>NestedScale</code> and <code>ScaleProduct</code> are exported, so printing one shows its properties and <code><a href="../reference/NestedScale.html">?NestedScale</a></code> documents them.</li>
+</ul></div>
 </div>
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.2.0" id="nestedscales-020">nestedscales 0.2.0<a class="anchor" aria-label="anchor" href="#nestedscales-020"></a></h2>
+<h2 class="page-header" data-toc-text="0.2.0" id="nestedscales-020">nestedscales 0.2.0<small>2026-11-03</small><a class="anchor" aria-label="anchor" href="#nestedscales-020"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
 <ul><li>
