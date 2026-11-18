@@ -15,9 +15,10 @@ NULL
 
 #' Attach scale labels and memberships to a dataset
 #'
-#' Adds a label column named after the scale, and optionally the codes of
-#' coarser frames (`"<name>.<frame>"`) and the unit's share and weight
-#' (`"<name>.share"`, `"<name>.weight"`).
+#' Adds a code column named after the scale, and optionally the codes of
+#' coarser frames (`"<name>.<frame>"`), the display names of the codes
+#' (`"<name>.label"`) and the unit's share and weight (`"<name>.share"`,
+#' `"<name>.weight"`).
 #'
 #' Existing columns are never overwritten -- a collision is an error.
 #'
@@ -38,6 +39,9 @@ NULL
 #'   matching codes; codes that are not units). `"auto"` (default) runs them
 #'   on eager inputs and skips them on arrow/dtplyr, which makes this verb
 #'   zero-scan there; `"on"`/`"off"` force the choice.
+#' @param labels Attach the display names of the keyed codes as
+#'   `"<name>.label"`: `TRUE` for the default variant, a string to name one,
+#'   `NULL`/`FALSE` (default) for none. See [`attach_labels_scale()`].
 #'
 #' @return `data` with the attached columns, in its own class.
 #'
@@ -51,9 +55,46 @@ NULL
 join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
                        meta = FALSE, weight = NULL, as_factor = TRUE,
                        collect = NULL,
-                       diagnostics = c("auto", "on", "off")) {
-  diagnostics <- match.arg(diagnostics)
+                       diagnostics = c("auto", "on", "off"),
+                       labels = NULL) {
   .check_scale(x, "x")
+  link <- .link_enter(data, x, key = key, source = frame)
+  out <- .join_scale(link$data, x,
+    key = link$key, frame = link$source, attach = attach, meta = meta,
+    weight = weight, as_factor = as_factor, collect = collect,
+    diagnostics = diagnostics, labels = labels
+  )
+  if (nrow(link$tags) == 0L || !is.data.frame(out)) {
+    return(out)
+  }
+  # What the join added: the code column named after the scale is at the
+  # keyed frame, and each `<name>.<frame>` column is at that frame.
+  nm <- .scale_name(x)
+  keyed <- link$source %||% intersect(
+    c(S7::prop(x, "frames"), .atom_level(x)), names(link$data)
+  )[1L]
+  added <- setdiff(names(out), names(link$data))
+  new <- list()
+  if (nm %in% added) new[[nm]] <- list(scale = x, frame = keyed)
+  for (fr in S7::prop(x, "frames")) {
+    col <- paste0(nm, ".", fr)
+    if (col %in% added) new[[col]] <- list(scale = x, frame = fr)
+  }
+  .link_exit(out, link, new)
+}
+
+#' @noRd
+.join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
+                        meta = FALSE, weight = NULL, as_factor = TRUE,
+                        collect = NULL,
+                        diagnostics = c("auto", "on", "off"),
+                        labels = NULL) {
+  diagnostics <- match.arg(diagnostics)
+  label_variant <- if (is.null(labels) || isFALSE(labels)) {
+    NULL
+  } else {
+    .label_variant(x, if (isTRUE(labels)) NULL else labels)
+  }
   backend <- backend_of(data, "data")
   nm <- .scale_name(x)
   schema <- backend_schema(data)
@@ -119,6 +160,7 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
   new_cols <- c(
     if (key != nm) nm,
     paste0(nm, ".", attach),
+    if (!is.null(label_variant)) paste0(nm, ".label"),
     if (isTRUE(meta)) paste0(nm, c(".share", ".weight"))
   )
   clash <- intersect(new_cols, names(schema))
@@ -193,6 +235,11 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
     val <- as.character(pairs[[cl]])[match(known, pairs[[frame]])]
     attach_df[[paste0(nm, ".", cl)]] <-
       if (isTRUE(as_factor)) factor(val, levels = members[[cl]]) else val
+  }
+
+  if (!is.null(label_variant)) {
+    attach_df[[paste0(nm, ".label")]] <-
+      scale_label(x, known, frame, label_variant)
   }
 
   # share / weight at the keyed frame (skipped when no weight exists)

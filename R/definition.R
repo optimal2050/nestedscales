@@ -333,6 +333,11 @@ NULL
   } else {
     .as_aliases(.table_from_ref(tables$aliases, dir, "aliases"))
   }
+  lb <- if (is.null(tables$labels)) {
+    NULL
+  } else {
+    .as_labels(.table_from_ref(tables$labels, dir, "labels"))
+  }
   members <- lapply(hdr$members, function(z) as.character(unlist(.as_list(z))))
   frames <- as.character(unlist(.as_list(hdr$frames)))
   meta <- .meta_decode(hdr$meta %||% list(),
@@ -341,7 +346,8 @@ NULL
   if (!is.null(hdr$name) && is.null(meta[["name"]])) meta$name <- hdr$name
   NestedScale(
     leaftable = leaftable, frames = frames, members = members,
-    key = hdr$key %||% "unit", meta = meta, attributes = at, aliases = al
+    key = hdr$key %||% "unit", meta = meta, attributes = at, aliases = al,
+    labels = lb
   )
 }
 
@@ -567,6 +573,9 @@ write_scale <- function(x, path, format = c("json", "yaml"),
     attributes = .attr_table(x),
     aliases = .alias_table(x)
   )
+  # Written only when present, so a definition without labels stays readable
+  # by a version that does not know the table.
+  if (nrow(.label_table(x)) > 0L) core$labels <- .label_table(x)
   if (tables == "auto") {
     n <- sum(vapply(core, nrow, integer(1)))
     tables <- if (n <= .INLINE_MAX_ROWS) {

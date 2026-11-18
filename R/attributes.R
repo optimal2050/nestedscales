@@ -65,8 +65,8 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 
 #' Bring an object saved under an earlier class definition up to date
 #'
-#' An S7 object embeds its class. One saved before the `attributes` and
-#' `aliases` properties existed validates and reads fine (the accessors
+#' An S7 object embeds its class. One saved before the `attributes`,
+#' `aliases` or `labels` properties existed validates and reads fine (the accessors
 #' tolerate the missing attributes), but any WRITE -- `S7::prop<-`,
 #' `S7::set_props()`, hence every rebuild -- is refused by the embedded
 #' class. So the write paths call this first: it swaps in the current class
@@ -75,8 +75,12 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' @noRd
 .upgrade_scale <- function(x) {
   cls <- attr(x, "S7_class", exact = TRUE)
-  if (is.null(cls) ||
-    all(c("attributes", "aliases") %in% names(cls@properties))) {
+  if (is.null(cls)) {
+    return(x)
+  }
+  props <- names(cls@properties)
+  core <- all(c("attributes", "aliases") %in% props)
+  if (core && "labels" %in% props) {
     return(x)
   }
   spec <- strsplit(class(x)[[1L]], "::", fixed = TRUE)[[1L]]
@@ -87,6 +91,10 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
     )
   }
   if (!inherits(current, "S7_class")) {
+    # Only `labels` is missing: every write path but the label one works.
+    if (core) {
+      return(x)
+    }
     .stop(paste0(
       "this %s was saved under an earlier class definition and its ",
       "package (%s) is not loaded, so it cannot be updated in place; ",
@@ -99,6 +107,10 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
   }
   if (is.null(attr(x, "aliases", exact = TRUE))) {
     attr(x, "aliases") <- .empty_aliases()
+  }
+  if ("labels" %in% names(current@properties) &&
+    is.null(attr(x, "labels", exact = TRUE))) {
+    attr(x, "labels") <- .empty_labels()
   }
   x
 }

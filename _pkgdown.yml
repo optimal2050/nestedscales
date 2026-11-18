@@ -59,6 +59,7 @@ reference:
   - scale_residuals
   - is_valid_frame
   - summary.NestedScale
+  - str.NestedScale
   - "`[.NestedScale`"
 - title: Navigation and shares
   desc: Move between frames and report what a unit holds.
@@ -84,7 +85,16 @@ reference:
   - attach_aliases_scale
   - scale_aliases
   - scale_match
+  - attach_labels_scale
+  - scale_labels
+  - scale_label
   - convert_scale
+- title: The data link
+  desc: Record which scale and frame a table's code columns are on.
+  contents:
+  - bind_scale
+  - scale_id
+  - as_scale_unit
 - title: Conversion
   desc: Recast data between resolutions, attach labels, and declare rules.
   contents:
@@ -153,6 +163,7 @@ reference:
   - scale_payload_collapse
   - scale_payload_io
   - scale_atom_pairs
+  - scale_link_enter
   - starts_with("backend_")
 - title: Package
   contents:

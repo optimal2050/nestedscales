@@ -178,6 +178,10 @@ resolves labels and model codes through the alias table, strictly.
 
 ## Design
 
+- **A scale is a definition, not a container.** It holds the atoms, the
+  frames that group them and the weights that size them. Data stays in
+  ordinary tables; `bind_scale()` records on the code columns which scale
+  and frame they are on, and the verbs check it.
 - **Atoms are the ground truth.** Frames are partitions of the atoms,
   not necessarily a strict tree; conversion always routes through the
   atom layer.

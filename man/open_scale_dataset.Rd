@@ -20,7 +20,8 @@ open_scale_dataset(path)
 A \code{scale_dataset}: a list with \code{data} (a lazily-read arrow
 Dataset) and \code{scale} (the \code{\link{NestedScale}} or \code{\link{ScaleProduct}} it is indexed
 by). Feed them to the verbs as
-\code{recast_scale(ds$data, ds$scale, ...)}.
+\code{recast_scale(ds$data, ds$scale, ...)}. \code{\link[=scale_link]{scale_link()}} reports which
+columns of the stored data are on which scale and frame.
 }
 \description{
 Open a scale-aware dataset

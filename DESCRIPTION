@@ -38,7 +38,8 @@ Imports:
     rlang,
     S7,
     stats,
-    utils
+    utils,
+    vctrs
 Suggests:
     arrow,
     cluster,
@@ -75,6 +76,8 @@ Collate:
     'filter.R'
     'frames.R'
     'join.R'
+    'labels.R'
+    'link.R'
     'map.R'
     'nestedscales-package.R'
     'recast.R'
@@ -83,6 +86,7 @@ Collate:
     'rules.R'
     'scale-construct.R'
     'shipped-scales.R'
+    'str.R'
     'sweep.R'
     'utils.R'
     'zzz.R'

@@ -53,11 +53,26 @@ x
 
 ## The object
 
-A `NestedScale` is an S7 object with seven properties:
+A `NestedScale` is an S7 object with eight properties. `str()` lists them
+with their size and purpose:
 
 ```{r props}
-S7::prop_names(x)
+str(x)
 ```
+
+The standard S7 tools apply: `S7::prop_names(x)` gives the names,
+`x@frames` or `S7::prop(x, "frames")` reads one property, and
+`S7::props(x)` returns all of them as a list.
+
+```{r props-s7}
+S7::prop_names(x)
+x@frames
+```
+
+The object is a **definition**: the atoms, the frames that group them, and
+the weights that say how big each atom is. It never holds data. Data stays
+in ordinary tables, and a table is tied to a scale by its code columns; see
+[The data link](#the-data-link) below.
 
 | property | type | holds |
 |---|---|---|
@@ -67,11 +82,12 @@ S7::prop_names(x)
 | `key` | `character` | the name of the atom column (`"unit"` by default) |
 | `meta` | `list` | `name`, `desc`, `weights`, `default_weight`, and whatever the builder adds |
 | `attributes` | `data.frame` | values keyed by `(frame, unit)`: `attribute`, `kind`, `value`, `lower`, `upper`, `unit_of_measure`, `source`, `note` |
-| `aliases` | `data.frame` | alternative labels keyed by `(frame, unit)`: `alias`, `source` |
+| `aliases` | `data.frame` | alternative spellings keyed by `(frame, unit)`: `alias`, `source` |
+| `labels` | `data.frame` | display names keyed by `(frame, unit, variant)`: `label` |
 
 Everything else -- parent/child tables, ancestry, shares, resolved
 attributes -- is derived on demand; nothing is cached on the object. The
-two tables are empty unless the builder fills them; a scale saved by an
+three tables are empty unless the builder fills them; a scale saved by an
 earlier version, which had no such properties, loads and validates
 unchanged.
 
@@ -158,6 +174,32 @@ One alias may point at several members (`elc` above); matching reports that
 as ambiguous unless `frame=` narrows it. Matching is exact and
 case-insensitive, with no fuzzy stage.
 
+## The label table
+
+Labels are display names. A label belongs to a member and to a named
+*variant*, so one member may carry a full name, a short one and a
+translation, while another frame carries none at all and is shown by its
+codes. A row with `unit = NA` names the frame itself.
+
+```{r labels}
+x <- attach_labels_scale(
+  x,
+  data.frame(
+    frame = "carrier",
+    unit  = c("Coal", "Electricity", NA),
+    label = c("Coal and coal products", "Electric power", "Energy carrier")
+  ),
+  variant = "long"
+)
+scale_labels(x)
+scale_label(x, c("Coal", "Electricity"), frame = "carrier")
+scale_label(x, scale_units(x, "group"), frame = "group")   # no labels: codes
+```
+
+Aliases and labels answer different questions. An alias is a spelling to be
+*recognised* (`scale_match()`); a label is a name to be *shown*
+(`scale_label()`, `join_scale(labels = )`).
+
 ## Weights and meta
 
 ```{r meta}
@@ -174,6 +216,42 @@ with `"<name>."`, `scale_map_between()` names its label columns after the
 objects, and `write_scale()` needs a name for the definition. The shipped
 `carriers` keeps energypal's short and long labels in `meta$labels`; colours
 are not stored.
+
+## The data link
+
+A table of data is tied to a scale by its code columns. Unbound, the tie is
+the column name alone: a column called `carrier` is read as codes at the
+`carrier` frame. Two scales can share frame names and codes, so the name
+does not say *which* scale the data is on. `bind_scale()` records it on the
+column itself, together with the scale's identity:
+
+```{r link}
+scale_id(x)
+d <- data.frame(fuel = scale_units(x), pj = seq_along(scale_units(x)))
+b <- bind_scale(d, x)
+scale_link(b)
+```
+
+`scale_id()` is the scale's name plus a hash of its structure -- key, frames
+and memberships. Weights, attributes, aliases and labels do not enter, so
+enriching a scale does not detach the data bound to it; a subset or a
+re-grouping is a different scale.
+
+A bound column is still a character vector. It keeps the link through row
+subsetting, `mutate()`, grouping, joins and row binding, and the verbs use
+it: the source frame is taken from the link, the result is bound to the
+target frame, and data bound to another scale is refused.
+
+```{r link-verbs}
+register_scale_rule("pj", "sum")
+out <- recast_scale(b, x, target = "carrier")
+scale_link(out)
+clear_scale_rules("pj")
+```
+
+Unbound data behaves as before, and its results stay unbound. A lazy table
+(arrow, dtplyr) cannot carry the link in memory; `write_scale_dataset()`
+records it in the store and `scale_link()` reads it back.
 
 ## What the validator guarantees
 

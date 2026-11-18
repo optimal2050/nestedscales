@@ -75,8 +75,10 @@ NULL
   refs <- list(leaftable = list(
     file = paste0(axis, "-leaftable.arrow"), format = "arrow"
   ))
-  for (what in c("attributes", "aliases")) {
-    df <- if (what == "attributes") .attr_table(s) else .alias_table(s)
+  member_tables <- list(attributes = .attr_table(s), aliases = .alias_table(s))
+  if (nrow(.label_table(s)) > 0L) member_tables$labels <- .label_table(s)
+  for (what in names(member_tables)) {
+    df <- member_tables[[what]]
     refs[[what]] <- if (nrow(df) <= .INLINE_MAX_ROWS) {
       list(inline = .table_inline(df))
     } else {
@@ -174,6 +176,31 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
     stats::setNames(scale_key(x), names(axes))
   }
 
+  # The link the data carries is checked against the axes and written to the
+  # manifest; the files themselves hold plain strings.
+  tags <- .scale_tags(d)
+  ids <- .id_hash(vapply(axes, scale_id, character(1)))
+  foreign <- tags[!.id_hash(tags$id) %in% ids, , drop = FALSE]
+  if (nrow(foreign) > 0L) {
+    .stop(
+      "the `%s` column is bound to %s, which is not a scale of this store",
+      foreign$column[[1L]], .tag_text(foreign$scale[[1L]], foreign$id[[1L]])
+    )
+  }
+  d <- unbind_scale(d)
+  link <- lapply(seq_len(nrow(tags)), function(i) {
+    list(
+      column = tags$column[[i]],
+      axis = names(axes)[match(.id_hash(tags$id[[i]]), ids)],
+      frame = tags$frame[[i]]
+    )
+  })
+  for (a in setdiff(names(axes), vapply(link, `[[`, character(1), "axis"))) {
+    link <- c(link, list(list(
+      column = keys[[a]], axis = a, frame = .atom_level(axes[[a]])
+    )))
+  }
+
   missing_keys <- setdiff(unname(keys), names(d))
   if (length(missing_keys) > 0L) {
     .stop(
@@ -219,6 +246,7 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
     nestedscales = as.character(utils::packageVersion("nestedscales")),
     kind = if (is_prod) "product" else "scale",
     keys = as.list(keys),
+    link = link,
     axes = headers
   )
   .write_header(manifest, file.path(sdir, "manifest.json"), "json")
@@ -257,7 +285,8 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
 #' @return A `scale_dataset`: a list with `data` (a lazily-read arrow
 #'   Dataset) and `scale` (the [`NestedScale`] or [`ScaleProduct`] it is indexed
 #'   by). Feed them to the verbs as
-#'   `recast_scale(ds$data, ds$scale, ...)`.
+#'   `recast_scale(ds$data, ds$scale, ...)`. [`scale_link()`] reports which
+#'   columns of the stored data are on which scale and frame.
 #'
 #' @examples
 #' # see write_scale_dataset()

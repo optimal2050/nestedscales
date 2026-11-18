@@ -14,7 +14,8 @@ join_scale(
   weight = NULL,
   as_factor = TRUE,
   collect = NULL,
-  diagnostics = c("auto", "on", "off")
+  diagnostics = c("auto", "on", "off"),
+  labels = NULL
 )
 }
 \arguments{
@@ -44,14 +45,19 @@ frame's full vocabulary as levels (so empty groups still plot).}
 matching codes; codes that are not units). \code{"auto"} (default) runs them
 on eager inputs and skips them on arrow/dtplyr, which makes this verb
 zero-scan there; \code{"on"}/\code{"off"} force the choice.}
+
+\item{labels}{Attach the display names of the keyed codes as
+\code{"<name>.label"}: \code{TRUE} for the default variant, a string to name one,
+\code{NULL}/\code{FALSE} (default) for none. See \code{\link[=attach_labels_scale]{attach_labels_scale()}}.}
 }
 \value{
 \code{data} with the attached columns, in its own class.
 }
 \description{
-Adds a label column named after the scale, and optionally the codes of
-coarser frames (\code{"<name>.<frame>"}) and the unit's share and weight
-(\code{"<name>.share"}, \code{"<name>.weight"}).
+Adds a code column named after the scale, and optionally the codes of
+coarser frames (\code{"<name>.<frame>"}), the display names of the codes
+(\code{"<name>.label"}) and the unit's share and weight (\code{"<name>.share"},
+\code{"<name>.weight"}).
 }
 \details{
 Existing columns are never overwritten -- a collision is an error.

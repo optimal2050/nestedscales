@@ -111,7 +111,7 @@ NULL
   out
 }
 
-#' Keep the attribute and alias rows of the members that still exist
+#' Keep the attribute, alias and label rows of the members that still exist
 #'
 #' The core's own payload is keyed by `(frame, unit)`, so a subset is a
 #' membership test, never a positional one -- correct under
@@ -126,7 +126,17 @@ NULL
   al <- al[paste(al$frame, al$unit, sep = "\r") %in% keep, , drop = FALSE]
   rownames(at) <- NULL
   rownames(al) <- NULL
-  S7::set_props(x, attributes = at, aliases = al, .check = FALSE)
+  x <- S7::set_props(x, attributes = at, aliases = al, .check = FALSE)
+  if (.has_labels_prop(x)) {
+    lb <- .label_table(x)
+    ok <- ifelse(is.na(lb$unit), lb$frame %in% S7::prop(x, "frames"),
+      paste(lb$frame, lb$unit, sep = "\r") %in% keep
+    )
+    lb <- lb[ok, , drop = FALSE]
+    rownames(lb) <- NULL
+    x <- S7::set_props(x, labels = lb, .check = FALSE)
+  }
+  x
 }
 
 #' Subset a NestedScale by unit

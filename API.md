@@ -178,6 +178,9 @@ invertible ratio, `factor` is one-way.
 | `attach_aliases_scale` | `x, aliases, source=NULL` | `x` with rows appended | ✓ | ✓ |
 | `scale_aliases` | `x, frame=NULL, source=NULL` | alias rows | ✓ | ✓ |
 | `scale_match` | `x, labels, frame=NULL, source=NULL` | table `label, frame, unit, method, candidates`; `method` = `exact`, `alias`, `ambiguous`, `none` | ✓ | ✓ |
+| `attach_labels_scale` | `x, labels, variant=NULL, default=NULL, overwrite=FALSE` | `x` with display names added; table columns `frame, unit, variant, label`, `unit` = NA names the frame | ✓ | |
+| `scale_labels` | `x, frame=NULL, variant=NULL` | label rows | ✓ | |
+| `scale_label` | `x, units, frame, variant=NULL` | one display name per code; the code where there is none | ✓ | |
 | `convert_scale` | `data, x, attribute, from_unit, to_unit, key=NULL, frame=NULL, values=NULL, source=NULL, na_action="error", collect=NULL` | `data` with value columns converted plus `<attribute>` and `<attribute>.origin_frame` | ✓ | ✓ |
 
 ### Backends

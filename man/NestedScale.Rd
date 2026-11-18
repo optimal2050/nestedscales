@@ -11,7 +11,8 @@ NestedScale(
   key = "unit",
   meta = list(),
   attributes = NULL,
-  aliases = NULL
+  aliases = NULL,
+  labels = NULL
 )
 }
 \arguments{
@@ -28,14 +29,17 @@ as a set.}
 \item{key}{Name of the atom key column (a single string, default \code{"unit"}).}
 
 \item{meta}{Named list of attributes (\code{name}, \code{desc}, \code{weights},
-\code{default_weight}, \code{residuals} (see \code{\link[=scale_residuals]{scale_residuals()}}), \code{labels},
-\code{source}, sample bookkeeping).}
+\code{default_weight}, \code{residuals} (see \code{\link[=scale_residuals]{scale_residuals()}}),
+\code{default_label}, \code{source}, sample bookkeeping).}
 
 \item{attributes}{Optional table of per-member physical attributes keyed
 by \verb{(frame, unit)}; see \code{\link[=attach_attributes_scale]{attach_attributes_scale()}} for the columns.}
 
 \item{aliases}{Optional table of alternative labels keyed by
 \verb{(frame, unit)}; see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}} for the columns.}
+
+\item{labels}{Optional table of display names keyed by
+\verb{(frame, unit, variant)}; see \code{\link[=attach_labels_scale]{attach_labels_scale()}} for the columns.}
 }
 \value{
 A \code{NestedScale} object.
@@ -56,4 +60,3 @@ scale_example()
 \seealso{
 \code{\link[=scale_from_leaftable]{scale_from_leaftable()}}, \code{\link[=scale_frames]{scale_frames()}}, \code{\link[=scale_units]{scale_units()}}
 }
-\keyword{internal}

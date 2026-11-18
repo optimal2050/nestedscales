@@ -15,6 +15,7 @@ scale_from_leaftable(
   desc = "",
   attributes = NULL,
   aliases = NULL,
+  labels = NULL,
   ...
 )
 }
@@ -46,8 +47,10 @@ by \verb{(frame, unit)}; see \code{\link[=attach_attributes_scale]{attach_attrib
 \item{aliases}{Optional table of alternative labels keyed by
 \verb{(frame, unit)}; see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}} for the columns.}
 
-\item{...}{Further named entries merged into \code{meta} (e.g. \code{source},
-\code{labels}).}
+\item{labels}{Optional table of display names keyed by
+\verb{(frame, unit, variant)}; see \code{\link[=attach_labels_scale]{attach_labels_scale()}} for the columns.}
+
+\item{...}{Further named entries merged into \code{meta} (e.g. \code{source}).}
 }
 \value{
 A \code{\link{NestedScale}}.

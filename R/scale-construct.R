@@ -34,8 +34,9 @@
 #'   by `(frame, unit)`; see [`attach_attributes_scale()`] for the columns.
 #' @param aliases Optional table of alternative labels keyed by
 #'   `(frame, unit)`; see [`attach_aliases_scale()`] for the columns.
-#' @param ... Further named entries merged into `meta` (e.g. `source`,
-#'   `labels`).
+#' @param labels Optional table of display names keyed by
+#'   `(frame, unit, variant)`; see [`attach_labels_scale()`] for the columns.
+#' @param ... Further named entries merged into `meta` (e.g. `source`).
 #'
 #' @return A [`NestedScale`].
 #'
@@ -58,6 +59,7 @@ scale_from_leaftable <- function(leaftable,
                                  desc = "",
                                  attributes = NULL,
                                  aliases = NULL,
+                                 labels = NULL,
                                  ...) {
   if (!is.data.frame(leaftable)) {
     .stop("`leaftable` must be a data.frame")
@@ -175,7 +177,8 @@ scale_from_leaftable <- function(leaftable,
     key        = key,
     meta       = meta,
     attributes = .as_attributes(attributes),
-    aliases    = .as_aliases(aliases)
+    aliases    = .as_aliases(aliases),
+    labels     = .as_labels(labels)
   )
 }
 

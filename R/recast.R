@@ -412,6 +412,40 @@ recast_scale <- function(data, x, source = NULL, target,
                          missing_sources = c("na", "ignore"),
                          batch = NULL, batch_by = NULL,
                          ...) {
+  .check_scale(x, "x")
+  link <- .link_enter(data, x, key = key, source = source)
+  out <- .recast_scale(link$data, x,
+    source = link$source, target = target, key = link$key, values = values,
+    rule = rule, weight = weight, na_action = na_action, parent = parent,
+    collect = collect, diagnostics = diagnostics,
+    missing_sources = missing_sources, batch = batch, batch_by = batch_by,
+    ...
+  )
+  new <- if (S7::S7_inherits(target, NestedScale)) {
+    stats::setNames(
+      list(list(scale = target, frame = .atom_level(target))),
+      .atom_level(target)
+    )
+  } else {
+    stats::setNames(list(list(scale = x, frame = target)), target)
+  }
+  .link_exit(out, link, new)
+}
+
+#' The worker behind `recast_scale()`, on data with plain code columns
+#' @noRd
+.recast_scale <- function(data, x, source = NULL, target,
+                          key = NULL,
+                          values = NULL,
+                          rule = NULL,
+                          weight = NULL,
+                          na_action = c("drop", "error", "keep"),
+                          parent = NULL,
+                          collect = NULL,
+                          diagnostics = c("auto", "on", "off"),
+                          missing_sources = c("na", "ignore"),
+                          batch = NULL, batch_by = NULL,
+                          ...) {
   na_action <- match.arg(na_action)
   diagnostics <- match.arg(diagnostics)
   missing_sources <- match.arg(missing_sources)
@@ -1227,6 +1261,20 @@ recast_to_atoms <- function(data, x, source = NULL, key = NULL, values = NULL,
                             rule = NULL, weight = NULL, attach_weight = TRUE,
                             collect = NULL) {
   .check_scale(x, "x")
+  link <- .link_enter(data, x, key = key, source = source)
+  out <- .recast_to_atoms(link$data, x,
+    source = link$source, key = link$key, values = values, rule = rule,
+    weight = weight, attach_weight = attach_weight, collect = collect
+  )
+  .link_exit(out, link, stats::setNames(
+    list(list(scale = x, frame = .atom_level(x))), scale_key(x)
+  ))
+}
+
+#' @noRd
+.recast_to_atoms <- function(data, x, source = NULL, key = NULL,
+                             values = NULL, rule = NULL, weight = NULL,
+                             attach_weight = TRUE, collect = NULL) {
   backend <- backend_of(data, "data")
   schema <- backend_schema(data)
   .check_ms_cols(schema)
@@ -1310,8 +1358,23 @@ recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
                               rule = NULL, weight = NULL, na_rm = FALSE,
                               na_action = c("drop", "error", "keep"),
                               collect = NULL) {
-  na_action <- match.arg(na_action)
   .check_scale(x, "x")
+  link <- .link_enter(data, x, key = key, infer = FALSE)
+  out <- .recast_from_atoms(link$data, x,
+    target = target, key = key, values = values, rule = rule,
+    weight = weight, na_rm = na_rm, na_action = na_action, collect = collect
+  )
+  .link_exit(out, link, stats::setNames(
+    list(list(scale = x, frame = target)), target
+  ))
+}
+
+#' @noRd
+.recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
+                               rule = NULL, weight = NULL, na_rm = FALSE,
+                               na_action = c("drop", "error", "keep"),
+                               collect = NULL) {
+  na_action <- match.arg(na_action)
   .check_frame(x, target, "target")
   backend <- backend_of(data, "data")
   schema <- backend_schema(data)

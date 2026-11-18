@@ -23,7 +23,7 @@ skip_if_not_installed("geoscales")
   scale_from_leaftable(
     geoscales::geoscale_leaftable(gs),
     frames = geoscales::geoscale_geoframes(gs),
-    key = "region",
+    key = "atom",
     weights = geoscales::geoscale_weights(gs),
     default_weight = S7::prop(gs, "meta")$default_weight,
     name = "example"
@@ -83,7 +83,7 @@ test_that("the two objects really do hold the same data", {
   list(
     nm = "state->zone cross-cutting",
     data = data.frame(
-      region = c("N1", "N2", "S1"), v = c(10, 20, 30),
+      atom = c("N1", "N2", "S1"), v = c(10, 20, 30),
       stringsAsFactors = FALSE
     ),
     args = list(
@@ -104,7 +104,7 @@ test_that("recast agrees with geoscales on every rule and direction", {
   gs <- .gs()
   ms <- .ms()
   atoms <- data.frame(
-    region = c("A1", "A2", "A3", "A4", "A5", "A6"),
+    atom = c("A1", "A2", "A3", "A4", "A5", "A6"),
     v = c(1, 2, 3, 4, 5, 6), stringsAsFactors = FALSE
   )
   for (cs in .cases) {
@@ -112,13 +112,13 @@ test_that("recast agrees with geoscales on every rule and direction", {
     a <- suppressWarnings(
       do.call(
         geoscales::recast_geoscale,
-        c(list(x = d, gs = gs, key = "region"), cs$args)
+        c(list(data = d, gs = gs, key = "atom"), cs$args)
       )
     )
     b <- suppressWarnings(
       do.call(
         recast_scale,
-        c(list(data = d, x = ms, key = "region"), cs$args)
+        c(list(data = d, x = ms, key = "atom"), cs$args)
       )
     )
     .same(a, b, cs$nm)
@@ -153,39 +153,39 @@ test_that("the copy rule agrees, including its refusal", {
   gs <- .gs()
   ms <- .ms()
   ok <- data.frame(
-    region = c("A1", "A2"), v = c(0.5, 0.5),
+    atom = c("A1", "A2"), v = c(0.5, 0.5),
     stringsAsFactors = FALSE
   )
   .same(
     suppressWarnings(
       geoscales::recast_geoscale(ok, gs,
         source = "atom", target = "state",
-        rule = "copy", key = "region"
+        rule = "copy", key = "atom"
       )
     ),
     suppressWarnings(
       recast_scale(ok, ms,
         source = "atom", target = "state", rule = "copy",
-        key = "region"
+        key = "atom"
       )
     ),
     "copy"
   )
 
   bad <- data.frame(
-    region = c("A1", "A2"), v = c(0.5, 0.9),
+    atom = c("A1", "A2"), v = c(0.5, 0.9),
     stringsAsFactors = FALSE
   )
   expect_error(suppressWarnings(
     geoscales::recast_geoscale(bad, gs,
       source = "atom", target = "state",
-      rule = "copy", key = "region"
+      rule = "copy", key = "atom"
     )
   ))
   expect_error(suppressWarnings(
     recast_scale(bad, ms,
       source = "atom", target = "state", rule = "copy",
-      key = "region"
+      key = "atom"
     )
   ))
 })
@@ -194,20 +194,20 @@ test_that("share agrees", {
   gs <- .gs()
   ms <- .ms()
   d <- data.frame(
-    region = c("A1", "A2", "A3", "A4", "A5", "A6"),
+    atom = c("A1", "A2", "A3", "A4", "A5", "A6"),
     v = c(1, 2, 3, 4, 5, 6), stringsAsFactors = FALSE
   )
   .same(
     suppressWarnings(
       geoscales::recast_geoscale(d, gs,
         source = "atom", target = "country",
-        rule = "share", key = "region"
+        rule = "share", key = "atom"
       )
     ),
     suppressWarnings(
       recast_scale(d, ms,
         source = "atom", target = "country", rule = "share",
-        key = "region"
+        key = "atom"
       )
     ),
     "share within country"
@@ -218,7 +218,7 @@ test_that("identifier columns are carried the same way", {
   gs <- .gs()
   ms <- .ms()
   d <- data.frame(
-    region = rep(c("A1", "A2", "A3", "A4", "A5", "A6"), 2),
+    atom = rep(c("A1", "A2", "A3", "A4", "A5", "A6"), 2),
     year = rep(c(2020, 2021), each = 6),
     v = c(1, 2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12),
     stringsAsFactors = FALSE
@@ -227,14 +227,14 @@ test_that("identifier columns are carried the same way", {
     suppressWarnings(
       geoscales::recast_geoscale(d, gs,
         source = "atom", target = "country",
-        rule = "sum", key = "region",
+        rule = "sum", key = "atom",
         values = "v"
       )
     ),
     suppressWarnings(
       recast_scale(d, ms,
         source = "atom", target = "country", rule = "sum",
-        key = "region", values = "v"
+        key = "atom", values = "v"
       )
     ),
     "panel recast"
@@ -394,7 +394,12 @@ test_that("prune agrees, bookkeeping included", {
   ms <- .ms()
   a <- geoscales::prune_geoscale(gs, "state")
   b <- prune_scale(ms, "state")
-  .same(geoscales::geoscale_leaftable(a), scale_leaftable(b), "leaftable")
+  # a pruned GeoScale is keyed by the geoframe it was pruned to; the neutral
+  # scale keeps a key column of its own holding the same codes
+  la <- geoscales::geoscale_leaftable(a)
+  lb <- scale_leaftable(b)
+  .same(la, lb[names(la)], "leaftable")
+  expect_identical(as.character(lb[[scale_key(b)]]), as.character(lb$state))
   expect_identical(geoscales::geoscale_geoframes(a), scale_frames(b))
   expect_equal(geoscales::geoscale_coverage(a), scale_coverage(b))
   expect_identical(S7::prop(a, "meta")$name, S7::prop(b, "meta")$name)

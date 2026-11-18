@@ -1,5 +1,32 @@
 # nestedscales (development version)
 
+## New features
+
+* Labels. A scale carries an optional table of display names keyed by
+  `(frame, unit, variant)`: a member may have several named variants, a frame
+  may have none, and a row with `unit = NA` names the frame itself.
+  `scale_from_leaftable()` takes it as `labels=`; `attach_labels_scale()`
+  adds rows and sets the default variant, `scale_labels()` reads the table
+  and `scale_label()` looks names up, returning the code where there is no
+  label. `join_scale(labels = )` attaches them as `"<name>.label"`. Subsets
+  keep the labels of the members that remain, and `write_scale()` /
+  `read_scale()` carry the table.
+* The data link. `bind_scale()` records on a table's code columns which
+  scale and frame they are on; `scale_link()` reports it and
+  `unbind_scale()` removes it. A bound column is a character vector of class
+  `scale_unit` (`as_scale_unit()`, `is_scale_unit()`) that keeps the link
+  through subsetting, joins and row binding. `recast_scale()`, `recast()`,
+  `recast_to_atoms()`, `recast_from_atoms()` and `join_scale()` take the
+  source frame from the link, stop when the data is bound to another scale,
+  and bind their result; unbound data is handled as before.
+  `write_scale_dataset()` records the link in the store.
+* `scale_id()` gives the identity of a scale: its name and a hash of its
+  structure. A link compares the hash alone, so objects with the same
+  structure under different names are interchangeable.
+* `str()` on a scale lists its properties with their size and purpose.
+* The classes `NestedScale` and `ScaleProduct` are exported, so printing one
+  shows its properties and `?NestedScale` documents them.
+
 # nestedscales 0.2.0
 
 ## Breaking changes

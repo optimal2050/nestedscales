@@ -13,8 +13,8 @@ scale_product_class()
 The S7 class object.
 }
 \description{
-The classes are not exported under their own names (the package's surface
-is its functions), so these return them. Needed to build a subclass
+These return the classes \code{\link{NestedScale}} and \code{\link{ScaleProduct}}, which are
+also exported under their own names. Needed to build a subclass
 (\code{S7::new_class(..., parent = scale_class())}, which is what
 \code{\link[=scale_alias_property]{scale_alias_property()}} is for) or to register an S7 method against one.
 To merely ask what an object is, use \code{\link[=scale_is]{scale_is()}}.

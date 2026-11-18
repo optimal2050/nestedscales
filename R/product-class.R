@@ -42,7 +42,7 @@ NULL
 #' @seealso [`scale_product()`], [`product_atoms()`], [`product_size()`]
 #' @examples
 #' scale_product(a = scale_example(), b = scale_example2())
-#' @keywords internal
+#' @export
 ScaleProduct <- S7::new_class(
   "ScaleProduct",
   package = "nestedscales",

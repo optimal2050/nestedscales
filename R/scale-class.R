@@ -17,10 +17,12 @@
 #                    coarser member; see R/attributes.R
 #   * `aliases`   -- long table of alternative labels keyed by `(frame, unit)`;
 #                    see R/aliases.R
+#   * `labels`    -- long table of display names keyed by
+#                    `(frame, unit, variant)`; see R/labels.R
 #   * `meta`      -- small named list: `name`, `desc`, `weights`,
 #                    `default_weight`, the sample bookkeeping triple
 #                    (`coverage`, `parent_totals`, `parent_name`),
-#                    `residuals`, `labels`, `source`
+#                    `residuals`, `default_label`, `source`
 #
 # Attributes are NOT weights: a weight says how big an atom is and drives
 # aggregation; an attribute is a per-member factor consumed row by row by
@@ -60,19 +62,21 @@
 #'   as a set.
 #' @param key Name of the atom key column (a single string, default `"unit"`).
 #' @param meta Named list of attributes (`name`, `desc`, `weights`,
-#'   `default_weight`, `residuals` (see [`scale_residuals()`]), `labels`,
-#'   `source`, sample bookkeeping).
+#'   `default_weight`, `residuals` (see [`scale_residuals()`]),
+#'   `default_label`, `source`, sample bookkeeping).
 #' @param attributes Optional table of per-member physical attributes keyed
 #'   by `(frame, unit)`; see [`attach_attributes_scale()`] for the columns.
 #' @param aliases Optional table of alternative labels keyed by
 #'   `(frame, unit)`; see [`attach_aliases_scale()`] for the columns.
+#' @param labels Optional table of display names keyed by
+#'   `(frame, unit, variant)`; see [`attach_labels_scale()`] for the columns.
 #'
 #' @return A `NestedScale` object.
 #'
 #' @seealso [`scale_from_leaftable()`], [`scale_frames()`], [`scale_units()`]
 #' @examples
 #' scale_example()
-#' @keywords internal
+#' @export
 NestedScale <- S7::new_class(
   "NestedScale",
   package = "nestedscales",
@@ -89,10 +93,13 @@ NestedScale <- S7::new_class(
     attributes = S7::new_property(S7::class_any,
                                   default = quote(.empty_attributes())),
     aliases    = S7::new_property(S7::class_any,
-                                  default = quote(.empty_aliases()))
+                                  default = quote(.empty_aliases())),
+    labels     = S7::new_property(S7::class_any,
+                                  default = quote(.empty_labels()))
   ),
   constructor = function(leaftable, frames, members, key = "unit",
-                         meta = list(), attributes = NULL, aliases = NULL) {
+                         meta = list(), attributes = NULL, aliases = NULL,
+                         labels = NULL) {
     S7::new_object(
       S7::S7_object(),
       leaftable  = leaftable,
@@ -101,7 +108,8 @@ NestedScale <- S7::new_class(
       key        = key,
       meta       = meta,
       attributes = attributes %||% .empty_attributes(),
-      aliases    = aliases %||% .empty_aliases()
+      aliases    = aliases %||% .empty_aliases(),
+      labels     = labels %||% .empty_labels()
     )
   },
   validator = function(self) {
@@ -114,6 +122,9 @@ NestedScale <- S7::new_class(
     meta <- S7::prop(self, "meta")
     attributes <- S7::prop(self, "attributes")
     aliases <- S7::prop(self, "aliases")
+    # `attr()`, not `S7::prop()`: a subclass installed against an earlier
+    # definition of this class has no `labels` property.
+    labels <- attr(self, "labels", exact = TRUE)
 
     # leaftable ---------------------------------------------------------------
     if (!is.data.frame(leaftable)) {
@@ -237,6 +248,17 @@ NestedScale <- S7::new_class(
           errs <- c(errs, .check_aliases_table(aliases, frames, members, v))
         }
       }
+      if (!is.null(labels)) {
+        if (!is.data.frame(labels)) {
+          errs <- c(errs, "`labels` must be a data.frame or NULL")
+        } else {
+          errs <- c(errs, .check_labels_table(labels, frames, members, v))
+        }
+      }
+    }
+    dl <- if (is.list(meta)) meta[["default_label"]] else NULL
+    if (!is.null(dl) && !.is_string(dl)) {
+      errs <- c(errs, "`meta$default_label` must be a single non-empty string")
     }
 
     # weights -----------------------------------------------------------------
@@ -849,6 +871,18 @@ print.NestedScale <- function(x, ...) {
       sep = ""
     )
   }
+  lb <- .label_table(x)
+  if (nrow(lb) > 0L) {
+    per <- vapply(unique(lb$frame), function(l) {
+      sprintf("%s [%s]", l, paste(unique(lb$variant[lb$frame == l]),
+        collapse = ", "
+      ))
+    }, character(1))
+    cat("Labels: ", paste(per, collapse = ", "),
+      " (default: ", .label_variant(x), ")\n",
+      sep = ""
+    )
+  }
   if (!is.null(meta[["source"]])) cat("Source: ", meta[["source"]], "\n", sep = "")
   invisible(x)
 }
@@ -878,7 +912,8 @@ S7::method(print, NestedScale) <- print.NestedScale
 #'   `coverage` (see [scale_coverage()]), `sampled`, `parent_name`, `nesting`
 #'   (adjacent-pair table with offender counts, see [scale_nests()]),
 #'   `attributes` (a `data.frame` of row counts by `attribute`, `frame` and
-#'   `source`), `aliases` (counts by `source`), `source`, `vocab`.
+#'   `source`), `aliases` (counts by `source`), `labels` (counts by `frame`
+#'   and `variant`), `source`, `vocab`.
 #' @examples
 #' summary(scale_example())
 #' @method summary NestedScale
@@ -917,6 +952,23 @@ summary.NestedScale <- function(object, ...) {
     data.frame(source = character(), n = integer(), stringsAsFactors = FALSE)
   }
 
+  lb <- .label_table(object)
+  label_counts <- if (nrow(lb) > 0L) {
+    cnt <- as.data.frame(
+      table(frame = factor(lb$frame, levels = fr), variant = lb$variant),
+      stringsAsFactors = FALSE
+    )
+    names(cnt)[3L] <- "n"
+    cnt <- cnt[cnt$n > 0L, , drop = FALSE]
+    rownames(cnt) <- NULL
+    cnt
+  } else {
+    data.frame(
+      frame = character(), variant = character(), n = integer(),
+      stringsAsFactors = FALSE
+    )
+  }
+
   nesting <- NULL
   if (length(fr) > 1L) {
     nesting <- do.call(rbind, lapply(seq_len(length(fr) - 1L), function(i) {
@@ -949,6 +1001,7 @@ summary.NestedScale <- function(object, ...) {
     nesting = nesting,
     attributes = attr_counts,
     aliases = alias_counts,
+    labels = label_counts,
     source = meta[["source"]],
     vocab = scale_vocab(object)
   )
@@ -1046,6 +1099,15 @@ print.summary_Scale <- function(x, ...) {
       sep = ""
     )
   }
+  if (!is.null(x$labels) && nrow(x$labels) > 0L) {
+    cat("  labels:         ",
+      paste(sprintf(
+        "%s [%s] (%d)", x$labels$frame, x$labels$variant, x$labels$n
+      ), collapse = ", "),
+      "\n",
+      sep = ""
+    )
+  }
   if (!is.null(x$source)) cat("  source:         ", x$source, "\n", sep = "")
   invisible(x)
 }
@@ -1063,8 +1125,7 @@ S7::method(names, NestedScale) <- names.NestedScale
 
 #' Is this a scale, or a product of scales?
 #'
-#' The classes themselves are not exported (the package's surface is its
-#' functions), so these are how calling code asks. Build a scale with
+#' These are how calling code asks what an object is. Build a scale with
 #' [`scale_from_leaftable()`] and a product with [`scale_product()`].
 #'
 #' Named with the object prefix rather than `is_scale()`, which `ggplot2`
@@ -1090,8 +1151,8 @@ scale_is_product <- function(x) {
 
 #' The scale classes, for subclassing and dispatch
 #'
-#' The classes are not exported under their own names (the package's surface
-#' is its functions), so these return them. Needed to build a subclass
+#' These return the classes [`NestedScale`] and [`ScaleProduct`], which are
+#' also exported under their own names. Needed to build a subclass
 #' (`S7::new_class(..., parent = scale_class())`, which is what
 #' [`scale_alias_property()`] is for) or to register an S7 method against one.
 #' To merely ask what an object is, use [`scale_is()`].

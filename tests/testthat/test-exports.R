@@ -24,7 +24,7 @@ test_that("no export collides with a package users attach alongside", {
 
 test_that("unrelated packages share no export name at all", {
   # ggplot2 and scales have no business sharing a name with this package --
-  # `NestedScale` and `is_scale` both did, which is why the classes are internal.
+  # an earlier class name and `is_scale` both did.
   ours <- getNamespaceExports("nestedscales")
   for (pkg in c("ggplot2", "scales")) {
     skip_if_not_installed(pkg)
@@ -34,12 +34,12 @@ test_that("unrelated packages share no export name at all", {
   }
 })
 
-test_that("the classes are deliberately NOT exported", {
-  # The surface is functions: classes are reached through scale_class(), and
-  # a bare `recast` would mask the generic timescales owns.
+test_that("the classes are exported beside their accessors", {
   ours <- getNamespaceExports("nestedscales")
-  expect_false("NestedScale" %in% ours)
-  expect_false("ScaleProduct" %in% ours)
+  expect_true("NestedScale" %in% ours)
+  expect_true("ScaleProduct" %in% ours)
+  expect_identical(nestedscales::NestedScale, scale_class())
+  expect_identical(nestedscales::ScaleProduct, scale_product_class())
   expect_true("recast" %in% ours) # owned here, re-exported by the twins
   expect_true(all(c("scale_class", "scale_is", "recast_scale") %in% ours))
 })
@@ -70,9 +70,8 @@ test_that("scale_class() is the class, so subclassing still works", {
   expect_true(scale_is(k))
 })
 
-test_that("base methods still dispatch with the class unexported", {
-  # S3method() entries are NAMESPACE directives, not exports, so print/names/
-  # as.data.frame/`[` are unaffected by dropping export(NestedScale).
+test_that("base methods dispatch on a scale", {
+  # S3method() entries are NAMESPACE directives, independent of the exports.
   s <- scale_example()
   expect_output(print(s))
   expect_type(names(s), "character")
