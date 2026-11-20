@@ -27,6 +27,11 @@
 * The classes `NestedScale` and `ScaleProduct` are exported, so printing one
   shows its properties and `?NestedScale` documents them.
 
+## Bug fixes
+
+* A test no longer depends on the wording of an 'S7' error message, which
+  differs between 'S7' versions.
+
 # nestedscales 0.2.0
 
 ## Breaking changes

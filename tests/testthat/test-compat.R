@@ -45,7 +45,8 @@ test_that("the 0.1.1 fixture still loads and behaves", {
   s <- readRDS(path)
   expect_true(scale_is(s))
   expect_false("attributes" %in% names(attr(s, "S7_class")@properties))
-  expect_error(S7::prop(s, "attributes"), "Can't find property")
+  # no message pattern: the wording is S7's and differs between its versions
+  expect_error(S7::prop(s, "attributes"))
   expect_no_error(S7::validate(s))
   expect_identical(nrow(scale_attributes(s)), 0L)
   expect_identical(nrow(scale_aliases(s)), 0L)
