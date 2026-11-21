@@ -32,7 +32,7 @@ The package covers three things:
    dimensions, grouping units into new levels, and storing data with its
    scales.
 
-## Available now (0.2.0)
+## Available now (0.3.0)
 
 ### Structure
 
@@ -49,6 +49,11 @@ The package covers three things:
   (`scale_residuals()`) are part of the representation.
 * `filter_scale()` and `prune_scale()` subset and collapse a scale, keeping
   the record of coverage.
+* `scale_id()` gives the identity of a scale, its name and a hash of its
+  structure. `scale_tree()`, also printed by `str()`, lists the parts of a
+  scale and marks each one as fixed (part of the identity), derived or
+  mutable.
+* The classes `NestedScale` and `ScaleProduct` are exported and documented.
 
 ### Transition rules
 
@@ -72,6 +77,11 @@ The package covers three things:
   `register_scale_map()` installs exact or hand-audited ones.
 * `join_scale()` attaches labels, coarser levels, shares and weights to a
   dataset.
+* The data link: `bind_scale()` records on the code columns of a table
+  which scale and level they are on, and `scale_link()` reports it. The
+  link survives subsetting, joins and row binding; the conversion functions
+  read the source level from it, stop when the data is bound to another
+  scale, and bind their result.
 * `reconcile_scale()` compares aggregated data with an independent total and
   can balance the gap.
 * `scale_product()` combines several scales into one multi-dimensional
@@ -86,8 +96,13 @@ The package covers three things:
 * Every operation accepts a `data.frame`, tibble, `data.table`, dtplyr table
   or arrow dataset and returns the same class; lazy inputs return a query.
 
-### Attributes, aliases and definitions
+### Labels, attributes, aliases and definitions
 
+* **Labels** are display names keyed by `(frame, unit, variant)`: a member
+  may have several named variants, a level may have none, and a level
+  itself can be named. `attach_labels_scale()` adds them, `scale_labels()`
+  and `scale_label()` read them, and `join_scale(labels = )` attaches them
+  to a dataset.
 * A scale may carry **attributes**, physical values keyed by `(frame, unit)`
   at any level (a calorific value on a fuel, on its carrier or on its
   group), each with a `kind`, bounds, unit of measure and source.
@@ -97,11 +112,10 @@ The package covers three things:
 * **Aliases** are alternative labels per member; `scale_match()` resolves
   labels exactly, case-insensitively, and reports ambiguity.
 * **Definition files.** `write_scale()` and `read_scale()` exchange a scale
-  as a JSON header with inline tables, or a bundle with Arrow or CSV tables,
-  readable by every binding; YAML is accepted. `scale_catalog()` lists the
-  definitions installed packages ship, and `read_scale("carriers")` opens
-  the one the core ships: the energypal fuel taxonomy with the IPCC 2006
-  default calorific values and CO2 factors (`?shipped_scales`).
+  as a JSON header with inline tables, or a bundle with Arrow or CSV tables;
+  YAML is accepted. The Python binding reads the same files, except the
+  label table. `scale_catalog()` lists the definitions installed packages
+  ship, and `read_scale()` opens one by its id.
 
 ### Dimension packages
 
@@ -145,12 +159,18 @@ The order is not fixed; items move up as the modelling packages need them.
   continuous variable. Today they are binned by hand before
   `scale_from_leaftable()`; a constructor taking breakpoints, with the
   interval bounds kept as weights, would build them directly.
-* **More shipped definitions.** `carriers` is the first classification the
-  core ships. Industry classifications (NACE, ISIC) and technology vintages
-  follow as definition files under `inst/scales/`, moving to a separate
-  data package only if their size demands it. Regional values of an
-  attribute (a national calorific value) belong to a product of the scale
-  with a `GeoScale`, attached under their own source; not built yet.
+* **Shipped definitions.** The core ships none. Classifications (fuels,
+  NACE, ISIC, technology vintages) belong to the packages that maintain
+  them, as definition files those packages register in the catalogue.
+* **Regional attribute values.** A national calorific value is the same
+  attribute on the same member in another region. It belongs to a product
+  of the scale with a `GeoScale`, attached under its own source; not built
+  yet.
+* **Labels in the Python binding.** The binding reads and writes
+  definition files but does not yet carry the label table.
+* **Declared content of a definition file.** A file does not yet state
+  which optional tables it holds, so an older reader cannot tell that it is
+  skipping one; a step of the schema version will record it.
 
 ## Not planned
 

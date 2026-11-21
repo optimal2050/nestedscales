@@ -1,4 +1,4 @@
-# nestedscales (development version)
+# nestedscales 0.3.0
 
 ## New features
 
@@ -31,10 +31,13 @@
 * The classes `NestedScale` and `ScaleProduct` are exported, so printing one
   shows its properties and `?NestedScale` documents them.
 
-## Bug fixes
+## Compatibility with 'S7' 1.0
 
+* The class of an object is read through `S7::S7_class()`. 'S7' 1.0 keeps it
+  under another attribute, which stopped the label functions and the update
+  of objects saved by earlier versions. 'S7' 0.2 is still supported.
 * A test no longer depends on the wording of an 'S7' error message, which
-  differs between 'S7' versions.
+  changed in 'S7' 1.0.
 
 # nestedscales 0.2.0
 
@@ -82,11 +85,6 @@
 * Catalogue. `register_scale_dir()`, `list_scale_dirs()`,
   `clear_scale_dirs()` and `scale_catalog()` list the definitions shipped by
   installed packages; `read_scale(id)` takes a catalogue id.
-* Shipped definition `carriers`: 71 fuels in `group > carrier > fuel` from
-  the energypal taxonomy, with the IPCC 2006 default net calorific values
-  and CO2 emission factors as attributes and energypal's spellings and model
-  commodity codes as aliases (`?shipped_scales`). The IPCC tables ship as
-  `inst/extdata/ipcc2006_fuel_defaults.csv`.
 * `write_scale_dataset()` writes `_scales/manifest.json`; a legacy
   `manifest.yaml` is still read. jsonlite is a new import.
 
@@ -94,7 +92,7 @@
 
 * New vignettes: `vignette("anatomy")` (the object, its tables and what the
   validator guarantees) and `vignette("attributes")` (attributes, aliases
-  and conversion on the shipped `carriers`). The article *Fuels, regions
+  and conversion). The article *Fuels, regions
   and months* on the package site joins a fuel scale, a `GeoScale` and a
   `Calendar` on one table.
 

@@ -1,6 +1,6 @@
 ---
 title: "Fuels, regions and months"
-description: "One table, three scales: attach the shipped fuel scale, a GeoScale and a Calendar to fuel-use data, match labels from a statistical source, convert mass to energy to CO2, aggregate along any dimension, and draw it with energypal's colours."
+description: "One table, three scales: attach a fuel scale, a GeoScale and a Calendar to fuel-use data, match labels from a statistical source, convert mass to energy to CO2, aggregate along any dimension, and draw it with energypal's colours."
 ---
 
 ```{r setup, include = FALSE}
@@ -32,13 +32,32 @@ cat("This article needs geoscales and timescales 0.7 or later, energypal ",
 ## Three scales, one vocabulary
 
 A fuel-use table has three dimensions a model cares about: *which fuel*,
-*where*, *when*. Each is a nested scale -- the fuel taxonomy the core ships,
+*where*, *when*. Each is a nested scale -- a fuel taxonomy built from energypal's palette,
 and the classes of two sibling packages built on the same core -- and each
 attaches to a table under its own name:
 
 ```{r scales, eval = has_all}
-es  <- read_scale("carriers")          # fuels:   group > carrier > fuel
-gs  <- geoscale_example()              # regions: country > state > zone > atom
+# fuels: group > carrier > fuel, from energypal's `carriers` palette
+ct <- energypal::energypal_table("carriers", include_groups = TRUE)
+l2 <- ct[ct$level == 2, ]
+l3 <- ct[ct$level == 3, ]
+own <- setdiff(l2$name, l3$parent)     # a carrier without subtypes is a fuel
+leaf <- rbind(data.frame(carrier = l3$parent, fuel = l3$name),
+              data.frame(carrier = own, fuel = own))
+leaf$group <- l2$parent[match(leaf$carrier, l2$name)]
+spelt <- which(!is.na(ct$aliases) & nzchar(ct$aliases))
+al <- unique(do.call(rbind, lapply(spelt, function(i) {
+  data.frame(frame = c("group", "carrier", "fuel")[ct$level[i]],
+             unit = ct$name[i],
+             alias = trimws(strsplit(ct$aliases[i], ";", fixed = TRUE)[[1]]),
+             source = "energypal")
+})))
+es <- scale_from_leaftable(
+  leaf[c("group", "carrier", "fuel")],
+  frames = c("group", "carrier", "fuel"), key = "fuel", name = "carriers",
+  aliases = al[nzchar(al$alias), ]
+)
+gs  <- geoscale_example()             # regions: country > state > zone > atom
 cal <- calendar("m12")                 # time:    MONTH
 
 scale_units(es, "carrier")
@@ -97,11 +116,29 @@ head(labelled, 3)
 
 ## Mass to energy to CO2
 
-The fuel scale carries the IPCC 2006 net calorific value (GJ/t) and CO2
-factor (kg/TJ) for these five fuels. Each conversion is one call, keyed by
-fuel, and the factor applied is reported alongside the result:
+The fuel scale ships without values, so a net calorific value (GJ/t) and a
+CO2 factor (kg/TJ) are attached for these five fuels first; the numbers are
+round and illustrative. Each conversion is then one call, keyed by fuel, and
+the factor applied is reported alongside the result:
 
 ```{r convert, eval = has_all}
+fuels <- unique(use$fuel)
+es <- attach_attributes_scale(
+  es,
+  data.frame(
+    frame = "fuel", unit = rep(fuels, 2),
+    attribute = rep(c("lhv", "ef_co2"), each = length(fuels)),
+    kind = rep(c("property", "factor"), each = length(fuels)),
+    value = unname(c(
+      c(Anthracite = 28, Lignite = 10, DistillateFuelOil = 43,
+        NaturalGas = 50, Biodiesel = 37)[fuels],
+      c(Anthracite = 95000, Lignite = 100000, DistillateFuelOil = 74000,
+        NaturalGas = 55000, Biodiesel = 70000)[fuels]
+    )),
+    unit_of_measure = rep(c("GJ/t", "kg/TJ"), each = length(fuels))
+  ),
+  source = "example"
+)
 energy <- use |>
   mutate(t = kt * 1e3) |>
   select(atom, timeslice, fuel, t) |>
@@ -244,10 +281,10 @@ clear_scale_rules()
 
 | | package | contributed |
 |---|---|---|
-| fuels | nestedscales (`carriers`) | the taxonomy, calorific values, CO2 factors, label matching |
+| fuels | nestedscales | the scale, the attached values, conversion, label matching |
 | regions | geoscales | the region hierarchy, aggregation to countries, the icicle |
 | time | timescales | month shares and hours, aggregation to quarters |
-| colours | energypal | one palette for every figure, by carrier id |
+| taxonomy and colours | energypal | the fuel names and hierarchy, and one palette for every figure, by carrier id |
 
 The core is what lets one table carry all three and lets `recast()` chain
 across them.

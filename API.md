@@ -217,9 +217,8 @@ A definition is a language-neutral file: a JSON header (`schema_version`,
 `class`, `name`, `key`, `frames`, `members`, `meta`, `tables`, `payload`) with
 the leaftable, attribute and alias tables inline (column-wise, typed) or, in a
 `<name>.scale/` bundle directory, as Arrow IPC or CSV files. YAML is accepted
-as input and optional output. The core ships `carriers` (fuels and energy
-carriers with IPCC 2006 defaults) and reads definitions from every registered
-directory.
+as input and optional output. The core ships no definitions and reads them
+from every registered directory.
 
 | Function | Arguments | Returns | R | Py |
 |---|---|---|---|---|

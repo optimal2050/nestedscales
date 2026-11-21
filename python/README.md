@@ -60,8 +60,8 @@ package's store -- hive-partitioned Arrow IPC data plus a JSON manifest and
 Arrow leaftables (a legacy YAML manifest is still read) -- so data and its
 scales move between R and Python unchanged. `write_scale()` / `read_scale()`
 exchange single definition files and bundles (JSON header; inline, Arrow or
-CSV tables), and `read_scale("carriers")` opens the fuel taxonomy vendored
-with the binding (`scale_catalog()` lists every registered definition). Scales written by R's timescales and geoscales are restored as
+CSV tables); `scale_catalog()` lists every registered definition and
+`read_scale()` opens one by its id. Scales written by R's timescales and geoscales are restored as
 Calendars and GeoScales by the Python timescales and geoscales packages
 (`as_calendar()`, `as_geoscale()`).
 

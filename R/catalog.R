@@ -19,8 +19,7 @@ NULL
 #' Packages ship scale definitions as files (see [`write_scale()`]) and
 #' register the directory holding them; `scale_catalog()` lists what every
 #' registered directory holds and [`read_scale()`] takes an id from it.
-#' nestedscales registers its own `inst/scales/` on load, so
-#' `read_scale("carriers")` works with nothing else attached.
+#' nestedscales itself ships no definitions.
 #'
 #' `register_scale_dir()` is what a dimension package calls in its
 #' `.onLoad()`: `register_scale_dir(system.file("scales", package =

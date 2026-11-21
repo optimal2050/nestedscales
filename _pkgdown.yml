@@ -144,11 +144,10 @@ reference:
   - SCALE_DISTANCES
   - register_scale_distance
 - title: Definitions and catalogue
-  desc: Language-neutral definition files, the registry of shipped ones, and the definitions this package ships.
+  desc: Language-neutral definition files and the registry of the ones installed packages ship.
   contents:
   - write_scale
   - scale_catalog
-  - shipped_scales
 - title: Arrays and storage
   contents:
   - as_scale_array

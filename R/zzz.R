@@ -29,9 +29,9 @@
     envir = baseenv()
   )
 
-  # The shipped definitions (inst/scales/), so `read_scale("carriers")`
-  # resolves with nothing else attached. Dimension packages do the same for
-  # theirs in their own .onLoad().
+  # Definitions shipped under inst/scales/, when there are any, resolve by
+  # id with nothing else attached. Dimension packages do the same for theirs
+  # in their own .onLoad().
   d <- system.file("scales", package = pkgname)
   if (nzchar(d)) register_scale_dir(d, package = pkgname)
 

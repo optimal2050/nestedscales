@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nestedscales</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -129,7 +129,7 @@ attributes stored at three different levels.</p>
 <span>  unit      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Anthracite"</span>, <span class="st">"Lignite"</span>, <span class="st">"Oil"</span>, <span class="st">"Bio"</span>, <span class="st">"Anthracite"</span>, <span class="st">"Gas"</span><span class="op">)</span>,</span>
 <span>  attribute <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lhv"</span>, <span class="st">"lhv"</span>, <span class="st">"lhv"</span>, <span class="st">"lhv"</span>, <span class="st">"ef_co2"</span>, <span class="st">"ef_co2"</span><span class="op">)</span>,</span>
 <span>  kind      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"property"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="st">"factor"</span>, <span class="st">"factor"</span><span class="op">)</span>,</span>
-<span>  value     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">26.7</span>, <span class="fl">11.9</span>, <span class="fl">42.5</span>, <span class="fl">15.0</span>, <span class="fl">98300</span>, <span class="fl">56100</span><span class="op">)</span>,</span>
+<span>  value     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">28</span>, <span class="fl">10</span>, <span class="fl">43</span>, <span class="fl">15</span>, <span class="fl">95000</span>, <span class="fl">55000</span><span class="op">)</span>,</span>
 <span>  unit_of_measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"GJ/t"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="st">"kg/TJ"</span>, <span class="st">"kg/TJ"</span><span class="op">)</span>,</span>
 <span>  source    <span class="op">=</span> <span class="st">"example"</span></span>
 <span><span class="op">)</span></span>
@@ -160,23 +160,19 @@ attributes stored at three different levels.</p>
 <code><a href="https://rdrr.io/r/utils/str.html" class="external-link">str()</a></code> lists them with their size and purpose:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;nestedscales::NestedScale&gt; fuels@b8098798</span></span>
-<span><span class="co">#&gt;  @ leaftable  : data.frame [9 x 4]   one row per atom: key, frame codes, weights</span></span>
-<span><span class="co">#&gt;                 group, phase, carrier, fuel</span></span>
-<span><span class="co">#&gt;  @ frames     : chr [4]              frame names, coarsest first</span></span>
-<span><span class="co">#&gt;                 group, phase, carrier, fuel</span></span>
-<span><span class="co">#&gt;  @ members    : list [4]             the codes at each frame</span></span>
-<span><span class="co">#&gt;                 group, phase, carrier, fuel</span></span>
-<span><span class="co">#&gt;  @ key        : chr [1]              name of the atom key column</span></span>
-<span><span class="co">#&gt;                 fuel</span></span>
-<span><span class="co">#&gt;  @ meta       : list [4]             name, description, weights, bookkeeping</span></span>
-<span><span class="co">#&gt;                 name, desc, weights, default_weight</span></span>
-<span><span class="co">#&gt;  @ attributes : data.frame [6 x 10]  member values, by (frame, unit)</span></span>
-<span><span class="co">#&gt;                 frame, unit, attribute, kind, value, lower, upper, unit_of_measure, ... (10 total)</span></span>
-<span><span class="co">#&gt;  @ aliases    : data.frame [5 x 4]   alternative spellings, by (frame, unit)</span></span>
-<span><span class="co">#&gt;                 frame, unit, alias, source</span></span>
-<span><span class="co">#&gt;  @ labels     : data.frame [0 x 4]   display names, by (frame, unit, variant)</span></span>
-<span><span class="co">#&gt;                 frame, unit, variant, label</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;NestedScale&gt; fuels@b8098798</span></span>
+<span><span class="co">#&gt; ├─ leaftable   data.frame [9 x 4]            one row per atom</span></span>
+<span><span class="co">#&gt; │  ├─ fuel     key                  fixed</span></span>
+<span><span class="co">#&gt; │  ├─ group    frame                fixed</span></span>
+<span><span class="co">#&gt; │  ├─ phase    frame                fixed</span></span>
+<span><span class="co">#&gt; │  └─ carrier  frame                fixed</span></span>
+<span><span class="co">#&gt; ├─ frames      chr [4]              fixed    group, phase, carrier, fuel</span></span>
+<span><span class="co">#&gt; ├─ members     list [4]             derived  from leaftable: group 3, phase 3, carrier 5, fuel 9</span></span>
+<span><span class="co">#&gt; ├─ key         chr [1]              fixed    fuel</span></span>
+<span><span class="co">#&gt; ├─ meta        list [4]             mutable  name, desc, weights, default_weight</span></span>
+<span><span class="co">#&gt; ├─ attributes  data.frame [6 x 10]  mutable  attach_attributes_scale()</span></span>
+<span><span class="co">#&gt; ├─ aliases     data.frame [5 x 4]   mutable  attach_aliases_scale()</span></span>
+<span><span class="co">#&gt; └─ labels      data.frame [0 x 4]   mutable  attach_labels_scale()</span></span></code></pre></div>
 <p>The standard S7 tools apply: <code>S7::prop_names(x)</code> gives the
 names, <code>x@frames</code> or <code>S7::prop(x, "frames")</code> reads
 one property, and <code>S7::props(x)</code> returns all of them as a
@@ -284,8 +280,7 @@ unique and complete. Frame columns may hold <code>NA</code>:
 <code>Electricity</code> has no physical state, so it does not
 participate at the <code>phase</code> frame, and <code>na_action=</code>
 decides what recasts do about it. The key may share its name with the
-finest frame, as here and in the shipped <code>carriers</code>: there
-the frame column <em>is</em> the key column.</p>
+finest frame, as here: the frame column <em>is</em> the key column.</p>
 </div>
 <div class="section level2">
 <h2 id="frames-members-ranks">Frames, members, ranks<a class="anchor" aria-label="anchor" href="#frames-members-ranks"></a>
@@ -303,11 +298,8 @@ the frame column <em>is</em> the key column.</p>
 <span><span class="fu"><a href="../reference/scale_rank.html">scale_rank</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"carrier"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
 <p>Codes are <strong>not unique across frames</strong>:
-<code>Electricity</code> is a group and a carrier here, and
-<code>Nuclear</code>, <code>Heat</code>, <code>Storage</code>,
-<code>Other</code> are each a group and a carrier in
-<code>carriers</code>. Every function that takes a code therefore takes
-its frame as well.</p>
+<code>Electricity</code> is a group and a carrier here. Every function
+that takes a code therefore takes its frame as well.</p>
 <p>Navigation is derived from the leaftable and routed through the
 atoms, so a frame that cross-cuts another reports overlap rather than
 invented containment:</p>
@@ -352,13 +344,13 @@ invented containment:</p>
 <strong>any</strong> member, not only on an atom:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     frame       unit attribute     kind   value lower upper unit_of_measure</span></span>
-<span><span class="co">#&gt; 1    fuel Anthracite       lhv property    26.7    NA    NA            GJ/t</span></span>
-<span><span class="co">#&gt; 2    fuel    Lignite       lhv property    11.9    NA    NA            GJ/t</span></span>
-<span><span class="co">#&gt; 3 carrier        Oil       lhv property    42.5    NA    NA            GJ/t</span></span>
-<span><span class="co">#&gt; 4   group        Bio       lhv property    15.0    NA    NA            GJ/t</span></span>
-<span><span class="co">#&gt; 5    fuel Anthracite    ef_co2   factor 98300.0    NA    NA           kg/TJ</span></span>
-<span><span class="co">#&gt; 6 carrier        Gas    ef_co2   factor 56100.0    NA    NA           kg/TJ</span></span>
+<span><span class="co">#&gt;     frame       unit attribute     kind value lower upper unit_of_measure</span></span>
+<span><span class="co">#&gt; 1    fuel Anthracite       lhv property    28    NA    NA            GJ/t</span></span>
+<span><span class="co">#&gt; 2    fuel    Lignite       lhv property    10    NA    NA            GJ/t</span></span>
+<span><span class="co">#&gt; 3 carrier        Oil       lhv property    43    NA    NA            GJ/t</span></span>
+<span><span class="co">#&gt; 4   group        Bio       lhv property    15    NA    NA            GJ/t</span></span>
+<span><span class="co">#&gt; 5    fuel Anthracite    ef_co2   factor 95000    NA    NA           kg/TJ</span></span>
+<span><span class="co">#&gt; 6 carrier        Gas    ef_co2   factor 55000    NA    NA           kg/TJ</span></span>
 <span><span class="co">#&gt;    source note</span></span>
 <span><span class="co">#&gt; 1 example &lt;NA&gt;</span></span>
 <span><span class="co">#&gt; 2 example &lt;NA&gt;</span></span>
@@ -373,14 +365,14 @@ and says where the value came from:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span><span class="op">)</span><span class="op">[</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"unit_of_measure"</span>, <span class="st">"origin_frame"</span>, <span class="st">"origin_unit"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;          unit value unit_of_measure origin_frame origin_unit</span></span>
-<span><span class="co">#&gt; 1  Anthracite  26.7            GJ/t         fuel  Anthracite</span></span>
-<span><span class="co">#&gt; 2     Lignite  11.9            GJ/t         fuel     Lignite</span></span>
-<span><span class="co">#&gt; 3      Diesel  42.5            GJ/t      carrier         Oil</span></span>
-<span><span class="co">#&gt; 4    Gasoline  42.5            GJ/t      carrier         Oil</span></span>
+<span><span class="co">#&gt; 1  Anthracite    28            GJ/t         fuel  Anthracite</span></span>
+<span><span class="co">#&gt; 2     Lignite    10            GJ/t         fuel     Lignite</span></span>
+<span><span class="co">#&gt; 3      Diesel    43            GJ/t      carrier         Oil</span></span>
+<span><span class="co">#&gt; 4    Gasoline    43            GJ/t      carrier         Oil</span></span>
 <span><span class="co">#&gt; 5  NaturalGas    NA            &lt;NA&gt;         &lt;NA&gt;        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6        Wood  15.0            GJ/t        group         Bio</span></span>
-<span><span class="co">#&gt; 7   Biodiesel  15.0            GJ/t        group         Bio</span></span>
-<span><span class="co">#&gt; 8      Biogas  15.0            GJ/t        group         Bio</span></span>
+<span><span class="co">#&gt; 6        Wood    15            GJ/t        group         Bio</span></span>
+<span><span class="co">#&gt; 7   Biodiesel    15            GJ/t        group         Bio</span></span>
+<span><span class="co">#&gt; 8      Biogas    15            GJ/t        group         Bio</span></span>
 <span><span class="co">#&gt; 9 Electricity    NA            &lt;NA&gt;         &lt;NA&gt;        &lt;NA&gt;</span></span></code></pre></div>
 <p>Attributes are <strong>not weights</strong>. A weight says how big an
 atom is and drives aggregation; an attribute is a per-member conversion
@@ -458,31 +450,13 @@ name to be <em>shown</em> (<code><a href="../reference/scale_label.html">scale_l
 <span><span class="co">#&gt; [1] "fuels"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $desc</span></span>
-<span><span class="co">#&gt; [1] ""</span></span>
-<span><span class="va">carriers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/write_scale.html">read_scale</a></span><span class="op">(</span><span class="st">"carriers"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/scale_weights.html">scale_weights</a></span><span class="op">(</span><span class="va">carriers</span><span class="op">)</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="fu">S7</span><span class="fu">::</span><span class="fu"><a href="https://rconsortium.github.io/S7/reference/prop.html" class="external-link">prop</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="st">"meta"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"source"</span>, <span class="st">"palette_version"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt; $name</span></span>
-<span><span class="co">#&gt; [1] "carriers"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $source</span></span>
-<span><span class="co">#&gt; [1] "energypal carriers.yml"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $palette_version</span></span>
-<span><span class="co">#&gt; [1] "0.1.1"</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">S7</span><span class="fu">::</span><span class="fu"><a href="https://rconsortium.github.io/S7/reference/prop.html" class="external-link">prop</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="st">"meta"</span><span class="op">)</span><span class="op">$</span><span class="va">labels</span>, <span class="fl">4</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     frame        unit label_short   label_long</span></span>
-<span><span class="co">#&gt; 1   group FossilFuels      Fossil Fossil Fuels</span></span>
-<span><span class="co">#&gt; 2 carrier  FossilCoal        Coal         Coal</span></span>
-<span><span class="co">#&gt; 3 carrier   FossilOil         Oil          Oil</span></span>
-<span><span class="co">#&gt; 4 carrier   FossilGas         Gas  Natural Gas</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] ""</span></span></code></pre></div>
 <p><code>meta$name</code> is load-bearing: <code><a href="../reference/join_scale.html">join_scale()</a></code>
 prefixes the columns it attaches with <code>"&lt;name&gt;."</code>,
 <code><a href="../reference/scale_map_between.html">scale_map_between()</a></code> names its label columns after the
 objects, and <code><a href="../reference/write_scale.html">write_scale()</a></code> needs a name for the definition.
-The shipped <code>carriers</code> keeps energypal’s short and long
-labels in <code>meta$labels</code>; colours are not stored.</p>
+Further fields passed to the constructor are kept in <code>meta</code>
+as given.</p>
 </div>
 <div class="section level2">
 <h2 id="the-data-link">The data link<a class="anchor" aria-label="anchor" href="#the-data-link"></a>
@@ -551,12 +525,12 @@ the frames that survive the collapse.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fossil</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="st">"group"</span>, <span class="st">"Fossil"</span><span class="op">]</span></span>
 <span><span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">fossil</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"frame"</span>, <span class="st">"unit"</span>, <span class="st">"attribute"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;     frame       unit attribute   value</span></span>
-<span><span class="co">#&gt; 1    fuel Anthracite       lhv    26.7</span></span>
-<span><span class="co">#&gt; 2    fuel    Lignite       lhv    11.9</span></span>
-<span><span class="co">#&gt; 3 carrier        Oil       lhv    42.5</span></span>
-<span><span class="co">#&gt; 4    fuel Anthracite    ef_co2 98300.0</span></span>
-<span><span class="co">#&gt; 5 carrier        Gas    ef_co2 56100.0</span></span></code></pre></div>
+<span><span class="co">#&gt;     frame       unit attribute value</span></span>
+<span><span class="co">#&gt; 1    fuel Anthracite       lhv    28</span></span>
+<span><span class="co">#&gt; 2    fuel    Lignite       lhv    10</span></span>
+<span><span class="co">#&gt; 3 carrier        Oil       lhv    43</span></span>
+<span><span class="co">#&gt; 4    fuel Anthracite    ef_co2 95000</span></span>
+<span><span class="co">#&gt; 5 carrier        Gas    ef_co2 55000</span></span></code></pre></div>
 <p><code><a href="../reference/prune_scale.html">prune_scale()</a></code> needs the frames above the new atom level
 to nest, so the cross-cutting <code>phase</code> has to go first:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -584,7 +558,7 @@ writes the same files.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>, <span class="fl">12</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; {</span></span>
 <span><span class="co">#&gt;   "schema_version": 1,</span></span>
-<span><span class="co">#&gt;   "nestedscales": "0.2.0.9000",</span></span>
+<span><span class="co">#&gt;   "nestedscales": "0.3.0",</span></span>
 <span><span class="co">#&gt;   "class": "nestedscales::NestedScale",</span></span>
 <span><span class="co">#&gt;   "name": "fuels",</span></span>
 <span><span class="co">#&gt;   "key": "fuel",</span></span>
@@ -605,8 +579,8 @@ register directories of definitions; <code><a href="../reference/scale_catalog.h
 them and <code>read_scale(id)</code> opens one by its id:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_catalog.html">scale_catalog</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"name"</span>, <span class="st">"kind"</span>, <span class="st">"frames"</span>, <span class="st">"n_atoms"</span>, <span class="st">"package"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;         id     name        kind             frames n_atoms      package</span></span>
-<span><span class="co">#&gt; 1 carriers carriers NestedScale group/carrier/fuel      71 nestedscales</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] id      name    kind    frames  n_atoms package</span></span>
+<span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="the-registry">The registry<a class="anchor" aria-label="anchor" href="#the-registry"></a>
@@ -649,7 +623,7 @@ differently, when it should.</p>
 functions.</li>
 <li>
 <code><a href="../articles/attributes.html">vignette("attributes")</a></code> – attributes, aliases and
-conversion on the shipped <code>carriers</code>.</li>
+conversion on a small fuel taxonomy.</li>
 </ul>
 </div>
   </div>

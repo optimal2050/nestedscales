@@ -1,6 +1,5 @@
 """Definition files: round trips in Python, the files R wrote
-(specs/goldens/definitions), the vendored `carriers`, and the catalogue."""
-import filecmp
+(specs/goldens/definitions), and the catalogue."""
 import json
 from pathlib import Path
 
@@ -13,7 +12,6 @@ from nestedscales import NestedScalesError
 
 REPO = Path(__file__).resolve().parents[2]
 DEFS = REPO / "specs" / "goldens" / "definitions"
-VENDORED = Path(ns.__file__).with_name("data")
 
 
 def fuels():
@@ -115,35 +113,19 @@ def test_reads_what_r_wrote():
     assert grid.frames == ("m", "h") and grid.leaftable.num_rows == 6
 
 
-def test_vendored_carriers_is_the_r_file():
-    r_file = REPO / "inst" / "scales" / "carriers.json"
-    assert filecmp.cmp(r_file, VENDORED / "carriers.json", shallow=False)
-    s = ns.read_scale("carriers")
-    assert s.frames == ("group", "carrier", "fuel")
-    assert s.leaftable.num_rows == 71
-    assert s.attributes.num_rows == 26
-    cat = {r["id"]: r for r in ns.scale_catalog()}
-    assert cat["carriers"]["n_atoms"] == 71
-    assert cat["carriers"]["package"] == "nestedscales"
-    m = ns.scale_match(s, ["GAS", "LIG", "Hydrogen"])
-    assert m["method"].to_pylist() == ["alias", "alias", "ambiguous"]
-    out = ns.convert_scale(pa.table({"fuel": ["Anthracite"], "t": [1000.0]}), s,
-                           "lhv", from_unit="t", to_unit="GJ")
-    assert out["t"].to_pylist() == [26700.0]
-    with pytest.raises(NestedScalesError, match="inverse is refused"):
-        ns.convert_scale(pa.table({"fuel": ["Anthracite"], "tj": [1.0]}), s,
-                         "ef_co2", from_unit="kg", to_unit="TJ")
-
-
 def test_catalog_ids_and_ambiguity(tmp_path):
+    d0 = tmp_path / "first"
+    d0.mkdir()
+    ns.write_scale(ns.scale_example(), d0 / "shared.json")
+    ns.register_scale_dir(d0, package="first")
     d = tmp_path / "scales"
     d.mkdir()
-    ns.write_scale(ns.scale_example2(), d / "carriers.json")
+    ns.write_scale(ns.scale_example2(), d / "shared.json")
     key = ns.register_scale_dir(d, package="other")
     try:
         with pytest.raises(NestedScalesError, match="several packages"):
-            ns.read_scale("carriers")
-        s = ns.read_scale("carriers", package="other")
+            ns.read_scale("shared")
+        s = ns.read_scale("shared", package="other")
         assert s.frames == ns.scale_example2().frames
     finally:
         ns.clear_scale_dirs()

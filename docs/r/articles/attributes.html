@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Attributes, aliases and conversion">
-<meta property="og:description" content="Why attributes are not weights, how a value resolves along the hierarchy, explicit sources, strict label matching, and converting mass to energy to emissions with the shipped IPCC defaults.">
+<meta property="og:description" content="Why attributes are not weights, how a value resolves along the hierarchy, explicit sources, strict label matching, and converting mass to energy to emissions on a small fuel taxonomy.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nestedscales</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -113,10 +113,10 @@
 <h2 id="what-problem-does-this-solve">What problem does this solve?<a class="anchor" aria-label="anchor" href="#what-problem-does-this-solve"></a>
 </h2>
 <p>Energy models, statistics and inventories carve fuels into
-categories, and every source carves differently: the IPCC lists
-fifty-odd fuels, a model has a handful of commodity codes, a chart wants
-a dozen colours. The numbers that turn one quantity into another – a net
-calorific value in GJ/t, a CO2 factor in kg/TJ – are published per
+categories, and every source carves differently: an inventory guideline
+lists fifty-odd fuels, a model has a handful of commodity codes, a chart
+wants a dozen colours. The numbers that turn one quantity into another –
+a net calorific value in GJ/t, a CO2 factor in kg/TJ – are published per
 category, for <em>some</em> categories, and the category a figure is
 published for is rarely the one the data is keyed by.</p>
 <p>A nested scale keeps such numbers as <strong>attributes</strong>:
@@ -124,60 +124,75 @@ values that belong to a member at whatever level they are published,
 resolved down the hierarchy when a finer member has none of its own, and
 applied row by row. The same mechanism serves any dimension – an area
 per region, an hour count per time slice – but fuels are where it earns
-its keep, so this vignette works on the shipped fuel taxonomy.</p>
+its keep, so this vignette works on a small fuel taxonomy.</p>
 </div>
 <div class="section level2">
-<h2 id="the-shipped-taxonomy">The shipped taxonomy<a class="anchor" aria-label="anchor" href="#the-shipped-taxonomy"></a>
+<h2 id="an-example-taxonomy">An example taxonomy<a class="anchor" aria-label="anchor" href="#an-example-taxonomy"></a>
 </h2>
-<p><code>carriers</code> is the fuel taxonomy of the energypal palettes,
-frozen as a definition file: 71 fuels under 17 carriers under 8
-groups.</p>
+<p>Eight fuels under five carriers under three groups. The values
+attached to them are round numbers chosen for illustration, not
+reference data: a net calorific value (<code>lhv</code>, GJ/t) for five
+fuels and a CO2 factor (<code>ef_co2</code>, kg/TJ) for four, under the
+source <code>"example"</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">carriers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/write_scale.html">read_scale</a></span><span class="op">(</span><span class="st">"carriers"</span><span class="op">)</span></span>
-<span><span class="va">carriers</span></span>
-<span><span class="co">#&gt; NestedScale: carriers</span></span>
-<span><span class="co">#&gt; Description: Energy carriers: fuels and energy vectors with subtypes, from energypal's carriers palette (IPCC 2006 / IEA classifications) </span></span>
+<code class="sourceCode R"><span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  frame <span class="op">=</span> <span class="st">"fuel"</span>,</span>
+<span>  unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Anthracite"</span>, <span class="st">"Bituminous"</span>, <span class="st">"Lignite"</span>, <span class="st">"NaturalGas"</span>, <span class="st">"Biodiesel"</span>,</span>
+<span>           <span class="st">"Anthracite"</span>, <span class="st">"Lignite"</span>, <span class="st">"NaturalGas"</span>, <span class="st">"Biodiesel"</span><span class="op">)</span>,</span>
+<span>  attribute <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lhv"</span>, <span class="st">"ef_co2"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  kind <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"property"</span>, <span class="st">"factor"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">28</span>, <span class="fl">25</span>, <span class="fl">10</span>, <span class="fl">50</span>, <span class="fl">37</span>, <span class="fl">95000</span>, <span class="fl">100000</span>, <span class="fl">55000</span>, <span class="fl">70000</span><span class="op">)</span>,</span>
+<span>  unit_of_measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GJ/t"</span>, <span class="st">"kg/TJ"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  source <span class="op">=</span> <span class="st">"example"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">codes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  frame <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"carrier"</span>, <span class="st">"fuel"</span>, <span class="st">"carrier"</span>, <span class="st">"carrier"</span><span class="op">)</span>,</span>
+<span>  unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gas"</span>, <span class="st">"Lignite"</span>, <span class="st">"Electricity"</span>, <span class="st">"Coal"</span><span class="op">)</span>,</span>
+<span>  alias <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GAS"</span>, <span class="st">"LIG"</span>, <span class="st">"ELC"</span>, <span class="st">"coal"</span><span class="op">)</span>,</span>
+<span>  source <span class="op">=</span> <span class="st">"commodity"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fuels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_from_leaftable.html">scale_from_leaftable</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Fossil"</span>, <span class="st">"Fossil"</span>, <span class="st">"Fossil"</span>, <span class="st">"Fossil"</span>, <span class="st">"Fossil"</span>, <span class="st">"Fossil"</span>,</span>
+<span>              <span class="st">"Renewable"</span>, <span class="st">"Electricity"</span><span class="op">)</span>,</span>
+<span>    carrier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coal"</span>, <span class="st">"Coal"</span>, <span class="st">"Coal"</span>, <span class="st">"Gas"</span>, <span class="st">"Gas"</span>, <span class="st">"Oil"</span>, <span class="st">"Biofuel"</span>,</span>
+<span>                <span class="st">"Electricity"</span><span class="op">)</span>,</span>
+<span>    fuel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Anthracite"</span>, <span class="st">"Bituminous"</span>, <span class="st">"Lignite"</span>, <span class="st">"NaturalGas"</span>, <span class="st">"LNG"</span>,</span>
+<span>             <span class="st">"Diesel"</span>, <span class="st">"Biodiesel"</span>, <span class="st">"Electricity"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  frames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span>, <span class="st">"carrier"</span>, <span class="st">"fuel"</span><span class="op">)</span>, key <span class="op">=</span> <span class="st">"fuel"</span>, name <span class="op">=</span> <span class="st">"fuels"</span>,</span>
+<span>  attributes <span class="op">=</span> <span class="va">values</span>, aliases <span class="op">=</span> <span class="va">codes</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fuels</span></span>
+<span><span class="co">#&gt; NestedScale: fuels</span></span>
 <span><span class="co">#&gt; Frames (3, coarsest first):</span></span>
-<span><span class="co">#&gt;   - group (8)</span></span>
-<span><span class="co">#&gt;     - carrier (17)</span></span>
-<span><span class="co">#&gt;       - fuel (71)</span></span>
-<span><span class="co">#&gt; Atoms: 71</span></span>
-<span><span class="co">#&gt; Attributes: lhv, ef_co2 (sources: IPCC2006) -- 26 at fuel</span></span>
-<span><span class="co">#&gt; Aliases: 136 (energypal, commodity)</span></span>
-<span><span class="co">#&gt; Source: energypal carriers.yml</span></span>
-<span><span class="fu"><a href="../reference/scale_units.html">scale_units</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="st">"carrier"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "FossilCoal"          "FossilOil"           "FossilGas"          </span></span>
-<span><span class="co">#&gt;  [4] "Bioenergy"           "Hydro"               "Wind"               </span></span>
-<span><span class="co">#&gt;  [7] "Solar"               "Geothermal"          "OtherRenewables"    </span></span>
-<span><span class="co">#&gt; [10] "Nuclear"             "Electricity"         "Heat"               </span></span>
-<span><span class="co">#&gt; [13] "Hydrogen"            "HydrogenDerivatives" "SyntheticFuels"     </span></span>
-<span><span class="co">#&gt; [16] "Storage"             "Other"</span></span>
-<span><span class="fu"><a href="../reference/scale_navigate.html">scale_children</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="st">"carrier"</span>, <span class="st">"FossilCoal"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Anthracite"      "Bituminous"      "SubBituminous"   "Lignite"        </span></span>
-<span><span class="co">#&gt; [5] "Coke"            "OtherFossilCoal"</span></span></code></pre></div>
-<p>Codes repeat across frames (<code>Nuclear</code> is a group
-<em>and</em> the carrier inside it), so every lookup names its
-frame.</p>
-<p>It carries the IPCC 2006 default net calorific values and CO2 factors
-for the fuels whose definition matches an IPCC fuel. Where there is no
-match, there is no number – the package never fills one in:</p>
+<span><span class="co">#&gt;   - group (3)</span></span>
+<span><span class="co">#&gt;     - carrier (5)</span></span>
+<span><span class="co">#&gt;       - fuel (8)</span></span>
+<span><span class="co">#&gt; Atoms: 8</span></span>
+<span><span class="co">#&gt; Attributes: lhv, ef_co2 (sources: example) -- 9 at fuel</span></span>
+<span><span class="co">#&gt; Aliases: 4 (commodity)</span></span>
+<span><span class="fu"><a href="../reference/scale_units.html">scale_units</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="st">"carrier"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Coal"        "Gas"         "Oil"         "Biofuel"     "Electricity"</span></span>
+<span><span class="fu"><a href="../reference/scale_navigate.html">scale_children</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="st">"carrier"</span>, <span class="st">"Coal"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Anthracite" "Bituminous" "Lignite"</span></span></code></pre></div>
+<p>Codes repeat across frames (<code>Electricity</code> is a group, the
+carrier inside it and that carrier’s only fuel), so every lookup names
+its frame.</p>
+<p>Where a fuel has no value, there is no number – the package never
+fills one in:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lhv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span><span class="op">)</span></span>
-<span><span class="va">lhv</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">lhv</span><span class="op">$</span><span class="va">value</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"unit_of_measure"</span>, <span class="st">"source"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;                 unit value unit_of_measure   source</span></span>
-<span><span class="co">#&gt; 1         Anthracite  26.7            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 2         Bituminous  25.8            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 3      SubBituminous  18.9            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 4            Lignite  11.9            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 5               Coke  28.2            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 7              Crude  42.3            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 8    ResidualFuelOil  40.4            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 9  DistillateFuelOil  43.0            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 10     MotorGasoline  44.3            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 11           JetFuel  44.1            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 12           LPG_NGL  47.3            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 14        NaturalGas  48.0            GJ/t IPCC2006</span></span>
-<span><span class="co">#&gt; 23         Biodiesel  27.0            GJ/t IPCC2006</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">lhv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span><span class="op">)</span></span>
+<span><span class="va">lhv</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"unit_of_measure"</span>, <span class="st">"source"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;          unit value unit_of_measure  source</span></span>
+<span><span class="co">#&gt; 1  Anthracite    28            GJ/t example</span></span>
+<span><span class="co">#&gt; 2  Bituminous    25            GJ/t example</span></span>
+<span><span class="co">#&gt; 3     Lignite    10            GJ/t example</span></span>
+<span><span class="co">#&gt; 4  NaturalGas    50            GJ/t example</span></span>
+<span><span class="co">#&gt; 5         LNG    NA            &lt;NA&gt;    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6      Diesel    NA            &lt;NA&gt;    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 7   Biodiesel    37            GJ/t example</span></span>
+<span><span class="co">#&gt; 8 Electricity    NA            &lt;NA&gt;    &lt;NA&gt;</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="attributes-are-not-weights">Attributes are not weights<a class="anchor" aria-label="anchor" href="#attributes-are-not-weights"></a>
@@ -200,9 +215,9 @@ coal is burnt. That is an ordinary recast of a resolved attribute with
 the <code>weighted_mean</code> rule, and the weight is where weights
 live: on the scale, as the consumption of each fuel.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">coal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_scale.html">filter_scale</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="st">"carrier"</span>, <span class="st">"FossilCoal"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">coal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_scale.html">filter_scale</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="st">"carrier"</span>, <span class="st">"Coal"</span><span class="op">)</span></span>
 <span><span class="va">lt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_leaftable.html">scale_leaftable</a></span><span class="op">(</span><span class="va">coal</span><span class="op">)</span></span>
-<span><span class="va">lt</span><span class="op">$</span><span class="va">tj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">300</span>, <span class="fl">50</span>, <span class="fl">400</span>, <span class="fl">20</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">lt</span><span class="op">$</span><span class="va">tj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">300</span>, <span class="fl">400</span><span class="op">)</span></span>
 <span><span class="va">mix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_from_leaftable.html">scale_from_leaftable</a></span><span class="op">(</span></span>
 <span>  <span class="va">lt</span>, frames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span>, <span class="st">"carrier"</span>, <span class="st">"fuel"</span><span class="op">)</span>, key <span class="op">=</span> <span class="st">"fuel"</span>,</span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">coal</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"mix"</span></span>
@@ -212,8 +227,8 @@ live: on the scale, as the consumption of each fuel.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>fuel <span class="op">=</span> <span class="va">lhv_coal</span><span class="op">$</span><span class="va">unit</span>, lhv <span class="op">=</span> <span class="va">lhv_coal</span><span class="op">$</span><span class="va">value</span><span class="op">)</span>, <span class="va">mix</span>,</span>
 <span>  source <span class="op">=</span> <span class="st">"fuel"</span>, target <span class="op">=</span> <span class="st">"carrier"</span>, rule <span class="op">=</span> <span class="st">"weighted_mean"</span>, weight <span class="op">=</span> <span class="st">"tj"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt;      carrier lhv</span></span>
-<span><span class="co">#&gt; 1 FossilCoal  NA</span></span></code></pre></div>
+<span><span class="co">#&gt;   carrier    lhv</span></span>
+<span><span class="co">#&gt; 1    Coal 17.875</span></span></code></pre></div>
 <p>(<code><a href="../reference/filter_scale.html">filter_scale()</a></code> keeps only the attribute rows of the
 surviving members, so the subset’s table is exactly what the new scale
 may take.)</p>
@@ -224,28 +239,25 @@ may take.)</p>
 <p>A value may be stored on a fuel, on a carrier or on a group. When a
 fuel has no value of its own, <code><a href="../reference/scale_attributes.html">scale_attributes()</a></code> walks to
 the nearest coarser frame that holds one and reports where the value
-came from. The shipped data stores everything at the fuel level; a
-carrier-level figure from another source fills the gaps below it without
-touching the fuels that have their own:</p>
+came from. The example values are all at the fuel level; a carrier-level
+figure from another source fills the gaps below it without touching the
+fuels that have their own:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/attach_attributes_scale.html">attach_attributes_scale</a></span><span class="op">(</span></span>
-<span>  <span class="va">carriers</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"carrier"</span>, unit <span class="op">=</span> <span class="st">"FossilGas"</span>, attribute <span class="op">=</span> <span class="st">"lhv"</span>,</span>
+<span>  <span class="va">fuels</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"carrier"</span>, unit <span class="op">=</span> <span class="st">"Gas"</span>, attribute <span class="op">=</span> <span class="st">"lhv"</span>,</span>
 <span>             kind <span class="op">=</span> <span class="st">"property"</span>, value <span class="op">=</span> <span class="fl">46</span>, unit_of_measure <span class="op">=</span> <span class="st">"GJ/t"</span><span class="op">)</span>,</span>
-<span>  source <span class="op">=</span> <span class="st">"example"</span></span>
+<span>  source <span class="op">=</span> <span class="st">"carrier-level"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">gas</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span><span class="op">)</span></span>
-<span><span class="va">res</span><span class="op">[</span><span class="va">res</span><span class="op">$</span><span class="va">unit</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="../reference/scale_navigate.html">scale_children</a></span><span class="op">(</span><span class="va">gas</span>, <span class="st">"carrier"</span>, <span class="st">"FossilGas"</span><span class="op">)</span>,</span>
+<span><span class="va">res</span><span class="op">[</span><span class="va">res</span><span class="op">$</span><span class="va">unit</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="../reference/scale_navigate.html">scale_children</a></span><span class="op">(</span><span class="va">gas</span>, <span class="st">"carrier"</span>, <span class="st">"Gas"</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"source"</span>, <span class="st">"origin_frame"</span>, <span class="st">"origin_unit"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;              unit value   source origin_frame origin_unit</span></span>
-<span><span class="co">#&gt; 14     NaturalGas    48 IPCC2006         fuel  NaturalGas</span></span>
-<span><span class="co">#&gt; 15       ShaleGas    46  example      carrier   FossilGas</span></span>
-<span><span class="co">#&gt; 16       TightGas    46  example      carrier   FossilGas</span></span>
-<span><span class="co">#&gt; 17            LNG    46  example      carrier   FossilGas</span></span>
-<span><span class="co">#&gt; 18  AssociatedGas    46  example      carrier   FossilGas</span></span>
-<span><span class="co">#&gt; 19 OtherFossilGas    46  example      carrier   FossilGas</span></span></code></pre></div>
-<p><code>NaturalGas</code> keeps its IPCC value; its siblings inherit
-the carrier’s. Nothing is guessed from a sibling or an average.</p>
+<span><span class="co">#&gt;         unit value        source origin_frame origin_unit</span></span>
+<span><span class="co">#&gt; 4 NaturalGas    50       example         fuel  NaturalGas</span></span>
+<span><span class="co">#&gt; 5        LNG    46 carrier-level      carrier         Gas</span></span></code></pre></div>
+<p><code>NaturalGas</code> keeps its own value; <code>LNG</code>
+inherits the carrier’s. Nothing is guessed from a sibling or an
+average.</p>
 <p>Two situations are refused rather than resolved:</p>
 <ul>
 <li>
@@ -263,14 +275,14 @@ figure.</li>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/attach_attributes_scale.html">attach_attributes_scale</a></span><span class="op">(</span></span>
-<span>  <span class="va">carriers</span>,</span>
+<span>  <span class="va">fuels</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"fuel"</span>, unit <span class="op">=</span> <span class="st">"Anthracite"</span>, attribute <span class="op">=</span> <span class="st">"lhv"</span>,</span>
 <span>             kind <span class="op">=</span> <span class="st">"property"</span>, value <span class="op">=</span> <span class="fl">27.5</span>, unit_of_measure <span class="op">=</span> <span class="st">"GJ/t"</span><span class="op">)</span>,</span>
 <span>  source <span class="op">=</span> <span class="st">"other"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">two</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> `lhv` for `Anthracite` at frame `fuel` is published by several sources (IPCC2006, other); pass `source=`</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> `lhv` for `Anthracite` at frame `fuel` is published by several sources (example, other); pass `source=`</span></span>
 <span><span class="va">other</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">two</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span>, source <span class="op">=</span> <span class="st">"other"</span><span class="op">)</span></span>
 <span><span class="va">other</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">other</span><span class="op">$</span><span class="va">value</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"source"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;         unit value source</span></span>
@@ -301,25 +313,25 @@ applied and where it came from.</p>
 <span>  kt   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fl">900</span>, <span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">use</span><span class="op">$</span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">use</span><span class="op">$</span><span class="va">kt</span> <span class="op">*</span> <span class="fl">1e3</span>                 <span class="co"># kt -&gt; t: no prefix arithmetic is done</span></span>
-<span><span class="va">energy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">use</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span>, <span class="st">"t"</span><span class="op">)</span><span class="op">]</span>, <span class="va">carriers</span>, <span class="st">"lhv"</span>,</span>
+<span><span class="va">energy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">use</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span>, <span class="st">"t"</span><span class="op">)</span><span class="op">]</span>, <span class="va">fuels</span>, <span class="st">"lhv"</span>,</span>
 <span>                        from_unit <span class="op">=</span> <span class="st">"t"</span>, to_unit <span class="op">=</span> <span class="st">"GJ"</span><span class="op">)</span></span>
 <span><span class="va">energy</span></span>
-<span><span class="co">#&gt;         fuel        t  lhv lhv.origin_frame</span></span>
-<span><span class="co">#&gt; 1 Anthracite  3204000 26.7             fuel</span></span>
-<span><span class="co">#&gt; 2    Lignite 10710000 11.9             fuel</span></span>
-<span><span class="co">#&gt; 3 NaturalGas        0 48.0             fuel</span></span>
-<span><span class="co">#&gt; 4  Biodiesel   405000 27.0             fuel</span></span></code></pre></div>
+<span><span class="co">#&gt;         fuel       t lhv lhv.origin_frame</span></span>
+<span><span class="co">#&gt; 1 Anthracite 3360000  28             fuel</span></span>
+<span><span class="co">#&gt; 2    Lignite 9000000  10             fuel</span></span>
+<span><span class="co">#&gt; 3 NaturalGas       0  50             fuel</span></span>
+<span><span class="co">#&gt; 4  Biodiesel  555000  37             fuel</span></span></code></pre></div>
 <p>A fuel without a value is an error, not a silent zero. Pass
 <code>na_action = "keep"</code> to carry <code>NA</code> instead. A
 <code>property</code> converts both ways:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">energy</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span>, <span class="st">"t"</span><span class="op">)</span><span class="op">]</span>, <span class="va">carriers</span>, <span class="st">"lhv"</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">energy</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span>, <span class="st">"t"</span><span class="op">)</span><span class="op">]</span>, <span class="va">fuels</span>, <span class="st">"lhv"</span>,</span>
 <span>              from_unit <span class="op">=</span> <span class="st">"GJ"</span>, to_unit <span class="op">=</span> <span class="st">"t"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         fuel      t  lhv lhv.origin_frame</span></span>
-<span><span class="co">#&gt; 1 Anthracite 120000 26.7             fuel</span></span>
-<span><span class="co">#&gt; 2    Lignite 900000 11.9             fuel</span></span>
-<span><span class="co">#&gt; 3 NaturalGas      0 48.0             fuel</span></span>
-<span><span class="co">#&gt; 4  Biodiesel  15000 27.0             fuel</span></span></code></pre></div>
+<span><span class="co">#&gt;         fuel      t lhv lhv.origin_frame</span></span>
+<span><span class="co">#&gt; 1 Anthracite 120000  28             fuel</span></span>
+<span><span class="co">#&gt; 2    Lignite 900000  10             fuel</span></span>
+<span><span class="co">#&gt; 3 NaturalGas      0  50             fuel</span></span>
+<span><span class="co">#&gt; 4  Biodiesel  15000  37             fuel</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="aggregate-to-carriers">Aggregate to carriers<a class="anchor" aria-label="anchor" href="#aggregate-to-carriers"></a>
@@ -328,36 +340,22 @@ applied and where it came from.</p>
 conserves the total. Register the rule once per column, or pass
 <code>rule=</code> each time.</p>
 <p>One decision has to be stated. The table reports four fuels against a
-taxonomy of 71. By default an absent fuel is <em>unknown</em>, and every
-carrier that contains one aggregates to <code>NA</code> with a warning –
-the safe reading for incomplete data. Fuel statistics usually mean the
-other thing, that an unreported fuel was not used, and
+taxonomy of eight. By default an absent fuel is <em>unknown</em>, and
+every carrier that contains one aggregates to <code>NA</code> with a
+warning – the safe reading for incomplete data. Fuel statistics usually
+mean the other thing, that an unreported fuel was not used, and
 <code>missing_sources = "ignore"</code> says so.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>fuel <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">fuel</span>, tj <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">t</span> <span class="op">/</span> <span class="fl">1e3</span><span class="op">)</span>   <span class="co"># GJ -&gt; TJ</span></span>
 <span><span class="fu"><a href="../reference/register_scale_rule.html">register_scale_rule</a></span><span class="op">(</span><span class="st">"tj"</span>, <span class="st">"sum"</span><span class="op">)</span></span>
-<span><span class="va">by_carrier</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recast_scale.html">recast_scale</a></span><span class="op">(</span><span class="va">tj</span>, <span class="va">carriers</span>, source <span class="op">=</span> <span class="st">"fuel"</span>, target <span class="op">=</span> <span class="st">"carrier"</span>,</span>
+<span><span class="va">by_carrier</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recast_scale.html">recast_scale</a></span><span class="op">(</span><span class="va">tj</span>, <span class="va">fuels</span>, source <span class="op">=</span> <span class="st">"fuel"</span>, target <span class="op">=</span> <span class="st">"carrier"</span>,</span>
 <span>                           missing_sources <span class="op">=</span> <span class="st">"ignore"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 67 source unit(s) present in the scale but missing from the data (e.g.</span></span>
-<span><span class="co">#&gt; Ammonia, AssociatedGas, Battery, ... (67 total)); produced NAs</span></span>
-<span><span class="va">by_carrier</span><span class="op">[</span><span class="va">by_carrier</span><span class="op">$</span><span class="va">tj</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span>
-<span><span class="co">#&gt;          carrier    tj</span></span>
-<span><span class="co">#&gt; 1     FossilCoal 13914</span></span>
-<span><span class="co">#&gt; NA          &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; 4      Bioenergy   405</span></span>
-<span><span class="co">#&gt; NA.1        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.2        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.3        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.4        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.5        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.6        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.7        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.8        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.9        &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.10       &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.11       &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.12       &lt;NA&gt;    NA</span></span>
-<span><span class="co">#&gt; NA.13       &lt;NA&gt;    NA</span></span>
+<span><span class="co">#&gt; Warning: 4 source unit(s) present in the scale but missing from the data (e.g.</span></span>
+<span><span class="co">#&gt; Bituminous, Diesel, Electricity, ... (4 total)); produced NAs</span></span>
+<span><span class="va">by_carrier</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">by_carrier</span><span class="op">$</span><span class="va">tj</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="co">#&gt;   carrier    tj</span></span>
+<span><span class="co">#&gt; 1    Coal 12360</span></span>
+<span><span class="co">#&gt; 4 Biofuel   555</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">by_carrier</span><span class="op">$</span><span class="va">tj</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">tj</span><span class="op">$</span><span class="va">tj</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 </div>
@@ -369,57 +367,30 @@ other thing, that an unreported fuel was not used, and
 <code>ef_co2</code> is stored with kind <code>factor</code>, not
 <code>property</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">co2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">tj</span>, <span class="va">carriers</span>, <span class="st">"ef_co2"</span>, from_unit <span class="op">=</span> <span class="st">"TJ"</span>, to_unit <span class="op">=</span> <span class="st">"kg"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">co2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">tj</span>, <span class="va">fuels</span>, <span class="st">"ef_co2"</span>, from_unit <span class="op">=</span> <span class="st">"TJ"</span>, to_unit <span class="op">=</span> <span class="st">"kg"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">co2</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">co2</span><span class="op">)</span> <span class="op">==</span> <span class="st">"tj"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"co2_kg"</span></span>
 <span><span class="va">co2</span></span>
-<span><span class="co">#&gt;         fuel     co2_kg ef_co2 ef_co2.origin_frame</span></span>
-<span><span class="co">#&gt; 1 Anthracite  314953200  98300                fuel</span></span>
-<span><span class="co">#&gt; 2    Lignite 1081710000 101000                fuel</span></span>
-<span><span class="co">#&gt; 3 NaturalGas          0  56100                fuel</span></span>
-<span><span class="co">#&gt; 4  Biodiesel   28674000  70800                fuel</span></span></code></pre></div>
+<span><span class="co">#&gt;         fuel    co2_kg ef_co2 ef_co2.origin_frame</span></span>
+<span><span class="co">#&gt; 1 Anthracite 319200000  95000                fuel</span></span>
+<span><span class="co">#&gt; 2    Lignite 900000000 100000                fuel</span></span>
+<span><span class="co">#&gt; 3 NaturalGas         0  55000                fuel</span></span>
+<span><span class="co">#&gt; 4  Biodiesel  38850000  70000                fuel</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">tj</span>, <span class="va">carriers</span>, <span class="st">"ef_co2"</span>, from_unit <span class="op">=</span> <span class="st">"kg"</span>, to_unit <span class="op">=</span> <span class="st">"TJ"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">tj</span>, <span class="va">fuels</span>, <span class="st">"ef_co2"</span>, from_unit <span class="op">=</span> <span class="st">"kg"</span>, to_unit <span class="op">=</span> <span class="st">"TJ"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> `ef_co2` converts TJ -&gt; kg only; the inverse is refused because it is a factor, not a property (see SCALE_ATTRIBUTE_KINDS)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="where-the-numbers-come-from">Where the numbers come from<a class="anchor" aria-label="anchor" href="#where-the-numbers-come-from"></a>
+<h2 id="values-from-a-published-source">Values from a published source<a class="anchor" aria-label="anchor" href="#values-from-a-published-source"></a>
 </h2>
-<p>Every IPCC row ships, with its mapping status, so the choice to
-attach a figure to a fuel is inspectable:</p>
+<p>Reference values – the defaults of an inventory guideline, the
+figures of a national statistical office, a plant-level measurement –
+are attached the same way: a table with one row per member and
+attribute, under the name of its source. Each source is chosen with
+<code>source=</code> when reading; nothing is overwritten.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ipcc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ipcc2006_fuel_defaults.csv"</span>,</span>
-<span>                             package <span class="op">=</span> <span class="st">"nestedscales"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ipcc</span><span class="op">$</span><span class="va">attribute</span>, <span class="va">ipcc</span><span class="op">$</span><span class="va">mapping_status</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         </span></span>
-<span><span class="co">#&gt;          mapped review unmapped</span></span>
-<span><span class="co">#&gt;   ef_co2     16     15       22</span></span>
-<span><span class="co">#&gt;   lhv        16     15       22</span></span>
-<span><span class="va">review</span> <span class="op">&lt;-</span> <span class="va">ipcc</span><span class="op">[</span><span class="va">ipcc</span><span class="op">$</span><span class="va">mapping_status</span> <span class="op">==</span> <span class="st">"review"</span> <span class="op">&amp;</span> <span class="va">ipcc</span><span class="op">$</span><span class="va">attribute</span> <span class="op">==</span> <span class="st">"lhv"</span>, <span class="op">]</span></span>
-<span><span class="va">review</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ipcc_fuel"</span>, <span class="st">"unit"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;                                   ipcc_fuel           unit value</span></span>
-<span><span class="co">#&gt; 9                         Aviation Gasoline                 44.3</span></span>
-<span><span class="co">#&gt; 11                             Jet Gasoline                 44.3</span></span>
-<span><span class="co">#&gt; 15                           Other Kerosene                 43.8</span></span>
-<span><span class="co">#&gt; 43                 Other Petroleum Products OtherFossilOil  40.2</span></span>
-<span><span class="co">#&gt; 77  Municipal Wastes (non-biomass fraction)          Waste  10.0</span></span>
-<span><span class="co">#&gt; 79                        Industrial Wastes          Waste    NA</span></span>
-<span><span class="co">#&gt; 85                          Wood/Wood Waste   SolidBiomass  15.6</span></span>
-<span><span class="co">#&gt; 89              Other Primary Solid Biomass   SolidBiomass  11.6</span></span>
-<span><span class="co">#&gt; 91                                 Charcoal   SolidBiomass  29.5</span></span>
-<span><span class="co">#&gt; 93                              Biogasoline        Ethanol  27.0</span></span>
-<span><span class="co">#&gt; 97                    Other Liquid Biofuels OtherBioenergy  27.4</span></span>
-<span><span class="co">#&gt; 99                             Landfill Gas         Biogas  50.4</span></span>
-<span><span class="co">#&gt; 101                              Sludge Gas         Biogas  50.4</span></span>
-<span><span class="co">#&gt; 103                            Other Biogas         Biogas  50.4</span></span>
-<span><span class="co">#&gt; 105     Municipal Wastes (biomass fraction)          Waste  11.6</span></span></code></pre></div>
-<p>A different source – a country-specific calorific value, a
-plant-level measurement – is attached under its own <code>source</code>
-and chosen with <code>source=</code> when reading; nothing is
-overwritten.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mine</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/attach_attributes_scale.html">attach_attributes_scale</a></span><span class="op">(</span></span>
-<span>  <span class="va">carriers</span>,</span>
+<span>  <span class="va">fuels</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"fuel"</span>, unit <span class="op">=</span> <span class="st">"Lignite"</span>, attribute <span class="op">=</span> <span class="st">"lhv"</span>,</span>
 <span>             kind <span class="op">=</span> <span class="st">"property"</span>, value <span class="op">=</span> <span class="fl">8.4</span>, unit_of_measure <span class="op">=</span> <span class="st">"GJ/t"</span><span class="op">)</span>,</span>
 <span>  source <span class="op">=</span> <span class="st">"plant"</span></span>
@@ -427,7 +398,7 @@ overwritten.</p>
 <span><span class="va">plant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">mine</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span>, source <span class="op">=</span> <span class="st">"plant"</span><span class="op">)</span></span>
 <span><span class="va">plant</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">plant</span><span class="op">$</span><span class="va">value</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"source"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;      unit value source</span></span>
-<span><span class="co">#&gt; 4 Lignite   8.4  plant</span></span></code></pre></div>
+<span><span class="co">#&gt; 3 Lignite   8.4  plant</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="model-commodity-codes">Model commodity codes<a class="anchor" aria-label="anchor" href="#model-commodity-codes"></a>
@@ -437,16 +408,21 @@ them through the alias table, exactly and case-insensitively, first
 against member names and then against aliases, and reports ambiguity
 instead of guessing. There is no fuzzy or substring stage: a model input
 is not the place for a near miss.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_match.html">scale_match</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GAS"</span>, <span class="st">"LIG"</span>, <span class="st">"ELC"</span>, <span class="st">"Hydrogen"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      label   frame        unit    method                      candidates</span></span>
-<span><span class="co">#&gt; 1      GAS carrier   FossilGas     alias                            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2      LIG    fuel     Lignite     alias                            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3      ELC carrier Electricity     alias                            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4 Hydrogen    &lt;NA&gt;        &lt;NA&gt; ambiguous carrier/Hydrogen; fuel/Hydrogen</span></span>
-<span><span class="fu"><a href="../reference/scale_match.html">scale_match</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="st">"Hydrogen"</span>, frame <span class="op">=</span> <span class="st">"carrier"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      label   frame     unit method candidates</span></span>
-<span><span class="co">#&gt; 1 Hydrogen carrier Hydrogen  exact       &lt;NA&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/scale_match.html">scale_match</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GAS"</span>, <span class="st">"LIG"</span>, <span class="st">"ELC"</span>, <span class="st">"Electricity"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         label   frame        unit    method</span></span>
+<span><span class="co">#&gt; 1         GAS carrier         Gas     exact</span></span>
+<span><span class="co">#&gt; 2         LIG    fuel     Lignite     alias</span></span>
+<span><span class="co">#&gt; 3         ELC carrier Electricity     alias</span></span>
+<span><span class="co">#&gt; 4 Electricity    &lt;NA&gt;        &lt;NA&gt; ambiguous</span></span>
+<span><span class="co">#&gt;                                                 candidates</span></span>
+<span><span class="co">#&gt; 1                                                     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2                                                     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3                                                     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4 group/Electricity; carrier/Electricity; fuel/Electricity</span></span>
+<span><span class="fu"><a href="../reference/scale_match.html">scale_match</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="st">"Electricity"</span>, frame <span class="op">=</span> <span class="st">"carrier"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         label   frame        unit method candidates</span></span>
+<span><span class="co">#&gt; 1 Electricity carrier Electricity  exact       &lt;NA&gt;</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="attaching-the-hierarchy-and-colours">Attaching the hierarchy, and colours<a class="anchor" aria-label="anchor" href="#attaching-the-hierarchy-and-colours"></a>
@@ -454,26 +430,25 @@ is not the place for a near miss.</p>
 <p>A table keyed by fuel gets its carrier and group with one join; the
 added columns are prefixed by the scale’s name, so a second scale on the
 same table never collides with the first.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/join_scale.html">join_scale</a></span><span class="op">(</span><span class="va">use</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span>, <span class="st">"kt"</span><span class="op">)</span><span class="op">]</span>, <span class="va">carriers</span>, frame <span class="op">=</span> <span class="st">"fuel"</span>, attach <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         fuel  kt carriers.group carriers.carrier   carriers</span></span>
-<span><span class="co">#&gt; 1 Anthracite 120    FossilFuels       FossilCoal Anthracite</span></span>
-<span><span class="co">#&gt; 2    Lignite 900    FossilFuels       FossilCoal    Lignite</span></span>
-<span><span class="co">#&gt; 3 NaturalGas   0    FossilFuels        FossilGas NaturalGas</span></span>
-<span><span class="co">#&gt; 4  Biodiesel  15      Renewable        Bioenergy  Biodiesel</span></span></code></pre></div>
-<p>Colours are presentation and stay in energypal, which remains the
-editable source of the taxonomy’s names, labels and aliases;
-<code>carriers</code> is a snapshot of it. When a figure needs colours,
-join them from energypal by member name – the article <em>Fuels, regions
-and months</em> on the package site does so.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/join_scale.html">join_scale</a></span><span class="op">(</span><span class="va">use</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fuel"</span>, <span class="st">"kt"</span><span class="op">)</span><span class="op">]</span>, <span class="va">fuels</span>, frame <span class="op">=</span> <span class="st">"fuel"</span>, attach <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         fuel  kt fuels.group fuels.carrier      fuels</span></span>
+<span><span class="co">#&gt; 1 Anthracite 120      Fossil          Coal Anthracite</span></span>
+<span><span class="co">#&gt; 2    Lignite 900      Fossil          Coal    Lignite</span></span>
+<span><span class="co">#&gt; 3 NaturalGas   0      Fossil           Gas NaturalGas</span></span>
+<span><span class="co">#&gt; 4  Biodiesel  15   Renewable       Biofuel  Biodiesel</span></span></code></pre></div>
+<p>Colours are presentation and are not stored on a scale. When a figure
+needs them, join them by member name from the palette it uses – the
+article <em>Fuels, regions and months</em> on the package site does
+so.</p>
 </div>
 <div class="section level2">
 <h2 id="country-specific-values">Country-specific values<a class="anchor" aria-label="anchor" href="#country-specific-values"></a>
 </h2>
-<p>The IPCC defaults are global. A calorific value for hard coal in
-Poland is the same attribute at the same fuel with a different
-<em>region</em> – a second dimension, not a deeper frame. That belongs
-to a <code><a href="../reference/scale_product.html">scale_product()</a></code> of the fuel scale and a
+<p>Published defaults are usually global. A calorific value for hard
+coal in one country is the same attribute at the same fuel with a
+different <em>region</em> – a second dimension, not a deeper frame. That
+belongs to a <code><a href="../reference/scale_product.html">scale_product()</a></code> of the fuel scale and a
 <code>GeoScale</code> from geoscales, with the regional values attached
 as their own source; it is not built in this version.</p>
 </div>
@@ -485,12 +460,8 @@ as their own source; it is not built in this version.</p>
 <code><a href="../articles/anatomy.html">vignette("anatomy")</a></code> takes the object apart: its tables,
 what the validator guarantees, definition files, the registry.</li>
 <li>The article <em>Fuels, regions and months</em> on the package site
-joins the fuel scale with a <code>GeoScale</code> and a
-<code>Calendar</code> on one table and draws the result with energypal’s
-colours.</li>
-<li>
-<code><a href="../reference/shipped_scales.html">?shipped_scales</a></code> documents <code>carriers</code> and the
-IPCC tables.</li>
+joins a fuel scale with a <code>GeoScale</code> and a
+<code>Calendar</code> on one table.</li>
 </ul>
 </div>
   </div>

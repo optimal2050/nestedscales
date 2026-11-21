@@ -30,11 +30,15 @@ The package defines:
   to a dataset, subsetting, combining several scales into one
   multi-dimensional index, clustering units into new levels, and storing
   data together with its scales.
-- **Attributes and definitions**: values that belong to a member but are
-  not weights (a calorific value, an emission factor) and alternative
-  labels, resolved along the hierarchy and applied row by row; and
-  language-neutral definition files, with a catalogue of the ones
-  installed packages ship.
+- **Labels, attributes and definitions**: display names for members and
+  levels, in named variants; values that belong to a member but are not
+  weights (a calorific value, an emission factor), resolved along the
+  hierarchy and applied row by row; alternative spellings matched
+  strictly; and language-neutral definition files, with a catalogue of
+  the ones installed packages ship.
+- **A link between data and scale**: the code columns of a table record
+  which scale and level they are on, so a conversion cannot be applied
+  to data of another scale.
 
 The package is dimension-agnostic. Time and space are provided by two
 packages built on it, designed for optimization and simulation models,
@@ -55,15 +59,20 @@ a roadmap of what is available and what is planned.
 
 ## Installation
 
-Until the first CRAN release, install the development version from
-GitHub:
+The released version is on CRAN:
+
+``` r
+install.packages("nestedscales")
+```
+
+The development version is on GitHub:
 
 ``` r
 pak::pkg_install("optimal2050/nestedscales")
 ```
 
 The package is pure R; its non-base runtime dependencies are dplyr,
-rlang, S7 and jsonlite.
+rlang, S7, vctrs and jsonlite.
 
 ## A scale in one call
 
@@ -144,44 +153,61 @@ recast_scale(x, ind, source = "class", target = "section",
 #> 2       D   50 43.33333
 ```
 
-## A shipped definition
+## Definition files and attributes
 
 Scales travel as definition files (a JSON header with the tables inline,
 or a bundle with Arrow or CSV tables) that the Python binding reads as
-well. The package ships one: the energypal fuel taxonomy with the IPCC
-2006 default calorific values and CO2 factors attached as attributes.
+well. A scale may also carry values that belong to its members, such as
+a calorific value per fuel; the two below are illustrative.
 
 ``` r
-carriers <- read_scale("carriers")
-carriers
-#> NestedScale: carriers
-#> Description: Energy carriers: fuels and energy vectors with subtypes, from energypal's carriers palette (IPCC 2006 / IEA classifications) 
-#> Frames (3, coarsest first):
-#>   - group (8)
-#>     - carrier (17)
-#>       - fuel (71)
-#> Atoms: 71
-#> Attributes: lhv, ef_co2 (sources: IPCC2006) -- 26 at fuel
-#> Aliases: 136 (energypal, commodity)
-#> Source: energypal carriers.yml
+fuels <- scale_from_leaftable(
+  data.frame(carrier = c("Coal", "Coal", "Gas"),
+             fuel = c("Anthracite", "Lignite", "NaturalGas")),
+  frames = c("carrier", "fuel"), key = "fuel", name = "fuels",
+  attributes = data.frame(
+    frame = "fuel", unit = c("Anthracite", "NaturalGas"), attribute = "lhv",
+    kind = "property", value = c(28, 50), unit_of_measure = "GJ/t",
+    source = "example"
+  ),
+  aliases = data.frame(frame = "fuel", unit = "NaturalGas", alias = "NG",
+                       source = "example")
+)
+file <- tempfile(fileext = ".json")
+write_scale(fuels, file)
+fuels <- read_scale(file)
+fuels
+#> NestedScale: fuels
+#> Frames (2, coarsest first):
+#>   - carrier (2)
+#>     - fuel (3)
+#> Atoms: 3
+#> Attributes: lhv (sources: example) -- 2 at fuel
+#> Aliases: 1 (example)
 
 fuel_use <- data.frame(fuel = c("Anthracite", "NaturalGas"), t = c(100, 100))
-convert_scale(fuel_use, carriers, "lhv", from_unit = "t", to_unit = "GJ")
-#>         fuel    t  lhv lhv.origin_frame
-#> 1 Anthracite 2670 26.7             fuel
-#> 2 NaturalGas 4800 48.0             fuel
+convert_scale(fuel_use, fuels, "lhv", from_unit = "t", to_unit = "GJ")
+#>         fuel    t lhv lhv.origin_frame
+#> 1 Anthracite 2800  28             fuel
+#> 2 NaturalGas 5000  50             fuel
+
+scale_match(fuels, c("NG", "lignite", "Peat"))
+#>     label frame       unit method candidates
+#> 1      NG  fuel NaturalGas  alias       <NA>
+#> 2 lignite  fuel    Lignite  exact       <NA>
+#> 3    Peat  <NA>       <NA>   none       <NA>
 ```
 
 `scale_attributes()` resolves a value for every member of a frame,
 walking to the nearest coarser level that holds one; `scale_match()`
-resolves labels and model codes through the alias table, strictly.
+resolves names and model codes through the alias table, strictly.
 
 ## Design
 
 - **A scale is a definition, not a container.** It holds the atoms, the
   frames that group them and the weights that size them. Data stays in
-  ordinary tables; `bind_scale()` records on the code columns which scale
-  and frame they are on, and the verbs check it.
+  ordinary tables; `bind_scale()` records on the code columns which
+  scale and frame they are on, and the verbs check it.
 - **Atoms are the ground truth.** Frames are partitions of the atoms,
   not necessarily a strict tree; conversion always routes through the
   atom layer.

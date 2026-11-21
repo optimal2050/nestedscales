@@ -33,8 +33,7 @@ invisibly.
 Packages ship scale definitions as files (see \code{\link[=write_scale]{write_scale()}}) and
 register the directory holding them; \code{scale_catalog()} lists what every
 registered directory holds and \code{\link[=read_scale]{read_scale()}} takes an id from it.
-nestedscales registers its own \verb{inst/scales/} on load, so
-\code{read_scale("carriers")} works with nothing else attached.
+nestedscales itself ships no definitions.
 }
 \details{
 \code{register_scale_dir()} is what a dimension package calls in its

@@ -47,11 +47,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Oleg Lugovoy \email{olugovoy@optimalsolution.dev} (\href{https://orcid.org/0000-0001-5546-9875}{ORCID})
+\strong{Maintainer}: Oleg Lugovoy \email{olugovoy@optimalsolution.dev} (\href{https://orcid.org/0000-0001-5546-9875}{ORCID}) [copyright holder]
 
 Authors:
 \itemize{
-  \item Oleg Lugovoy \email{olugovoy@optimalsolution.dev} (\href{https://orcid.org/0000-0001-5546-9875}{ORCID})
+  \item Oleg Lugovoy \email{olugovoy@optimalsolution.dev} (\href{https://orcid.org/0000-0001-5546-9875}{ORCID}) [copyright holder]
 }
 
 }

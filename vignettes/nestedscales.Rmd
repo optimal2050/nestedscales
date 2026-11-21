@@ -148,18 +148,29 @@ frame, walking to the nearest coarser level when a member has none of its
 own. `convert_scale()` applies the resolved value row by row. Alternative
 labels live in an alias table, and `scale_match()` resolves labels against
 member names and aliases exactly, reporting ambiguity rather than guessing.
-The package ships one such scale, the energypal fuel taxonomy with the IPCC
-2006 defaults:
+A small fuel scale shows all three; its two calorific values are
+illustrative:
 
 ```{r attributes}
-carriers <- read_scale("carriers")
-lhv <- scale_attributes(carriers, "lhv", frame = "fuel")
-head(lhv[!is.na(lhv$value), c("unit", "value", "unit_of_measure")])
+fuels <- scale_from_leaftable(
+  data.frame(carrier = c("Coal", "Coal", "Gas"),
+             fuel = c("Anthracite", "Lignite", "NaturalGas")),
+  frames = c("carrier", "fuel"), key = "fuel", name = "fuels",
+  attributes = data.frame(
+    frame = "fuel", unit = c("Lignite", "NaturalGas"), attribute = "lhv",
+    kind = "property", value = c(10, 50), unit_of_measure = "GJ/t",
+    source = "example"
+  ),
+  aliases = data.frame(frame = "fuel", unit = "NaturalGas", alias = "NG",
+                       source = "example")
+)
+scale_attributes(fuels, "lhv", frame = "fuel")[
+  c("unit", "value", "unit_of_measure")]
 
 fuel_use <- data.frame(fuel = c("Lignite", "NaturalGas"), t = c(1000, 1000))
-convert_scale(fuel_use, carriers, "lhv", from_unit = "t", to_unit = "GJ")
+convert_scale(fuel_use, fuels, "lhv", from_unit = "t", to_unit = "GJ")
 
-scale_match(carriers, c("GAS", "lignite", "Hydrogen"))
+scale_match(fuels, c("NG", "lignite", "Peat"))
 ```
 
 `vignette("attributes")` has the full account.

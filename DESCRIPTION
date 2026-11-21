@@ -1,13 +1,13 @@
 Package: nestedscales
 Title: Nested Scales and Multi-Dimensional Indexes for Modeling
-Version: 0.2.0.9000
+Version: 0.3.0
 URL: https://optimal2050.github.io/nestedscales/r/,
     https://github.com/optimal2050/nestedscales
 BugReports: https://github.com/optimal2050/nestedscales/issues
 Authors@R:
     person(given = "Oleg",
            family = "Lugovoy",
-           role = c("aut", "cre"),
+           role = c("aut", "cre", "cph"),
            email = "olugovoy@optimalsolution.dev",
            comment = c(ORCID = "0000-0001-5546-9875"))
 Description: Provides multi-level discrete representations of data dimensions
@@ -85,7 +85,6 @@ Collate:
     'reconcile.R'
     'rules.R'
     'scale-construct.R'
-    'shipped-scales.R'
     'str.R'
     'sweep.R'
     'tree.R'

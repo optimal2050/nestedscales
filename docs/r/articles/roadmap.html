@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nestedscales</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -138,7 +138,7 @@ storing data with its scales.</li>
 </ol>
 </div>
 <div class="section level2">
-<h2 id="available-now-0-2-0">Available now (0.2.0)<a class="anchor" aria-label="anchor" href="#available-now-0-2-0"></a>
+<h2 id="available-now-0-3-0">Available now (0.3.0)<a class="anchor" aria-label="anchor" href="#available-now-0-3-0"></a>
 </h2>
 <div class="section level3">
 <h3 id="structure">Structure<a class="anchor" aria-label="anchor" href="#structure"></a>
@@ -165,6 +165,13 @@ representation.</li>
 <li>
 <code><a href="../reference/filter_scale.html">filter_scale()</a></code> and <code><a href="../reference/prune_scale.html">prune_scale()</a></code> subset
 and collapse a scale, keeping the record of coverage.</li>
+<li>
+<code><a href="../reference/scale_id.html">scale_id()</a></code> gives the identity of a scale, its name and
+a hash of its structure. <code><a href="../reference/scale_tree.html">scale_tree()</a></code>, also printed by
+<code><a href="https://rdrr.io/r/utils/str.html" class="external-link">str()</a></code>, lists the parts of a scale and marks each one as
+fixed (part of the identity), derived or mutable.</li>
+<li>The classes <code>NestedScale</code> and <code>ScaleProduct</code>
+are exported and documented.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -203,6 +210,12 @@ hand-audited ones.</li>
 <li>
 <code><a href="../reference/join_scale.html">join_scale()</a></code> attaches labels, coarser levels, shares
 and weights to a dataset.</li>
+<li>The data link: <code><a href="../reference/bind_scale.html">bind_scale()</a></code> records on the code columns
+of a table which scale and level they are on, and
+<code><a href="../reference/bind_scale.html">scale_link()</a></code> reports it. The link survives subsetting,
+joins and row binding; the conversion functions read the source level
+from it, stop when the data is bound to another scale, and bind their
+result.</li>
 <li>
 <code><a href="../reference/reconcile_scale.html">reconcile_scale()</a></code> compares aggregated data with an
 independent total and can balance the gap.</li>
@@ -227,9 +240,16 @@ same class; lazy inputs return a query.</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="attributes-aliases-and-definitions">Attributes, aliases and definitions<a class="anchor" aria-label="anchor" href="#attributes-aliases-and-definitions"></a>
+<h3 id="labels-attributes-aliases-and-definitions">Labels, attributes, aliases and definitions<a class="anchor" aria-label="anchor" href="#labels-attributes-aliases-and-definitions"></a>
 </h3>
 <ul>
+<li>
+<strong>Labels</strong> are display names keyed by
+<code>(frame, unit, variant)</code>: a member may have several named
+variants, a level may have none, and a level itself can be named.
+<code><a href="../reference/attach_labels_scale.html">attach_labels_scale()</a></code> adds them,
+<code><a href="../reference/scale_labels.html">scale_labels()</a></code> and <code><a href="../reference/scale_label.html">scale_label()</a></code> read them,
+and <code>join_scale(labels = )</code> attaches them to a dataset.</li>
 <li>A scale may carry <strong>attributes</strong>, physical values keyed
 by <code>(frame, unit)</code> at any level (a calorific value on a fuel,
 on its carrier or on its group), each with a <code>kind</code>, bounds,
@@ -244,12 +264,10 @@ and reports ambiguity.</li>
 <li>
 <strong>Definition files.</strong> <code><a href="../reference/write_scale.html">write_scale()</a></code> and
 <code><a href="../reference/write_scale.html">read_scale()</a></code> exchange a scale as a JSON header with inline
-tables, or a bundle with Arrow or CSV tables, readable by every binding;
-YAML is accepted. <code><a href="../reference/scale_catalog.html">scale_catalog()</a></code> lists the definitions
-installed packages ship, and <code>read_scale("carriers")</code> opens
-the one the core ships: the energypal fuel taxonomy with the IPCC 2006
-default calorific values and CO2 factors
-(<code><a href="../reference/shipped_scales.html">?shipped_scales</a></code>).</li>
+tables, or a bundle with Arrow or CSV tables; YAML is accepted. The
+Python binding reads the same files, except the label table.
+<code><a href="../reference/scale_catalog.html">scale_catalog()</a></code> lists the definitions installed packages
+ship, and <code><a href="../reference/write_scale.html">read_scale()</a></code> opens one by its id.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -310,14 +328,23 @@ intervals of a continuous variable. Today they are binned by hand before
 with the interval bounds kept as weights, would build them
 directly.</li>
 <li>
-<strong>More shipped definitions.</strong> <code>carriers</code> is
-the first classification the core ships. Industry classifications (NACE,
-ISIC) and technology vintages follow as definition files under
-<code>inst/scales/</code>, moving to a separate data package only if
-their size demands it. Regional values of an attribute (a national
-calorific value) belong to a product of the scale with a
-<code>GeoScale</code>, attached under their own source; not built
-yet.</li>
+<strong>Shipped definitions.</strong> The core ships none.
+Classifications (fuels, NACE, ISIC, technology vintages) belong to the
+packages that maintain them, as definition files those packages register
+in the catalogue.</li>
+<li>
+<strong>Regional attribute values.</strong> A national calorific
+value is the same attribute on the same member in another region. It
+belongs to a product of the scale with a <code>GeoScale</code>, attached
+under its own source; not built yet.</li>
+<li>
+<strong>Labels in the Python binding.</strong> The binding reads and
+writes definition files but does not yet carry the label table.</li>
+<li>
+<strong>Declared content of a definition file.</strong> A file does
+not yet state which optional tables it holds, so an older reader cannot
+tell that it is skipping one; a step of the schema version will record
+it.</li>
 </ul>
 </div>
 <div class="section level2">

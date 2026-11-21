@@ -34,7 +34,7 @@ at <- data.frame(
   unit      = c("Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"),
   attribute = c("lhv", "lhv", "lhv", "lhv", "ef_co2", "ef_co2"),
   kind      = c(rep("property", 4), "factor", "factor"),
-  value     = c(26.7, 11.9, 42.5, 15.0, 98300, 56100),
+  value     = c(28, 10, 43, 15, 95000, 55000),
   unit_of_measure = c(rep("GJ/t", 4), "kg/TJ", "kg/TJ"),
   source    = "example"
 )
@@ -100,8 +100,8 @@ scale_leaftable(x)
 Each row is one atom. The key column (`fuel` here) is unique and complete.
 Frame columns may hold `NA`: `Electricity` has no physical state, so it does
 not participate at the `phase` frame, and `na_action=` decides what recasts
-do about it. The key may share its name with the finest frame, as here and
-in the shipped `carriers`: there the frame column *is* the key column.
+do about it. The key may share its name with the finest frame, as here:
+the frame column *is* the key column.
 
 ## Frames, members, ranks
 
@@ -114,9 +114,8 @@ scale_rank(x, "carrier")
 ```
 
 Codes are **not unique across frames**: `Electricity` is a group and a
-carrier here, and `Nuclear`, `Heat`, `Storage`, `Other` are each a group
-and a carrier in `carriers`. Every function that takes a code therefore
-takes its frame as well.
+carrier here. Every function that takes a code therefore takes its frame
+as well.
 
 Navigation is derived from the leaftable and routed through the atoms, so a
 frame that cross-cuts another reports overlap rather than invented
@@ -205,17 +204,12 @@ Aliases and labels answer different questions. An alias is a spelling to be
 ```{r meta}
 scale_weights(x)                        # none declared here
 S7::prop(x, "meta")[c("name", "desc")]
-carriers <- read_scale("carriers")
-scale_weights(carriers)
-S7::prop(carriers, "meta")[c("name", "source", "palette_version")]
-head(S7::prop(carriers, "meta")$labels, 4)
 ```
 
 `meta$name` is load-bearing: `join_scale()` prefixes the columns it attaches
 with `"<name>."`, `scale_map_between()` names its label columns after the
-objects, and `write_scale()` needs a name for the definition. The shipped
-`carriers` keeps energypal's short and long labels in `meta$labels`; colours
-are not stored.
+objects, and `write_scale()` needs a name for the definition. Further
+fields passed to the constructor are kept in `meta` as given.
 
 ## The data link
 
@@ -341,5 +335,5 @@ being registered three times -- or differently, when it should.
 ## Where to next?
 
 - `vignette("nestedscales")` -- the tour of the main functions.
-- `vignette("attributes")` -- attributes, aliases and conversion on the
-  shipped `carriers`.
+- `vignette("attributes")` -- attributes, aliases and conversion on a
+  small fuel taxonomy.

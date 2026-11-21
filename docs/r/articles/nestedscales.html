@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nestedscales</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -300,31 +300,39 @@ level when a member has none of its own. <code><a href="../reference/convert_sca
 applies the resolved value row by row. Alternative labels live in an
 alias table, and <code><a href="../reference/scale_match.html">scale_match()</a></code> resolves labels against
 member names and aliases exactly, reporting ambiguity rather than
-guessing. The package ships one such scale, the energypal fuel taxonomy
-with the IPCC 2006 defaults:</p>
+guessing. A small fuel scale shows all three; its two calorific values
+are illustrative:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">carriers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/write_scale.html">read_scale</a></span><span class="op">(</span><span class="st">"carriers"</span><span class="op">)</span></span>
-<span><span class="va">lhv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lhv</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">lhv</span><span class="op">$</span><span class="va">value</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"unit_of_measure"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;            unit value unit_of_measure</span></span>
-<span><span class="co">#&gt; 1    Anthracite  26.7            GJ/t</span></span>
-<span><span class="co">#&gt; 2    Bituminous  25.8            GJ/t</span></span>
-<span><span class="co">#&gt; 3 SubBituminous  18.9            GJ/t</span></span>
-<span><span class="co">#&gt; 4       Lignite  11.9            GJ/t</span></span>
-<span><span class="co">#&gt; 5          Coke  28.2            GJ/t</span></span>
-<span><span class="co">#&gt; 7         Crude  42.3            GJ/t</span></span>
+<code class="sourceCode R"><span><span class="va">fuels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_from_leaftable.html">scale_from_leaftable</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>carrier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coal"</span>, <span class="st">"Coal"</span>, <span class="st">"Gas"</span><span class="op">)</span>,</span>
+<span>             fuel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Anthracite"</span>, <span class="st">"Lignite"</span>, <span class="st">"NaturalGas"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  frames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"carrier"</span>, <span class="st">"fuel"</span><span class="op">)</span>, key <span class="op">=</span> <span class="st">"fuel"</span>, name <span class="op">=</span> <span class="st">"fuels"</span>,</span>
+<span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    frame <span class="op">=</span> <span class="st">"fuel"</span>, unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lignite"</span>, <span class="st">"NaturalGas"</span><span class="op">)</span>, attribute <span class="op">=</span> <span class="st">"lhv"</span>,</span>
+<span>    kind <span class="op">=</span> <span class="st">"property"</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">50</span><span class="op">)</span>, unit_of_measure <span class="op">=</span> <span class="st">"GJ/t"</span>,</span>
+<span>    source <span class="op">=</span> <span class="st">"example"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  aliases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"fuel"</span>, unit <span class="op">=</span> <span class="st">"NaturalGas"</span>, alias <span class="op">=</span> <span class="st">"NG"</span>,</span>
+<span>                       source <span class="op">=</span> <span class="st">"example"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/scale_attributes.html">scale_attributes</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="st">"lhv"</span>, frame <span class="op">=</span> <span class="st">"fuel"</span><span class="op">)</span><span class="op">[</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unit"</span>, <span class="st">"value"</span>, <span class="st">"unit_of_measure"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;         unit value unit_of_measure</span></span>
+<span><span class="co">#&gt; 1 Anthracite    NA            &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2    Lignite    10            GJ/t</span></span>
+<span><span class="co">#&gt; 3 NaturalGas    50            GJ/t</span></span>
 <span></span>
 <span><span class="va">fuel_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>fuel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lignite"</span>, <span class="st">"NaturalGas"</span><span class="op">)</span>, t <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">fuel_use</span>, <span class="va">carriers</span>, <span class="st">"lhv"</span>, from_unit <span class="op">=</span> <span class="st">"t"</span>, to_unit <span class="op">=</span> <span class="st">"GJ"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         fuel     t  lhv lhv.origin_frame</span></span>
-<span><span class="co">#&gt; 1    Lignite 11900 11.9             fuel</span></span>
-<span><span class="co">#&gt; 2 NaturalGas 48000 48.0             fuel</span></span>
+<span><span class="fu"><a href="../reference/convert_scale.html">convert_scale</a></span><span class="op">(</span><span class="va">fuel_use</span>, <span class="va">fuels</span>, <span class="st">"lhv"</span>, from_unit <span class="op">=</span> <span class="st">"t"</span>, to_unit <span class="op">=</span> <span class="st">"GJ"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         fuel     t lhv lhv.origin_frame</span></span>
+<span><span class="co">#&gt; 1    Lignite 10000  10             fuel</span></span>
+<span><span class="co">#&gt; 2 NaturalGas 50000  50             fuel</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/scale_match.html">scale_match</a></span><span class="op">(</span><span class="va">carriers</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GAS"</span>, <span class="st">"lignite"</span>, <span class="st">"Hydrogen"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      label   frame      unit    method                      candidates</span></span>
-<span><span class="co">#&gt; 1      GAS carrier FossilGas     alias                            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2  lignite    fuel   Lignite     exact                            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3 Hydrogen    &lt;NA&gt;      &lt;NA&gt; ambiguous carrier/Hydrogen; fuel/Hydrogen</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/scale_match.html">scale_match</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NG"</span>, <span class="st">"lignite"</span>, <span class="st">"Peat"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     label frame       unit method candidates</span></span>
+<span><span class="co">#&gt; 1      NG  fuel NaturalGas  alias       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2 lignite  fuel    Lignite  exact       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3    Peat  &lt;NA&gt;       &lt;NA&gt;   none       &lt;NA&gt;</span></span></code></pre></div>
 <p><code><a href="../articles/attributes.html">vignette("attributes")</a></code> has the full account.</p>
 </div>
 <div class="section level2">
@@ -342,8 +350,8 @@ ship:</p>
 <span><span class="fu"><a href="../reference/scale_frames.html">scale_frames</a></span><span class="op">(</span><span class="fu"><a href="../reference/write_scale.html">read_scale</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "section"  "division" "class"</span></span>
 <span><span class="fu"><a href="../reference/scale_catalog.html">scale_catalog</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"name"</span>, <span class="st">"frames"</span>, <span class="st">"n_atoms"</span>, <span class="st">"package"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;         id     name             frames n_atoms      package</span></span>
-<span><span class="co">#&gt; 1 carriers carriers group/carrier/fuel      71 nestedscales</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] id      name    frames  n_atoms package</span></span>
+<span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="several-dimensions">Several dimensions<a class="anchor" aria-label="anchor" href="#several-dimensions"></a>

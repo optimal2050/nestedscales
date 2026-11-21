@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nestedscales</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -144,9 +144,13 @@
         </td>
         <td><p>Summarize a NestedScale</p></td>
       </tr><tr><td>
-          <p><code><a href="str.NestedScale.html">str(<i>&lt;NestedScale&gt;</i>)</a></code> <code><a href="str.NestedScale.html">str(<i>&lt;nestedscales::NestedScale&gt;</i>)</a></code> </p>
+          <p><code><a href="str.NestedScale.html">str(<i>&lt;NestedScale&gt;</i>)</a></code> <code><a href="str.NestedScale.html">str(<i>&lt;nestedscales::NestedScale&gt;</i>)</a></code> <code><a href="str.NestedScale.html">str(<i>&lt;nestedscales::ScaleProduct&gt;</i>)</a></code> </p>
         </td>
         <td><p>Show the structure of a scale</p></td>
+      </tr><tr><td>
+          <p><code><a href="scale_tree.html">scale_tree()</a></code> <code><a href="scale_tree.html">print(<i>&lt;scale_tree&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>The parts of a scale and which of them may change</p></td>
       </tr><tr><td>
           <p><code><a href="sub-.NestedScale.html">`[`(<i>&lt;NestedScale&gt;</i>)</a></code> <code><a href="sub-.NestedScale.html">`[`(<i>&lt;nestedscales::NestedScale&gt;</i>)</a></code> </p>
         </td>
@@ -417,7 +421,7 @@
         <td><p>Register a distance</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="definitions-and-catalogue">Definitions and catalogue <a href="#definitions-and-catalogue" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Language-neutral definition files, the registry of shipped ones, and the definitions this package ships.</p>
+          <p class="section-desc"></p><p>Language-neutral definition files and the registry of the ones installed packages ship.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="write_scale.html">write_scale()</a></code> <code><a href="write_scale.html">read_scale()</a></code> </p>
@@ -427,10 +431,6 @@
           <p><code><a href="scale_catalog.html">register_scale_dir()</a></code> <code><a href="scale_catalog.html">list_scale_dirs()</a></code> <code><a href="scale_catalog.html">clear_scale_dirs()</a></code> <code><a href="scale_catalog.html">scale_catalog()</a></code> </p>
         </td>
         <td><p>Shipped scale definitions</p></td>
-      </tr><tr><td>
-          <p><code><a href="shipped_scales.html">shipped_scales</a></code> </p>
-        </td>
-        <td><p>Shipped definitions: <code>carriers</code> and the IPCC 2006 fuel defaults</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="arrays-and-storage">Arrays and storage <a href="#arrays-and-storage" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
@@ -471,6 +471,10 @@
           <p><code><a href="scale_payload_collapse.html">scale_payload_collapse()</a></code> </p>
         </td>
         <td><p>Collapse a subclass's per-atom payload</p></td>
+      </tr><tr><td>
+          <p><code><a href="scale_payload_parts.html">scale_payload_parts()</a></code> </p>
+        </td>
+        <td><p>Describe the parts a subclass adds to a scale</p></td>
       </tr><tr><td>
           <p><code><a href="scale_payload_io.html">scale_write_payload()</a></code> <code><a href="scale_payload_io.html">scale_read_payload()</a></code> <code><a href="scale_payload_io.html">register_scale_class()</a></code> <code><a href="scale_payload_io.html">list_scale_classes()</a></code> </p>
         </td>
