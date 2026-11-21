@@ -113,8 +113,9 @@ registered by hand (listed under <code>package = NA</code>).</p></dd>
     <div id="value">
     <h2>Value</h2>
     <p><code>scale_catalog()</code> a <code>data.frame</code> with one row per definition:
-<code>id</code>, <code>name</code>, <code>kind</code> (the class, without its package prefix), <code>key</code>,
-<code>frames</code> (joined by <code>/</code>), <code>n_atoms</code>, <code>package</code>, <code>path</code>.
+<code>id</code>, <code>name</code>, <code>kind</code> (the class, without its package prefix), <code>leaf</code>
+(the name of the leaf column), <code>frames</code> (joined by <code>/</code>), <code>n_leaves</code>,
+<code>package</code>, <code>path</code>.
 <code>register_scale_dir()</code> the registry key, invisibly; <code>list_scale_dirs()</code>
 a <code>data.frame</code> with <code>package</code> and <code>path</code>; <code>clear_scale_dirs()</code> <code>NULL</code>,
 invisibly.</p>
@@ -128,7 +129,7 @@ invisibly.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">scale_catalog</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] id      name    kind    key     frames  n_atoms package path   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] id       name     kind     leaf     frames   n_leaves package  path    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
 </code></pre></div>
     </div>

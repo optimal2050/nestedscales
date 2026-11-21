@@ -142,19 +142,19 @@
 <td>
 <code>pyarrow.dataset.Dataset</code>, polars <code>LazyFrame</code>
 </td>
-</tr><tr><td><code>x[frame, unit]</code></td>
+</tr><tr><td><code>x[frame, member]</code></td>
 <td><code>[.NestedScale</code></td>
 <td>
-<code>x[frame, unit]</code> (<code>__getitem__</code>)</td>
+<code>x[frame, member]</code> (<code>__getitem__</code>)</td>
 </tr><tr><td>dense array</td>
 <td>
 <code>array</code> with dimnames</td>
 <td>
-<code>numpy.ndarray</code>; labels are <code><a href="reference/scale_units.html">scale_units()</a></code>
+<code>numpy.ndarray</code>; labels are <code><a href="reference/scale_members.html">scale_members()</a></code>
 </td>
-</tr></tbody></table><p>Rows of returned tables are sorted by code point in Python and by the session locale in R, so row order is not part of the contract. Code vocabularies (<code>scale_units</code>, children, parents) are in canonical member order everywhere.</p>
+</tr></tbody></table><p>Rows of returned tables are sorted by code point in Python and by the session locale in R, so row order is not part of the contract. Code vocabularies (<code>scale_members</code>, children, parents) are in canonical member order everywhere.</p>
 <p>Error and warning messages are kept verbatim across bindings.</p>
-<p>Missing values follow R: an aggregate over a group containing a missing value is missing, and a target whose sources are only partly present in the data is missing (the partial-source law). A lazy input returns the observed target units only unless <code>collect = TRUE</code>; a materialised result is completed to the full target vocabulary, identifier groups in first-appearance order and target codes in member order, a missing-target row last.</p>
+<p>Missing values follow R: an aggregate over a group containing a missing value is missing, and a target whose sources are only partly present in the data is missing (the partial-source law). A lazy input returns the observed target members only unless <code>collect = TRUE</code>; a materialised result is completed to the full target vocabulary, identifier groups in first-appearance order and target codes in member order, a missing-target row last.</p>
 <p>Known differences:</p>
 <ul><li>a filtered scale whose codes are too long to list is named with a hash of them; R uses <code><a href="https://rlang.r-lib.org/reference/hash.html" class="external-link">rlang::hash()</a></code>, which cannot be reproduced outside R, so such names differ between bindings;</li>
 <li>R’s YAML writer stores named numbers (<code>coverage</code>, <code>parent_totals</code>, a Calendar’s <code>tokens</code>) as bare sequences rounded to 7 digits; the Python reader maps them back onto the declared weights and recomputes coverage from the parent totals, and the Python writer stores named mappings at full precision.</li>
@@ -164,7 +164,7 @@
 <p>Status: <strong>R</strong> = in the R package; <strong>Py</strong> = in the Python binding.</p>
 <p>Signatures are the agreed ones. Three renames landed in R 0.2.0 with no deprecation aliases (the R package is pre-1.0), matching Python:</p>
 <ul><li>
-<code>from</code> / <code>to</code> became <code>source</code> / <code>target</code> everywhere: frames, scales, crosswalk columns, navigation, and the atom-pair columns. In <code><a href="reference/recast.html">recast()</a></code>, the scale argument is <code>scale</code> and the source frame <code>source</code>;</li>
+<code>from</code> / <code>to</code> became <code>source</code> / <code>target</code> everywhere: frames, scales, crosswalk columns, navigation, and the leaf-pair columns. In <code><a href="reference/recast.html">recast()</a></code>, the scale argument is <code>scale</code> and the source frame <code>source</code>;</li>
 <li>the <code>clear_*</code> functions take <code>name</code> (registry names or keys) and <code>scope</code>;</li>
 <li>the backend helpers <code>.ms_*</code> became the <code>backend_*</code> functions below.</li>
 </ul><div class="section level3">
@@ -175,18 +175,18 @@
 <th>R</th>
 <th>Py</th>
 </tr></thead><tbody><tr><td><code>scale_from_leaftable</code></td>
-<td><code>leaftable, frames, key=NULL, weights=NULL, default_weight=NULL, members=NULL, name="", desc="", attributes=NULL, aliases=NULL, ...</code></td>
+<td><code>leaftable, frames, leaf=NULL, weights=NULL, default_weight=NULL, members=NULL, name="", desc="", attributes=NULL, aliases=NULL, ...</code></td>
 <td>scale</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_example</code></td>
 <td></td>
-<td>scale (7 atoms)</td>
+<td>scale (7 leaves)</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_example2</code></td>
 <td></td>
-<td>scale (4 atoms)</td>
+<td>scale (4 leaves)</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>is_valid_frame</code></td>
@@ -199,24 +199,24 @@
 <td>names, coarsest first</td>
 <td>✓</td>
 <td>✓</td>
-</tr><tr><td><code>scale_units</code></td>
+</tr><tr><td><code>scale_members</code></td>
 <td><code>x, frame=NULL</code></td>
-<td>codes at a frame (default: atoms)</td>
+<td>codes at a frame (default: leaves)</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_rank</code></td>
 <td><code>x, frame</code></td>
-<td>1 = coarsest; key = n+1; else missing</td>
+<td>1 = coarsest; leaf column = n+1; else missing</td>
 <td>✓</td>
 <td>✓</td>
-</tr><tr><td><code>scale_atom_level</code></td>
+</tr><tr><td><code>scale_leaf_frame</code></td>
 <td><code>x</code></td>
-<td>finest frame, or the key</td>
+<td>the frame whose members are the leaves, or the leaf column</td>
 <td>✓</td>
 <td>✓</td>
-</tr><tr><td><code>scale_key</code></td>
+</tr><tr><td><code>scale_leaf_column</code></td>
 <td><code>x</code></td>
-<td>key column name</td>
+<td>name of the leaf column</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_leaftable</code></td>
@@ -316,24 +316,24 @@
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_children</code></td>
-<td><code>x, frame, unit, target=NULL</code></td>
+<td><code>x, frame, member, target=NULL</code></td>
 <td>codes</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_parents</code></td>
-<td><code>x, frame, unit, target=NULL</code></td>
+<td><code>x, frame, member, target=NULL</code></td>
 <td>codes</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_descendants</code></td>
-<td><code>x, frame, unit, target=NULL</code></td>
-<td>table <code>frame, unit</code>
+<td><code>x, frame, member, target=NULL</code></td>
+<td>table <code>frame, member</code>
 </td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_ancestors</code></td>
-<td><code>x, frame, unit, target=NULL</code></td>
-<td>table <code>frame, unit</code>
+<td><code>x, frame, member, target=NULL</code></td>
+<td>table <code>frame, member</code>
 </td>
 <td>✓</td>
 <td>✓</td>
@@ -380,7 +380,7 @@
 <th>Returns</th>
 <th>R</th>
 <th>Py</th>
-</tr></thead><tbody><tr><td><code>scale_atom_pairs</code></td>
+</tr></thead><tbody><tr><td><code>scale_leaf_pairs</code></td>
 <td><code>x, source, target, weight=NULL, ...</code></td>
 <td>table <code>source, target, w</code> (subclass hook)</td>
 <td>✓</td>
@@ -426,7 +426,7 @@
 <td>nothing</td>
 <td>✓</td>
 <td>✓</td>
-</tr></tbody></table><p>A crosswalk has columns <code>&lt;source label&gt;, &lt;target label&gt;, n_from, n_overlap, w, w_from</code> (plus any <code>by</code> columns first). <code>n_from</code> and <code>n_overlap</code> are 32-bit integers, <code>w</code> and <code>w_from</code> doubles. A missing target label marks atoms the target does not cover. The split share of <code>sum</code> disaggregation is <code>w / w_from</code>; with no weight column every atom weighs 1, so it equals <code>n_overlap / n_from</code>.</p>
+</tr></tbody></table><p>A crosswalk has columns <code>&lt;source label&gt;, &lt;target label&gt;, n_from, n_overlap, w, w_from</code> (plus any <code>by</code> columns first). <code>n_from</code> and <code>n_overlap</code> are 32-bit integers, <code>w</code> and <code>w_from</code> doubles. A missing target label marks leaves the target does not cover. The split share of <code>sum</code> disaggregation is <code>w / w_from</code>; with no weight column every leaf weighs 1, so it equals <code>n_overlap / n_from</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="recast">Recast<a class="anchor" aria-label="anchor" href="#recast"></a></h3>
@@ -441,17 +441,17 @@
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>recast_crosswalk</code></td>
-<td><code>data, map, source, target, key=source, values=NULL, rule=NULL, ids=NULL, by=character(), targets=NULL, missing_sources="na", unit="unit", collect=NULL</code></td>
+<td><code>data, map, source, target, key=source, values=NULL, rule=NULL, ids=NULL, by=character(), targets=NULL, missing_sources="na", member="member", collect=NULL</code></td>
 <td>table keyed at <code>target</code>
 </td>
 <td>✓</td>
 <td>✓</td>
-</tr><tr><td><code>recast_to_atoms</code></td>
+</tr><tr><td><code>recast_to_leaves</code></td>
 <td><code>data, x, source=NULL, key=NULL, values=NULL, rule=NULL, weight=NULL, attach_weight=TRUE, collect=NULL</code></td>
-<td>table keyed at the atoms</td>
+<td>table keyed at the leaves</td>
 <td>✓</td>
 <td>✓</td>
-</tr><tr><td><code>recast_from_atoms</code></td>
+</tr><tr><td><code>recast_from_leaves</code></td>
 <td><code>data, x, target, key=NULL, values=NULL, rule=NULL, weight=NULL, na_rm=FALSE, na_action="drop", collect=NULL</code></td>
 <td>table keyed at <code>target</code>
 </td>
@@ -471,7 +471,7 @@
 <th>R</th>
 <th>Py</th>
 </tr></thead><tbody><tr><td><code>filter_scale</code></td>
-<td><code>x, frame, unit, drop_empty_frames=FALSE</code></td>
+<td><code>x, frame, member, drop_empty_frames=FALSE</code></td>
 <td>scale (a sample)</td>
 <td>✓</td>
 <td>✓</td>
@@ -505,7 +505,7 @@
 </div>
 <div class="section level3">
 <h3 id="attributes-and-aliases">Attributes and aliases<a class="anchor" aria-label="anchor" href="#attributes-and-aliases"></a></h3>
-<p>Member attributes (a calorific value, an emission factor) and aliases (alternative labels) are long tables on the scale keyed by <code>(frame, unit)</code>. Attributes are never weights and are never recast; <code><a href="reference/convert_scale.html">convert_scale()</a></code> applies them row by row. A <code>kind</code> travels with every attribute row: <code>property</code> is an invertible ratio, <code>factor</code> is one-way.</p>
+<p>Member attributes (a calorific value, an emission factor) and aliases (alternative labels) are long tables on the scale keyed by <code>(frame, member)</code>. Attributes are never weights and are never recast; <code><a href="reference/convert_scale.html">convert_scale()</a></code> applies them row by row. A <code>kind</code> travels with every attribute row: <code>property</code> is an invertible ratio, <code>factor</code> is one-way.</p>
 <table class="table"><colgroup><col width="20%"><col width="20%"><col width="20%"><col width="20%"><col width="20%"></colgroup><thead><tr><th>Function</th>
 <th>Arguments</th>
 <th>Returns</th>
@@ -519,12 +519,12 @@
 </tr><tr><td><code>attach_attributes_scale</code></td>
 <td><code>x, attributes, source=NULL, kind=NULL</code></td>
 <td>
-<code>x</code> with rows appended; an existing <code>(frame, unit, attribute, source)</code> row is an error</td>
+<code>x</code> with rows appended; an existing <code>(frame, member, attribute, source)</code> row is an error</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>scale_attributes</code></td>
 <td><code>x, attribute=NULL, frame=NULL, source=NULL, inherit=TRUE</code></td>
-<td>stored rows; with <code>frame=</code> one row per member and attribute, resolved along the hierarchy (<code>origin_frame</code>, <code>origin_unit</code>)</td>
+<td>stored rows; with <code>frame=</code> one row per member and attribute, resolved along the hierarchy (<code>origin_frame</code>, <code>origin_member</code>)</td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>attach_aliases_scale</code></td>
@@ -540,14 +540,14 @@
 <td>✓</td>
 </tr><tr><td><code>scale_match</code></td>
 <td><code>x, labels, frame=NULL, source=NULL</code></td>
-<td>table <code>label, frame, unit, method, candidates</code>; <code>method</code> = <code>exact</code>, <code>alias</code>, <code>ambiguous</code>, <code>none</code>
+<td>table <code>label, frame, member, method, candidates</code>; <code>method</code> = <code>exact</code>, <code>alias</code>, <code>ambiguous</code>, <code>none</code>
 </td>
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td><code>attach_labels_scale</code></td>
 <td><code>x, labels, variant=NULL, default=NULL, overwrite=FALSE</code></td>
 <td>
-<code>x</code> with display names added; table columns <code>frame, unit, variant, label</code>, <code>unit</code> = NA names the frame</td>
+<code>x</code> with display names added; table columns <code>frame, member, variant, label</code>, <code>member</code> = NA names the frame</td>
 <td>✓</td>
 <td></td>
 </tr><tr><td><code>scale_labels</code></td>
@@ -556,7 +556,7 @@
 <td>✓</td>
 <td></td>
 </tr><tr><td><code>scale_label</code></td>
-<td><code>x, units, frame, variant=NULL</code></td>
+<td><code>x, members, frame, variant=NULL</code></td>
 <td>one display name per code; the code where there is none</td>
 <td>✓</td>
 <td></td>
@@ -650,7 +650,7 @@
 </div>
 <div class="section level3">
 <h3 id="definitions-and-catalogue">Definitions and catalogue<a class="anchor" aria-label="anchor" href="#definitions-and-catalogue"></a></h3>
-<p>A definition is a language-neutral file: a JSON header (<code>schema_version</code>, <code>class</code>, <code>name</code>, <code>key</code>, <code>frames</code>, <code>members</code>, <code>meta</code>, <code>tables</code>, <code>payload</code>) with the leaftable, attribute and alias tables inline (column-wise, typed) or, in a <code>&lt;name&gt;.scale/</code> bundle directory, as Arrow IPC or CSV files. YAML is accepted as input and optional output. The core ships no definitions and reads them from every registered directory.</p>
+<p>A definition is a language-neutral file: a JSON header (<code>schema_version</code>, <code>class</code>, <code>name</code>, <code>leaf</code>, <code>frames</code>, <code>members</code>, <code>meta</code>, <code>tables</code>, <code>payload</code>) with the leaftable, attribute and alias tables inline (column-wise, typed) or, in a <code>&lt;name&gt;.scale/</code> bundle directory, as Arrow IPC or CSV files. YAML is accepted as input and optional output. The core ships no definitions and reads them from every registered directory. Schema version 2 names the leaf column <code>leaf</code> in the header and the code column of the attribute, alias and label tables <code>member</code>; version 1 named them <code>key</code> and <code>unit</code>. Version 2 is written and both are read.</p>
 <table class="table"><colgroup><col width="20%"><col width="20%"><col width="20%"><col width="20%"><col width="20%"></colgroup><thead><tr><th>Function</th>
 <th>Arguments</th>
 <th>Returns</th>
@@ -669,7 +669,7 @@
 <td>✓</td>
 </tr><tr><td><code>scale_catalog</code></td>
 <td></td>
-<td>table <code>id, name, kind, key, frames, n_atoms, package, path</code>
+<td>table <code>id, name, kind, leaf, frames, n_leaves, package, path</code>
 </td>
 <td>✓</td>
 <td>✓</td>
@@ -736,7 +736,7 @@
 <td>✓</td>
 <td>✓</td>
 </tr><tr><td>
-<code>recast_product</code>, <code>join_product</code>, <code>filter_product</code>, <code>product_atoms</code>
+<code>recast_product</code>, <code>join_product</code>, <code>filter_product</code>, <code>product_leaves</code>
 </td>
 <td></td>
 <td></td>

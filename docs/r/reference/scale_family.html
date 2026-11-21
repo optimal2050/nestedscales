@@ -101,20 +101,20 @@
     <div id="value">
     <h2>Value</h2>
     <p>A <code>data.frame</code> with columns <code>parent_frame</code>, <code>parent</code>, <code>child_frame</code>,
-<code>child</code>. Atoms unassigned at either frame are omitted.</p>
+<code>child</code>. Leaves unassigned at either frame are omitted.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="scale_example.html">scale_example</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">scale_family</span><span class="op">(</span><span class="va">s</span>, <span class="st">"group"</span>, <span class="st">"unit"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scale_family</span><span class="op">(</span><span class="va">s</span>, <span class="st">"group"</span>, <span class="st">"item"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   parent_frame parent child_frame child</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        group     G1        unit    U1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        group     G1        unit    U2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        group     GB        unit    U3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        group     GB        unit    U4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        group     GB        unit    U5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6        group     GC        unit    U6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        group     G1        item    U1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        group     G1        item    U2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        group     GB        item    U3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        group     GB        item    U4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        group     GB        item    U5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        group     GC        item    U6</span>
 </code></pre></div>
     </div>
   </div>

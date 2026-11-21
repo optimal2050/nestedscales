@@ -103,8 +103,8 @@
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code>data.frame</code> with columns <code>frame</code>, <code>unit</code>, <code>variant</code>, <code>label</code>.
-A row with <code>unit = NA</code> is the label of the frame itself.</p>
+    <p>A <code>data.frame</code> with columns <code>frame</code>, <code>member</code>, <code>variant</code>, <code>label</code>.
+A row with <code>member = NA</code> is the label of the frame itself.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -115,15 +115,15 @@ A row with <code>unit = NA</code> is the label of the frame itself.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="attach_labels_scale.html">attach_labels_scale</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="scale_example.html">scale_example</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"sector"</span>, unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="st">"S"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"sector"</span>, member <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="st">"S"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>             label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Primary"</span>, <span class="st">"Secondary"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">scale_labels</span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    frame unit variant     label</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sector    P   label   Primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 sector    S   label Secondary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    frame member variant     label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sector      P   label   Primary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 sector      S   label Secondary</span>
 <span class="r-in"><span><span class="fu">scale_labels</span><span class="op">(</span><span class="va">s</span>, frame <span class="op">=</span> <span class="st">"class"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] frame   unit    variant label  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] frame   member  variant label  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
 </code></pre></div>
     </div>

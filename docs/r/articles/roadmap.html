@@ -117,39 +117,45 @@ updated with each release.</p>
 <h2 id="scope">Scope<a class="anchor" aria-label="anchor" href="#scope"></a>
 </h2>
 <p>A <strong>nested scale</strong> represents one dimension of a dataset
-or model as a table of atoms, the finest units, with one column per
-coarser level, the frames. Every frame nests in the atoms. Frames may
+or model as a table of leaves, the finest members, with one column per
+coarser level, the frames. Every frame nests in the leaves. Frames may
 nest in each other (a tree: activity in division in section) or overlay
 each other (hours of the day and months of the year); every operation
-routes through the atoms, so both are handled alike.</p>
+routes through the leaves, so both are handled alike.</p>
 <p>The package covers three things:</p>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Structure</strong>: the levels, the units at each level, and
-which pairs of levels nest, cross or are uniform.</li>
+<strong>Structure</strong>: the levels, the members at each level,
+and which pairs of levels nest, cross or are uniform.</li>
 <li>
 <strong>Transition rules</strong>: how a value moves between levels
 – summed, averaged, weighted, copied, or expressed as a share of its
 parent.</li>
 <li>
 <strong>Operations</strong>: converting data, attaching labels,
-subsetting, combining dimensions, grouping units into new levels, and
+subsetting, combining dimensions, grouping members into new levels, and
 storing data with its scales.</li>
 </ol>
 </div>
 <div class="section level2">
 <h2 id="available-now-0-3-0">Available now (0.3.0)<a class="anchor" aria-label="anchor" href="#available-now-0-3-0"></a>
 </h2>
+<p>The core is the structure, the transition rules, conversion and
+joining. Five features are marked experimental and may change or be
+removed: attributes with <code><a href="../reference/convert_scale.html">convert_scale()</a></code>, products of
+scales, arrays and stored datasets, distances, and
+<code><a href="../reference/reconcile_scale.html">reconcile_scale()</a></code>. The data link is experimental as
+well.</p>
 <div class="section level3">
 <h3 id="structure">Structure<a class="anchor" aria-label="anchor" href="#structure"></a>
 </h3>
 <ul>
 <li>
 <code><a href="../reference/scale_from_leaftable.html">scale_from_leaftable()</a></code> builds a scale from a table;
-<code><a href="../reference/scale_frames.html">scale_frames()</a></code>, <code><a href="../reference/scale_units.html">scale_units()</a></code>,
-<code><a href="../reference/scale_key.html">scale_key()</a></code>, <code><a href="../reference/scale_leaftable.html">scale_leaftable()</a></code>,
+<code><a href="../reference/scale_frames.html">scale_frames()</a></code>, <code><a href="../reference/scale_members.html">scale_members()</a></code>,
+<code><a href="../reference/scale_leaf_column.html">scale_leaf_column()</a></code>, <code><a href="../reference/scale_leaftable.html">scale_leaftable()</a></code>,
 <code><a href="../reference/scale_weights.html">scale_weights()</a></code>, <code><a href="../reference/scale_rank.html">scale_rank()</a></code> and
-<code><a href="../reference/scale_atom_level.html">scale_atom_level()</a></code> read it.</li>
+<code><a href="../reference/scale_leaf_frame.html">scale_leaf_frame()</a></code> read it.</li>
 <li>Relations between levels: <code><a href="../reference/scale_nests.html">scale_nests()</a></code>,
 <code><a href="../reference/scale_crosses.html">scale_crosses()</a></code>, <code><a href="../reference/scale_is_uniform.html">scale_is_uniform()</a></code>;
 <code><a href="../reference/scale_family.html">scale_family()</a></code> and <code><a href="../reference/scale_ancestry.html">scale_ancestry()</a></code> list
@@ -160,7 +166,7 @@ parent-child pairs; <code><a href="../reference/scale_navigate.html">scale_child
 <code><a href="../reference/scale_share.html">scale_share()</a></code> and <code><a href="../reference/scale_coverage.html">scale_coverage()</a></code> report
 weights and what fraction of a parent a subset keeps.</li>
 <li>Partial membership (<code>NA</code> at a level) and declared
-residual units (<code><a href="../reference/scale_residuals.html">scale_residuals()</a></code>) are part of the
+residual members (<code><a href="../reference/scale_residuals.html">scale_residuals()</a></code>) are part of the
 representation.</li>
 <li>
 <code><a href="../reference/filter_scale.html">filter_scale()</a></code> and <code><a href="../reference/prune_scale.html">prune_scale()</a></code> subset
@@ -199,9 +205,9 @@ a coarse value is split.</li>
 <ul>
 <li>
 <code><a href="../reference/recast_scale.html">recast_scale()</a></code> converts data between any two levels of
-a scale, or to the atoms of another scale that shares atom keys;
-<code><a href="../reference/recast_to_atoms.html">recast_to_atoms()</a></code> and <code><a href="../reference/recast_to_atoms.html">recast_from_atoms()</a></code> are
-its two halves; <code><a href="../reference/recast_crosswalk.html">recast_crosswalk()</a></code> runs the same engine
+a scale, or to the leaves of another scale that shares leaf codes;
+<code><a href="../reference/recast_to_leaves.html">recast_to_leaves()</a></code> and <code><a href="../reference/recast_to_leaves.html">recast_from_leaves()</a></code>
+are its two halves; <code><a href="../reference/recast_crosswalk.html">recast_crosswalk()</a></code> runs the same engine
 over a correspondence built elsewhere.</li>
 <li>
 <code><a href="../reference/scale_map.html">scale_map()</a></code> and <code><a href="../reference/scale_map_between.html">scale_map_between()</a></code> expose
@@ -210,8 +216,8 @@ hand-audited ones.</li>
 <li>
 <code><a href="../reference/join_scale.html">join_scale()</a></code> attaches labels, coarser levels, shares
 and weights to a dataset.</li>
-<li>The data link: <code><a href="../reference/bind_scale.html">bind_scale()</a></code> records on the code columns
-of a table which scale and level they are on, and
+<li>The data link (experimental): <code><a href="../reference/bind_scale.html">bind_scale()</a></code> records on
+the code columns of a table which scale and level they are on, and
 <code><a href="../reference/bind_scale.html">scale_link()</a></code> reports it. The link survives subsetting,
 joins and row binding; the conversion functions read the source level
 from it, stop when the data is bound to another scale, and bind their
@@ -223,11 +229,11 @@ independent total and can balance the gap.</li>
 <code><a href="../reference/scale_product.html">scale_product()</a></code> combines several scales into one
 multi-dimensional index; <code><a href="../reference/recast_product.html">recast_product()</a></code>,
 <code><a href="../reference/join_product.html">join_product()</a></code> and <code><a href="../reference/filter_product.html">filter_product()</a></code> work over
-it without materialising the product of atoms.</li>
+it without materialising the product of leaves.</li>
 <li>
 <code><a href="../reference/cluster_scale.html">cluster_scale()</a></code>, <code><a href="../reference/cluster_contiguous.html">cluster_contiguous()</a></code>,
 <code><a href="../reference/cluster_medoids.html">cluster_medoids()</a></code> and <code><a href="../reference/cluster_sweep.html">cluster_sweep()</a></code> group
-units by their data and return the scale with the clusters as a new
+members by their data and return the scale with the clusters as a new
 level.</li>
 <li>
 <code><a href="../reference/as_scale_array.html">as_scale_array()</a></code> and <code><a href="../reference/as_scale_array.html">as_scale_table()</a></code> move
@@ -245,17 +251,17 @@ same class; lazy inputs return a query.</li>
 <ul>
 <li>
 <strong>Labels</strong> are display names keyed by
-<code>(frame, unit, variant)</code>: a member may have several named
+<code>(frame, member, variant)</code>: a member may have several named
 variants, a level may have none, and a level itself can be named.
 <code><a href="../reference/attach_labels_scale.html">attach_labels_scale()</a></code> adds them,
 <code><a href="../reference/scale_labels.html">scale_labels()</a></code> and <code><a href="../reference/scale_label.html">scale_label()</a></code> read them,
 and <code>join_scale(labels = )</code> attaches them to a dataset.</li>
 <li>A scale may carry <strong>attributes</strong>, physical values keyed
-by <code>(frame, unit)</code> at any level (a calorific value on a fuel,
-on its carrier or on its group), each with a <code>kind</code>, bounds,
-unit of measure and source. <code><a href="../reference/scale_attributes.html">scale_attributes()</a></code> resolves one
-value per member along the hierarchy and says where it came from;
-<code><a href="../reference/convert_scale.html">convert_scale()</a></code> converts a table row by row with it.
+by <code>(frame, member)</code> at any level (a calorific value on a
+fuel, on its carrier or on its group), each with a <code>kind</code>,
+bounds, unit of measure and source. <code><a href="../reference/scale_attributes.html">scale_attributes()</a></code>
+resolves one value per member along the hierarchy and says where it came
+from; <code><a href="../reference/convert_scale.html">convert_scale()</a></code> converts a table row by row with it.
 Attributes are never weights and are never recast.</li>
 <li>
 <strong>Aliases</strong> are alternative labels per member;
@@ -322,7 +328,7 @@ shares – belongs in the core, so any dimension can be drawn and the
 dimension packages can build on it.</li>
 <li>
 <strong>Scales from continuous variables.</strong> Income brackets,
-temperature regimes and vintage bins are nested scales whose atoms are
+temperature regimes and vintage bins are nested scales whose leaves are
 intervals of a continuous variable. Today they are binned by hand before
 <code><a href="../reference/scale_from_leaftable.html">scale_from_leaftable()</a></code>; a constructor taking breakpoints,
 with the interval bounds kept as weights, would build them
@@ -351,9 +357,9 @@ it.</li>
 <h2 id="not-planned">Not planned<a class="anchor" aria-label="anchor" href="#not-planned"></a>
 </h2>
 <ul>
-<li>Trees as node objects, or an object per unit. The flat atom table is
-the representation, and it is what keeps conversion the same for every
-dimension.</li>
+<li>Trees as node objects, or an object per member. The flat leaf table
+is the representation, and it is what keeps conversion the same for
+every dimension.</li>
 <li>Guessing a rule when none is given. A value column with no rule is
 an error; a silently chosen rule is a silent unit error.</li>
 </ul>

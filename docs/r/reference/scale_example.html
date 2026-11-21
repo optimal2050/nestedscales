@@ -89,16 +89,17 @@ reproduces three awkward features of real classification tables:</p>
 
     <div id="value">
     <h2>Value</h2>
-    <p>A <code><a href="NestedScale.html">NestedScale</a></code> with 7 atoms and frames <code>sector</code>/<code>class</code>/<code>group</code>/<code>unit</code>.</p>
+    <p>A <code><a href="NestedScale.html">NestedScale</a></code> with 7 leaves and frames
+<code>sector</code>/<code>class</code>/<code>group</code>/<code>item</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
 
 <ul><li><p>a code (<code>"G1"</code>) reused at more than one frame, so bare codes are ambiguous
 and every lookup must name its frame;</p></li>
-<li><p>a non-nesting pair of frames – group <code>"GB"</code> draws units from two
+<li><p>a non-nesting pair of frames – group <code>"GB"</code> draws members from two
 different classes, so <code>class</code> and <code>group</code> do not form a tree;</p></li>
-<li><p>a unit (<code>"OTH"</code>) with no code at any coarser frame (partial coverage).</p></li>
+<li><p>a member (<code>"OTH"</code>) with no code at any coarser frame (partial coverage).</p></li>
 </ul></div>
 
     <div id="ref-examples">
@@ -106,13 +107,13 @@ different classes, so <code>class</code> and <code>group</code> do not form a tr
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu">scale_example</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">s</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NestedScale: example</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Description: Synthetic example: reused code, non-nesting frame pair, and an unassigned atom </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Description: Synthetic example: reused code, non-nesting frame pair, and an unassigned leaf </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Frames (4, coarsest first):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - sector (2)  [1 unit unassigned]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - class (3)  [1 unit unassigned]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       - group (3)  [1 unit unassigned]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         - unit (7)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Atoms: 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - sector (2)  [1 member unassigned]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - class (3)  [1 member unassigned]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       - group (3)  [1 member unassigned]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         - item (7)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Leaves: 7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Weights: size, count (default: size)</span>
 <span class="r-in"><span><span class="fu"><a href="scale_nests.html">scale_nests</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"class"</span>, <span class="st">"group"</span><span class="op">)</span> <span class="co"># FALSE - they cross-cut</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>

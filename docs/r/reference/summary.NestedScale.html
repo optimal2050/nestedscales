@@ -115,8 +115,8 @@ object (a list) with its own print method.</p>
     <div id="value">
     <h2>Value</h2>
     <p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> returns a list of class <code>"summary_Scale"</code>: <code>name</code>,
-<code>desc</code>, <code>frames</code> (named member counts), <code>unassigned</code> (named NA-atom
-counts), <code>n_atoms</code>, <code>weights</code>, <code>weight_totals</code>, <code>default_weight</code>,
+<code>desc</code>, <code>frames</code> (named member counts), <code>unassigned</code> (named NA-leaf
+counts), <code>n_leaves</code>, <code>weights</code>, <code>weight_totals</code>, <code>default_weight</code>,
 <code>coverage</code> (see <code><a href="scale_coverage.html">scale_coverage()</a></code>), <code>sampled</code>, <code>parent_name</code>, <code>nesting</code>
 (adjacent-pair table with offender counts, see <code><a href="scale_nests.html">scale_nests()</a></code>),
 <code>attributes</code> (a <code>data.frame</code> of row counts by <code>attribute</code>, <code>frame</code> and
@@ -128,14 +128,14 @@ and <code>variant</code>), <code>source</code>, <code>vocab</code>.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="scale_example.html">scale_example</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;summary of NestedScale 'example'&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   desc:          Synthetic example: reused code, non-nesting frame pair, and an unassigned atom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   frames:         sector (2) / class (3) / group (3) / unit (7)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   atoms:          7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   desc:          Synthetic example: reused code, non-nesting frame pair, and an unassigned leaf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   frames:         sector (2) / class (3) / group (3) / item (7)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   leaves:         7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   unassigned:     sector (1), class (1), group (1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   weight totals:  size = 3,100, count =   300  (default: size)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   nesting:        sector &gt; class: nested</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   nesting:        class &gt; group: CROSS-CUTTING (1 offender(s))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   nesting:        group &gt; unit: nested</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   nesting:        group &gt; item: nested</span>
 </code></pre></div>
     </div>
   </div>

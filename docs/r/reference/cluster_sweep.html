@@ -90,7 +90,7 @@
 <span>  key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  value <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
-<span>  scale_units <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  scale_members <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  FUN <span class="op">=</span> <span class="va">cluster_scale</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -101,8 +101,8 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Long data: unit codes, one or more identifier columns saying
-which observation each row is, and a value column. A unit that is not
+<dd><p>Long data: member codes, one or more identifier columns saying
+which observation each row is, and a value column. A member that is not
 observed over the same set as the others is an error rather than a hole.</p></dd>
 
 
@@ -115,7 +115,7 @@ observed over the same set as the others is an error rather than a hole.</p></dd
 
 
 <dt id="arg-frame">frame<a class="anchor" aria-label="anchor" href="#arg-frame"></a></dt>
-<dd><p>Frame whose units are clustered. Defaults to the atom frame.</p></dd>
+<dd><p>Frame whose members are clustered. Defaults to the leaf frame.</p></dd>
 
 
 <dt id="arg-key-value">key, value<a class="anchor" aria-label="anchor" href="#arg-key-value"></a></dt>
@@ -126,8 +126,8 @@ observed over the same set as the others is an error rather than a hole.</p></dd
 <dd><p>A name from <code><a href="register_scale_distance.html">list_scale_distances()</a></code>.</p></dd>
 
 
-<dt id="arg-scale-units">scale_units<a class="anchor" aria-label="anchor" href="#arg-scale-units"></a></dt>
-<dd><p>Standardise each unit's profile before measuring;
+<dt id="arg-scale-members">scale_members<a class="anchor" aria-label="anchor" href="#arg-scale-members"></a></dt>
+<dd><p>Standardise each member's profile before measuring;
 see <code><a href="scale_distance.html">scale_distance()</a></code>.</p></dd>
 
 
@@ -152,7 +152,7 @@ cluster, which is often what rules a k out).</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="scale_example.html">scale_example</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="scale_units.html">scale_units</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  item <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="scale_members.html">scale_members</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  t <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"t%d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>, <span class="fl">7</span><span class="op">)</span>, v <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">28</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">cluster_sweep</span><span class="op">(</span><span class="va">d</span>, <span class="va">s</span>, ks <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>

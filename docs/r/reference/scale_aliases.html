@@ -103,21 +103,21 @@
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code>data.frame</code> with columns <code>frame</code>, <code>unit</code>, <code>alias</code>, <code>source</code>.</p>
+    <p>A <code>data.frame</code> with columns <code>frame</code>, <code>member</code>, <code>alias</code>, <code>source</code>.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="attach_aliases_scale.html">attach_aliases_scale</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="scale_example.html">scale_example</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"sector"</span>, unit <span class="op">=</span> <span class="st">"P"</span>, alias <span class="op">=</span> <span class="st">"primary"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"sector"</span>, member <span class="op">=</span> <span class="st">"P"</span>, alias <span class="op">=</span> <span class="st">"primary"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  source <span class="op">=</span> <span class="st">"labels"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">scale_aliases</span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    frame unit   alias source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sector    P primary labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    frame member   alias source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sector      P primary labels</span>
 <span class="r-in"><span><span class="fu">scale_aliases</span><span class="op">(</span><span class="va">s</span>, frame <span class="op">=</span> <span class="st">"class"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] frame  unit   alias  source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] frame  member alias  source</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
 </code></pre></div>
     </div>

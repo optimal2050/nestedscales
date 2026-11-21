@@ -98,10 +98,6 @@ can accept the same inputs as the core verbs.</p>
 <span></span>
 <span><span class="fu">backend_lazy</span><span class="op">(</span><span class="va">data</span>, backend <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">backend_scan</span><span class="op">(</span><span class="va">data</span>, backend <span class="op">=</span> <span class="cn">NULL</span>, columns <span class="op">=</span> <span class="cn">NULL</span>, filter <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">backend_distinct</span><span class="op">(</span><span class="va">data</span>, <span class="va">columns</span>, backend <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
 <span><span class="fu">backend_pull</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">backend_restore</span><span class="op">(</span><span class="va">table</span>, <span class="va">backend</span>, collect <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
@@ -129,15 +125,6 @@ can accept the same inputs as the core verbs.</p>
 <code>data</code>.</p></dd>
 
 
-<dt id="arg-columns">columns<a class="anchor" aria-label="anchor" href="#arg-columns"></a></dt>
-<dd><p>Column names to read; <code>NULL</code> reads every column.</p></dd>
-
-
-<dt id="arg-filter">filter<a class="anchor" aria-label="anchor" href="#arg-filter"></a></dt>
-<dd><p>An unevaluated dplyr filter expression (built with
-<code><a href="https://rlang.r-lib.org/reference/expr.html" class="external-link">rlang::expr()</a></code>), or <code>NULL</code> for every row.</p></dd>
-
-
 <dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
 <dd><p>A query or table.</p></dd>
 
@@ -160,8 +147,8 @@ is installed; an explicit value makes both branches testable.</p></dd>
     <p><code>backend_of()</code> a single string naming the backend;
 <code>backend_is_lazy()</code> a logical; <code>backend_schema()</code> a zero-row
 <code>data.frame</code>; <code>backend_lazy()</code> <code>data</code>, wrapped where the backend needs
-it; <code>backend_scan()</code>, <code>backend_distinct()</code> and <code>backend_pull()</code> a
-<code>data.frame</code>; <code>backend_restore()</code> the result in the input's class;
+it; <code>backend_pull()</code> a <code>data.frame</code>; <code>backend_restore()</code> the result in
+the input's class;
 <code>backend_bind_rows()</code> one data frame, or <code>NULL</code> when every part is
 empty.</p>
     </div>
@@ -174,9 +161,6 @@ input – the one place that message is written.</p></li>
 <li><p><code>backend_schema()</code> describes the columns without scanning the data.</p></li>
 <li><p><code>backend_lazy()</code> lifts <code>data</code> into a dplyr-compatible carrier for a
 pipeline (a <code>data.table</code> becomes a dtplyr step when dtplyr is installed).</p></li>
-<li><p><code>backend_scan()</code> reads the needed columns and rows into memory.</p></li>
-<li><p><code>backend_distinct()</code> is the distinct rows of some columns, in
-first-appearance order, read into memory.</p></li>
 <li><p><code>backend_pull()</code> materialises a query or table as a <code>data.frame</code>.</p></li>
 <li><p><code>backend_restore()</code> returns a pipeline result in the caller's type.</p></li>
 <li><p><code>backend_bind_rows()</code> binds chunk results into one frame.</p></li>
@@ -184,22 +168,14 @@ first-appearance order, read into memory.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"U1"</span>, <span class="st">"U2"</span>, <span class="st">"U2"</span><span class="op">)</span>, v <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>item <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"U1"</span>, <span class="st">"U2"</span>, <span class="st">"U2"</span><span class="op">)</span>, v <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">backend_of</span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "data.frame"</span>
 <span class="r-in"><span><span class="fu">backend_is_lazy</span><span class="op">(</span><span class="fu">backend_of</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-in"><span><span class="fu">backend_schema</span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] unit v   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] item v   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
-<span class="r-in"><span><span class="fu">backend_distinct</span><span class="op">(</span><span class="va">d</span>, <span class="st">"unit"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   unit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   U1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   U2</span>
-<span class="r-in"><span><span class="fu">backend_scan</span><span class="op">(</span><span class="va">d</span>, columns <span class="op">=</span> <span class="st">"v"</span>, filter <span class="op">=</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/expr.html" class="external-link">expr</a></span><span class="op">(</span><span class="va">v</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   v</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 3</span>
 </code></pre></div>
     </div>
   </div>

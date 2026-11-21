@@ -122,23 +122,23 @@ read with <code>@</code> or <code><a href="https://rconsortium.github.io/S7/refe
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="scale_example.html">scale_example</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;NestedScale&gt; example@491e9cf6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ├─ leaftable   data.frame [7 x 6]            one row per atom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> │  ├─ unit     key                  fixed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;NestedScale&gt; example@c24a3e23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ├─ leaftable   data.frame [7 x 6]            one row per leaf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> │  ├─ item     leaf column          fixed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> │  ├─ sector   frame                fixed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> │  ├─ class    frame                fixed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> │  ├─ group    frame                fixed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> │  ├─ size     weight               mutable</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> │  └─ count    weight               mutable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ├─ frames      chr [4]              fixed    sector, class, group, unit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ├─ members     list [4]             derived  from leaftable: sector 2, class 3, group 3, unit 7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ├─ key         chr [1]              fixed    unit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ├─ frames      chr [4]              fixed    sector, class, group, item</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ├─ members     list [4]             derived  from leaftable: sector 2, class 3, group 3, item 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ├─ leaf        chr [1]              fixed    item</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ├─ meta        list [4]             mutable  name, desc, weights, default_weight</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ├─ attributes  data.frame [0 x 10]  mutable  attach_attributes_scale()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ├─ aliases     data.frame [0 x 4]   mutable  attach_aliases_scale()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> └─ labels      data.frame [0 x 4]   mutable  attach_labels_scale()</span>
 <span class="r-in"><span><span class="fu">S7</span><span class="fu">::</span><span class="fu"><a href="https://rconsortium.github.io/S7/reference/prop_names.html" class="external-link">prop_names</a></span><span class="op">(</span><span class="fu"><a href="scale_example.html">scale_example</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "leaftable"  "frames"     "members"    "key"        "meta"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "leaftable"  "frames"     "members"    "leaf"       "meta"      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6] "attributes" "aliases"    "labels"    </span>
 </code></pre></div>
     </div>

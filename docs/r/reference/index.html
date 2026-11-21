@@ -82,7 +82,7 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="scale_from_leaftable.html">scale_from_leaftable()</a></code> </p>
         </td>
-        <td><p>Build a NestedScale from a flat table of atoms</p></td>
+        <td><p>Build a NestedScale from a flat table of leaves</p></td>
       </tr><tr><td>
           <p><code><a href="scale_example.html">scale_example()</a></code> </p>
         </td>
@@ -108,13 +108,13 @@
         </td>
         <td><p>Frames of a NestedScale</p></td>
       </tr><tr><td>
-          <p><code><a href="scale_units.html">scale_units()</a></code> </p>
+          <p><code><a href="scale_members.html">scale_members()</a></code> </p>
         </td>
-        <td><p>Units of a NestedScale</p></td>
+        <td><p>Members of a NestedScale</p></td>
       </tr><tr><td>
-          <p><code><a href="scale_key.html">scale_key()</a></code> </p>
+          <p><code><a href="scale_leaf_column.html">scale_leaf_column()</a></code> </p>
         </td>
-        <td><p>The atom key column name</p></td>
+        <td><p>The name of the leaf column</p></td>
       </tr><tr><td>
           <p><code><a href="scale_leaftable.html">scale_leaftable()</a></code> <code><a href="scale_leaftable.html">as.data.frame(<i>&lt;NestedScale&gt;</i>)</a></code> <code><a href="scale_leaftable.html">as.data.frame(<i>&lt;nestedscales::NestedScale&gt;</i>)</a></code> </p>
         </td>
@@ -128,13 +128,13 @@
         </td>
         <td><p>Frame rank</p></td>
       </tr><tr><td>
-          <p><code><a href="scale_atom_level.html">scale_atom_level()</a></code> </p>
+          <p><code><a href="scale_leaf_frame.html">scale_leaf_frame()</a></code> </p>
         </td>
-        <td><p>The level at which a scale enumerates its atoms</p></td>
+        <td><p>The frame whose members are the leaves</p></td>
       </tr><tr><td>
           <p><code><a href="scale_residuals.html">scale_residuals()</a></code> </p>
         </td>
-        <td><p>Units that are residuals</p></td>
+        <td><p>Members that are residuals</p></td>
       </tr><tr><td>
           <p><code><a href="is_valid_frame.html">is_valid_frame()</a></code> </p>
         </td>
@@ -157,7 +157,7 @@
         <td><p>Subset a NestedScale</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="navigation-and-shares">Navigation and shares <a href="#navigation-and-shares" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Move between frames and report what a unit holds.</p>
+          <p class="section-desc"></p><p>Move between frames and report what a member holds.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="scale_navigate.html">scale_children()</a></code> <code><a href="scale_navigate.html">scale_parents()</a></code> <code><a href="scale_navigate.html">scale_descendants()</a></code> <code><a href="scale_navigate.html">scale_ancestors()</a></code> </p>
@@ -182,7 +182,7 @@
       </tr><tr><td>
           <p><code><a href="scale_is_uniform.html">scale_is_uniform()</a></code> </p>
         </td>
-        <td><p>Are the units of a frame the same size?</p></td>
+        <td><p>Are the members of a frame the same size?</p></td>
       </tr><tr><td>
           <p><code><a href="scale_share.html">scale_share()</a></code> </p>
         </td>
@@ -198,7 +198,7 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="filter_scale.html">filter_scale()</a></code> </p>
         </td>
-        <td><p>Subset a NestedScale by unit</p></td>
+        <td><p>Subset a NestedScale by member</p></td>
       </tr><tr><td>
           <p><code><a href="prune_scale.html">prune_scale()</a></code> </p>
         </td>
@@ -246,9 +246,9 @@
       </tr><tr><td>
           <p><code><a href="convert_scale.html">convert_scale()</a></code> </p>
         </td>
-        <td><p>Convert unit-keyed quantities with a member attribute</p></td>
+        <td><p>Convert member-keyed quantities with a member attribute</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="the-data-link">The data link <a href="#the-data-link" class="anchor" aria-hidden="true"></a></h2>
+          <h2 id="the-data-link-experimental-">The data link (experimental) <a href="#the-data-link-experimental-" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Record which scale and frame a table’s code columns are on.</p>
         </th>
       </tr></tbody><tbody><tr><td>
@@ -260,7 +260,7 @@
         </td>
         <td><p>The identity of a scale</p></td>
       </tr><tr><td>
-          <p><code><a href="as_scale_unit.html">as_scale_unit()</a></code> <code><a href="as_scale_unit.html">is_scale_unit()</a></code> </p>
+          <p><code><a href="as_scale_member.html">as_scale_member()</a></code> <code><a href="as_scale_member.html">is_scale_member()</a></code> </p>
         </td>
         <td><p>Codes bound to a scale</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
@@ -276,9 +276,9 @@
         </td>
         <td><p>Recast data through a scale</p></td>
       </tr><tr><td>
-          <p><code><a href="recast_to_atoms.html">recast_to_atoms()</a></code> <code><a href="recast_to_atoms.html">recast_from_atoms()</a></code> </p>
+          <p><code><a href="recast_to_leaves.html">recast_to_leaves()</a></code> <code><a href="recast_to_leaves.html">recast_from_leaves()</a></code> </p>
         </td>
-        <td><p>Recast unit data down to the atom layer, and back</p></td>
+        <td><p>Recast member data down to the leaf layer, and back</p></td>
       </tr><tr><td>
           <p><code><a href="recast_crosswalk.html">recast_crosswalk()</a></code> </p>
         </td>
@@ -322,7 +322,7 @@
       </tr><tr><td>
           <p><code><a href="scale_map_between.html">scale_map_between()</a></code> </p>
         </td>
-        <td><p>Crosswalk between two scales through their shared atoms</p></td>
+        <td><p>Crosswalk between two scales through their shared leaves</p></td>
       </tr><tr><td>
           <p><code><a href="register_scale_map.html">register_scale_map()</a></code> <code><a href="register_scale_map.html">register_scale_map_between()</a></code> <code><a href="register_scale_map.html">get_scale_map()</a></code> <code><a href="register_scale_map.html">get_scale_map_between()</a></code> <code><a href="register_scale_map.html">list_scale_maps()</a></code> </p>
         </td>
@@ -332,7 +332,7 @@
         </td>
         <td><p>Clear the registered crosswalks</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="products-of-scales">Products of scales <a href="#products-of-scales" class="anchor" aria-hidden="true"></a></h2>
+          <h2 id="products-of-scales-experimental-">Products of scales (experimental) <a href="#products-of-scales-experimental-" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Several scales as one multi-index.</p>
         </th>
       </tr></tbody><tbody><tr><td>
@@ -368,9 +368,9 @@
         </td>
         <td><p>Coverage of each axis</p></td>
       </tr><tr><td>
-          <p><code><a href="product_atoms.html">product_atoms()</a></code> </p>
+          <p><code><a href="product_leaves.html">product_leaves()</a></code> </p>
         </td>
-        <td><p>Realise the atoms of a product</p></td>
+        <td><p>Realise the leaves of a product</p></td>
       </tr><tr><td>
           <p><code><a href="recast_product.html">recast_product()</a></code> </p>
         </td>
@@ -389,20 +389,20 @@
         <td><p>Summarize a product</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="clustering">Clustering <a href="#clustering" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Group units by their data into a new, coarser frame.</p>
+          <p class="section-desc"></p><p>Group members by their data into a new, coarser frame.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="cluster_scale.html">cluster_scale()</a></code> </p>
         </td>
-        <td><p>Cluster the units of a scale into a new frame</p></td>
+        <td><p>Cluster the members of a scale into a new frame</p></td>
       </tr><tr><td>
           <p><code><a href="cluster_contiguous.html">cluster_contiguous()</a></code> </p>
         </td>
-        <td><p>Cluster the units of a scale under a contiguity constraint</p></td>
+        <td><p>Cluster the members of a scale under a contiguity constraint</p></td>
       </tr><tr><td>
           <p><code><a href="cluster_medoids.html">cluster_medoids()</a></code> </p>
         </td>
-        <td><p>The representative unit of each cluster</p></td>
+        <td><p>The representative member of each cluster</p></td>
       </tr><tr><td>
           <p><code><a href="cluster_sweep.html">cluster_sweep()</a></code> </p>
         </td>
@@ -410,7 +410,7 @@
       </tr><tr><td>
           <p><code><a href="scale_distance.html">scale_distance()</a></code> </p>
         </td>
-        <td><p>Distance between the units of a scale</p></td>
+        <td><p>Distance between the members of a scale</p></td>
       </tr><tr><td>
           <p><code><a href="SCALE_DISTANCES.html">SCALE_DISTANCES</a></code> </p>
         </td>
@@ -432,7 +432,7 @@
         </td>
         <td><p>Shipped scale definitions</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="arrays-and-storage">Arrays and storage <a href="#arrays-and-storage" class="anchor" aria-hidden="true"></a></h2>
+          <h2 id="arrays-and-storage-experimental-">Arrays and storage (experimental) <a href="#arrays-and-storage-experimental-" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
@@ -466,11 +466,11 @@
       </tr><tr><td>
           <p><code><a href="scale_payload_slice.html">scale_payload_slice()</a></code> </p>
         </td>
-        <td><p>Subset a subclass's per-atom payload</p></td>
+        <td><p>Subset a subclass's per-leaf payload</p></td>
       </tr><tr><td>
           <p><code><a href="scale_payload_collapse.html">scale_payload_collapse()</a></code> </p>
         </td>
-        <td><p>Collapse a subclass's per-atom payload</p></td>
+        <td><p>Collapse a subclass's per-leaf payload</p></td>
       </tr><tr><td>
           <p><code><a href="scale_payload_parts.html">scale_payload_parts()</a></code> </p>
         </td>
@@ -480,15 +480,11 @@
         </td>
         <td><p>Write and read a subclass's payload in a definition file</p></td>
       </tr><tr><td>
-          <p><code><a href="scale_atom_pairs.html">scale_atom_pairs()</a></code> </p>
+          <p><code><a href="scale_leaf_pairs.html">scale_leaf_pairs()</a></code> </p>
         </td>
-        <td><p>Atom-level correspondence between two frames</p></td>
+        <td><p>Leaf-level correspondence between two frames</p></td>
       </tr><tr><td>
-          <p><code><a href="scale_link_enter.html">scale_link_enter()</a></code> <code><a href="scale_link_enter.html">scale_link_exit()</a></code> </p>
-        </td>
-        <td><p>The data link, for dimension packages</p></td>
-      </tr><tr><td>
-          <p><code><a href="backend.html">backend_of()</a></code> <code><a href="backend.html">backend_is_lazy()</a></code> <code><a href="backend.html">backend_schema()</a></code> <code><a href="backend.html">backend_lazy()</a></code> <code><a href="backend.html">backend_scan()</a></code> <code><a href="backend.html">backend_distinct()</a></code> <code><a href="backend.html">backend_pull()</a></code> <code><a href="backend.html">backend_restore()</a></code> <code><a href="backend.html">backend_bind_rows()</a></code> </p>
+          <p><code><a href="backend.html">backend_of()</a></code> <code><a href="backend.html">backend_is_lazy()</a></code> <code><a href="backend.html">backend_schema()</a></code> <code><a href="backend.html">backend_lazy()</a></code> <code><a href="backend.html">backend_pull()</a></code> <code><a href="backend.html">backend_restore()</a></code> <code><a href="backend.html">backend_bind_rows()</a></code> </p>
         </td>
         <td><p>Backends: the table types the verbs accept</p></td>
       </tr></tbody><tbody><tr><th colspan="2">

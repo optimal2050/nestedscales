@@ -103,19 +103,53 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>nestedscales represents a discrete data dimension at multiple resolutions and recasts tabular data between them. A <strong>nested scale</strong> stores one row per finest-grained unit, or <em>atom</em>, and one column for each coarser grouping, or <em>frame</em>. Each frame assigns atoms to units; frames may form a hierarchy or cross-cut one another, including product-like overlays. All mappings are derived from membership at the atom level.</p>
+<p>nestedscales represents a discrete data dimension at multiple resolutions and recasts tabular data between them. A <strong>nested scale</strong> stores one row per finest-grained member, or <em>leaf</em>, and one column for each coarser grouping, or <em>frame</em>. Each frame assigns leaves to members; frames may form a hierarchy or cross-cut one another, including product-like overlays. All mappings are derived from membership at the leaf level.</p>
+<div class="section level2">
+<h2 id="the-structure">The structure<a class="anchor" aria-label="anchor" href="#the-structure"></a>
+</h2>
+<p>Three levels over five leaves, drawn as a tree and as the table a nested scale stores:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>group     subgroup     item            group  subgroup  item  kind</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>                                       <span class="sc">-----</span>  <span class="sc">--------</span>  <span class="sc">----</span>  <span class="sc">----</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>G1 ──┬── G1a ──┬── i1                  G1     G1a       i1    x</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>     │         └── i2                  G1     G1a       i2    y</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>     └── G1b ───── i3                  G1     G1b       i3    x</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>G2 ───── G2a ──┬── i4                  G2     G2a       i4    y</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>               └── i5                  G2     G2a       i5    y</span></code></pre></div>
+<p>Each row is a leaf and each column a frame. <code>group</code>, <code>subgroup</code> and <code>item</code> nest in one another; <code>kind</code> groups the same leaves another way and nests in none of them. Data keyed by any frame can be moved to any other, because both are groupings of the same leaves.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://optimal2050.github.io/nestedscales/r/">nestedscales</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scale_from_leaftable.html">scale_from_leaftable</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    group    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G1"</span>, <span class="st">"G1"</span>, <span class="st">"G1"</span>, <span class="st">"G2"</span>, <span class="st">"G2"</span><span class="op">)</span>,</span>
+<span>    subgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G1a"</span>, <span class="st">"G1a"</span>, <span class="st">"G1b"</span>, <span class="st">"G2a"</span>, <span class="st">"G2a"</span><span class="op">)</span>,</span>
+<span>    kind     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
+<span>    item     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"i1"</span>, <span class="st">"i2"</span>, <span class="st">"i3"</span>, <span class="st">"i4"</span>, <span class="st">"i5"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  frames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span>, <span class="st">"subgroup"</span>, <span class="st">"kind"</span>, <span class="st">"item"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"generic"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/scale_nests.html">scale_nests</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"group"</span>, <span class="st">"subgroup"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="fu"><a href="reference/scale_nests.html">scale_nests</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"subgroup"</span>, <span class="st">"kind"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; attr(,"offenders")</span></span>
+<span><span class="co">#&gt; [1] "x" "y"</span></span>
+<span><span class="fu"><a href="reference/scale_navigate.html">scale_children</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"group"</span>, <span class="st">"G1"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "G1a" "G1b"</span></span>
+<span><span class="fu"><a href="reference/scale_members.html">scale_members</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"kind"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "x" "y"</span></span></code></pre></div>
 <p>The package defines:</p>
 <ul>
 <li>
-<strong>Structure</strong>: the levels of a scale, the units at each level, and the relations between levels (nested, crossed, uniform).</li>
+<strong>Structure</strong>: the levels of a scale, the members at each level, and the relations between levels (nested, crossed, uniform).</li>
 <li>
 <strong>Transition rules</strong> between levels, chosen per value column and aware of direction: <code>sum</code>, <code>weighted_mean</code>, <code>mean</code>, and <code>copy</code>; <code>sd</code> for aggregation; and <code>share</code> or <code>logshare</code> for within-parent shares.</li>
 <li>
-<strong>Operations</strong>: converting data between levels, attaching level labels to a dataset, subsetting, combining several scales into one multi-dimensional index, clustering units into new levels, and storing data together with its scales.</li>
+<strong>Operations</strong>: converting data between levels, attaching level labels to a dataset, subsetting, combining several scales into one multi-dimensional index, clustering members into new levels, and storing data together with its scales.</li>
 <li>
 <strong>Labels, attributes and definitions</strong>: display names for members and levels, in named variants; values that belong to a member but are not weights (a calorific value, an emission factor), resolved along the hierarchy and applied row by row; alternative spellings matched strictly; and language-neutral definition files, with a catalogue of the ones installed packages ship.</li>
 <li>
-<strong>A link between data and scale</strong>: the code columns of a table record which scale and level they are on, so a conversion cannot be applied to data of another scale.</li>
+<strong>A link between data and scale</strong> (experimental): the code columns of a table can record which scale and frame they are on, so a conversion is refused for data of another scale.</li>
 </ul>
 <p>The package is dimension-agnostic. Time and space are provided by two packages built on it, designed for optimization and simulation models, where labeled time slices and regions serve as the index sets of variables and constraints:</p>
 <ul>
@@ -125,14 +159,15 @@
 <a href="https://github.com/optimal2050/geoscales" class="external-link">geoscales</a>: <code>GeoScale</code>, labeled geographical regions with geometry.</li>
 </ul>
 <p>Both classes are subclasses of <code>NestedScale</code>. Any other dimension (industries, income brackets, technology vintages) is declared directly from a table. <code><a href="articles/nestedscales.html">vignette("nestedscales")</a></code> introduces the functions; the <a href="https://optimal2050.github.io/nestedscales/" class="external-link">package website</a> includes a roadmap of what is available and what is planned.</p>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>The released version is on CRAN:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"nestedscales"</span><span class="op">)</span></span></code></pre></div>
 <p>The development version is on GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"optimal2050/nestedscales"</span><span class="op">)</span></span></code></pre></div>
 <p>The package is pure R; its non-base runtime dependencies are dplyr, rlang, S7, vctrs and jsonlite.</p>
 </div>
@@ -140,7 +175,7 @@
 <h2 id="a-scale-in-one-call">A scale in one call<a class="anchor" aria-label="anchor" href="#a-scale-in-one-call"></a>
 </h2>
 <p>Declare the levels, coarsest first:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://optimal2050.github.io/nestedscales/r/">nestedscales</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">industries</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -163,22 +198,22 @@
 <span><span class="co">#&gt;   - section (2)</span></span>
 <span><span class="co">#&gt;     - division (3)</span></span>
 <span><span class="co">#&gt;       - class (5)</span></span>
-<span><span class="co">#&gt; Atoms: 5</span></span>
+<span><span class="co">#&gt; Leaves: 5</span></span>
 <span><span class="co">#&gt; Weights: gva (default: gva)</span></span></code></pre></div>
-<p>Every structural question is answered from the atoms, never from an assumed tree:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p>Every structural question is answered from the leaves, never from an assumed tree:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/scale_frames.html">scale_frames</a></span><span class="op">(</span><span class="va">ind</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "section"  "division" "class"</span></span>
-<span><span class="fu"><a href="reference/scale_units.html">scale_units</a></span><span class="op">(</span><span class="va">ind</span>, <span class="st">"division"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/scale_members.html">scale_members</a></span><span class="op">(</span><span class="va">ind</span>, <span class="st">"division"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "C10" "C11" "D35"</span></span>
 <span><span class="fu"><a href="reference/scale_nests.html">scale_nests</a></span><span class="op">(</span><span class="va">ind</span>, <span class="st">"section"</span>, <span class="st">"division"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Hierarchies that cross-cut are normal and supported – one detailed code may belong to several aggregates. <code>scale_nests(x, parent, child)</code> tests whether every child code belongs to a single parent code; conversion never depends on that relationship.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ind</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;summary of NestedScale 'nace'&gt;</span></span>
 <span><span class="co">#&gt;   frames:         section (2) / division (3) / class (5)</span></span>
-<span><span class="co">#&gt;   atoms:          5</span></span>
+<span><span class="co">#&gt;   leaves:         5</span></span>
 <span><span class="co">#&gt;   weight totals:  gva = 695  (default: gva)</span></span>
 <span><span class="co">#&gt;   nesting:        section &gt; division: nested</span></span>
 <span><span class="co">#&gt;   nesting:        division &gt; class: nested</span></span></code></pre></div>
@@ -187,7 +222,7 @@
 <h2 id="moving-data-between-levels">Moving data between levels<a class="anchor" aria-label="anchor" href="#moving-data-between-levels"></a>
 </h2>
 <p>Data keyed at one level is recast to another with a rule per value column. With complete coverage, <code>"sum"</code> conserves totals; intensive quantities use <code>"weighted_mean"</code> with a declared weight:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  class <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C101"</span>, <span class="st">"C102"</span>, <span class="st">"C110"</span>, <span class="st">"D351"</span>, <span class="st">"D352"</span><span class="op">)</span>,</span>
 <span>  jobs  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">8</span>, <span class="fl">5</span>, <span class="fl">30</span>, <span class="fl">20</span><span class="op">)</span>,</span>
@@ -205,17 +240,17 @@
 <h2 id="definition-files-and-attributes">Definition files and attributes<a class="anchor" aria-label="anchor" href="#definition-files-and-attributes"></a>
 </h2>
 <p>Scales travel as definition files (a JSON header with the tables inline, or a bundle with Arrow or CSV tables) that the Python binding reads as well. A scale may also carry values that belong to its members, such as a calorific value per fuel; the two below are illustrative.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fuels</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scale_from_leaftable.html">scale_from_leaftable</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>carrier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coal"</span>, <span class="st">"Coal"</span>, <span class="st">"Gas"</span><span class="op">)</span>,</span>
 <span>             fuel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Anthracite"</span>, <span class="st">"Lignite"</span>, <span class="st">"NaturalGas"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  frames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"carrier"</span>, <span class="st">"fuel"</span><span class="op">)</span>, key <span class="op">=</span> <span class="st">"fuel"</span>, name <span class="op">=</span> <span class="st">"fuels"</span>,</span>
+<span>  frames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"carrier"</span>, <span class="st">"fuel"</span><span class="op">)</span>, leaf <span class="op">=</span> <span class="st">"fuel"</span>, name <span class="op">=</span> <span class="st">"fuels"</span>,</span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    frame <span class="op">=</span> <span class="st">"fuel"</span>, unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Anthracite"</span>, <span class="st">"NaturalGas"</span><span class="op">)</span>, attribute <span class="op">=</span> <span class="st">"lhv"</span>,</span>
+<span>    frame <span class="op">=</span> <span class="st">"fuel"</span>, member <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Anthracite"</span>, <span class="st">"NaturalGas"</span><span class="op">)</span>, attribute <span class="op">=</span> <span class="st">"lhv"</span>,</span>
 <span>    kind <span class="op">=</span> <span class="st">"property"</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">28</span>, <span class="fl">50</span><span class="op">)</span>, unit_of_measure <span class="op">=</span> <span class="st">"GJ/t"</span>,</span>
 <span>    source <span class="op">=</span> <span class="st">"example"</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  aliases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"fuel"</span>, unit <span class="op">=</span> <span class="st">"NaturalGas"</span>, alias <span class="op">=</span> <span class="st">"NG"</span>,</span>
+<span>  aliases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="st">"fuel"</span>, member <span class="op">=</span> <span class="st">"NaturalGas"</span>, alias <span class="op">=</span> <span class="st">"NG"</span>,</span>
 <span>                       source <span class="op">=</span> <span class="st">"example"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".json"</span><span class="op">)</span></span>
@@ -226,7 +261,7 @@
 <span><span class="co">#&gt; Frames (2, coarsest first):</span></span>
 <span><span class="co">#&gt;   - carrier (2)</span></span>
 <span><span class="co">#&gt;     - fuel (3)</span></span>
-<span><span class="co">#&gt; Atoms: 3</span></span>
+<span><span class="co">#&gt; Leaves: 3</span></span>
 <span><span class="co">#&gt; Attributes: lhv (sources: example) -- 2 at fuel</span></span>
 <span><span class="co">#&gt; Aliases: 1 (example)</span></span>
 <span></span>
@@ -237,7 +272,7 @@
 <span><span class="co">#&gt; 2 NaturalGas 5000  50             fuel</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/scale_match.html">scale_match</a></span><span class="op">(</span><span class="va">fuels</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NG"</span>, <span class="st">"lignite"</span>, <span class="st">"Peat"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     label frame       unit method candidates</span></span>
+<span><span class="co">#&gt;     label frame     member method candidates</span></span>
 <span><span class="co">#&gt; 1      NG  fuel NaturalGas  alias       &lt;NA&gt;</span></span>
 <span><span class="co">#&gt; 2 lignite  fuel    Lignite  exact       &lt;NA&gt;</span></span>
 <span><span class="co">#&gt; 3    Peat  &lt;NA&gt;       &lt;NA&gt;   none       &lt;NA&gt;</span></span></code></pre></div>
@@ -248,15 +283,15 @@
 </h2>
 <ul>
 <li>
-<strong>A scale is a definition, not a container.</strong> It holds the atoms, the frames that group them and the weights that size them. Data stays in ordinary tables; <code><a href="reference/bind_scale.html">bind_scale()</a></code> records on the code columns which scale and frame they are on, and the verbs check it.</li>
+<strong>A scale is a definition, not a container.</strong> It holds the leaves, the frames that group them and the weights that size them. Data stays in ordinary tables and is matched to a scale by its codes; the experimental <code><a href="reference/bind_scale.html">bind_scale()</a></code> can also record on the code columns which scale and frame they are on.</li>
 <li>
-<strong>Atoms are the ground truth.</strong> Frames are partitions of the atoms, not necessarily a strict tree; conversion always routes through the atom layer.</li>
+<strong>Leaves are the ground truth.</strong> Frames are partitions of the leaves, not necessarily a strict tree; conversion always routes through the leaf layer.</li>
 <li>
 <strong>Weights are named and plural.</strong> A scale can carry <code>gva</code>, <code>employment</code> and <code>count</code> side by side, with one declared default.</li>
 <li>
-<strong>Attributes are not weights.</strong> A weight says how big an atom is and drives aggregation; an attribute is a per-member factor, consumed row by row and never summed.</li>
+<strong>Attributes are not weights.</strong> A weight says how big a leaf is and drives aggregation; an attribute is a per-member factor, consumed row by row and never summed.</li>
 <li>
-<strong>Partial coverage is first class.</strong> An atom with no code at a frame is <code>NA</code>, not an error, and a subset records what fraction of its parent it keeps.</li>
+<strong>Partial coverage is first class.</strong> A leaf with no code at a frame is <code>NA</code>, not an error, and a subset records what fraction of its parent it keeps.</li>
 <li>
 <strong>Backend-agnostic.</strong> The verbs use the dplyr interface, so the same pipeline runs on a <code>data.frame</code>, a <code>data.table</code>, or an arrow dataset; lazy inputs stay lazy.</li>
 </ul>
@@ -268,7 +303,7 @@
 <li>
 <a href="https://CRAN.R-project.org/package=scales" class="external-link">scales</a> maps data to graphical aesthetics; its discrete scales are palettes and label formatters, not resolutions of a model dimension.</li>
 <li>
-<a href="https://CRAN.R-project.org/package=data.tree" class="external-link">data.tree</a> represents strict trees as node objects. nestedscales keeps the hierarchy as a flat atom table, allows frames that cross-cut, and converts data between any two frames with weights.</li>
+<a href="https://CRAN.R-project.org/package=data.tree" class="external-link">data.tree</a> represents strict trees as node objects. nestedscales keeps the hierarchy as a flat leaf table, allows frames that cross-cut, and converts data between any two frames with weights.</li>
 <li>
 <a href="https://CRAN.R-project.org/package=hts" class="external-link">hts</a> reconciles forecasts across a fixed aggregation tree; <code><a href="reference/reconcile_scale.html">reconcile_scale()</a></code> here compares data aggregated with <code>sum</code> or <code>weighted_mean</code> against independent totals and can balance discrepancies.</li>
 </ul>
