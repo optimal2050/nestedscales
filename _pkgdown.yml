@@ -60,6 +60,7 @@ reference:
   - is_valid_frame
   - summary.NestedScale
   - str.NestedScale
+  - scale_tree
   - "`[.NestedScale`"
 - title: Navigation and shares
   desc: Move between frames and report what a unit holds.
@@ -161,6 +162,7 @@ reference:
   - scale_vocab
   - scale_payload_slice
   - scale_payload_collapse
+  - scale_payload_parts
   - scale_payload_io
   - scale_atom_pairs
   - scale_link_enter

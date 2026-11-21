@@ -22,6 +22,9 @@
     print.summary_ScaleProduct,
     envir = baseenv()
   )
+  registerS3method("print", "scale_tree", print.scale_tree,
+    envir = baseenv()
+  )
   registerS3method("print", "scale_dataset", print.scale_dataset,
     envir = baseenv()
   )

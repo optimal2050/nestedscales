@@ -23,7 +23,11 @@
 * `scale_id()` gives the identity of a scale: its name and a hash of its
   structure. A link compares the hash alone, so objects with the same
   structure under different names are interchangeable.
-* `str()` on a scale lists its properties with their size and purpose.
+* `scale_tree()` lists the parts of a scale or a product as a tree and marks
+  each one `fixed` (it enters the identity), `derived` or `mutable`, naming
+  the function that changes it. `str()` prints the same tree.
+  `scale_payload_parts()` is the hook a subclass uses to describe the parts
+  it adds.
 * The classes `NestedScale` and `ScaleProduct` are exported, so printing one
   shows its properties and `?NestedScale` documents them.
 

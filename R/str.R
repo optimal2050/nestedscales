@@ -1,5 +1,5 @@
 # =============================================================================
-# str() -- the structure of a scale, one line per property
+# str() -- the structure of a scale, as the tree of scale_tree()
 # =============================================================================
 
 #' @include scale-class.R
@@ -33,72 +33,30 @@ NULL
   sprintf("%s [%d]", class(v)[[1L]], length(v))
 }
 
-#' @noRd
-.prop_detail <- function(name, v) {
-  if (is.character(v) && !is.object(v)) {
-    return(.preview(v, 6L))
-  }
-  if (is.data.frame(v) || (is.list(v) && !is.object(v))) {
-    if (!is.null(names(v)) && length(v) > 0L) {
-      return(.preview(names(v), 8L))
-    }
-  }
-  ""
-}
-
 #' Show the structure of a scale
 #'
-#' Lists the properties of the object, one per line: what kind of value each
-#' holds, its size, and what it is for. Properties a subclass adds are
-#' listed after the core ones. The properties themselves are read with `@`
-#' or `S7::prop()`; `S7::prop_names()` gives their names.
+#' Prints the tree of [`scale_tree()`]: the properties of the object, the
+#' columns of its leaftable and what a subclass adds, each with its size and
+#' whether it is fixed, derived or mutable. The properties themselves are
+#' read with `@` or `S7::prop()`; `S7::prop_names()` gives their names.
 #'
-#' @param object A [`NestedScale`].
-#' @param ... Ignored.
+#' @param object A [`NestedScale`] or a [`ScaleProduct`].
+#' @param ... Passed to the print method of [`scale_tree()`].
 #' @return `object`, invisibly.
+#' @seealso [`scale_tree()`]
 #' @examples
 #' str(scale_example())
 #' S7::prop_names(scale_example())
 #' @method str NestedScale
 str.NestedScale <- function(object, ...) {
-  cls <- attr(object, "S7_class", exact = TRUE)
-  props <- names(cls@properties)
-  # A property that only renames another (`timeframes` for `frames`) is the
-  # same value twice; show it once, under the core name.
-  core <- intersect(names(.PROP_ROLES), props)
-  extra <- setdiff(props, core)
-  vals <- lapply(props, function(p) {
-    tryCatch(S7::prop(object, p), error = function(e) NULL)
-  })
-  names(vals) <- props
-  same_as <- vapply(extra, function(p) {
-    hit <- core[vapply(core, function(k) identical(vals[[p]], vals[[k]]),
-                       logical(1))]
-    if (length(hit) > 0L && is.character(vals[[p]])) hit[[1L]] else ""
-  }, character(1))
-
-  cat("<", class(object)[[1L]], "> ", scale_id(object), "\n", sep = "")
-  w <- max(nchar(props))
-  line <- function(p, role) {
-    detail <- .prop_detail(p, vals[[p]])
-    cat(" @ ", format(p, width = w), " : ",
-      format(.prop_shape(vals[[p]]), width = 20), " ", role,
-      if (nzchar(detail)) paste0("\n", strrep(" ", w + 6L), detail),
-      "\n",
-      sep = ""
-    )
-  }
-  for (p in core) line(p, .PROP_ROLES[[p]])
-  for (p in extra) {
-    line(p, if (nzchar(same_as[[p]])) {
-      paste0("another name for @", same_as[[p]])
-    } else {
-      "added by the subclass"
-    })
-  }
+  print(scale_tree(object), ...)
   invisible(object)
 }
 
 #' @rdname str.NestedScale
 #' @export
 `str.nestedscales::NestedScale` <- str.NestedScale
+
+#' @rdname str.NestedScale
+#' @export
+`str.nestedscales::ScaleProduct` <- str.NestedScale

@@ -88,5 +88,6 @@ Collate:
     'shipped-scales.R'
     'str.R'
     'sweep.R'
+    'tree.R'
     'utils.R'
     'zzz.R'

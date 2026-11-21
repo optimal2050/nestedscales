@@ -3,27 +3,33 @@
 \name{str.NestedScale}
 \alias{str.NestedScale}
 \alias{str.nestedscales::NestedScale}
+\alias{str.nestedscales::ScaleProduct}
 \title{Show the structure of a scale}
 \usage{
 \method{str}{NestedScale}(object, ...)
 
 \method{str}{`nestedscales::NestedScale`}(object, ...)
+
+\method{str}{`nestedscales::ScaleProduct`}(object, ...)
 }
 \arguments{
-\item{object}{A \code{\link{NestedScale}}.}
+\item{object}{A \code{\link{NestedScale}} or a \code{\link{ScaleProduct}}.}
 
-\item{...}{Ignored.}
+\item{...}{Passed to the print method of \code{\link[=scale_tree]{scale_tree()}}.}
 }
 \value{
 \code{object}, invisibly.
 }
 \description{
-Lists the properties of the object, one per line: what kind of value each
-holds, its size, and what it is for. Properties a subclass adds are
-listed after the core ones. The properties themselves are read with \code{@}
-or \code{S7::prop()}; \code{S7::prop_names()} gives their names.
+Prints the tree of \code{\link[=scale_tree]{scale_tree()}}: the properties of the object, the
+columns of its leaftable and what a subclass adds, each with its size and
+whether it is fixed, derived or mutable. The properties themselves are
+read with \code{@} or \code{S7::prop()}; \code{S7::prop_names()} gives their names.
 }
 \examples{
 str(scale_example())
 S7::prop_names(scale_example())
+}
+\seealso{
+\code{\link[=scale_tree]{scale_tree()}}
 }
