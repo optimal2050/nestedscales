@@ -20,7 +20,7 @@ test_that("coarser frames attach with the scale-name prefix", {
   expect_identical(as.character(out$example.sector), c("P", "P", "S"))
   # attached memberships are factors over the frame's full vocabulary
   expect_s3_class(out$example.sector, "factor")
-  expect_identical(levels(out$example.sector), scale_units(s, "sector"))
+  expect_identical(levels(out$example.sector), scale_members(s, "sector"))
 })
 
 test_that("as_factor = FALSE returns plain character", {
@@ -31,7 +31,7 @@ test_that("as_factor = FALSE returns plain character", {
 
 test_that("only coarser frames may be attached", {
   s <- scale_example()
-  expect_error(join_scale(.jd(), s, attach = "unit"), "must be coarser")
+  expect_error(join_scale(.jd(), s, attach = "item"), "must be coarser")
 })
 
 test_that("meta attaches share and weight, and share sums to 1", {
@@ -40,7 +40,7 @@ test_that("meta attaches share and weight, and share sums to 1", {
   expect_true(all(c("example.share", "example.weight") %in% names(out)))
   # class G1 = U1 + U2 = 300 by size
   expect_equal(out$example.weight[out$class == "G1"], 300)
-  # the denominator is the CODED total at that frame (the unassigned atom
+  # the denominator is the CODED total at that frame (the unassigned leaf
   # belongs to no class, so it cannot be part of any class's share), which
   # is what makes the shares over a frame sum to 1
   expect_equal(out$example.share[out$class == "G1"], 300 / 2100)
@@ -67,7 +67,7 @@ test_that("attaching never overwrites an existing column", {
 test_that("unknown codes warn but the join proceeds", {
   s <- scale_example()
   d <- rbind(.jd(), data.frame(class = "NOPE", v = 4))
-  expect_warning(out <- join_scale(d, s), "are not units at")
+  expect_warning(out <- join_scale(d, s), "are not members at")
   expect_true(is.na(out$example[out$class == "NOPE"]))
 })
 
@@ -89,17 +89,17 @@ test_that("several scales live side by side on one dataset", {
   a <- scale_example()
   df <- data.frame(
     big = c("X", "X", "Y", "Y", "Y", "Y", "Z"),
-    unit = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH"),
+    item = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH"),
     size = 1, stringsAsFactors = FALSE
   )
-  b <- scale_from_leaftable(df, frames = c("big", "unit"), name = "other")
+  b <- scale_from_leaftable(df, frames = c("big", "item"), name = "other")
 
   d <- data.frame(
-    unit = c("U1", "U3", "U5"), v = 1:3,
+    item = c("U1", "U3", "U5"), v = 1:3,
     stringsAsFactors = FALSE
   )
   out <- join_scale(join_scale(d, a, attach = "sector"), b,
-    key = "unit", frame = "unit", attach = "big"
+    key = "item", frame = "item", attach = "big"
   )
   # one dataset now carries both scales' labels -- a direct crosswalk
   expect_true(all(c("example", "example.sector", "other", "other.big") %in%

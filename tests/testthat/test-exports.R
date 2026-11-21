@@ -49,7 +49,7 @@ test_that("scale_is / scale_is_product answer what an object is", {
   p <- scale_product(a = scale_example(), b = scale_example2())
   expect_true(scale_is(s))
   expect_false(scale_is(p)) # a product holds scales but is not one
-  expect_false(scale_is(data.frame(unit = "U1")))
+  expect_false(scale_is(data.frame(item = "U1")))
   expect_false(scale_is(NULL))
   expect_true(scale_is_product(p))
   expect_false(scale_is_product(s))
@@ -65,7 +65,8 @@ test_that("scale_class() is the class, so subclassing still works", {
   k <- Child(
     leaftable = scale_leaftable(scale_example()),
     frames = scale_frames(scale_example()),
-    members = S7::prop(scale_example(), "members")
+    members = S7::prop(scale_example(), "members"),
+    leaf = scale_leaf_column(scale_example())
   )
   expect_true(scale_is(k))
 })
@@ -77,7 +78,7 @@ test_that("base methods dispatch on a scale", {
   expect_type(names(s), "character")
   expect_s3_class(as.data.frame(s), "data.frame")
   f <- scale_frames(s)[1]
-  expect_true(scale_is(s[f, scale_units(s, f)[1]]))
+  expect_true(scale_is(s[f, scale_members(s, f)[1]]))
 })
 
 test_that("loading the namespace leaves ggplot2 scale objects alone", {

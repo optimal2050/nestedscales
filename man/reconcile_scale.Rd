@@ -46,7 +46,7 @@ to \code{data} and \code{totals}.}
 \itemize{
 \item \code{"none"} (default) -- report it and change nothing.
 \item \code{"residual"} -- return the data with each group's gap written onto its
-declared residual unit at \code{source}. Needs exactly one residual per
+declared residual member at \code{source}. Needs exactly one residual per
 affected group, and \code{rule = "sum"}.
 \item \code{"proportional"} -- return the data scaled by \code{target / aggregated}
 within each group, so every group hits its total.
@@ -70,21 +70,21 @@ default; can also close it.
 \examples{
 lf <- data.frame(
   country = c("DE", "DE", "DE"),
-  unit = c("DE1", "DE2", "DE_XR"),
+  item = c("DE1", "DE2", "DE_XR"),
   pop = c(40, 30, 0), stringsAsFactors = FALSE
 )
 s <- scale_from_leaftable(lf,
-  frames = c("country", "unit"), key = "unit",
+  frames = c("country", "item"), leaf = "item",
   weights = "pop", name = "geo",
-  residuals = list(unit = "DE_XR")
+  residuals = list(item = "DE_XR")
 )
-fine <- data.frame(unit = c("DE1", "DE2", "DE_XR"), gdp = c(400, 300, 0))
+fine <- data.frame(item = c("DE1", "DE2", "DE_XR"), gdp = c(400, 300, 0))
 published <- data.frame(country = "DE", gdp = 750)
 
-reconcile_scale(fine, s, source = "unit", target = "country", published)
+reconcile_scale(fine, s, source = "item", target = "country", published)
 
 reconcile_scale(fine, s,
-  source = "unit", target = "country", published,
+  source = "item", target = "country", published,
   balance = "residual"
 )
 }

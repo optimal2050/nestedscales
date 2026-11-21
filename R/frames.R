@@ -31,9 +31,9 @@ is_valid_frame <- function(x) {
 #' Reserved column names in a leaftable
 #'
 #' Column names that carry a fixed meaning and therefore cannot be used as
-#' frame names. The atom key column (`x@key`, default `"unit"`) is reserved in
+#' frame names. The leaf column (`x@leaf`, default `"leaf"`) is reserved in
 #' addition to these, except as the name of the FINEST frame -- there the frame
-#' column *is* the key column, so nothing collides.
+#' column *is* the leaf column, so nothing collides.
 #'
 #' @noRd
 .RESERVED_COLS <- c("share", ".weight", ".order")

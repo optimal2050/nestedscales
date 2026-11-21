@@ -2,7 +2,7 @@
 % Please edit documentation in R/scale-class.R
 \name{scale_residuals}
 \alias{scale_residuals}
-\title{Units that are residuals}
+\title{Members that are residuals}
 \usage{
 scale_residuals(x, frame = NULL)
 }
@@ -13,20 +13,20 @@ scale_residuals(x, frame = NULL)
 \code{NULL} for the whole named list.}
 }
 \value{
-A character vector of unit codes, or the named list over frames.
+A character vector of member codes, or the named list over frames.
 Empty when the scale declares none.
 }
 \description{
 A residual carries a real value but is not a destination for allocation:
 non-regionalized GDP, taxes that belong to no industry, an "n.e.c." bucket.
-It aggregates upward like any other unit -- that is the point, it is what
+It aggregates upward like any other member -- that is the point, it is what
 makes the parent total reconcile -- but \code{\link[=recast_scale]{recast_scale()}} never splits a
 coarse figure INTO one.
 }
 \details{
 Declare them when building the scale, per frame, because codes are not
 unique across frames:
-\code{scale_from_leaftable(..., residuals = list(unit = "DE_XR"))}.
+\code{scale_from_leaftable(..., residuals = list(item = "DE_XR"))}.
 }
 \examples{
 s <- scale_example()
@@ -35,9 +35,9 @@ scale_residuals(s) # none declared
 lf <- scale_leaftable(s)
 r <- scale_from_leaftable(
   lf,
-  frames = scale_frames(s), key = "unit",
+  frames = scale_frames(s), leaf = "item",
   weights = scale_weights(s), name = "with_residual",
-  residuals = list(unit = "OTH")
+  residuals = list(item = "OTH")
 )
-scale_residuals(r, "unit")
+scale_residuals(r, "item")
 }

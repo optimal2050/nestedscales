@@ -45,7 +45,7 @@ applies to every axis.}
 }
 \value{
 The recast data in the input's class, keyed by the converted axes'
-target units.
+target members.
 }
 \description{
 Converts one or more axes of a product in a single call. Axes named in \code{target}
@@ -59,7 +59,7 @@ crosswalk is never built. The passes are ordered so the axis that reduces
 the data most runs first.
 
 A per-axis \code{"sd"} is refused because it is order-dependent; a scalar
-\code{"sd"} means the pooled sd over all product atoms in a target block, which
+\code{"sd"} means the pooled sd over all product leaves in a target block, which
 is well defined and is computed without materialising the product.
 \code{"share"} is not defined across a product, because it changes which axis
 the result is keyed by.
@@ -67,7 +67,7 @@ the result is keyed by.
 \examples{
 p <- scale_product(a = scale_example(), b = scale_example2())
 d <- merge(
-  data.frame(unit = c("U1", "U2", "U3", "U4", "U5", "U6")),
+  data.frame(item = c("U1", "U2", "U3", "U4", "U5", "U6")),
   data.frame(period = c("p1", "p2", "p3", "p4"))
 )
 d$cap <- seq_len(nrow(d))

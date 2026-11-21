@@ -108,7 +108,7 @@ test_that("copy errors in the caller's vocabulary", {
       source = "month", target = "quarter",
       values = "price", rule = "copy",
       ids = character(),
-      unit = "timeslice"
+      member = "timeslice"
     ),
     "not constant within a target timeslice"
   )

@@ -2,7 +2,7 @@
 % Please edit documentation in R/scale-class.R
 \name{scale_payload_collapse}
 \alias{scale_payload_collapse}
-\title{Collapse a subclass's per-atom payload}
+\title{Collapse a subclass's per-leaf payload}
 \usage{
 scale_payload_collapse(x, ...)
 }
@@ -16,10 +16,10 @@ scale_payload_collapse(x, ...)
 }
 \description{
 The companion of \code{\link[=scale_payload_slice]{scale_payload_slice()}} for the rebuilds that MERGE
-atoms rather than keep a subset of them -- \code{\link[=prune_scale]{prune_scale()}}, which makes
-a coarser frame the new atom layer. Called with \code{map}, an integer vector
+leaves rather than keep a subset of them -- \code{\link[=prune_scale]{prune_scale()}}, which makes
+a coarser frame the new leaf layer. Called with \code{map}, an integer vector
 with one entry per row of the OLD leaftable giving the index of the NEW
-row that atom was merged into, or \code{NA} for an atom that was dropped.
+row that leaf was merged into, or \code{NA} for a leaf that was dropped.
 }
 \details{
 The \code{NestedScale} default returns \code{x} unchanged, which is right for a

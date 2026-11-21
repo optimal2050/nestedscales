@@ -14,12 +14,12 @@ scale_family(x, parent = NULL, child = NULL)
 }
 \value{
 A \code{data.frame} with columns \code{parent_frame}, \code{parent}, \code{child_frame},
-\code{child}. Atoms unassigned at either frame are omitted.
+\code{child}. Leaves unassigned at either frame are omitted.
 }
 \description{
 Immediate parent-child table between two frames
 }
 \examples{
 s <- scale_example()
-scale_family(s, "group", "unit")
+scale_family(s, "group", "item")
 }

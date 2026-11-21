@@ -2,7 +2,7 @@
 % Please edit documentation in R/cluster.R
 \name{cluster_scale}
 \alias{cluster_scale}
-\title{Cluster the units of a scale into a new frame}
+\title{Cluster the members of a scale into a new frame}
 \usage{
 cluster_scale(
   data,
@@ -13,7 +13,7 @@ cluster_scale(
   value = NULL,
   method = c("pam", "hclust", "kmeans"),
   distance = "euclidean",
-  scale_units = FALSE,
+  scale_members = FALSE,
   new_frame = "cluster",
   labels = "c",
   hclust_method = "ward.D2",
@@ -22,15 +22,15 @@ cluster_scale(
 )
 }
 \arguments{
-\item{data}{Long data: unit codes, one or more identifier columns saying
-which observation each row is, and a value column. A unit that is not
+\item{data}{Long data: member codes, one or more identifier columns saying
+which observation each row is, and a value column. A member that is not
 observed over the same set as the others is an error rather than a hole.}
 
 \item{x}{A \code{NestedScale}.}
 
 \item{k}{Number of clusters.}
 
-\item{frame}{Frame whose units are clustered. Defaults to the atom frame.}
+\item{frame}{Frame whose members are clustered. Defaults to the leaf frame.}
 
 \item{key, value}{Columns of \code{data}; inferred when unambiguous.}
 
@@ -41,14 +41,14 @@ package), \code{"hclust"} (\link[stats:hclust]{stats::hclust}) or \code{"kmeans"
 
 \item{distance}{A name from \code{\link[=list_scale_distances]{list_scale_distances()}}.}
 
-\item{scale_units}{Standardise each unit's profile before measuring;
+\item{scale_members}{Standardise each member's profile before measuring;
 see \code{\link[=scale_distance]{scale_distance()}}.}
 
 \item{new_frame}{Name for the frame the clusters form.}
 
 \item{labels}{How to name the clusters: a prefix (the default \code{"c"} gives
 \code{c01}, \code{c02}, ...), or \code{"medoid"} to name each cluster after its
-representative unit, which keeps the codes meaningful.}
+representative member, which keeps the codes meaningful.}
 
 \item{hclust_method}{Linkage for \code{method = "hclust"}.}
 
@@ -60,11 +60,11 @@ representative unit, which keeps the codes meaningful.}
 \value{
 The scale, with \code{new_frame} inserted directly above \code{frame}. The
 assignment is also returned as the \code{"clustering"} attribute: a data frame
-of unit, cluster and (for medoid-based methods) whether the unit is its
+of member, cluster and (for medoid-based methods) whether the member is its
 cluster's medoid.
 }
 \description{
-Groups the units at \code{frame} by the similarity of their profiles and returns
+Groups the members at \code{frame} by the similarity of their profiles and returns
 the scale with those groups added as a new, coarser frame.
 }
 \details{
@@ -78,7 +78,7 @@ construction, but they need not nest inside any existing coarser frame, and
 s <- scale_example()
 set.seed(1)
 d <- data.frame(
-  unit = rep(scale_units(s), each = 4),
+  item = rep(scale_members(s), each = 4),
   t = rep(sprintf("t\%d", 1:4), 7),
   v = as.numeric(seq_len(28))
 )

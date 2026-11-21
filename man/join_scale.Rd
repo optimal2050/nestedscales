@@ -19,12 +19,13 @@ join_scale(
 )
 }
 \arguments{
-\item{data}{The data, in any supported backend, with a column of unit codes.}
+\item{data}{The data, in any supported backend, with a column of member
+codes.}
 
 \item{x}{The \code{\link{NestedScale}} to attach.}
 
 \item{key}{Name of the code column in \code{data}. Inferred from the scale's
-name, the keyed frame, or the scale's own key column.}
+name, the keyed frame, or the scale's leaf column.}
 
 \item{frame}{The frame the codes in \code{key} are at. \code{NULL} (default) is
 inferred as the single frame name appearing among the data's columns.}
@@ -32,7 +33,7 @@ inferred as the single frame name appearing among the data's columns.}
 \item{attach}{Coarser frames whose codes to attach as new columns: \code{TRUE}
 for all of them, a character vector to choose, \code{NULL}/\code{FALSE} for none.}
 
-\item{meta}{Attach the unit's \code{share} and \code{weight} at the keyed frame.}
+\item{meta}{Attach the member's \code{share} and \code{weight} at the keyed frame.}
 
 \item{weight}{Weight column used for \code{meta}. \code{NULL} uses the default.}
 
@@ -42,7 +43,7 @@ frame's full vocabulary as levels (so empty groups still plot).}
 \item{collect}{For lazy inputs: materialise (\code{TRUE}) or return the query.}
 
 \item{diagnostics}{Whether to run the checks that read the data (no
-matching codes; codes that are not units). \code{"auto"} (default) runs them
+matching codes; codes that are not members). \code{"auto"} (default) runs them
 on eager inputs and skips them on arrow/dtplyr, which makes this verb
 zero-scan there; \code{"on"}/\code{"off"} force the choice.}
 
@@ -56,7 +57,7 @@ zero-scan there; \code{"on"}/\code{"off"} force the choice.}
 \description{
 Adds a code column named after the scale, and optionally the codes of
 coarser frames (\code{"<name>.<frame>"}), the display names of the codes
-(\code{"<name>.label"}) and the unit's share and weight (\code{"<name>.share"},
+(\code{"<name>.label"}) and the member's share and weight (\code{"<name>.share"},
 \code{"<name>.weight"}).
 }
 \details{

@@ -21,8 +21,8 @@
 }
 \value{
 \code{summary()} returns a list of class \code{"summary_Scale"}: \code{name},
-\code{desc}, \code{frames} (named member counts), \code{unassigned} (named NA-atom
-counts), \code{n_atoms}, \code{weights}, \code{weight_totals}, \code{default_weight},
+\code{desc}, \code{frames} (named member counts), \code{unassigned} (named NA-leaf
+counts), \code{n_leaves}, \code{weights}, \code{weight_totals}, \code{default_weight},
 \code{coverage} (see \code{\link[=scale_coverage]{scale_coverage()}}), \code{sampled}, \code{parent_name}, \code{nesting}
 (adjacent-pair table with offender counts, see \code{\link[=scale_nests]{scale_nests()}}),
 \code{attributes} (a \code{data.frame} of row counts by \code{attribute}, \code{frame} and

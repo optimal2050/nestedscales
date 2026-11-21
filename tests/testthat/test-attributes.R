@@ -6,7 +6,7 @@ test_that("every scale has an empty attribute table by default", {
   at <- scale_attributes(s)
   expect_s3_class(at, "data.frame")
   expect_identical(nrow(at), 0L)
-  expect_named(at, c("frame", "unit", "attribute", "kind", "value", "lower",
+  expect_named(at, c("frame", "member", "attribute", "kind", "value", "lower",
                      "upper", "unit_of_measure", "source", "note"))
   expect_identical(nrow(scale_aliases(s)), 0L)
 })
@@ -26,26 +26,26 @@ test_that("inheritance: own value, then carrier, then group; NA otherwise", {
   es <- .fuels()
   r <- scale_attributes(es, "lhv", frame = "fuel")
   expect_equal(nrow(r), 9L)
-  expect_equal(r$unit, scale_units(es))
-  v <- stats::setNames(r$value, r$unit)
+  expect_equal(r$member, scale_members(es))
+  v <- stats::setNames(r$value, r$member)
   expect_equal(v[["Anthracite"]], 26.7)
   expect_equal(v[["Diesel"]], 42.5)      # from carrier Oil
   expect_equal(v[["Wood"]], 15.0)        # from group Bio
   expect_true(is.na(v[["NaturalGas"]]))
   expect_true(is.na(v[["Electricity"]]))
-  o <- stats::setNames(r$origin_frame, r$unit)
+  o <- stats::setNames(r$origin_frame, r$member)
   expect_equal(o[["Anthracite"]], "fuel")
   expect_equal(o[["Diesel"]], "carrier")
   expect_equal(o[["Wood"]], "group")
   expect_true(is.na(o[["NaturalGas"]]))
-  expect_equal(r$origin_unit[r$unit == "Wood"], "Bio")
+  expect_equal(r$origin_member[r$member == "Wood"], "Bio")
   expect_equal(unique(r$kind[!is.na(r$value)]), "property")
 })
 
 test_that("a carrier resolves through a silent cross-cutting frame", {
   es <- .fuels()
   r <- scale_attributes(es, "lhv", frame = "carrier")
-  v <- stats::setNames(r$value, r$unit)
+  v <- stats::setNames(r$value, r$member)
   expect_equal(v[["Oil"]], 42.5)
   expect_equal(v[["Biomass"]], 15.0)   # phase holds nothing -> group
   expect_true(is.na(v[["Coal"]]))      # fuels have values, the carrier not
@@ -59,82 +59,82 @@ test_that("inherit = FALSE reports stored values only", {
 test_that("a cross-cutting ancestor that holds the attribute is ambiguous", {
   es <- attach_attributes_scale(
     .fuels(),
-    data.frame(frame = "phase", unit = "gas", attribute = "lhv", value = 48,
+    data.frame(frame = "phase", member = "gas", attribute = "lhv", value = 48,
                unit_of_measure = "GJ/t"),
     source = "example", kind = "property"
   )
   expect_error(scale_attributes(es, "lhv", frame = "carrier"), "ambiguous")
   r <- scale_attributes(es, "lhv", frame = "fuel")
-  v <- stats::setNames(r$value, r$unit)
+  v <- stats::setNames(r$value, r$member)
   expect_equal(v[["NaturalGas"]], 48)
   expect_equal(v[["Biogas"]], 48)          # phase is nearer than group
-  expect_equal(r$origin_frame[r$unit == "Biogas"], "phase")
+  expect_equal(r$origin_frame[r$member == "Biogas"], "phase")
 })
 
 test_that("two sources for one member error unless `source=` selects", {
   es <- attach_attributes_scale(
     .fuels(),
-    data.frame(frame = "fuel", unit = "Anthracite", attribute = "lhv",
+    data.frame(frame = "fuel", member = "Anthracite", attribute = "lhv",
                value = 27.5, unit_of_measure = "GJ/t"),
     source = "other", kind = "property"
   )
   expect_error(scale_attributes(es, "lhv", frame = "fuel"), "several sources")
   r1 <- scale_attributes(es, "lhv", frame = "fuel", source = "example")
   r2 <- scale_attributes(es, "lhv", frame = "fuel", source = "other")
-  expect_equal(r1$value[r1$unit == "Anthracite"], 26.7)
-  expect_equal(r2$value[r2$unit == "Anthracite"], 27.5)
-  expect_true(is.na(r2$value[r2$unit == "Lignite"]))
+  expect_equal(r1$value[r1$member == "Anthracite"], 26.7)
+  expect_equal(r2$value[r2$member == "Anthracite"], 27.5)
+  expect_true(is.na(r2$value[r2$member == "Lignite"]))
 })
 
-test_that("resolution works at the key level of a product-shaped scale", {
-  # the key is the atom level: no frame enumerates the atoms
+test_that("resolution works at the leaf column of a product-shaped scale", {
+  # the leaf column is the leaf level: no frame enumerates the leaves
   grid <- expand.grid(m = c("m1", "m2"), h = c("h1", "h2"),
                       stringsAsFactors = FALSE)
-  grid$unit <- paste(grid$m, grid$h, sep = "_")
-  s <- scale_from_leaftable(grid, frames = c("m", "h"), key = "unit",
+  grid$item <- paste(grid$m, grid$h, sep = "_")
+  s <- scale_from_leaftable(grid, frames = c("m", "h"), leaf = "item",
                             name = "grid")
   s <- attach_attributes_scale(
-    s, data.frame(frame = "m", unit = "m1", attribute = "price", value = 3,
+    s, data.frame(frame = "m", member = "m1", attribute = "price", value = 3,
                   unit_of_measure = "EUR/MWh"),
     source = "t", kind = "factor"
   )
-  r <- scale_attributes(s, "price", frame = "unit")
-  expect_equal(r$value[r$unit == "m1_h2"], 3)
-  expect_true(is.na(r$value[r$unit == "m2_h1"]))
+  r <- scale_attributes(s, "price", frame = "item")
+  expect_equal(r$value[r$member == "m1_h2"], 3)
+  expect_true(is.na(r$value[r$member == "m2_h1"]))
 })
 
 test_that("attach refuses collisions, bad kinds and mixed kinds", {
   es <- .fuels()
   expect_error(
     attach_attributes_scale(
-      es, data.frame(frame = "fuel", unit = "Anthracite", attribute = "lhv",
+      es, data.frame(frame = "fuel", member = "Anthracite", attribute = "lhv",
                      value = 1, unit_of_measure = "GJ/t"),
       source = "example", kind = "property"),
     "never overwritten"
   )
   expect_error(
     attach_attributes_scale(
-      es, data.frame(frame = "fuel", unit = "Lignite", attribute = "hhv",
+      es, data.frame(frame = "fuel", member = "Lignite", attribute = "hhv",
                      value = 1, unit_of_measure = "GJ/t"),
       source = "x", kind = "ratio"),
     "kind"
   )
   expect_error(
     attach_attributes_scale(
-      es, data.frame(frame = "fuel", unit = "Lignite", attribute = "lhv",
+      es, data.frame(frame = "fuel", member = "Lignite", attribute = "lhv",
                      value = 1, unit_of_measure = "GJ/t"),
       source = "x", kind = "factor"),
     "one kind"
   )
   expect_error(
     attach_attributes_scale(
-      es, data.frame(frame = "fuel", unit = "Lignite", attribute = "hhv",
+      es, data.frame(frame = "fuel", member = "Lignite", attribute = "hhv",
                      value = 1, unit_of_measure = "GJ/t", source = "s"),
       source = "x", kind = "property"),
     "already has a `source`"
   )
   es2 <- attach_attributes_scale(
-    es, data.frame(frame = "carrier", unit = "Coal", attribute = "hhv",
+    es, data.frame(frame = "carrier", member = "Coal", attribute = "hhv",
                    value = 28, unit_of_measure = "GJ/t"),
     source = "new", kind = "property")
   expect_equal(nrow(scale_attributes(es2)), 7L)
@@ -148,7 +148,7 @@ test_that("the validator rejects malformed tables with the vocabulary", {
   expect_error(bad(base[-1L]), "exactly the columns")
   x <- base; x$frame[1L] <- "nope"
   expect_error(bad(x), "frame\\(s\\) not in the object")
-  x <- base; x$unit[1L] <- "Unobtainium"
+  x <- base; x$member[1L] <- "Unobtainium"
   expect_error(bad(x), "not members")
   x <- base; x$value[1L] <- Inf
   expect_error(bad(x), "finite")

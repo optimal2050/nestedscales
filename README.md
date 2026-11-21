@@ -13,32 +13,74 @@ downloads](https://cranlogs.r-pkg.org/badges/grand-total/nestedscales)](https://
 
 nestedscales represents a discrete data dimension at multiple
 resolutions and recasts tabular data between them. A **nested scale**
-stores one row per finest-grained unit, or *atom*, and one column for
-each coarser grouping, or *frame*. Each frame assigns atoms to units;
+stores one row per finest-grained member, or *leaf*, and one column for
+each coarser grouping, or *frame*. Each frame assigns leaves to members;
 frames may form a hierarchy or cross-cut one another, including
 product-like overlays. All mappings are derived from membership at the
-atom level.
+leaf level.
+
+## The structure
+
+Three levels over five leaves, drawn as a tree and as the table a nested
+scale stores:
+
+    group     subgroup     item            group  subgroup  item  kind
+                                           -----  --------  ----  ----
+    G1 ──┬── G1a ──┬── i1                  G1     G1a       i1    x
+         │         └── i2                  G1     G1a       i2    y
+         └── G1b ───── i3                  G1     G1b       i3    x
+    G2 ───── G2a ──┬── i4                  G2     G2a       i4    y
+                   └── i5                  G2     G2a       i5    y
+
+Each row is a leaf and each column a frame. `group`, `subgroup` and
+`item` nest in one another; `kind` groups the same leaves another way
+and nests in none of them. Data keyed by any frame can be moved to any
+other, because both are groupings of the same leaves.
+
+``` r
+library(nestedscales)
+
+s <- scale_from_leaftable(
+  data.frame(
+    group    = c("G1", "G1", "G1", "G2", "G2"),
+    subgroup = c("G1a", "G1a", "G1b", "G2a", "G2a"),
+    kind     = c("x", "y", "x", "y", "y"),
+    item     = c("i1", "i2", "i3", "i4", "i5")
+  ),
+  frames = c("group", "subgroup", "kind", "item"), name = "generic"
+)
+scale_nests(s, "group", "subgroup")
+#> [1] TRUE
+scale_nests(s, "subgroup", "kind")
+#> [1] FALSE
+#> attr(,"offenders")
+#> [1] "x" "y"
+scale_children(s, "group", "G1")
+#> [1] "G1a" "G1b"
+scale_members(s, "kind")
+#> [1] "x" "y"
+```
 
 The package defines:
 
-- **Structure**: the levels of a scale, the units at each level, and the
-  relations between levels (nested, crossed, uniform).
+- **Structure**: the levels of a scale, the members at each level, and
+  the relations between levels (nested, crossed, uniform).
 - **Transition rules** between levels, chosen per value column and aware
   of direction: `sum`, `weighted_mean`, `mean`, and `copy`; `sd` for
   aggregation; and `share` or `logshare` for within-parent shares.
 - **Operations**: converting data between levels, attaching level labels
   to a dataset, subsetting, combining several scales into one
-  multi-dimensional index, clustering units into new levels, and storing
-  data together with its scales.
+  multi-dimensional index, clustering members into new levels, and
+  storing data together with its scales.
 - **Labels, attributes and definitions**: display names for members and
   levels, in named variants; values that belong to a member but are not
   weights (a calorific value, an emission factor), resolved along the
   hierarchy and applied row by row; alternative spellings matched
   strictly; and language-neutral definition files, with a catalogue of
   the ones installed packages ship.
-- **A link between data and scale**: the code columns of a table record
-  which scale and level they are on, so a conversion cannot be applied
-  to data of another scale.
+- **A link between data and scale** (experimental): the code columns of
+  a table can record which scale and frame they are on, so a conversion
+  is refused for data of another scale.
 
 The package is dimension-agnostic. Time and space are provided by two
 packages built on it, designed for optimization and simulation models,
@@ -101,17 +143,17 @@ ind
 #>   - section (2)
 #>     - division (3)
 #>       - class (5)
-#> Atoms: 5
+#> Leaves: 5
 #> Weights: gva (default: gva)
 ```
 
-Every structural question is answered from the atoms, never from an
+Every structural question is answered from the leaves, never from an
 assumed tree:
 
 ``` r
 scale_frames(ind)
 #> [1] "section"  "division" "class"
-scale_units(ind, "division")
+scale_members(ind, "division")
 #> [1] "C10" "C11" "D35"
 scale_nests(ind, "section", "division")
 #> [1] TRUE
@@ -126,7 +168,7 @@ never depends on that relationship.
 summary(ind)
 #> <summary of NestedScale 'nace'>
 #>   frames:         section (2) / division (3) / class (5)
-#>   atoms:          5
+#>   leaves:         5
 #>   weight totals:  gva = 695  (default: gva)
 #>   nesting:        section > division: nested
 #>   nesting:        division > class: nested
@@ -164,13 +206,13 @@ a calorific value per fuel; the two below are illustrative.
 fuels <- scale_from_leaftable(
   data.frame(carrier = c("Coal", "Coal", "Gas"),
              fuel = c("Anthracite", "Lignite", "NaturalGas")),
-  frames = c("carrier", "fuel"), key = "fuel", name = "fuels",
+  frames = c("carrier", "fuel"), leaf = "fuel", name = "fuels",
   attributes = data.frame(
-    frame = "fuel", unit = c("Anthracite", "NaturalGas"), attribute = "lhv",
+    frame = "fuel", member = c("Anthracite", "NaturalGas"), attribute = "lhv",
     kind = "property", value = c(28, 50), unit_of_measure = "GJ/t",
     source = "example"
   ),
-  aliases = data.frame(frame = "fuel", unit = "NaturalGas", alias = "NG",
+  aliases = data.frame(frame = "fuel", member = "NaturalGas", alias = "NG",
                        source = "example")
 )
 file <- tempfile(fileext = ".json")
@@ -181,7 +223,7 @@ fuels
 #> Frames (2, coarsest first):
 #>   - carrier (2)
 #>     - fuel (3)
-#> Atoms: 3
+#> Leaves: 3
 #> Attributes: lhv (sources: example) -- 2 at fuel
 #> Aliases: 1 (example)
 
@@ -192,7 +234,7 @@ convert_scale(fuel_use, fuels, "lhv", from_unit = "t", to_unit = "GJ")
 #> 2 NaturalGas 5000  50             fuel
 
 scale_match(fuels, c("NG", "lignite", "Peat"))
-#>     label frame       unit method candidates
+#>     label frame     member method candidates
 #> 1      NG  fuel NaturalGas  alias       <NA>
 #> 2 lignite  fuel    Lignite  exact       <NA>
 #> 3    Peat  <NA>       <NA>   none       <NA>
@@ -204,21 +246,22 @@ resolves names and model codes through the alias table, strictly.
 
 ## Design
 
-- **A scale is a definition, not a container.** It holds the atoms, the
+- **A scale is a definition, not a container.** It holds the leaves, the
   frames that group them and the weights that size them. Data stays in
-  ordinary tables; `bind_scale()` records on the code columns which
-  scale and frame they are on, and the verbs check it.
-- **Atoms are the ground truth.** Frames are partitions of the atoms,
+  ordinary tables and is matched to a scale by its codes; the
+  experimental `bind_scale()` can also record on the code columns which
+  scale and frame they are on.
+- **Leaves are the ground truth.** Frames are partitions of the leaves,
   not necessarily a strict tree; conversion always routes through the
-  atom layer.
+  leaf layer.
 - **Weights are named and plural.** A scale can carry `gva`,
   `employment` and `count` side by side, with one declared default.
-- **Attributes are not weights.** A weight says how big an atom is and
+- **Attributes are not weights.** A weight says how big a leaf is and
   drives aggregation; an attribute is a per-member factor, consumed row
   by row and never summed.
-- **Partial coverage is first class.** An atom with no code at a frame
-  is `NA`, not an error, and a subset records what fraction of its
-  parent it keeps.
+- **Partial coverage is first class.** A leaf with no code at a frame is
+  `NA`, not an error, and a subset records what fraction of its parent
+  it keeps.
 - **Backend-agnostic.** The verbs use the dplyr interface, so the same
   pipeline runs on a `data.frame`, a `data.table`, or an arrow dataset;
   lazy inputs stay lazy.
@@ -230,7 +273,7 @@ resolves names and model codes through the alias table, strictly.
   formatters, not resolutions of a model dimension.
 - [data.tree](https://CRAN.R-project.org/package=data.tree) represents
   strict trees as node objects. nestedscales keeps the hierarchy as a
-  flat atom table, allows frames that cross-cut, and converts data
+  flat leaf table, allows frames that cross-cut, and converts data
   between any two frames with weights.
 - [hts](https://CRAN.R-project.org/package=hts) reconciles forecasts
   across a fixed aggregation tree; `reconcile_scale()` here compares

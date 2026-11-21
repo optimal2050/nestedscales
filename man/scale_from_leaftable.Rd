@@ -2,12 +2,12 @@
 % Please edit documentation in R/scale-construct.R
 \name{scale_from_leaftable}
 \alias{scale_from_leaftable}
-\title{Build a NestedScale from a flat table of atoms}
+\title{Build a NestedScale from a flat table of leaves}
 \usage{
 scale_from_leaftable(
   leaftable,
   frames,
-  key = NULL,
+  leaf = NULL,
   weights = NULL,
   default_weight = NULL,
   members = NULL,
@@ -20,15 +20,15 @@ scale_from_leaftable(
 )
 }
 \arguments{
-\item{leaftable}{\code{data.frame} with one row per atom, one column per name in
+\item{leaftable}{\code{data.frame} with one row per leaf, one column per name in
 \code{frames}, and optionally numeric weight columns.}
 
 \item{frames}{Ordered character vector of frame names, \strong{coarsest first}.
 Each must be a column of \code{leaftable}.}
 
-\item{key}{Name of the column holding the unique atom key. Defaults to
-\code{"unit"} if present, otherwise the finest frame (the last entry of
-\code{frames}), which is copied into a \code{unit} column.}
+\item{leaf}{Name of the leaf column: the column that identifies the
+leaves, one unique code per row. Defaults to a column called \code{"leaf"}
+if present, otherwise to the finest frame (the last entry of \code{frames}).}
 
 \item{weights}{Character vector naming the weight columns. Defaults to all
 numeric columns that are neither frames nor reserved names.}
@@ -42,13 +42,14 @@ frame. Derived from \code{leaftable} when \code{NULL} (first-appearance order).}
 \item{name, desc}{Short name and description.}
 
 \item{attributes}{Optional table of per-member physical attributes keyed
-by \verb{(frame, unit)}; see \code{\link[=attach_attributes_scale]{attach_attributes_scale()}} for the columns.}
+by \verb{(frame, member)}; see \code{\link[=attach_attributes_scale]{attach_attributes_scale()}} for the columns.}
 
 \item{aliases}{Optional table of alternative labels keyed by
-\verb{(frame, unit)}; see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}} for the columns.}
+\verb{(frame, member)}; see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}} for the columns.}
 
 \item{labels}{Optional table of display names keyed by
-\verb{(frame, unit, variant)}; see \code{\link[=attach_labels_scale]{attach_labels_scale()}} for the columns.}
+\verb{(frame, member, variant)}; see \code{\link[=attach_labels_scale]{attach_labels_scale()}} for the
+columns.}
 
 \item{...}{Further named entries merged into \code{meta} (e.g. \code{source}).}
 }
@@ -56,20 +57,20 @@ by \verb{(frame, unit)}; see \code{\link[=attach_attributes_scale]{attach_attrib
 A \code{\link{NestedScale}}.
 }
 \description{
-The general constructor. Takes a wide \code{data.frame} with one row per atom
-(the finest unit) and one column per frame, and returns a \code{\link{NestedScale}}.
+The general constructor. Takes a wide \code{data.frame} with one row per leaf
+(the finest member) and one column per frame, and returns a \code{\link{NestedScale}}.
 }
 \details{
 Blank strings (\code{""}) in frame columns are normalised to \code{NA}, meaning "this
-atom has no code at this frame" -- partial coverage is normal in real
+leaf has no code at this frame" -- partial coverage is normal in real
 classification tables.
 }
 \examples{
 df <- data.frame(
   section = c("A", "A", "A", "B"),
   group   = c("A1", "A1", "A2", "B1"),
-  unit    = c("A11", "A12", "A21", "B11"),
+  item    = c("A11", "A12", "A21", "B11"),
   gva     = c(100, 200, 300, 400)
 )
-scale_from_leaftable(df, frames = c("section", "group", "unit"))
+scale_from_leaftable(df, frames = c("section", "group", "item"))
 }

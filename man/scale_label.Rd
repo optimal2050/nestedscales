@@ -4,12 +4,12 @@
 \alias{scale_label}
 \title{Look up the labels of members}
 \usage{
-scale_label(x, units, frame, variant = NULL)
+scale_label(x, members, frame, variant = NULL)
 }
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{units}{Character vector of member codes at \code{frame}.}
+\item{members}{Character vector of member codes at \code{frame}.}
 
 \item{frame}{The frame the codes are at.}
 
@@ -17,18 +17,18 @@ scale_label(x, units, frame, variant = NULL)
 \code{\link[=attach_labels_scale]{attach_labels_scale()}}.}
 }
 \value{
-A character vector as long as \code{units}.
+A character vector as long as \code{members}.
 }
 \description{
 Returns one display name per code. A code without a label of the chosen
 variant is returned unchanged, so the result is always usable as an axis
-or legend text. \code{NA} in \code{units} stands for the frame itself and returns
+or legend text. \code{NA} in \code{members} stands for the frame itself and returns
 the frame's label, or its name when it has none.
 }
 \examples{
 s <- attach_labels_scale(
   scale_example(),
-  data.frame(frame = "sector", unit = c("P", "S", NA),
+  data.frame(frame = "sector", member = c("P", "S", NA),
              label = c("Primary", "Secondary", "Sector"))
 )
 scale_label(s, c("S", "P", "T"), frame = "sector")

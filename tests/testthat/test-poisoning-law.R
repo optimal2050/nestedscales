@@ -1,8 +1,8 @@
 # =========================================================================== #
 # THE PARTIAL-SOURCE POISONING LAW.
 #
-# When a target unit's sources are only PARTIALLY present in the data, the
-# result for that unit is NA -- not a partial answer. The engine gets this
+# When a target member's sources are only PARTIALLY present in the data, the
+# result for that member is NA -- not a partial answer. The engine gets this
 # from a right join against the crosswalk, which injects an NA row for every
 # (identifier, source) pair the data does not carry.
 #
@@ -18,7 +18,7 @@
 # G2 (U3, U4) and S1 (U5, U6) are wholly absent -- the two cases must be
 # distinguished, so both appear here.
 .partial <- function(v = 1) {
-  data.frame(unit = "U1", value = v, stringsAsFactors = FALSE)
+  data.frame(item = "U1", value = v, stringsAsFactors = FALSE)
 }
 
 test_that("a partially-supplied target is NA for every rule", {
@@ -26,7 +26,7 @@ test_that("a partially-supplied target is NA for every rule", {
   for (r in c("sum", "mean", "weighted_mean", "copy", "sd")) {
     out <- suppressWarnings(
       recast_scale(.partial(), s,
-        source = "unit", target = "class", rule = r,
+        source = "item", target = "class", rule = r,
         weight = if (r == "weighted_mean") "size" else NULL
       )
     )
@@ -47,7 +47,7 @@ test_that("the poisoning is partiality, not absence", {
   # under test: G1 is poisoned by its missing sibling U2, while G2 is simply
   # absent and gets its NA from vocabulary completion.
   out <- suppressWarnings(
-    recast_scale(.partial(), s, source = "unit", target = "class", rule = "sum")
+    recast_scale(.partial(), s, source = "item", target = "class", rule = "sum")
   )
   expect_true(is.na(out$value[out$class == "G1"]))
   expect_true(is.na(out$value[out$class == "G2"]))
@@ -56,11 +56,11 @@ test_that("the poisoning is partiality, not absence", {
   both <- suppressWarnings(
     recast_scale(
       data.frame(
-        unit = c("U1", "U2"), value = c(1, 2),
+        item = c("U1", "U2"), value = c(1, 2),
         stringsAsFactors = FALSE
       ),
       s,
-      source = "unit", target = "class", rule = "sum"
+      source = "item", target = "class", rule = "sum"
     )
   )
   expect_equal(both$value[both$class == "G1"], 3)
@@ -71,14 +71,14 @@ test_that("poisoning is per identifier group, not global", {
   # 2020 has both of G1's sources; 2021 has only one. The complete year must
   # keep its answer -- a poisoned group may not spread across groups.
   d <- data.frame(
-    unit = c("U1", "U2", "U1"),
+    item = c("U1", "U2", "U1"),
     year = c(2020, 2020, 2021),
     value = c(1, 2, 5),
     stringsAsFactors = FALSE
   )
   out <- suppressWarnings(
     recast_scale(d, s,
-      source = "unit", target = "class", rule = "sum",
+      source = "item", target = "class", rule = "sum",
       values = "value"
     )
   )
@@ -86,12 +86,12 @@ test_that("poisoning is per identifier group, not global", {
   expect_true(is.na(out$value[out$class == "G1" & out$year == 2021]))
 })
 
-test_that("a partial source poisons through the atom halves too", {
+test_that("a partial source poisons through the leaf halves too", {
   s <- scale_example()
   up <- suppressWarnings(
-    recast_from_atoms(.partial(), s, target = "class", rule = "sum")
+    recast_from_leaves(.partial(), s, target = "class", rule = "sum")
   )
-  # recast_from_atoms joins the data to the members, so a missing atom simply
+  # recast_from_leaves joins the data to the members, so a missing leaf simply
   # does not contribute; this half does NOT poison, and that asymmetry is
   # deliberate -- pin it so a "consistency" refactor cannot quietly change it
   expect_equal(up$value[up$class == "G1"], 1)
@@ -103,7 +103,7 @@ test_that("poisoning survives on every backend", {
     x <- as_backend(.partial(), bk)
     out <- suppressWarnings(
       recast_scale(x, s,
-        source = "unit", target = "class", rule = "sum",
+        source = "item", target = "class", rule = "sum",
         collect = TRUE
       )
     )
@@ -119,14 +119,14 @@ test_that("the crosswalk is what defines the expected source set", {
   withr::defer(clear_scale_maps())
   # Registering a crosswalk in which G1 has ONLY U1 makes the same data
   # complete -- so the law is "every source the CROSSWALK expects", not
-  # "every unit that happens to exist".
+  # "every member that happens to exist".
   one <- data.frame(
-    unit = "U1", class = "G1", n_from = 1L, n_overlap = 1L,
+    item = "U1", class = "G1", n_from = 1L, n_overlap = 1L,
     w = 1, w_from = 1, stringsAsFactors = FALSE
   )
-  register_scale_map(s, "unit", "class", one)
+  register_scale_map(s, "item", "class", one)
   out <- suppressWarnings(
-    recast_scale(.partial(), s, source = "unit", target = "class", rule = "sum")
+    recast_scale(.partial(), s, source = "item", target = "class", rule = "sum")
   )
   expect_equal(out$value[out$class == "G1"], 1)
 })

@@ -16,20 +16,20 @@ with each release.
 ## Scope
 
 A **nested scale** represents one dimension of a dataset or model as a table
-of atoms, the finest units, with one column per coarser level, the frames.
-Every frame nests in the atoms. Frames may nest in each other (a tree:
+of leaves, the finest members, with one column per coarser level, the frames.
+Every frame nests in the leaves. Frames may nest in each other (a tree:
 activity in division in section) or overlay each other (hours of the day and
-months of the year); every operation routes through the atoms, so both are
+months of the year); every operation routes through the leaves, so both are
 handled alike.
 
 The package covers three things:
 
-1. **Structure**: the levels, the units at each level, and which pairs of
+1. **Structure**: the levels, the members at each level, and which pairs of
    levels nest, cross or are uniform.
 2. **Transition rules**: how a value moves between levels -- summed,
    averaged, weighted, copied, or expressed as a share of its parent.
 3. **Operations**: converting data, attaching labels, subsetting, combining
-   dimensions, grouping units into new levels, and storing data with its
+   dimensions, grouping members into new levels, and storing data with its
    scales.
 
 ## Available now (0.3.0)
@@ -37,15 +37,15 @@ The package covers three things:
 ### Structure
 
 * `scale_from_leaftable()` builds a scale from a table; `scale_frames()`,
-  `scale_units()`, `scale_key()`, `scale_leaftable()`, `scale_weights()`,
-  `scale_rank()` and `scale_atom_level()` read it.
+  `scale_members()`, `scale_leaf_column()`, `scale_leaftable()`, `scale_weights()`,
+  `scale_rank()` and `scale_leaf_frame()` read it.
 * Relations between levels: `scale_nests()`, `scale_crosses()`,
   `scale_is_uniform()`; `scale_family()` and `scale_ancestry()` list
   parent-child pairs; `scale_children()`, `scale_parents()`,
   `scale_descendants()` and `scale_ancestors()` navigate.
 * `scale_share()` and `scale_coverage()` report weights and what fraction of
   a parent a subset keeps.
-* Partial membership (`NA` at a level) and declared residual units
+* Partial membership (`NA` at a level) and declared residual members
   (`scale_residuals()`) are part of the representation.
 * `filter_scale()` and `prune_scale()` subset and collapse a scale, keeping
   the record of coverage.
@@ -70,14 +70,15 @@ The package covers three things:
 ### Operations
 
 * `recast_scale()` converts data between any two levels of a scale, or to
-  the atoms of another scale that shares atom keys; `recast_to_atoms()` and
-  `recast_from_atoms()` are its two halves; `recast_crosswalk()` runs the
+  the leaves of another scale that shares leaf codes; `recast_to_leaves()` and
+  `recast_from_leaves()` are its two halves; `recast_crosswalk()` runs the
   same engine over a correspondence built elsewhere.
 * `scale_map()` and `scale_map_between()` expose the crosswalks;
   `register_scale_map()` installs exact or hand-audited ones.
 * `join_scale()` attaches labels, coarser levels, shares and weights to a
   dataset.
-* The data link: `bind_scale()` records on the code columns of a table
+* The data link (experimental): `bind_scale()` records on the code columns
+  of a table
   which scale and level they are on, and `scale_link()` reports it. The
   link survives subsetting, joins and row binding; the conversion functions
   read the source level from it, stop when the data is bound to another
@@ -86,9 +87,9 @@ The package covers three things:
   can balance the gap.
 * `scale_product()` combines several scales into one multi-dimensional
   index; `recast_product()`, `join_product()` and `filter_product()` work
-  over it without materialising the product of atoms.
+  over it without materialising the product of leaves.
 * `cluster_scale()`, `cluster_contiguous()`, `cluster_medoids()` and
-  `cluster_sweep()` group units by their data and return the scale with the
+  `cluster_sweep()` group members by their data and return the scale with the
   clusters as a new level.
 * `as_scale_array()` and `as_scale_table()` move between long tables and
   dense arrays; `write_scale_dataset()` and `open_scale_dataset()` store data
@@ -98,12 +99,12 @@ The package covers three things:
 
 ### Labels, attributes, aliases and definitions
 
-* **Labels** are display names keyed by `(frame, unit, variant)`: a member
+* **Labels** are display names keyed by `(frame, member, variant)`: a member
   may have several named variants, a level may have none, and a level
   itself can be named. `attach_labels_scale()` adds them, `scale_labels()`
   and `scale_label()` read them, and `join_scale(labels = )` attaches them
   to a dataset.
-* A scale may carry **attributes**, physical values keyed by `(frame, unit)`
+* A scale may carry **attributes**, physical values keyed by `(frame, member)`
   at any level (a calorific value on a fuel, on its carrier or on its
   group), each with a `kind`, bounds, unit of measure and source.
   `scale_attributes()` resolves one value per member along the hierarchy
@@ -155,7 +156,7 @@ The order is not fixed; items move up as the modelling packages need them.
   the core, so any dimension can be drawn and the dimension packages can
   build on it.
 * **Scales from continuous variables.** Income brackets, temperature
-  regimes and vintage bins are nested scales whose atoms are intervals of a
+  regimes and vintage bins are nested scales whose leaves are intervals of a
   continuous variable. Today they are binned by hand before
   `scale_from_leaftable()`; a constructor taking breakpoints, with the
   interval bounds kept as weights, would build them directly.
@@ -174,7 +175,7 @@ The order is not fixed; items move up as the modelling packages need them.
 
 ## Not planned
 
-* Trees as node objects, or an object per unit. The flat atom table is the
+* Trees as node objects, or an object per member. The flat leaf table is the
   representation, and it is what keeps conversion the same for every
   dimension.
 * Guessing a rule when none is given. A value column with no rule is an

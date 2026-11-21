@@ -26,9 +26,9 @@ For intensive quantities (efficiency, price, capacity factor).}
 \item{\code{mean}}{Up: unweighted mean. Down: copy unchanged.}
 \item{\code{copy}}{Up: the common value, erroring if it is not constant.
 Down: copy unchanged. For scale-invariant scalars.}
-\item{\code{sd}}{Up: standard deviation over the atoms (aggregation only;
-going down it degenerates to \code{NA} for single-atom groups).}
-\item{\code{share}}{Share within parent: each source unit's value divided by
+\item{\code{sd}}{Up: standard deviation over the leaves (aggregation only;
+going down it degenerates to \code{NA} for single-leaf groups).}
+\item{\code{share}}{Share within parent: each source member's value divided by
 the total over its parent group. Unlike every other rule the result
 stays keyed at the \strong{source} frame -- the recast target (or
 \verb{parent=}) names the parent -- so it cannot be mixed with other rules

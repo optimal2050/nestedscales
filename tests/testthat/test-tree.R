@@ -16,11 +16,11 @@ test_that("the marks follow the identity", {
   tr <- scale_tree(s)
   mark <- function(part) tr$mark[tr$part == part]
   expect_identical(mark("frames"), "fixed")
-  expect_identical(mark("key"), "fixed")
+  expect_identical(mark("leaf"), "fixed")
   expect_identical(mark("members"), "derived")
   cols <- tr[tr$parent == "leaftable", ]
   expect_identical(
-    cols$mark[cols$kind %in% c("key", "frame")],
+    cols$mark[cols$kind %in% c("leaf column", "frame")],
     rep("fixed", length(scale_frames(s)))
   )
   expect_true(all(cols$mark[cols$kind == "weight"] == "mutable"))
@@ -32,16 +32,16 @@ test_that("changing a mutable part keeps the identity", {
   id <- scale_id(s)
   hash <- function(x) sub("^.*@", "", scale_id(x))
   lab <- attach_labels_scale(s, data.frame(
-    frame = "sector", unit = scale_units(s, "sector")[[1L]], label = "First"
+    frame = "sector", member = scale_members(s, "sector")[[1L]], label = "First"
   ))
   expect_identical(scale_id(lab), id)
   al <- attach_aliases_scale(s, data.frame(
-    frame = "sector", unit = scale_units(s, "sector")[[1L]], alias = "one"
+    frame = "sector", member = scale_members(s, "sector")[[1L]], alias = "one"
   ), source = "t")
   expect_identical(scale_id(al), id)
   at <- attach_attributes_scale(
     s, data.frame(
-      frame = "sector", unit = scale_units(s, "sector")[[1L]],
+      frame = "sector", member = scale_members(s, "sector")[[1L]],
       attribute = "density", value = 1, unit_of_measure = "t/m3"
     ),
     source = "t", kind = "property"
@@ -64,7 +64,7 @@ test_that("changing a fixed part gives another scale", {
   lt <- scale_leaftable(s)
   fr <- scale_frames(s)
   lt[[fr[[1L]]]] <- paste0(lt[[fr[[1L]]]], "x")
-  other <- scale_from_leaftable(lt, frames = fr, key = scale_key(s),
+  other <- scale_from_leaftable(lt, frames = fr, leaf = scale_leaf_column(s),
                                 weights = scale_weights(s), name = "example")
   expect_false(identical(scale_id(other), scale_id(s)))
 })
@@ -108,7 +108,7 @@ test_that("a subclass describes the parts it adds", {
   s <- scale_example()
   x <- Sub(
     leaftable = scale_leaftable(s), frames = scale_frames(s),
-    members = S7::prop(s, "members"), key = scale_key(s),
+    members = S7::prop(s, "members"), leaf = scale_leaf_column(s),
     meta = S7::prop(s, "meta"), payload = 1:3, plain = NULL
   )
   tr <- scale_tree(x)

@@ -13,9 +13,9 @@ the axis names.}
 \item{name, desc}{Short name and description of the product.}
 
 \item{keys}{Optional named character vector overriding the data key column
-per axis. By default each axis uses its scale's own key
-(\code{\link[=scale_key]{scale_key()}}); if that would make two axes share a column name, the
-AXIS NAMES are used instead.}
+per axis. By default each axis uses the name of its scale's leaf column
+(\code{\link[=scale_leaf_column]{scale_leaf_column()}}); if that would make two axes share a column
+name, the AXIS NAMES are used instead.}
 
 \item{joint_weights}{Reserved; see \code{\link{ScaleProduct}}.}
 }

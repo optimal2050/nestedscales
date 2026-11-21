@@ -1,22 +1,22 @@
 # =============================================================================
-# scale_map() -- the crosswalk through the atom layer
+# scale_map() -- the crosswalk through the leaf layer
 # =============================================================================
-# Every conversion is `from -> ATOMS -> to`, collapsed into ONE table: one row
-# per pair of overlapping units, carrying the counts and weights each rule
+# Every conversion is `from -> LEAVES -> to`, collapsed into ONE table: one row
+# per pair of overlapping members, carrying the counts and weights each rule
 # needs. `recast_scale()` is a join against this table plus one grouped
 # summarise, which is what lets the converters run unchanged over
 # data.frame / data.table / arrow backends.
 #
 # Two shapes:
 #   * within ONE scale -- `source`/`target` are frame names of `x`;
-#   * across TWO scales -- `source`/`target` are NestedScale objects, matched on shared
-#     atom keys.
+#   * across TWO scales -- `source`/`target` are NestedScale objects, matched
+#     on the leaf codes they share.
 #
-# The ADAPTER SEAM is `scale_atom_pairs()`: a dimension supplies the atom-level
+# The ADAPTER SEAM is `scale_leaf_pairs()`: a dimension supplies the leaf-level
 # (from, to, w) correspondence and everything downstream is shared. The `NestedScale`
-# default reads it straight from the leaftable, which is already the atom
-# enumeration. A dimension whose atom layer must be GENERATED rather than read
-# -- time, where the atoms are a datetime grid that depends on the year --
+# default reads it straight from the leaftable, which is already the leaf
+# enumeration. A dimension whose leaf layer must be GENERATED rather than read
+# -- time, where the leaves are a datetime grid that depends on the year --
 # overrides this generic and may carry extra identifier columns (`year`)
 # through `by=`; those ride the identifier-column contract from there on.
 # =============================================================================
@@ -27,28 +27,28 @@ NULL
 #' @noRd
 .MAP_REGISTRY <- new.env(parent = emptyenv())
 
-#' Atom-level correspondence between two frames
+#' Leaf-level correspondence between two frames
 #'
-#' The seam a dimension package overrides when its atom layer is generated
-#' rather than enumerated. Returns one row per atom (or per atom and extra
+#' The seam a dimension package overrides when its leaf layer is generated
+#' rather than enumerated. Returns one row per leaf (or per leaf and extra
 #' identifier, e.g. per grid instant and year).
 #'
 #' @param x A [`NestedScale`].
 #' @param ... Method arguments: `source` and `target` (frame names of `x`), `weight`
 #'   (a weight column, or `NULL` for the scale's default), and whatever else
-#'   the dimension needs to generate its atoms -- `year` for a calendar.
+#'   the dimension needs to generate its leaves -- `year` for a calendar.
 #'
 #' @return A `data.frame` with columns `source`, `target`, `w`, plus any extra
 #'   identifier columns the dimension carries. The extra columns must be named
 #'   in the `by` argument of the caller.
 #'
 #' @examples
-#' head(scale_atom_pairs(scale_example(), "class", "group"))
+#' head(scale_leaf_pairs(scale_example(), "class", "group"))
 #' @export
-scale_atom_pairs <- S7::new_generic("scale_atom_pairs", "x")
+scale_leaf_pairs <- S7::new_generic("scale_leaf_pairs", "x")
 
-S7::method(scale_atom_pairs, NestedScale) <- function(x, source, target, weight = NULL,
-                                                ...) {
+S7::method(scale_leaf_pairs, NestedScale) <- function(x, source, target,
+                                                      weight = NULL, ...) {
   leaves <- S7::prop(x, "leaftable")
   wcol <- .map_weight(x, weight)
   data.frame(
@@ -61,29 +61,29 @@ S7::method(scale_atom_pairs, NestedScale) <- function(x, source, target, weight 
 
 #' Crosswalk between two frames of a scale
 #'
-#' Materialises the `from -> atoms -> to` route as a table: one row per pair of
-#' overlapping units with
+#' Materialises the `from -> leaves -> to` route as a table: one row per pair of
+#' overlapping members with
 #'
-#' * `n_from` -- atoms in the `source` unit (its full set, before any target
+#' * `n_from` -- leaves in the `source` member (its full set, before any target
 #'   coverage is considered),
-#' * `n_overlap` -- atoms the pair shares,
-#' * `w` -- the weight of the overlap (summed atom weights, chosen weight
+#' * `n_overlap` -- leaves the pair shares,
+#' * `w` -- the weight of the overlap (summed leaf weights, chosen weight
 #'   column), the quantity `"weighted_mean"` aggregation uses,
-#' * `w_from` -- the full weight of the `source` unit; `w / w_from` is the split
-#'   share `"sum"` disaggregation uses.
+#' * `w_from` -- the full weight of the `source` member; `w / w_from` is the
+#'   split share `"sum"` disaggregation uses.
 #'
 #' The two label columns are named by the frames; rows with an `NA` target
-#' label are atoms `target` does not cover. A crosswalk registered with
+#' label are leaves `target` does not cover. A crosswalk registered with
 #' [`register_scale_map()`] is returned as-is instead of being derived.
 #'
 #' @param x The [`NestedScale`] the frames belong to.
 #' @param source,target Frame names of `x`.
 #' @param weight Weight column for `w`. `NULL` uses the default weight; when
-#'   the object declares no weights at all, every atom gets weight 1 (an equal
+#'   the object declares no weights at all, every leaf gets weight 1 (an equal
 #'   split).
 #' @param by Extra identifier columns carried through from
-#'   [`scale_atom_pairs()`] (e.g. `"year"`).
-#' @param ... Passed to [`scale_atom_pairs()`].
+#'   [`scale_leaf_pairs()`] (e.g. `"year"`).
+#' @param ... Passed to [`scale_leaf_pairs()`].
 #'
 #' @return A `data.frame` with columns `<from>`, `<to>` (`NA` = uncovered by
 #'   `target`), `n_from`, `n_overlap`, `w`, `w_from`, plus any `by` columns.
@@ -117,22 +117,25 @@ scale_map <- function(x, source, target, weight = NULL, by = character(), ...) {
     return(reg)
   }
 
-  d <- scale_atom_pairs(x, source = source, target = target, weight = weight, ...)
+  d <- scale_leaf_pairs(
+    x, source = source, target = target, weight = weight, ...
+  )
   .finish_map(d, source, target, by = by)
 }
 
-#' Crosswalk between two scales through their shared atoms
+#' Crosswalk between two scales through their shared leaves
 #'
-#' The counterpart of [`scale_map()`] for two scales: atoms are matched on
-#' their keys, so a unit of `source` overlaps a unit of `target` where they contain
-#' the same atoms. Same columns as [`scale_map()`], with the two label columns
-#' named after the scales. Atoms of `source` absent from `target` get an `NA` target
-#' (with a warning). A crosswalk registered with
+#' The counterpart of [`scale_map()`] for two scales: leaves are matched on
+#' their codes, so a member of `source` overlaps a member of `target` where
+#' they contain the same leaves. Same columns as [`scale_map()`], with the two
+#' label columns named after the scales. Leaves of `source` absent from
+#' `target` get an `NA` target (with a warning). A crosswalk registered with
 #' [`register_scale_map_between()`] is returned as-is instead of being derived.
 #'
-#' @param source,target Two named [`NestedScale`] objects whose atom keys overlap.
+#' @param source,target Two named [`NestedScale`] objects whose leaf codes
+#'   overlap.
 #' @param weight Weight column of `source` for `w`; `NULL` uses its default
-#'   weight, or weight 1 per atom when it declares none.
+#'   weight, or weight 1 per leaf when it declares none.
 #'
 #' @return A `data.frame` with columns `<from name>`, `<to name>`, `n_from`,
 #'   `n_overlap`, `w`, `w_from`.
@@ -142,9 +145,9 @@ scale_map <- function(x, source, target, weight = NULL, by = character(), ...) {
 #' b <- scale_from_leaftable(
 #'   data.frame(
 #'     big = c("X", "X", "Y", "Y", "Y", "Y", "Z"),
-#'     unit = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH")
+#'     item = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH")
 #'   ),
-#'   frames = c("big", "unit"), name = "other"
+#'   frames = c("big", "item"), name = "other"
 #' )
 #' scale_map_between(a, b)
 #' @export
@@ -167,26 +170,26 @@ scale_map_between <- function(source, target, weight = NULL) {
     return(reg)
   }
 
-  kf <- scale_key(source)
-  kt <- scale_key(target)
+  kf <- scale_leaf_column(source)
+  kt <- scale_leaf_column(target)
   lf <- S7::prop(source, "leaftable")
   lt <- S7::prop(target, "leaftable")
   shared <- intersect(lf[[kf]], lt[[kt]])
   if (length(shared) == 0L) {
-    keys <- if (identical(kf, kt)) sprintf("`%s` keys", kf) else "keys"
+    what <- if (identical(kf, kt)) sprintf("`%s` codes", kf) else "leaf codes"
     hint <- scale_vocab(source)$register_map %||% "register_scale_map_between()"
     .stop(
       paste0(
-        "the atom layers of \"%s\" and \"%s\" share no %s; ",
+        "the leaf layers of \"%s\" and \"%s\" share no %s; ",
         "register an explicit crosswalk with %s"
       ),
-      from_nm, to_nm, keys, hint
+      from_nm, to_nm, what, hint
     )
   }
   n_miss <- sum(!lf[[kf]] %in% shared)
   if (n_miss > 0L) {
     .warn(paste0(
-      "%d atom(s) of \"%s\" have no counterpart in \"%s\"; their ",
+      "%d leaf row(s) of \"%s\" have no counterpart in \"%s\"; their ",
       "share is uncovered (NA target)"
     ), n_miss, from_nm, to_nm)
   }
@@ -209,17 +212,17 @@ scale_map_between <- function(source, target, weight = NULL) {
   .resolve_weight(x, weight)
 }
 
-#' Aggregate an atom frame of from/to/w (plus any `by` columns) into the map
-#' schema
+#' Aggregate a table of leaf pairs, from/to/w (plus any `by` columns), into
+#' the map schema
 #' @noRd
 .finish_map <- function(d, from_lab, to_lab, by = character()) {
   miss <- setdiff(c("source", "target", "w", by), names(d))
   if (length(miss) > 0L) {
-    .stop("the atom correspondence is missing column(s): %s", .preview(miss))
+    .stop("the leaf correspondence is missing column(s): %s", .preview(miss))
   }
   d <- d[!is.na(d$source), , drop = FALSE]
   if (nrow(d) == 0L) {
-    .stop("no atoms carry a code at `source`; the map would be empty")
+    .stop("no leaves carry a code at `source`; the map would be empty")
   }
   d$w[is.na(d$w)] <- 0
   grp <- c(by, "source", "target")
@@ -249,7 +252,7 @@ scale_map_between <- function(source, target, weight = NULL) {
 
 #' Register / look up a direct crosswalk
 #'
-#' A registered map short-circuits the atom-layer derivation in
+#' A registered map short-circuits the leaf-layer derivation in
 #' [`scale_map()`] or [`scale_map_between()`] (and thereby [`recast_scale()`])
 #' for one pair of resolutions -- for cases where the exact correspondence is
 #' known (hand-audited crosswalks, official concordance tables).

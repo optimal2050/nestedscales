@@ -10,7 +10,7 @@ ScaleProduct(axes, keys, joint_weights = NULL, meta = list())
 \item{axes}{Named list of \code{\link{NestedScale}} objects; the names are the axis names.}
 
 \item{keys}{Named character vector, one entry per axis, giving the data
-column that carries that axis's unit codes.}
+column that carries that axis's member codes.}
 
 \item{joint_weights}{Reserved for a weight that varies jointly across axes
 (an hourly profile used as a spatial split weight). \code{NULL} in this
@@ -23,9 +23,9 @@ A \code{ScaleProduct} object.
 }
 \description{
 Combines two or more \code{\link{NestedScale}} objects into one multi-dimensional index --
-time x space, time x space x industry, and so on. The atoms of the product
-are tuples of the component atoms, and they stay LAZY: nothing is
-materialised at construction, and \code{\link[=product_atoms]{product_atoms()}} is the guarded way to
+time x space, time x space x industry, and so on. The leaves of the product
+are tuples of the component leaves, and they stay LAZY: nothing is
+materialised at construction, and \code{\link[=product_leaves]{product_leaves()}} is the guarded way to
 realise them.
 }
 \details{
@@ -35,5 +35,5 @@ Construct with \code{\link[=scale_product]{scale_product()}}.
 scale_product(a = scale_example(), b = scale_example2())
 }
 \seealso{
-\code{\link[=scale_product]{scale_product()}}, \code{\link[=product_atoms]{product_atoms()}}, \code{\link[=product_size]{product_size()}}
+\code{\link[=scale_product]{scale_product()}}, \code{\link[=product_leaves]{product_leaves()}}, \code{\link[=product_size]{product_size()}}
 }

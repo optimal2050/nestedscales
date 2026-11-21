@@ -9,7 +9,7 @@ attach_aliases_scale(x, aliases, source = NULL)
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{aliases}{A \code{data.frame} with columns \code{frame}, \code{unit}, \code{alias} and,
+\item{aliases}{A \code{data.frame} with columns \code{frame}, \code{member}, \code{alias} and,
 unless \code{source} is given, \code{source}.}
 
 \item{source}{Optional single string filled into the \code{source} column.}
@@ -19,7 +19,7 @@ The scale with the rows appended.
 }
 \description{
 Appends rows to the object's alias table: alternative labels by which a
-member (\code{frame}, \code{unit}) is known, tagged with the \code{source} the spelling
+member (\code{frame}, \code{member}) is known, tagged with the \code{source} the spelling
 comes from (a palette, a model's commodity codes, a dataset). The same
 alias may legitimately point at several members; \code{\link[=scale_match]{scale_match()}}
 reports that as ambiguous unless the caller names the frame.
@@ -27,7 +27,7 @@ reports that as ambiguous unless the caller names the frame.
 \examples{
 s <- attach_aliases_scale(
   scale_example(),
-  data.frame(frame = "sector", unit = c("P", "S"),
+  data.frame(frame = "sector", member = c("P", "S"),
              alias = c("primary", "secondary")),
   source = "labels"
 )

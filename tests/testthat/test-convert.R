@@ -39,7 +39,7 @@ test_that("a wrong unit pair errors, naming the direction", {
   )
 })
 
-test_that("an unresolved unit errors by default and keeps NA on request", {
+test_that("an unresolved member errors by default and keeps NA on request", {
   es <- .fuels()
   d <- data.frame(fuel = c("Anthracite", "NaturalGas"), t = c(1, 1))
   expect_error(
@@ -56,7 +56,7 @@ test_that("unknown codes, collisions and non-numeric inputs are refused", {
   expect_error(
     convert_scale(data.frame(fuel = "Unobtainium", t = 1), es,
                   attribute = "lhv", from_unit = "t", to_unit = "GJ"),
-    "not units of frame"
+    "not members of frame"
   )
   expect_error(
     convert_scale(data.frame(fuel = "Anthracite", t = 1, lhv = 0), es,
@@ -77,7 +77,7 @@ test_that("unknown codes, collisions and non-numeric inputs are refused", {
     convert_scale(data.frame(code = c("Oil", "Bio"), t = c(10, 10)), es,
                   attribute = "lhv", from_unit = "t", to_unit = "GJ",
                   frame = "carrier", key = "code"),
-    "not units of frame `carrier`"
+    "not members of frame `carrier`"
   )
 })
 
@@ -92,11 +92,11 @@ test_that("a code at a coarser frame converts with its own value", {
 test_that("the kind is read from the table, not from a catalogue", {
   s <- attach_attributes_scale(
     scale_example(),
-    data.frame(frame = "sector", unit = c("P", "S"), attribute = "yield",
+    data.frame(frame = "sector", member = c("P", "S"), attribute = "yield",
                value = c(2, 4), unit_of_measure = "kg/kg"),
     source = "t", kind = "factor"
   )
-  d <- data.frame(unit = c("U1", "U5"), kg = c(1, 1))
+  d <- data.frame(item = c("U1", "U5"), kg = c(1, 1))
   out <- convert_scale(d, s, attribute = "yield", from_unit = "kg",
                        to_unit = "kg")
   expect_equal(out$kg, c(2, 4))

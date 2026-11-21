@@ -34,7 +34,7 @@ through the worker.
 \examples{
 s <- scale_example()
 d <- data.frame(
-  unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
+  item = c("U1", "U2", "U3", "U4", "U5", "U6"),
   capacity = c(1, 2, 3, 4, 5, 6)
 )
 recast(d, s, target = "sector", rule = "sum")

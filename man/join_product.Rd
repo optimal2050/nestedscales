@@ -25,6 +25,6 @@ all the axes' labels side by side.
 }
 \examples{
 p <- scale_product(a = scale_example(), b = scale_example2())
-d <- data.frame(unit = c("U1", "U3"), period = c("p1", "p2"), v = 1:2)
+d <- data.frame(item = c("U1", "U3"), period = c("p1", "p2"), v = 1:2)
 join_product(d, p, attach = TRUE)
 }

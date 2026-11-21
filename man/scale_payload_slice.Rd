@@ -2,7 +2,7 @@
 % Please edit documentation in R/scale-class.R
 \name{scale_payload_slice}
 \alias{scale_payload_slice}
-\title{Subset a subclass's per-atom payload}
+\title{Subset a subclass's per-leaf payload}
 \usage{
 scale_payload_slice(x, ...)
 }
@@ -16,7 +16,7 @@ indices.}
 \code{x}, with any payload subset to the kept rows.
 }
 \description{
-The seam a dimension package overrides when it carries per-atom data
+The seam a dimension package overrides when it carries per-leaf data
 alongside the leaftable -- geoscales' \code{Geoscale} and its geometry. Called
 whenever the engine rebuilds an object from a row subset, with the kept row
 indices. The \code{NestedScale} default has no payload and returns \code{x} unchanged.

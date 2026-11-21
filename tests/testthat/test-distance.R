@@ -2,12 +2,12 @@
 # Distances and the registry.
 # =========================================================================== #
 
-test_that("scale_distance() is a dist over the frame's units, in order", {
+test_that("scale_distance() is a dist over the frame's members, in order", {
   s <- three_group_scale()
   d <- scale_distance(three_group_data(), s)
   expect_s3_class(d, "dist")
   expect_identical(attr(d, "Size"), 8L)
-  expect_identical(attr(d, "Labels"), scale_units(s))
+  expect_identical(attr(d, "Labels"), scale_members(s))
 })
 
 test_that("level distances see magnitude and shape distances do not", {
@@ -15,14 +15,14 @@ test_that("level distances see magnitude and shape distances do not", {
   t <- sprintf("t%d", 1:6)
   # u1 and u2 have the SAME shape at different magnitudes; u3 differs in shape
   d <- rbind(
-    data.frame(unit = "u1", t = t, v = as.numeric(1:6)),
-    data.frame(unit = "u2", t = t, v = as.numeric(1:6) * 50),
-    data.frame(unit = "u3", t = t, v = as.numeric(6:1)),
-    data.frame(unit = "u4", t = t, v = as.numeric(6:1)),
-    data.frame(unit = "u5", t = t, v = as.numeric(6:1)),
-    data.frame(unit = "u6", t = t, v = as.numeric(6:1)),
-    data.frame(unit = "u7", t = t, v = as.numeric(6:1)),
-    data.frame(unit = "u8", t = t, v = as.numeric(6:1)),
+    data.frame(item = "u1", t = t, v = as.numeric(1:6)),
+    data.frame(item = "u2", t = t, v = as.numeric(1:6) * 50),
+    data.frame(item = "u3", t = t, v = as.numeric(6:1)),
+    data.frame(item = "u4", t = t, v = as.numeric(6:1)),
+    data.frame(item = "u5", t = t, v = as.numeric(6:1)),
+    data.frame(item = "u6", t = t, v = as.numeric(6:1)),
+    data.frame(item = "u7", t = t, v = as.numeric(6:1)),
+    data.frame(item = "u8", t = t, v = as.numeric(6:1)),
     stringsAsFactors = FALSE
   )
 
@@ -36,19 +36,19 @@ test_that("level distances see magnitude and shape distances do not", {
   expect_equal(unname(shp["u1", "u2"]), 0, tolerance = 1e-8)
 })
 
-test_that("scale_units = TRUE turns a level distance into a shape one", {
+test_that("scale_members = TRUE turns a level distance into a shape one", {
   s <- three_group_scale()
   t <- sprintf("t%d", 1:6)
   d <- do.call(rbind, lapply(seq_len(8), function(i) {
     data.frame(
-      unit = sprintf("u%d", i), t = t,
+      item = sprintf("u%d", i), t = t,
       v = as.numeric(1:6) * i, stringsAsFactors = FALSE
     )
   }))
   raw <- as.matrix(scale_distance(d, s, method = "euclidean"))
   std <- as.matrix(scale_distance(d, s,
     method = "euclidean",
-    scale_units = TRUE
+    scale_members = TRUE
   ))
   expect_gt(raw["u1", "u8"], 1)
   expect_equal(unname(std["u1", "u8"]), 0, tolerance = 1e-8)
@@ -60,12 +60,12 @@ test_that("a profile with no shape is maximally distant, not accidentally close"
   d <- do.call(rbind, lapply(seq_len(8), function(i) {
     v <- if (i <= 2) rep(5, 6) else as.numeric(1:6) # u1, u2 are constant
     data.frame(
-      unit = sprintf("u%d", i), t = t, v = v,
+      item = sprintf("u%d", i), t = t, v = v,
       stringsAsFactors = FALSE
     )
   }))
   m <- as.matrix(scale_distance(d, s, method = "correlation"))
-  # two flat units are NOT treated as a matching pair
+  # two flat members are NOT treated as a matching pair
   expect_equal(unname(m["u1", "u2"]), 2)
   expect_equal(unname(m["u1", "u3"]), 2)
   # while two genuinely identical shapes are
@@ -113,7 +113,7 @@ test_that("a registered distance can drive a clustering", {
     k = 3, method = "hclust",
     distance = "mine"
   )
-  expect_true(recovers_groups(attr(cl, "clustering"), "unit", "cluster"))
+  expect_true(recovers_groups(attr(cl, "clustering"), "item", "cluster"))
 })
 
 test_that("the registry validates and clears", {
@@ -140,6 +140,6 @@ test_that("a registered distance of the wrong size is caught", {
   register_scale_distance("wrong", function(m) stats::dist(m[1:3, ]))
   expect_error(
     scale_distance(three_group_data(), s, method = "wrong"),
-    "returned 3 rows for 8 units"
+    "returned 3 rows for 8 members"
   )
 })

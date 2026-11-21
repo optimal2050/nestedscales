@@ -13,7 +13,7 @@ product_weights(x)
 A named list of character vectors.
 }
 \description{
-A product has no weights of its own: the weight of a product atom is the
+A product has no weights of its own: the weight of a product leaf is the
 product of its components' weights, which is derived when needed and never
 stored.
 }

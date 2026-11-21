@@ -20,11 +20,11 @@ scale_leaftable(x)
 \item{...}{Ignored.}
 }
 \value{
-A \code{data.frame}: one row per atom, with the frame columns plus any
+A \code{data.frame}: one row per leaf, with the frame columns plus any
 weight columns.
 }
 \description{
-The one-row-per-atom table the scale is built on, as a plain \code{data.frame} --
+The one-row-per-leaf table the scale is built on, as a plain \code{data.frame} --
 the exported accessor to prefer over reaching for \code{x@leaftable}.
 \code{as.data.frame()} and \code{ggplot2::fortify()} on a NestedScale are equivalent, so
 \verb{ggplot(s) + geom_*()} pipelines work directly.

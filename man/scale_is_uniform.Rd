@@ -2,7 +2,7 @@
 % Please edit documentation in R/navigate.R
 \name{scale_is_uniform}
 \alias{scale_is_uniform}
-\title{Are the units of a frame the same size?}
+\title{Are the members of a frame the same size?}
 \usage{
 scale_is_uniform(x, frame, weight = NULL, tolerance = 1e-09)
 }
@@ -11,23 +11,23 @@ scale_is_uniform(x, frame, weight = NULL, tolerance = 1e-09)
 
 \item{frame}{A frame name.}
 
-\item{weight}{\code{NULL} compares atom counts; a weight column name compares
-its per-unit totals.}
+\item{weight}{\code{NULL} compares leaf counts; a weight column name compares
+its per-member totals.}
 
 \item{tolerance}{Relative tolerance for weight totals.}
 }
 \value{
 A logical scalar. When \code{FALSE}, the attribute \code{"sizes"} holds the
-per-unit counts or totals.
+per-member counts or totals.
 }
 \description{
-\code{TRUE} when every unit of \code{frame} holds the same number of atoms, or the
+\code{TRUE} when every member of \code{frame} holds the same number of leaves, or the
 same total of a weight column: the dimension-free form of a "regular"
-calendar (equal durations) or an equal-area regionalisation. Atoms with
+calendar (equal durations) or an equal-area regionalisation. Leaves with
 no code at \code{frame} are ignored.
 }
 \examples{
 s <- scale_example()
-scale_is_uniform(s, "class")                  # two atoms each
+scale_is_uniform(s, "class")                  # two leaves each
 scale_is_uniform(s, "class", weight = "size") # but not the same size
 }

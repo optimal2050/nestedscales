@@ -2,7 +2,7 @@
 % Please edit documentation in R/distance.R
 \name{scale_distance}
 \alias{scale_distance}
-\title{Distance between the units of a scale}
+\title{Distance between the members of a scale}
 \usage{
 scale_distance(
   data,
@@ -11,39 +11,39 @@ scale_distance(
   key = NULL,
   value = NULL,
   method = "euclidean",
-  scale_units = FALSE
+  scale_members = FALSE
 )
 }
 \arguments{
-\item{data}{Long data: a column of unit codes, one or more identifier
+\item{data}{Long data: a column of member codes, one or more identifier
 columns saying which observation each row is, and a value column.}
 
 \item{x}{A \code{NestedScale}.}
 
-\item{frame}{Frame whose units are compared. Defaults to the atom frame.}
+\item{frame}{Frame whose members are compared. Defaults to the leaf frame.}
 
-\item{key}{Column of \code{data} holding the unit codes. Defaults to \code{frame}
-when present, else the scale's key.}
+\item{key}{Column of \code{data} holding the member codes. Defaults to \code{frame}
+when present, else the scale's leaf column.}
 
 \item{value}{Value column; inferred when unambiguous.}
 
 \item{method}{A name from \code{\link[=list_scale_distances]{list_scale_distances()}}.}
 
-\item{scale_units}{Standardise each unit's profile to mean 0, sd 1 before
+\item{scale_members}{Standardise each member's profile to mean 0, sd 1 before
 measuring. Turns a level distance into a shape distance; has no effect on
 \code{"correlation"}, which already ignores level.}
 }
 \value{
-A \link[stats:dist]{stats::dist} object over the frame's units, in member order.
+A \link[stats:dist]{stats::dist} object over the frame's members, in member order.
 }
 \description{
-Reshapes long, unit-keyed data into a unit-by-observation matrix and
+Reshapes long, member-keyed data into a member-by-observation matrix and
 measures the distance between its rows.
 }
 \examples{
 s <- scale_example()
 d <- data.frame(
-  unit = rep(scale_units(s), each = 3),
+  item = rep(scale_members(s), each = 3),
   t = rep(sprintf("t\%d", 1:3), 7), v = as.numeric(seq_len(21))
 )
 round(scale_distance(d, s, method = "correlation"), 2)

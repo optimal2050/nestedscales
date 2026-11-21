@@ -4,14 +4,14 @@
 \alias{filter_product}
 \title{Subset a product componentwise}
 \usage{
-filter_product(x, axis, frame, unit, ...)
+filter_product(x, axis, frame, member, ...)
 }
 \arguments{
 \item{x}{A \code{\link{ScaleProduct}}.}
 
 \item{axis}{Axis to filter.}
 
-\item{frame, unit}{Passed to \code{\link[=filter_scale]{filter_scale()}}.}
+\item{frame, member}{Passed to \code{\link[=filter_scale]{filter_scale()}}.}
 
 \item{...}{Passed to \code{\link[=filter_scale]{filter_scale()}}.}
 }

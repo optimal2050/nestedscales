@@ -9,7 +9,7 @@ attach_attributes_scale(x, attributes, source = NULL, kind = NULL)
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{attributes}{A \code{data.frame} with columns \code{frame}, \code{unit},
+\item{attributes}{A \code{data.frame} with columns \code{frame}, \code{member},
 \code{attribute}, \code{value}, \code{unit_of_measure}, and optionally \code{lower},
 \code{upper}, \code{note}; \code{kind} and \code{source} as columns or through the
 arguments.}
@@ -25,7 +25,7 @@ The scale with the rows appended.
 }
 \description{
 Appends rows to the object's attribute table. A row names the member it
-belongs to (\code{frame}, \code{unit}), the attribute (\code{attribute}, e.g. \code{"lhv"}),
+belongs to (\code{frame}, \code{member}), the attribute (\code{attribute}, e.g. \code{"lhv"}),
 its \code{kind} (see \code{\link{SCALE_ATTRIBUTE_KINDS}}), its \code{value}, an optional
 \code{lower}/\code{upper} range, the physical \code{unit_of_measure} (\code{"GJ/t"},
 \code{"kg/TJ"}), the \code{source} the figure was taken from and an optional \code{note}.
@@ -34,7 +34,7 @@ carrier is inherited by every fuel under it that has no value of its own
 (see \code{\link[=scale_attributes]{scale_attributes()}}).
 }
 \details{
-Existing rows are never overwritten: a row whose \verb{(frame, unit, attribute, source)} already exists is an error. Attach a second source
+Existing rows are never overwritten: a row whose \verb{(frame, member, attribute, source)} already exists is an error. Attach a second source
 under its own \code{source} name and choose between them with \verb{source=} when
 reading.
 }
@@ -42,10 +42,10 @@ reading.
 s <- scale_example()
 s2 <- attach_attributes_scale(
   s,
-  data.frame(frame = "class", unit = c("G1", "G2", "S1"),
+  data.frame(frame = "class", member = c("G1", "G2", "S1"),
              attribute = "density", value = c(10, 20, 5),
              unit_of_measure = "t/m3"),
   source = "survey", kind = "property"
 )
-scale_attributes(s2, "density", frame = "unit")
+scale_attributes(s2, "density", frame = "item")
 }

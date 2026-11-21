@@ -1,22 +1,23 @@
 # =============================================================================
 # Labels -- display names for members and frames, in named variants
 # =============================================================================
-# A long table keyed by (frame, unit, variant): one row per display name. The
-# table is sparse -- a frame, or a member, without a row is shown by its code
-# -- and a row with `unit = NA` names the frame itself. Labels are for display
-# only; `scale_match()` resolves spellings through the alias table instead.
+# A long table keyed by (frame, member, variant): one row per display name.
+# The table is sparse -- a frame, or a member, without a row is shown by its
+# code -- and a row with `member = NA` names the frame itself. Labels are for
+# display only; `scale_match()` resolves spellings through the alias table
+# instead.
 # =============================================================================
 
 #' @include scale-class.R
 NULL
 
-.LABEL_COLS <- c("frame", "unit", "variant", "label")
+.LABEL_COLS <- c("frame", "member", "variant", "label")
 .DEFAULT_VARIANT <- "label"
 
 #' @noRd
 .empty_labels <- function() {
   data.frame(
-    frame = character(), unit = character(), variant = character(),
+    frame = character(), member = character(), variant = character(),
     label = character(), stringsAsFactors = FALSE
   )
 }
@@ -24,7 +25,7 @@ NULL
 #' The label table, with NULL (a class without the property) as empty
 #' @noRd
 .label_table <- function(x) {
-  attr(x, "labels", exact = TRUE) %||% .empty_labels()
+  .legacy_member_col(attr(x, "labels", exact = TRUE) %||% .empty_labels())
 }
 
 #' Whether the object's embedded class declares the `labels` property
@@ -64,11 +65,11 @@ NULL
   out
 }
 
-#' "frame\runit\rvariant" row keys (an NA unit is the frame's own label)
+#' "frame\rmember\rvariant" row keys (an NA member is the frame's own label)
 #' @noRd
 .label_keys <- function(lb) {
-  paste(lb$frame, ifelse(is.na(lb$unit), "", lb$unit), lb$variant,
-    is.na(lb$unit),
+  paste(lb$frame, ifelse(is.na(lb$member), "", lb$member), lb$variant,
+    is.na(lb$member),
     sep = "\r"
   )
 }
@@ -76,6 +77,7 @@ NULL
 #' @noRd
 .check_labels_table <- function(lb, frames, members, v) {
   errs <- character()
+  lb <- .legacy_member_col(lb)
   if (!identical(names(lb), .LABEL_COLS)) {
     return(sprintf(
       "`labels` must have exactly the columns: %s",
@@ -92,17 +94,17 @@ NULL
       .preview(bad_frame)
     ))
   }
-  check <- lb$frame %in% frames & !is.na(lb$unit)
+  check <- lb$frame %in% frames & !is.na(lb$member)
   is_member <- rep(TRUE, nrow(lb))
   is_member[check] <- vapply(
-    which(check), function(i) lb$unit[[i]] %in% members[[lb$frame[[i]]]],
+    which(check), function(i) lb$member[[i]] %in% members[[lb$frame[[i]]]],
     logical(1)
   )
   if (any(!is_member)) {
-    bad <- unique(paste0(lb$frame, "/", lb$unit)[!is_member])
+    bad <- unique(paste0(lb$frame, "/", lb$member)[!is_member])
     errs <- c(errs, sprintf(
       "`labels` names (%s/%s) pairs that are not members: %s",
-      v$frame, v$unit, .preview(bad)
+      v$frame, v$member, .preview(bad)
     ))
   }
   for (nm in c("variant", "label")) {
@@ -117,7 +119,7 @@ NULL
     errs <- c(errs, sprintf(
       "`labels` has more than one label for: %s",
       .preview(unique(paste0(
-        dup$frame, "/", ifelse(is.na(dup$unit), "<frame>", dup$unit),
+        dup$frame, "/", ifelse(is.na(dup$member), "<frame>", dup$member),
         " [", dup$variant, "]"
       )))
     ))
@@ -150,23 +152,23 @@ NULL
 #' Attach labels to a scale
 #'
 #' Adds display names to the object's label table. A label belongs to a
-#' member (`frame`, `unit`) and to a `variant` -- a free name such as
+#' member (`frame`, `member`) and to a `variant` -- a free name such as
 #' `"name"`, `"short"` or a language code -- so a member may carry several.
 #' The table is sparse: frames and members without a row are shown by their
-#' code. A row with `unit = NA` labels the frame itself.
+#' code. A row with `member = NA` labels the frame itself.
 #'
 #' Labels are for display. Alternative spellings to be *matched* belong in
 #' the alias table, see [`attach_aliases_scale()`].
 #'
 #' @param x A [`NestedScale`].
-#' @param labels A `data.frame` with columns `frame`, `unit`, `label` and,
+#' @param labels A `data.frame` with columns `frame`, `member`, `label` and,
 #'   unless `variant` is given, optionally `variant`.
 #' @param variant Single string filled into the `variant` column when
 #'   `labels` has none. Defaults to `"label"`.
 #' @param default Single string naming the variant used when a lookup names
 #'   none. `NULL` keeps the current default (initially the first variant
 #'   attached).
-#' @param overwrite Replace the label of a (`frame`, `unit`, `variant`)
+#' @param overwrite Replace the label of a (`frame`, `member`, `variant`)
 #'   already present. `FALSE` (default) makes that an error.
 #'
 #' @return The scale with the rows added.
@@ -174,7 +176,7 @@ NULL
 #' @examples
 #' s <- attach_labels_scale(
 #'   scale_example(),
-#'   data.frame(frame = "sector", unit = c("P", "S", NA),
+#'   data.frame(frame = "sector", member = c("P", "S", NA),
 #'              label = c("Primary", "Secondary", "Sector"))
 #' )
 #' scale_labels(s)
@@ -200,7 +202,7 @@ attach_labels_scale <- function(x, labels, variant = NULL, default = NULL,
     if (!isTRUE(overwrite)) {
       .stop(
         "label(s) already present: %s; pass overwrite = TRUE to replace",
-        .preview(unique(paste0(old$frame, "/", old$unit)[clash]))
+        .preview(unique(paste0(old$frame, "/", old$member)[clash]))
       )
     }
     old <- old[!clash, , drop = FALSE]
@@ -229,13 +231,13 @@ attach_labels_scale <- function(x, labels, variant = NULL, default = NULL,
 #' @param frame Restrict to one frame; `NULL` for all.
 #' @param variant Restrict to one variant (or several); `NULL` for all.
 #'
-#' @return A `data.frame` with columns `frame`, `unit`, `variant`, `label`.
-#'   A row with `unit = NA` is the label of the frame itself.
+#' @return A `data.frame` with columns `frame`, `member`, `variant`, `label`.
+#'   A row with `member = NA` is the label of the frame itself.
 #'
 #' @examples
 #' s <- attach_labels_scale(
 #'   scale_example(),
-#'   data.frame(frame = "sector", unit = c("P", "S"),
+#'   data.frame(frame = "sector", member = c("P", "S"),
 #'              label = c("Primary", "Secondary"))
 #' )
 #' scale_labels(s)
@@ -260,21 +262,21 @@ scale_labels <- function(x, frame = NULL, variant = NULL) {
 #'
 #' Returns one display name per code. A code without a label of the chosen
 #' variant is returned unchanged, so the result is always usable as an axis
-#' or legend text. `NA` in `units` stands for the frame itself and returns
+#' or legend text. `NA` in `members` stands for the frame itself and returns
 #' the frame's label, or its name when it has none.
 #'
 #' @param x A [`NestedScale`].
-#' @param units Character vector of member codes at `frame`.
+#' @param members Character vector of member codes at `frame`.
 #' @param frame The frame the codes are at.
 #' @param variant The label variant. `NULL` uses the scale's default, see
 #'   [`attach_labels_scale()`].
 #'
-#' @return A character vector as long as `units`.
+#' @return A character vector as long as `members`.
 #'
 #' @examples
 #' s <- attach_labels_scale(
 #'   scale_example(),
-#'   data.frame(frame = "sector", unit = c("P", "S", NA),
+#'   data.frame(frame = "sector", member = c("P", "S", NA),
 #'              label = c("Primary", "Secondary", "Sector"))
 #' )
 #' scale_label(s, c("S", "P", "T"), frame = "sector")
@@ -282,15 +284,15 @@ scale_labels <- function(x, frame = NULL, variant = NULL) {
 #' scale_label(s, c("G1", "G2"), frame = "class")   # no labels: the codes
 #' @seealso [`attach_labels_scale()`], [`scale_labels()`]
 #' @export
-scale_label <- function(x, units, frame, variant = NULL) {
+scale_label <- function(x, members, frame, variant = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
-  units <- as.character(units)
+  members <- as.character(members)
   variant <- .label_variant(x, variant)
   lb <- .label_table(x)
   lb <- lb[lb$frame == frame & lb$variant == variant, , drop = FALSE]
-  out <- lb$label[match(units, lb$unit)]
+  out <- lb$label[match(members, lb$member)]
   miss <- is.na(out)
-  out[miss] <- ifelse(is.na(units[miss]), frame, units[miss])
+  out[miss] <- ifelse(is.na(members[miss]), frame, members[miss])
   out
 }

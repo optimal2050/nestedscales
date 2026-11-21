@@ -14,8 +14,9 @@ A single string.
 }
 \description{
 A short string that says which scale an object is: its name and a hash of
-its structure, \code{"<name>@<hash>"}. The hash covers the key, the frames and
-the atom-to-frame memberships; weights, attributes, aliases, labels and the
+its structure, \code{"<name>@<hash>"}. The hash covers the leaf column, the
+frames and
+the leaf-to-frame memberships; weights, attributes, aliases, labels and the
 order of rows or members do not enter, so adding a weight keeps data bound
 to the scale valid, while a subset or a re-grouping is a different scale.
 A data link compares the hash alone: two objects with the same structure
@@ -24,9 +25,11 @@ messages.
 }
 \details{
 The hash is the first eight hexadecimal digits of the MD5 of a canonical
-UTF-8 text: the line \verb{key=<key>}, the line \verb{frames=} with the frame names
-tab-separated, then one tab-separated line per atom (key first, then its
-code at each frame, empty where unassigned), atoms sorted by key in the C
+UTF-8 text: the line \verb{key=<leaf column name>} (the prefix \verb{key=} is part
+of the hashed text and is kept so that identities do not change), the
+line \verb{frames=} with the frame names tab-separated, then one tab-separated
+line per leaf (its code in the leaf column first, then its code at each
+frame, empty where unassigned), leaves sorted by the leaf column in the C
 locale, lines joined by \code{"\\n"}.
 }
 \examples{

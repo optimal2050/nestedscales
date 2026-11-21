@@ -2,7 +2,7 @@
 % Please edit documentation in R/cluster.R
 \name{cluster_medoids}
 \alias{cluster_medoids}
-\title{The representative unit of each cluster}
+\title{The representative member of each cluster}
 \usage{
 cluster_medoids(x, frame = NULL)
 }
@@ -12,17 +12,17 @@ cluster_medoids(x, frame = NULL)
 \item{frame}{The cluster frame; defaults to the one the clustering added.}
 }
 \value{
-A data frame of cluster and its representative unit.
+A data frame of cluster and its representative member.
 }
 \description{
-The medoid is an ACTUAL unit, not an average of units, which is what makes
-it usable as a representative period or a representative region: a model
-built on medoids is built on things that really happened.
+The medoid is an ACTUAL member, not an average of members, which is what
+makes it usable as a representative period or a representative region: a
+model built on medoids is built on things that really happened.
 }
 \examples{
 s <- scale_example()
 d <- data.frame(
-  unit = rep(scale_units(s), each = 4),
+  item = rep(scale_members(s), each = 4),
   t = rep(sprintf("t\%d", 1:4), 7), v = as.numeric(seq_len(28))
 )
 cluster_medoids(cluster_scale(d, s, k = 3))

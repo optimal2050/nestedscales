@@ -14,7 +14,7 @@
 
 \item{i}{Frame name.}
 
-\item{j}{Unit codes to keep.}
+\item{j}{Member codes to keep.}
 
 \item{...}{Unused.}
 }
@@ -22,7 +22,7 @@
 A \code{\link{NestedScale}}.
 }
 \description{
-\code{x[frame, unit]} is \code{\link[=filter_scale]{filter_scale()}}.
+\code{x[frame, member]} is \code{\link[=filter_scale]{filter_scale()}}.
 }
 \examples{
 scale_example()["sector", "P"]

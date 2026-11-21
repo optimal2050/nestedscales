@@ -2,8 +2,8 @@
 # Scale definition files -- a scale as a language-neutral bundle
 # =============================================================================
 # A definition is a HEADER plus TABLES. The header (JSON; YAML accepted on the
-# way in and offered on the way out) says what the scale is: its class, key,
-# frames, members, meta, and where each table lives. A table is either INLINE
+# way in and offered on the way out) says what the scale is: its class, leaf
+# column, frames, members, meta, and where each table lives. A table is INLINE
 # in the header (column-wise, with a type per column, the encoding the
 # cross-language goldens already use) or a FILE next to it (Arrow IPC, or CSV
 # with the types recorded so it reads back typed).
@@ -26,7 +26,10 @@
 #' @include aliases.R
 NULL
 
-.SCHEMA_VERSION <- 1L
+# Schema 2 names the leaf column `leaf` in the header and the member code
+# column of the attribute, alias and label tables `member`; schema 1 named
+# them `key` and `unit`. Version 2 is written, both are read.
+.SCHEMA_VERSION <- 2L
 .INLINE_MAX_ROWS <- 1000L
 .COL_TYPES <- c("string", "double", "integer", "logical")
 
@@ -299,7 +302,7 @@ NULL
     nestedscales = as.character(utils::packageVersion("nestedscales")),
     class = class(x)[[1L]],
     name = if (nzchar(nm)) nm else NULL,
-    key = scale_key(x),
+    leaf = scale_leaf_column(x),
     frames = I(scale_frames(x)),
     members = lapply(members, I),
     meta = m$values,
@@ -308,6 +311,15 @@ NULL
   )
   if (length(m$vectors) > 0L) hdr$meta_vectors <- I(m$vectors)
   hdr
+}
+
+#' The name of the leaf column recorded in a header of either schema version
+#' @noRd
+.header_leaf <- function(hdr) {
+  if (isTRUE(hdr$schema_version < 2)) {
+    return(hdr$key %||% "unit")
+  }
+  hdr$leaf %||% "leaf"
 }
 
 #' Rebuild the CORE scale from a header and the directory its files are in
@@ -323,20 +335,25 @@ NULL
   tables <- hdr$tables %||% list()
   if (is.null(tables$leaftable)) .stop("the definition has no `leaftable`")
   leaftable <- .table_from_ref(tables$leaftable, dir, "leaftable")
+  # a schema 1 member table has its codes in a `unit` column
+  member_table <- function(what) {
+    tab <- .table_from_ref(tables[[what]], dir, what)
+    if (sv < 2) .legacy_member_col(tab) else tab
+  }
   at <- if (is.null(tables$attributes)) {
     NULL
   } else {
-    .as_attributes(.table_from_ref(tables$attributes, dir, "attributes"))
+    .as_attributes(member_table("attributes"))
   }
   al <- if (is.null(tables$aliases)) {
     NULL
   } else {
-    .as_aliases(.table_from_ref(tables$aliases, dir, "aliases"))
+    .as_aliases(member_table("aliases"))
   }
   lb <- if (is.null(tables$labels)) {
     NULL
   } else {
-    .as_labels(.table_from_ref(tables$labels, dir, "labels"))
+    .as_labels(member_table("labels"))
   }
   members <- lapply(hdr$members, function(z) as.character(unlist(.as_list(z))))
   frames <- as.character(unlist(.as_list(hdr$frames)))
@@ -346,7 +363,7 @@ NULL
   if (!is.null(hdr$name) && is.null(meta[["name"]])) meta$name <- hdr$name
   NestedScale(
     leaftable = leaftable, frames = frames, members = members,
-    key = hdr$key %||% "unit", meta = meta, attributes = at, aliases = al,
+    leaf = .header_leaf(hdr), meta = meta, attributes = at, aliases = al,
     labels = lb
   )
 }

@@ -16,14 +16,14 @@ NULL
 
 utils::globalVariables(c(".ms_factor", ".ms_origin_frame"))
 
-#' Convert unit-keyed quantities with a member attribute
+#' Convert member-keyed quantities with a member attribute
 #'
 #' Multiplies (or divides) the numeric value columns of `data` by the value
-#' of `attribute` resolved for each row's unit -- a net calorific value to
+#' of `attribute` resolved for each row's member -- a net calorific value to
 #' turn mass into energy, an emission factor to turn energy into CO2, a
 #' density to turn volume into mass. Values are resolved along the hierarchy
 #' exactly as [`scale_attributes()`] does, so a factor stored on a coarser
-#' member applies to every atom under it that has no factor of its own.
+#' member applies to every leaf under it that has no factor of its own.
 #'
 #' Direction comes from the attribute's unit of measure, read as
 #' `"<numerator>/<denominator>"`: with `lhv` in `"GJ/t"`, `from_unit = "t",
@@ -33,7 +33,7 @@ utils::globalVariables(c(".ms_factor", ".ms_origin_frame"))
 #' kilotonnes must be turned into tonnes before converting with a GJ/t
 #' factor.
 #'
-#' A unit for which no value resolves is an **error** by default -- a
+#' A member for which no value resolves is an **error** by default -- a
 #' silently dropped row is a wrong total -- unless `na_action = "keep"`,
 #' which leaves `NA` in its rows.
 #'
@@ -45,12 +45,12 @@ utils::globalVariables(c(".ms_factor", ".ms_origin_frame"))
 #'   after, matching the attribute's unit of measure.
 #' @param key Name of the code column in `data`; defaults to `frame`.
 #' @param frame Frame the codes belong to. Inferred when exactly one of the
-#'   scale's frame names (or its atom level) is a column of `data`.
+#'   scale's frame names (or its leaf column) is a column of `data`.
 #' @param values Value columns to convert; `NULL` takes every numeric column
 #'   that is not the key.
 #' @param source Restrict the attribute to one source; `NULL` errors on a
 #'   conflict between sources.
-#' @param na_action What to do with rows whose unit has no value:
+#' @param na_action What to do with rows whose member has no value:
 #'   `"error"` (default) or `"keep"` (an `NA` result).
 #' @param collect For lazy inputs: materialise (`TRUE`) or return the query.
 #'
@@ -62,17 +62,17 @@ utils::globalVariables(c(".ms_factor", ".ms_origin_frame"))
 #' @examples
 #' s <- attach_attributes_scale(
 #'   scale_example(),
-#'   data.frame(frame = c("sector", "unit"), unit = c("P", "U5"),
+#'   data.frame(frame = c("sector", "item"), member = c("P", "U5"),
 #'              attribute = "lhv", value = c(20, 30),
 #'              unit_of_measure = "GJ/t"),
 #'   source = "example", kind = "property"
 #' )
-#' mass <- data.frame(unit = c("U1", "U2", "U5"), t = c(100, 200, 50))
+#' mass <- data.frame(item = c("U1", "U2", "U5"), t = c(100, 200, 50))
 #' energy <- convert_scale(mass, s, attribute = "lhv",
 #'                         from_unit = "t", to_unit = "GJ")
 #' energy
 #' # back to tonnes: a property is invertible
-#' convert_scale(energy[c("unit", "t")], s, attribute = "lhv",
+#' convert_scale(energy[c("item", "t")], s, attribute = "lhv",
 #'               from_unit = "GJ", to_unit = "t")
 #' @export
 convert_scale <- function(data, x, attribute, from_unit, to_unit,
@@ -128,7 +128,7 @@ convert_scale <- function(data, x, attribute, from_unit, to_unit,
   uom <- unique(stats::na.omit(res$unit_of_measure))
   if (length(uom) == 0L) {
     .stop(
-      "no `%s` value resolves for any %s at %s `%s`", attribute, v$unit,
+      "no `%s` value resolves for any %s at %s `%s`", attribute, v$member,
       v$frame, frame
     )
   }
@@ -181,14 +181,14 @@ convert_scale <- function(data, x, attribute, from_unit, to_unit,
   # every code must be a member, and must resolve (or na_action = "keep") --
   codes <- backend_distinct(data, key, backend)[[key]]
   codes <- unique(as.character(stats::na.omit(codes)))
-  unknown <- setdiff(codes, res$unit)
+  unknown <- setdiff(codes, res$member)
   if (length(unknown) > 0L) {
     .stop(
       "code(s) in `data$%s` that are not %s of %s `%s`: %s",
-      key, v$units, v$frame, frame, .preview(unknown)
+      key, v$members, v$frame, frame, .preview(unknown)
     )
   }
-  unresolved <- intersect(codes, res$unit[is.na(res$value)])
+  unresolved <- intersect(codes, res$member[is.na(res$value)])
   if (length(unresolved) > 0L && na_action == "error") {
     .stop(
       paste0(
@@ -199,7 +199,7 @@ convert_scale <- function(data, x, attribute, from_unit, to_unit,
     )
   }
 
-  fac <- data.frame(res$unit,
+  fac <- data.frame(res$member,
     .ms_factor = res$value,
     .ms_origin_frame = res$origin_frame,
     stringsAsFactors = FALSE

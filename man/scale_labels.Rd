@@ -14,8 +14,8 @@ scale_labels(x, frame = NULL, variant = NULL)
 \item{variant}{Restrict to one variant (or several); \code{NULL} for all.}
 }
 \value{
-A \code{data.frame} with columns \code{frame}, \code{unit}, \code{variant}, \code{label}.
-A row with \code{unit = NA} is the label of the frame itself.
+A \code{data.frame} with columns \code{frame}, \code{member}, \code{variant}, \code{label}.
+A row with \code{member = NA} is the label of the frame itself.
 }
 \description{
 Read the label table
@@ -23,7 +23,7 @@ Read the label table
 \examples{
 s <- attach_labels_scale(
   scale_example(),
-  data.frame(frame = "sector", unit = c("P", "S"),
+  data.frame(frame = "sector", member = c("P", "S"),
              label = c("Primary", "Secondary"))
 )
 scale_labels(s)

@@ -31,7 +31,8 @@ Aliased <- S7::new_class("Aliased",
 a <- Aliased(
   leaftable = scale_leaftable(scale_example()),
   frames = scale_frames(scale_example()),
-  members = S7::prop(scale_example(), "members")
+  members = S7::prop(scale_example(), "members"),
+  leaf = scale_leaf_column(scale_example())
 )
 a@levels
 }

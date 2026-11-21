@@ -1,5 +1,5 @@
 # =========================================================================== #
-# ScaleProduct: construction, the key contract, accessors, guarded atoms.
+# ScaleProduct: construction, the key contract, accessors, guarded leaves.
 # =========================================================================== #
 
 .p2 <- function() scale_product(a = scale_example(), b = scale_example2())
@@ -32,10 +32,10 @@ test_that("axes must be named NestedScale objects", {
   # a scale with no name cannot key a crosswalk or a join column
   anon <- scale_from_leaftable(
     data.frame(
-      g = c("A", "A"), unit = c("u1", "u2"),
+      g = c("A", "A"), item = c("u1", "u2"),
       stringsAsFactors = FALSE
     ),
-    frames = c("g", "unit")
+    frames = c("g", "item")
   )
   expect_error(scale_product(a = scale_example(), b = anon), "has no name")
 })
@@ -51,11 +51,11 @@ test_that("a product may not nest another product", {
 
 test_that("each axis keeps its own key column by default", {
   p <- .p2()
-  expect_identical(product_keys(p), c(a = "unit", b = "period"))
+  expect_identical(product_keys(p), c(a = "item", b = "period"))
 })
 
 test_that("colliding keys fall back to the axis names", {
-  # both example scales are keyed "unit"
+  # both example scales are keyed "member"
   p <- scale_product(first = scale_example(), second = scale_example())
   expect_identical(product_keys(p), c(first = "first", second = "second"))
 })
@@ -107,33 +107,33 @@ test_that("coverage is per axis, and the joint one is their product", {
   expect_equal(prod(cov), 1000 / 3100)
 })
 
-# Atoms -----------------------------------------------------------------------
+# Leaves -----------------------------------------------------------------------
 
-test_that("product_atoms() is the cross product of the components", {
+test_that("product_leaves() is the cross product of the components", {
   p <- .p2()
-  at <- product_atoms(p)
+  at <- product_leaves(p)
   expect_identical(nrow(at), 28L)
-  expect_true(all(c("unit", "period") %in% names(at)))
+  expect_true(all(c("item", "period") %in% names(at)))
   # each axis's frames are carried, prefixed by the axis name
   expect_true(all(c("a.sector", "a.class", "a.group", "b.era") %in%
     names(at)))
-  # the key column is not repeated as a prefixed frame
-  expect_false("a.unit" %in% names(at))
-  expect_setequal(unique(at$unit), scale_units(scale_example()))
-  expect_setequal(unique(at$period), scale_units(scale_example2()))
+  # the leaf column is not repeated as a prefixed frame
+  expect_false("a.item" %in% names(at))
+  expect_setequal(unique(at$item), scale_members(scale_example()))
+  expect_setequal(unique(at$period), scale_members(scale_example2()))
 })
 
-test_that("product_atoms() refuses to build more than `limit` rows", {
+test_that("product_leaves() refuses to build more than `limit` rows", {
   p <- .p2()
-  expect_error(product_atoms(p, limit = 10), "above `limit`")
+  expect_error(product_leaves(p, limit = 10), "above `limit`")
   # the message reports the size so the caller can decide
-  expect_error(product_atoms(p, limit = 10), "28")
-  expect_no_error(product_atoms(p, limit = 28))
+  expect_error(product_leaves(p, limit = 10), "28")
+  expect_no_error(product_leaves(p, limit = 28))
 })
 
 test_that("the leaftable accessor points at the product-shaped ones", {
   p <- .p2()
-  expect_error(scale_leaftable(p), "scale_axes|product_atoms")
+  expect_error(scale_leaftable(p), "scale_axes|product_leaves")
 })
 
 # Reserved joint weights -------------------------------------------------------
@@ -143,7 +143,7 @@ test_that("joint_weights is accepted and validated but not required", {
   expect_null(S7::prop(p, "joint_weights"))
 
   jw <- data.frame(
-    unit = "U1", period = "p1", jw = 1,
+    item = "U1", period = "p1", jw = 1,
     stringsAsFactors = FALSE
   )
   q <- scale_product(
@@ -155,14 +155,14 @@ test_that("joint_weights is accepted and validated but not required", {
   expect_error(
     scale_product(
       a = scale_example(), b = scale_example2(),
-      joint_weights = data.frame(unit = "U1", jw = 1)
+      joint_weights = data.frame(item = "U1", jw = 1)
     ),
     "missing key column"
   )
   expect_error(
     scale_product(
       a = scale_example(), b = scale_example2(),
-      joint_weights = data.frame(unit = "U1", period = "p1")
+      joint_weights = data.frame(item = "U1", period = "p1")
     ),
     "no weight column"
   )
@@ -175,7 +175,7 @@ test_that("print() reports the axes and the implied size", {
   expect_output(print(p), "ScaleProduct")
   expect_output(print(p), "7 x 4 = 28")
   expect_output(print(p), "not materialised")
-  expect_output(print(p), "key: unit")
+  expect_output(print(p), "key: item")
 })
 
 test_that("print() reports sampling when an axis is a sample", {
@@ -187,7 +187,7 @@ test_that("print() reports sampling when an axis is a sample", {
 })
 
 test_that("format() is the one-line form", {
-  expect_match(format(.p2()), "^<ScaleProduct\\[a x b\\] atoms=28>$")
+  expect_match(format(.p2()), "^<ScaleProduct\\[a x b\\] leaves=28>$")
 })
 
 test_that("summary() returns the classed view and prints it", {

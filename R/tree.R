@@ -1,7 +1,7 @@
 # =============================================================================
 # scale_tree() -- the parts of a scale, and which of them may change
 # =============================================================================
-# The identity of a scale (`scale_id()`) is a hash of the key column, the frame
+# The identity of a scale (`scale_id()`) is a hash of the leaf column, the frame
 # names and the frame codes. A part is
 #   fixed    when it enters that hash: changing it makes another scale;
 #   derived  when it is computed from another part;
@@ -86,18 +86,25 @@ S7::method(scale_payload_parts, NestedScale) <- function(x, ...) NULL
 #' The parts of one scale, core rows first
 #' @noRd
 .scale_parts <- function(x) {
+  # the parts are listed by the current class definition
+  x <- .upgrade_scale(x)
   cls <- .s7_class(x)
   props <- names(cls@properties)
+  # a class definition up to 0.2.0 names the leaf column property `key`; it
+  # is listed as `leaf`
+  if (!"leaf" %in% props && "key" %in% props) {
+    props[props == "key"] <- "leaf"
+  }
   core <- intersect(names(.PROP_ROLES), props)
   extra <- setdiff(props, core)
 
   lt <- S7::prop(x, "leaftable")
   frames <- S7::prop(x, "frames")
-  key <- S7::prop(x, "key")
+  leaf <- .leaf_col(x)
   meta <- S7::prop(x, "meta")
   vals <- list(
     leaftable = lt, frames = frames, members = S7::prop(x, "members"),
-    key = key, meta = meta, attributes = .attr_table(x),
+    leaf = leaf, meta = meta, attributes = .attr_table(x),
     aliases = .alias_table(x), labels = .label_table(x)
   )
 
@@ -122,17 +129,19 @@ S7::method(scale_payload_parts, NestedScale) <- function(x, ...) NULL
 
   weights <- intersect(meta[["weights"]] %||% character(), names(lt))
   cols <- names(lt)
-  col_kind <- ifelse(cols == key, "key",
+  col_kind <- ifelse(cols == leaf, "leaf column",
     ifelse(cols %in% frames, "frame",
       ifelse(cols %in% weights, "weight", "column")
     )
   )
-  col_mark <- ifelse(col_kind %in% c("key", "frame"), "fixed", "mutable")
-  ord <- order(match(col_kind, c("key", "frame", "weight", "column")))
+  col_mark <- ifelse(col_kind %in% c("leaf column", "frame"), "fixed",
+    "mutable"
+  )
+  ord <- order(match(col_kind, c("leaf column", "frame", "weight", "column")))
 
   top <- list(
     leaftable = .part_row(shown[["leaftable"]],
-      shape = .prop_shape(lt), note = "one row per atom"
+      shape = .prop_shape(lt), note = "one row per leaf"
     ),
     frames = .part_row(shown[["frames"]],
       shape = .prop_shape(frames), mark = "fixed", note = .preview(frames, 6L)
@@ -143,8 +152,8 @@ S7::method(scale_payload_parts, NestedScale) <- function(x, ...) NULL
         "from ", shown[["leaftable"]], ": ", .frame_counts(lt, frames)
       )
     ),
-    key = .part_row(shown[["key"]],
-      shape = .prop_shape(key), mark = "fixed", note = key
+    leaf = .part_row(shown[["leaf"]],
+      shape = .prop_shape(leaf), mark = "fixed", note = leaf
     ),
     meta = .part_row(shown[["meta"]],
       shape = .prop_shape(meta), mark = "mutable",
@@ -240,7 +249,7 @@ S7::method(scale_payload_parts, NestedScale) <- function(x, ...) NULL
 #' Lists the parts of a scale as a tree: its properties, the columns of the
 #' leaftable, and whatever a subclass adds. Each part carries one of three
 #' marks, defined by the identity of the scale ([`scale_id()`]), which is
-#' computed from the key column, the frame names and the frame codes:
+#' computed from the leaf column, the frame names and the frame codes:
 #'
 #' * `fixed`: the part enters the identity. Changing it gives another scale,
 #'   which data bound to the first one no longer matches; the route is to

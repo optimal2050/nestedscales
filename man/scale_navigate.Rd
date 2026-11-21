@@ -8,30 +8,30 @@
 \alias{scale_ancestors}
 \title{Navigate a NestedScale's hierarchy}
 \usage{
-scale_children(x, frame, unit, target = NULL)
+scale_children(x, frame, member, target = NULL)
 
-scale_parents(x, frame, unit, target = NULL)
+scale_parents(x, frame, member, target = NULL)
 
-scale_descendants(x, frame, unit, target = NULL)
+scale_descendants(x, frame, member, target = NULL)
 
-scale_ancestors(x, frame, unit, target = NULL)
+scale_ancestors(x, frame, member, target = NULL)
 }
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{frame}{The frame \code{unit} belongs to.}
+\item{frame}{The frame \code{member} belongs to.}
 
-\item{unit}{Character vector of codes.}
+\item{member}{Character vector of codes.}
 
 \item{target}{Target frame. \code{NULL} uses the adjacent frame (children/parents)
 or every finer/coarser frame (descendants/ancestors).}
 }
 \value{
 A character vector (children/parents) or a \code{data.frame} with
-columns \code{frame} and \code{unit} (descendants/ancestors).
+columns \code{frame} and \code{member} (descendants/ancestors).
 }
 \description{
-Codes related to \code{unit} at another frame, found through the atoms.
+Codes related to \code{member} at another frame, found through the leaves.
 \code{scale_children()}/\code{scale_parents()} step one frame down/up by default;
 \code{scale_descendants()}/\code{scale_ancestors()} report every finer/coarser frame
 as a frame-tagged table.
@@ -39,7 +39,7 @@ as a frame-tagged table.
 \examples{
 s <- scale_example()
 scale_children(s, "sector", "P")
-scale_parents(s, "unit", "U5")
+scale_parents(s, "item", "U5")
 scale_descendants(s, "sector", "P")
-scale_ancestors(s, "unit", "U5")
+scale_ancestors(s, "item", "U5")
 }

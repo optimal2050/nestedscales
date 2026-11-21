@@ -12,7 +12,7 @@ test_that("scale_family() returns the adjacent pairs by default", {
   expect_identical(nrow(scale_family(s, "mid", "leaf")), 4L)
 })
 
-test_that("scale_family() omits atoms unassigned at either frame", {
+test_that("scale_family() omits leaves unassigned at either frame", {
   s <- scale_example()
   fam <- scale_family(s, "sector", "class")
   expect_false(anyNA(fam$parent))
@@ -57,7 +57,7 @@ test_that("scale_coverage() reads the bookkeeping when present", {
   s <- tidy_scale()
   sampled <- NestedScale(
     leaftable = scale_leaftable(s), frames = scale_frames(s),
-    members = S7::prop(s, "members"), key = "leaf",
+    members = S7::prop(s, "members"), leaf = "leaf",
     meta = list(
       name = "part", weights = "w", default_weight = "w",
       coverage = c(w = 0.5), parent_totals = list(w = 20),
@@ -83,22 +83,22 @@ test_that("scale_crosses() tells a product apart from a tree", {
 
   grid <- expand.grid(m = c("m1", "m2"), h = c("h1", "h2", "h3"),
                       stringsAsFactors = FALSE)
-  grid$unit <- paste(grid$m, grid$h, sep = "_")
-  mh <- scale_from_leaftable(grid, frames = c("m", "h"), key = "unit")
+  grid$item <- paste(grid$m, grid$h, sep = "_")
+  mh <- scale_from_leaftable(grid, frames = c("m", "h"), leaf = "item")
   expect_true(scale_crosses(mh, "m", "h"))
   expect_true(scale_crosses(mh, "h", "m"))
   expect_false(scale_nests(mh, "m", "h"))
-  expect_identical(scale_atom_level(mh), "unit")
+  expect_identical(scale_leaf_frame(mh), "item")
 
   grid2 <- grid[-1, ]                      # drop m1_h1: no longer a product
-  mh2 <- scale_from_leaftable(grid2, frames = c("m", "h"), key = "unit")
+  mh2 <- scale_from_leaftable(grid2, frames = c("m", "h"), leaf = "item")
   expect_false(scale_crosses(mh2, "m", "h"))
 })
 
-test_that("scale_is_uniform() compares atom counts or weight totals", {
+test_that("scale_is_uniform() compares leaf counts or weight totals", {
   s <- scale_example()
-  expect_true(scale_is_uniform(s, "unit"))
-  expect_true(scale_is_uniform(s, "class"))   # two atoms in each class
+  expect_true(scale_is_uniform(s, "item"))
+  expect_true(scale_is_uniform(s, "class"))   # two leaves in each class
   by_size <- scale_is_uniform(s, "class", weight = "size")
   expect_false(by_size)
   expect_named(attr(by_size, "sizes"), c("G1", "G2", "S1"))

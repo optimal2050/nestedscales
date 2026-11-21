@@ -2,7 +2,7 @@
 % Please edit documentation in R/convert.R
 \name{convert_scale}
 \alias{convert_scale}
-\title{Convert unit-keyed quantities with a member attribute}
+\title{Convert member-keyed quantities with a member attribute}
 \usage{
 convert_scale(
   data,
@@ -32,7 +32,7 @@ after, matching the attribute's unit of measure.}
 \item{key}{Name of the code column in \code{data}; defaults to \code{frame}.}
 
 \item{frame}{Frame the codes belong to. Inferred when exactly one of the
-scale's frame names (or its atom level) is a column of \code{data}.}
+scale's frame names (or its leaf column) is a column of \code{data}.}
 
 \item{values}{Value columns to convert; \code{NULL} takes every numeric column
 that is not the key.}
@@ -40,7 +40,7 @@ that is not the key.}
 \item{source}{Restrict the attribute to one source; \code{NULL} errors on a
 conflict between sources.}
 
-\item{na_action}{What to do with rows whose unit has no value:
+\item{na_action}{What to do with rows whose member has no value:
 \code{"error"} (default) or \code{"keep"} (an \code{NA} result).}
 
 \item{collect}{For lazy inputs: materialise (\code{TRUE}) or return the query.}
@@ -53,11 +53,11 @@ input's class.
 }
 \description{
 Multiplies (or divides) the numeric value columns of \code{data} by the value
-of \code{attribute} resolved for each row's unit -- a net calorific value to
+of \code{attribute} resolved for each row's member -- a net calorific value to
 turn mass into energy, an emission factor to turn energy into CO2, a
 density to turn volume into mass. Values are resolved along the hierarchy
 exactly as \code{\link[=scale_attributes]{scale_attributes()}} does, so a factor stored on a coarser
-member applies to every atom under it that has no factor of its own.
+member applies to every leaf under it that has no factor of its own.
 }
 \details{
 Direction comes from the attribute's unit of measure, read as
@@ -67,23 +67,23 @@ a \code{"factor"} is one-way. No unit-prefix arithmetic is done: a column in
 kilotonnes must be turned into tonnes before converting with a GJ/t
 factor.
 
-A unit for which no value resolves is an \strong{error} by default -- a
+A member for which no value resolves is an \strong{error} by default -- a
 silently dropped row is a wrong total -- unless \code{na_action = "keep"},
 which leaves \code{NA} in its rows.
 }
 \examples{
 s <- attach_attributes_scale(
   scale_example(),
-  data.frame(frame = c("sector", "unit"), unit = c("P", "U5"),
+  data.frame(frame = c("sector", "item"), member = c("P", "U5"),
              attribute = "lhv", value = c(20, 30),
              unit_of_measure = "GJ/t"),
   source = "example", kind = "property"
 )
-mass <- data.frame(unit = c("U1", "U2", "U5"), t = c(100, 200, 50))
+mass <- data.frame(item = c("U1", "U2", "U5"), t = c(100, 200, 50))
 energy <- convert_scale(mass, s, attribute = "lhv",
                         from_unit = "t", to_unit = "GJ")
 energy
 # back to tonnes: a property is invertible
-convert_scale(energy[c("unit", "t")], s, attribute = "lhv",
+convert_scale(energy[c("item", "t")], s, attribute = "lhv",
               from_unit = "GJ", to_unit = "t")
 }

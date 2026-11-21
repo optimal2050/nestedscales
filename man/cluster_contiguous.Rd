@@ -2,7 +2,7 @@
 % Please edit documentation in R/contiguity.R
 \name{cluster_contiguous}
 \alias{cluster_contiguous}
-\title{Cluster the units of a scale under a contiguity constraint}
+\title{Cluster the members of a scale under a contiguity constraint}
 \usage{
 cluster_contiguous(
   data,
@@ -12,7 +12,7 @@ cluster_contiguous(
   key = NULL,
   value = NULL,
   distance = "euclidean",
-  scale_units = FALSE,
+  scale_members = FALSE,
   adjacency = "order",
   circular = FALSE,
   linkage = "average",
@@ -21,31 +21,31 @@ cluster_contiguous(
 )
 }
 \arguments{
-\item{data}{Long data: unit codes, one or more identifier columns saying
-which observation each row is, and a value column. A unit that is not
+\item{data}{Long data: member codes, one or more identifier columns saying
+which observation each row is, and a value column. A member that is not
 observed over the same set as the others is an error rather than a hole.}
 
 \item{x}{A \code{NestedScale}.}
 
 \item{k}{Number of clusters.}
 
-\item{frame}{Frame whose units are clustered. Defaults to the atom frame.}
+\item{frame}{Frame whose members are clustered. Defaults to the leaf frame.}
 
 \item{key, value}{Columns of \code{data}; inferred when unambiguous.}
 
 \item{distance}{A name from \code{\link[=list_scale_distances]{list_scale_distances()}}.}
 
-\item{scale_units}{Standardise each unit's profile before measuring;
+\item{scale_members}{Standardise each member's profile before measuring;
 see \code{\link[=scale_distance]{scale_distance()}}.}
 
-\item{adjacency}{How units may be merged. \code{"order"} (the default) treats
-the units at \code{frame} as a sequence in member order and permits only
+\item{adjacency}{How members may be merged. \code{"order"} (the default) treats
+the members at \code{frame} as a sequence in member order and permits only
 neighbours -- the clusters come out as consecutive blocks. Otherwise a
-two-column data frame or a square logical/0-1 matrix over the units,
+two-column data frame or a square logical/0-1 matrix over the members,
 giving the pairs that may merge.}
 
 \item{circular}{For \code{"order"}: treat the sequence as a loop, so the last
-unit neighbours the first. Right for a yearly cycle, wrong for a
+member neighbours the first. Right for a yearly cycle, wrong for a
 trajectory.}
 
 \item{linkage}{How the distance between two clusters is measured:
@@ -55,14 +55,14 @@ trajectory.}
 
 \item{labels}{How to name the clusters: a prefix (the default \code{"c"} gives
 \code{c01}, \code{c02}, ...), or \code{"medoid"} to name each cluster after its
-representative unit, which keeps the codes meaningful.}
+representative member, which keeps the codes meaningful.}
 }
 \value{
 As \code{\link[=cluster_scale]{cluster_scale()}}: the scale with the cluster frame added, and
 the assignment in the \code{"clustering"} attribute.
 }
 \description{
-Merges only units the constraint allows to be merged, so the resulting
+Merges only members the constraint allows to be merged, so the resulting
 groups are contiguous in order (an ordered scale) or connected in space (an
 adjacency graph).
 }
@@ -75,7 +75,7 @@ violates the constraint.
 \examples{
 s <- scale_example()
 d <- data.frame(
-  unit = rep(scale_units(s), each = 4),
+  item = rep(scale_members(s), each = 4),
   t = rep(sprintf("t\%d", 1:4), 7), v = as.numeric(seq_len(28))
 )
 cl <- cluster_contiguous(d, s, k = 3)

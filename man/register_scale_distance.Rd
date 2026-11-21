@@ -19,7 +19,7 @@ clear_scale_distances(name = NULL)
 \item{name}{Distances to remove; \code{NULL} clears every registered one.
 Built-ins cannot be removed.}
 
-\item{fn}{A function of the unit-by-feature matrix returning a
+\item{fn}{A function of the member-by-feature matrix returning a
 \link[stats:dist]{stats::dist} object (or a square matrix) over its rows.}
 }
 \value{

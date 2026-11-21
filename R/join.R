@@ -17,26 +17,27 @@ NULL
 #'
 #' Adds a code column named after the scale, and optionally the codes of
 #' coarser frames (`"<name>.<frame>"`), the display names of the codes
-#' (`"<name>.label"`) and the unit's share and weight (`"<name>.share"`,
+#' (`"<name>.label"`) and the member's share and weight (`"<name>.share"`,
 #' `"<name>.weight"`).
 #'
 #' Existing columns are never overwritten -- a collision is an error.
 #'
-#' @param data The data, in any supported backend, with a column of unit codes.
+#' @param data The data, in any supported backend, with a column of member
+#'   codes.
 #' @param x The [`NestedScale`] to attach.
 #' @param key Name of the code column in `data`. Inferred from the scale's
-#'   name, the keyed frame, or the scale's own key column.
+#'   name, the keyed frame, or the scale's leaf column.
 #' @param frame The frame the codes in `key` are at. `NULL` (default) is
 #'   inferred as the single frame name appearing among the data's columns.
 #' @param attach Coarser frames whose codes to attach as new columns: `TRUE`
 #'   for all of them, a character vector to choose, `NULL`/`FALSE` for none.
-#' @param meta Attach the unit's `share` and `weight` at the keyed frame.
+#' @param meta Attach the member's `share` and `weight` at the keyed frame.
 #' @param weight Weight column used for `meta`. `NULL` uses the default.
 #' @param as_factor Return attached membership columns as factors with the
 #'   frame's full vocabulary as levels (so empty groups still plot).
 #' @param collect For lazy inputs: materialise (`TRUE`) or return the query.
 #' @param diagnostics Whether to run the checks that read the data (no
-#'   matching codes; codes that are not units). `"auto"` (default) runs them
+#'   matching codes; codes that are not members). `"auto"` (default) runs them
 #'   on eager inputs and skips them on arrow/dtplyr, which makes this verb
 #'   zero-scan there; `"on"`/`"off"` force the choice.
 #' @param labels Attach the display names of the keyed codes as
@@ -71,7 +72,7 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
   # keyed frame, and each `<name>.<frame>` column is at that frame.
   nm <- .scale_name(x)
   keyed <- link$source %||% intersect(
-    c(S7::prop(x, "frames"), .atom_level(x)), names(link$data)
+    c(S7::prop(x, "frames"), .leaf_frame(x)), names(link$data)
   )[1L]
   added <- setdiff(names(out), names(link$data))
   new <- list()
@@ -107,10 +108,10 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
   # -- resolve the keyed frame and the key -----------------------------------
   if (is.null(frame)) {
     hit <- intersect(fr_all, names(schema))
-    # Fall back to the atom level when no frame column is present: a Calendar
+    # Fall back to the leaf column when no frame column is present: a Calendar
     # is keyed by its timeslices, which are combinations of its frames rather
     # than codes of one. Only fires where this previously errored.
-    if (length(hit) == 0L) hit <- intersect(.atom_level(x), names(schema))
+    if (length(hit) == 0L) hit <- intersect(.leaf_frame(x), names(schema))
     if (length(hit) != 1L) {
       .stop(
         paste0(
@@ -128,13 +129,13 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
       nm
     } else if (frame %in% names(schema)) {
       frame
-    } else if (scale_key(x) %in% names(schema)) {
-      scale_key(x)
+    } else if (scale_leaf_column(x) %in% names(schema)) {
+      scale_leaf_column(x)
     } else {
       .stop(paste0(
         "the data has no `%s`, `%s`, or `%s` column; ",
         "pass `key=`"
-      ), nm, frame, scale_key(x))
+      ), nm, frame, scale_leaf_column(x))
     }
   }
   if (!key %in% names(schema)) {
@@ -142,8 +143,8 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
   }
 
   # -- what gets attached ----------------------------------------------------
-  # scale_rank(), not match(): the atom level may be the KEY, which is not in
-  # `frames` and ranks one past the last. A raw match() gives NA here.
+  # scale_rank(), not match(): `frame` may be the leaf column, which is not
+  # in `frames` and ranks one past the last. A raw match() gives NA here.
   coarser <- fr_all[seq_len(scale_rank(x, frame) - 1L)]
   if (isTRUE(attach)) attach <- coarser
   if (!is.null(attach) && !isFALSE(attach)) {
@@ -191,7 +192,7 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
     )
     if (nrow(any_match) == 0L) {
       .stop(
-        "no rows of the `%s` column match units at %s '%s'",
+        "no rows of the `%s` column match members at %s '%s'",
         key, v$frame, frame
       )
     }
@@ -205,7 +206,7 @@ join_scale <- function(data, x, key = NULL, frame = NULL, attach = NULL,
     if (length(unknown) > 0L) {
       .warn(
         "%d code(s) in the `%s` column are not %s at %s '%s': %s",
-        length(unknown), key, v$units, v$frame, frame,
+        length(unknown), key, v$members, v$frame, frame,
         .preview(unique(as.character(unknown)))
       )
     }

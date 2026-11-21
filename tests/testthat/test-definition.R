@@ -4,7 +4,7 @@
 .with_meta <- function() {
   s <- .fuels()
   meta <- S7::prop(s, "meta")
-  meta$labels <- data.frame(frame = "carrier", unit = "Coal",
+  meta$labels <- data.frame(frame = "carrier", member = "Coal",
                             label_short = "Coal", stringsAsFactors = FALSE)
   meta$tokens <- c(group = "g", carrier = "c")
   meta$year_start <- list(month = 4L, day = 1L)
@@ -22,7 +22,7 @@ test_that("a single JSON file round-trips a scale with its tables", {
   expect_true(scale_is(back))
   expect_identical(scale_frames(back), scale_frames(s))
   expect_identical(S7::prop(back, "members"), S7::prop(s, "members"))
-  expect_identical(scale_key(back), "fuel")
+  expect_identical(scale_leaf_column(back), "fuel")
   expect_equal(scale_leaftable(back), scale_leaftable(s))
   expect_equal(scale_attributes(back), scale_attributes(s))
   expect_equal(scale_aliases(back), scale_aliases(s))
@@ -42,9 +42,10 @@ test_that("the header is plain JSON with the documented shape", {
   f <- withr::local_tempfile(fileext = ".json")
   write_scale(.fuels(), f, overwrite = TRUE)
   h <- jsonlite::fromJSON(f, simplifyVector = FALSE)
-  expect_identical(h$schema_version, 1L)
+  expect_identical(h$schema_version, 2L)
   expect_identical(h$class, "nestedscales::NestedScale")
-  expect_identical(h$key, "fuel")
+  expect_identical(h$leaf, "fuel")
+  expect_null(h$key)
   expect_identical(unlist(h$frames), c("group", "phase", "carrier", "fuel"))
   expect_named(h$tables, c("leaftable", "attributes", "aliases"))
   expect_true(!is.null(h$tables$leaftable$inline$columns$fuel))
@@ -102,14 +103,14 @@ test_that("auto inlines small scales and files large ones", {
   write_scale(s, d)
   expect_identical(list.files(d), "scale.json")
   big <- scale_from_leaftable(
-    data.frame(top = "T", unit = sprintf("u%04d", 1:1500)),
-    frames = c("top", "unit"), name = "big"
+    data.frame(top = "T", item = sprintf("u%04d", 1:1500)),
+    frames = c("top", "item"), name = "big"
   )
   d2 <- file.path(withr::local_tempdir(), "big")
   write_scale(big, d2)
   files <- list.files(d2)
   expect_true(any(grepl("^leaftable\\.(arrow|csv)$", files)))
-  expect_identical(scale_units(read_scale(d2)), scale_units(big))
+  expect_identical(scale_members(read_scale(d2)), scale_members(big))
 })
 
 test_that("overwrite and junk directories are handled explicitly", {
@@ -178,7 +179,7 @@ test_that("the payload hooks carry a subclass through a bundle", {
   S7::method(scale_read_payload, Shaped) <- function(x, dir, header, ...) {
     Shaped(
       leaftable = scale_leaftable(x), frames = scale_frames(x),
-      members = S7::prop(x, "members"), key = scale_key(x),
+      members = S7::prop(x, "members"), leaf = scale_leaf_column(x),
       meta = S7::prop(x, "meta"),
       shape = readLines(file.path(dir, header$payload$shape$file))
     )
@@ -186,9 +187,9 @@ test_that("the payload hooks carry a subclass through a bundle", {
   base <- scale_example()
   s <- Shaped(
     leaftable = scale_leaftable(base), frames = scale_frames(base),
-    members = S7::prop(base, "members"), key = scale_key(base),
+    members = S7::prop(base, "members"), leaf = scale_leaf_column(base),
     meta = S7::prop(base, "meta"),
-    shape = paste0("shape_", scale_leaftable(base)$unit)
+    shape = paste0("shape_", scale_leaftable(base)$item)
   )
   d <- file.path(withr::local_tempdir(), "shaped.scale")
   write_scale(s, d)
@@ -203,7 +204,7 @@ test_that("the payload hooks carry a subclass through a bundle", {
   expect_error(read_scale(d), "no such class is registered")
   core <- read_scale(d, class = "core")
   expect_false(S7::S7_inherits(core, Shaped))
-  expect_identical(scale_units(core), scale_units(s))
+  expect_identical(scale_members(core), scale_members(s))
 
   # registered: back as itself
   key <- register_scale_class(Shaped)

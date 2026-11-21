@@ -20,7 +20,7 @@ object by definition.}
 column that is not a key.}
 
 \item{frames}{Optional named list giving the frame each axis is keyed at;
-defaults to each axis's atom frame.}
+defaults to each axis's leaf frame.}
 
 \item{fill}{Value for cells the data does not cover.}
 
@@ -39,12 +39,12 @@ plus the value column.
 }
 \description{
 Reshapes a long table into an array whose dimensions are the scale's axes,
-in the order the product declares them, with the units as \code{dimnames}.
+in the order the product declares them, with the members as \code{dimnames}.
 }
 \examples{
 p <- scale_product(a = scale_example(), b = scale_example2())
 d <- merge(
-  data.frame(unit = c("U1", "U2")),
+  data.frame(item = c("U1", "U2")),
   data.frame(period = c("p1", "p2"))
 )
 d$v <- 1:4

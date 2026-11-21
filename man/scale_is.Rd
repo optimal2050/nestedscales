@@ -14,7 +14,7 @@ scale_is_product(x)
 }
 \value{
 A single \code{TRUE} or \code{FALSE}. A product is NOT a scale: it holds
-several and materialises no atoms of its own.
+several and materialises no leaves of its own.
 }
 \description{
 These are how calling code asks what an object is. Build a scale with
@@ -26,6 +26,6 @@ already exports.
 }
 \examples{
 scale_is(scale_example())
-scale_is(data.frame(unit = "U1"))
+scale_is(data.frame(item = "U1"))
 scale_is_product(scale_product(a = scale_example(), b = scale_example2()))
 }

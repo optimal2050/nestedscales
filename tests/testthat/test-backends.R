@@ -7,7 +7,7 @@
 
 .df <- function() {
   data.frame(
-    unit = c("u1", "u2", "u3"), v = c(1, 2, 3),
+    item = c("u1", "u2", "u3"), v = c(1, 2, 3),
     stringsAsFactors = FALSE
   )
 }
@@ -55,7 +55,7 @@ test_that("backend_of() rejects unsupported input once", {
 test_that("backend_schema() describes columns without materialising rows", {
   s <- backend_schema(.df())
   expect_identical(nrow(s), 0L)
-  expect_named(s, c("unit", "v"))
+  expect_named(s, c("item", "v"))
 })
 
 test_that("backend_restore() round-trips every eager backend to its own class", {
@@ -65,7 +65,7 @@ test_that("backend_restore() round-trips every eager backend to its own class", 
     expect_true(.bk_expect_class(out, bk),
       label = sprintf("[%s] class restored", bk)
     )
-    expect_equal(.bk_sort(out, "unit")$v, c(1, 2, 3),
+    expect_equal(.bk_sort(out, "item")$v, c(1, 2, 3),
       label = sprintf("[%s] values", bk)
     )
   }
@@ -83,7 +83,7 @@ test_that("lazy inputs stay lazy unless collect = TRUE", {
     expect_true(.bk_expect_class(out2, bk, collected = TRUE),
       label = sprintf("[%s] collect = TRUE materialises", bk)
     )
-    expect_equal(.bk_sort(out2, "unit")$v, c(1, 2, 3),
+    expect_equal(.bk_sort(out2, "item")$v, c(1, 2, 3),
       label = sprintf("[%s] collected values", bk)
     )
   }
@@ -94,7 +94,7 @@ test_that("lazy inputs stay lazy unless collect = TRUE", {
 test_that("recast_scale() honours the contract on every backend", {
   s <- scale_example()
   input <- data.frame(
-    unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
+    item = c("U1", "U2", "U3", "U4", "U5", "U6"),
     value = c(1, 2, 3, 4, 5, 6),
     stringsAsFactors = FALSE
   )
@@ -103,7 +103,7 @@ test_that("recast_scale() honours the contract on every backend", {
     function(x, collect = NULL) {
       suppressWarnings(
         recast_scale(x, s,
-          source = "unit", target = "sector", rule = "sum",
+          source = "item", target = "sector", rule = "sum",
           collect = collect
         )
       )
@@ -118,7 +118,7 @@ test_that("recast_scale() honours the contract on every backend", {
 test_that("recast_scale() with identifiers holds on every backend", {
   s <- scale_example()
   input <- data.frame(
-    unit = rep(c("U1", "U2", "U3", "U4", "U5", "U6"), 2),
+    item = rep(c("U1", "U2", "U3", "U4", "U5", "U6"), 2),
     year = rep(c(2020, 2021), each = 6),
     value = c(1, 2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12),
     stringsAsFactors = FALSE
@@ -128,7 +128,7 @@ test_that("recast_scale() with identifiers holds on every backend", {
     function(x, collect = NULL) {
       suppressWarnings(
         recast_scale(x, s,
-          source = "unit", target = "sector", rule = "sum",
+          source = "item", target = "sector", rule = "sum",
           values = "value", collect = collect
         )
       )
@@ -138,7 +138,7 @@ test_that("recast_scale() with identifiers holds on every backend", {
   )
 })
 
-test_that("recast_to_atoms() honours the contract on every backend", {
+test_that("recast_to_leaves() honours the contract on every backend", {
   s <- scale_example()
   input <- data.frame(
     sector = c("P", "S"), cap = c(10, 20),
@@ -148,26 +148,26 @@ test_that("recast_to_atoms() honours the contract on every backend", {
     input,
     function(x, collect = NULL) {
       suppressWarnings(
-        recast_to_atoms(x, s,
+        recast_to_leaves(x, s,
           source = "sector", rule = "sum",
           weight = "size", collect = collect
         )
       )
     },
-    key_cols = "unit"
+    key_cols = "item"
   )
 })
 
 test_that("every entry point rejects unsupported input the same way", {
   s <- scale_example()
   expect_backend_rejects(function(x) {
-    recast_scale(x, s, source = "unit", target = "sector", rule = "sum")
+    recast_scale(x, s, source = "item", target = "sector", rule = "sum")
   })
   expect_backend_rejects(function(x) {
-    recast_to_atoms(x, s, source = "sector", rule = "sum")
+    recast_to_leaves(x, s, source = "sector", rule = "sum")
   })
   expect_backend_rejects(function(x) {
-    recast_from_atoms(x, s, target = "sector", rule = "sum")
+    recast_from_leaves(x, s, target = "sector", rule = "sum")
   })
 })
 

@@ -13,11 +13,11 @@
 #'   `x@frames`.
 #'
 #' @return A `data.frame` with columns `parent_frame`, `parent`, `child_frame`,
-#'   `child`. Atoms unassigned at either frame are omitted.
+#'   `child`. Leaves unassigned at either frame are omitted.
 #'
 #' @examples
 #' s <- scale_example()
-#' scale_family(s, "group", "unit")
+#' scale_family(s, "group", "item")
 #' @export
 scale_family <- function(x, parent = NULL, child = NULL) {
   .check_scale(x)
@@ -72,8 +72,8 @@ scale_family <- function(x, parent = NULL, child = NULL) {
 #' can straddle two parents, and a reporting classification can assign one
 #' detailed class to several aggregates.
 #'
-#' Nesting is *not* required by [`NestedScale`] -- conversion routes through the atom
-#' layer and works either way. This function is a diagnostic.
+#' Nesting is *not* required by [`NestedScale`] -- conversion routes through
+#' the leaf layer and works either way. This function is a diagnostic.
 #'
 #' @param x A [`NestedScale`].
 #' @param parent,child Frame names.
@@ -95,16 +95,16 @@ scale_nests <- function(x, parent, child) {
 
 #' Do two frames form a product?
 #'
-#' `TRUE` when every unit of `a` combines with the same set of units of `b`,
+#' `TRUE` when every member of `a` combines with the same set of members of `b`,
 #' as the months and hours of a `MONTH x HOUR` calendar do: the frames overlay
-#' rather than nest, and the atoms are their combinations. The complement of
+#' rather than nest, and the leaves are their combinations. The complement of
 #' [`scale_nests()`] for the other common shape; a pair can be neither.
 #'
 #' @inheritParams scale_nests
 #' @param a,b Frame names.
 #'
 #' @return A logical scalar. When `FALSE`, the attribute `"offenders"` names
-#'   the units of `a` whose set of `b` units differs from the first one's.
+#'   the members of `a` whose set of `b` members differs from the first one's.
 #'
 #' @examples
 #' s <- scale_example()
@@ -112,8 +112,8 @@ scale_nests <- function(x, parent, child) {
 #'
 #' grid <- expand.grid(m = c("m1", "m2"), h = c("h1", "h2", "h3"),
 #'                     stringsAsFactors = FALSE)
-#' grid$unit <- paste(grid$m, grid$h, sep = "_")
-#' mh <- scale_from_leaftable(grid, frames = c("m", "h"), key = "unit")
+#' grid$item <- paste(grid$m, grid$h, sep = "_")
+#' mh <- scale_from_leaftable(grid, frames = c("m", "h"), leaf = "item")
 #' scale_crosses(mh, "m", "h")
 #' scale_nests(mh, "m", "h")
 #' @export
@@ -129,33 +129,33 @@ scale_crosses <- function(x, a, b) {
   ok
 }
 
-#' Are the units of a frame the same size?
+#' Are the members of a frame the same size?
 #'
-#' `TRUE` when every unit of `frame` holds the same number of atoms, or the
+#' `TRUE` when every member of `frame` holds the same number of leaves, or the
 #' same total of a weight column: the dimension-free form of a "regular"
-#' calendar (equal durations) or an equal-area regionalisation. Atoms with
+#' calendar (equal durations) or an equal-area regionalisation. Leaves with
 #' no code at `frame` are ignored.
 #'
 #' @inheritParams scale_nests
 #' @param frame A frame name.
-#' @param weight `NULL` compares atom counts; a weight column name compares
-#'   its per-unit totals.
+#' @param weight `NULL` compares leaf counts; a weight column name compares
+#'   its per-member totals.
 #' @param tolerance Relative tolerance for weight totals.
 #'
 #' @return A logical scalar. When `FALSE`, the attribute `"sizes"` holds the
-#'   per-unit counts or totals.
+#'   per-member counts or totals.
 #'
 #' @examples
 #' s <- scale_example()
-#' scale_is_uniform(s, "class")                  # two atoms each
+#' scale_is_uniform(s, "class")                  # two leaves each
 #' scale_is_uniform(s, "class", weight = "size") # but not the same size
 #' @export
 scale_is_uniform <- function(x, frame, weight = NULL, tolerance = 1e-9) {
   .check_scale(x)
   .check_frame(x, frame, "frame")
   lf <- S7::prop(x, "leaftable")
-  units <- as.character(lf[[frame]])
-  keep <- !is.na(units)
+  members <- as.character(lf[[frame]])
+  keep <- !is.na(members)
   w <- if (is.null(weight)) {
     rep(1, nrow(lf))
   } else {
@@ -165,7 +165,7 @@ scale_is_uniform <- function(x, frame, weight = NULL, tolerance = 1e-9) {
     }
     as.numeric(lf[[weight]])
   }
-  sizes <- tapply(w[keep], units[keep], sum, na.rm = TRUE)
+  sizes <- tapply(w[keep], members[keep], sum, na.rm = TRUE)
   if (length(sizes) == 0L) {
     return(FALSE)
   }
@@ -177,14 +177,14 @@ scale_is_uniform <- function(x, frame, weight = NULL, tolerance = 1e-9) {
 
 #' Ancestry between all frame pairs
 #'
-#' Every `(coarser, finer)` code pair that shares at least one atom, for all
+#' Every `(coarser, finer)` code pair that shares at least one leaf, for all
 #' frame pairs.
 #'
-#' Computed **atom-mediated**, directly from the leaftable -- deliberately not
+#' Computed **leaf-mediated**, directly from the leaftable -- deliberately not
 #' as a transitive closure of [`scale_family()`]. Closing a hierarchy that
 #' cross-cuts manufactures false relationships: in the example scale, group
-#' `GB` straddles both sectors, so closing `sector -> class -> group -> unit`
-#' would wrongly report sector `P` as an ancestor of unit `U5`, which lies in
+#' `GB` straddles both sectors, so closing `sector -> class -> group -> item`
+#' would wrongly report sector `P` as an ancestor of member `U5`, which lies in
 #' sector `S`.
 #'
 #' For frames that do not nest this relation is *overlap*, not containment --
@@ -226,32 +226,32 @@ scale_ancestry <- function(x) {
 
 #' Navigate a NestedScale's hierarchy
 #'
-#' Codes related to `unit` at another frame, found through the atoms.
+#' Codes related to `member` at another frame, found through the leaves.
 #' `scale_children()`/`scale_parents()` step one frame down/up by default;
 #' `scale_descendants()`/`scale_ancestors()` report every finer/coarser frame
 #' as a frame-tagged table.
 #'
 #' @param x A [`NestedScale`].
-#' @param frame The frame `unit` belongs to.
-#' @param unit Character vector of codes.
+#' @param frame The frame `member` belongs to.
+#' @param member Character vector of codes.
 #' @param target Target frame. `NULL` uses the adjacent frame (children/parents)
 #'   or every finer/coarser frame (descendants/ancestors).
 #'
 #' @return A character vector (children/parents) or a `data.frame` with
-#'   columns `frame` and `unit` (descendants/ancestors).
+#'   columns `frame` and `member` (descendants/ancestors).
 #'
 #' @examples
 #' s <- scale_example()
 #' scale_children(s, "sector", "P")
-#' scale_parents(s, "unit", "U5")
+#' scale_parents(s, "item", "U5")
 #' scale_descendants(s, "sector", "P")
-#' scale_ancestors(s, "unit", "U5")
+#' scale_ancestors(s, "item", "U5")
 #' @name scale_navigate
 NULL
 
 #' @rdname scale_navigate
 #' @export
-scale_children <- function(x, frame, unit, target = NULL) {
+scale_children <- function(x, frame, member, target = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- .nav_levels(x)
@@ -266,12 +266,12 @@ scale_children <- function(x, frame, unit, target = NULL) {
     target <- fr[i + 1L]
   }
   .check_frame(x, target, "target")
-  .related(x, frame, unit, target)
+  .related(x, frame, member, target)
 }
 
 #' @rdname scale_navigate
 #' @export
-scale_parents <- function(x, frame, unit, target = NULL) {
+scale_parents <- function(x, frame, member, target = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- .nav_levels(x)
@@ -286,12 +286,12 @@ scale_parents <- function(x, frame, unit, target = NULL) {
     target <- fr[i - 1L]
   }
   .check_frame(x, target, "target")
-  .related(x, frame, unit, target)
+  .related(x, frame, member, target)
 }
 
 #' @rdname scale_navigate
 #' @export
-scale_descendants <- function(x, frame, unit, target = NULL) {
+scale_descendants <- function(x, frame, member, target = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- .nav_levels(x)
@@ -302,12 +302,12 @@ scale_descendants <- function(x, frame, unit, target = NULL) {
     .check_frame(x, target, "target")
     target
   }
-  .related_df(x, frame, unit, targets)
+  .related_df(x, frame, member, targets)
 }
 
 #' @rdname scale_navigate
 #' @export
-scale_ancestors <- function(x, frame, unit, target = NULL) {
+scale_ancestors <- function(x, frame, member, target = NULL) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- .nav_levels(x)
@@ -318,22 +318,22 @@ scale_ancestors <- function(x, frame, unit, target = NULL) {
     .check_frame(x, target, "target")
     target
   }
-  .related_df(x, frame, unit, targets)
+  .related_df(x, frame, member, targets)
 }
 
 #' Related codes across several frames, as a frame-tagged table
 #' @noRd
-.related_df <- function(x, frame, unit, targets) {
+.related_df <- function(x, frame, member, targets) {
   if (length(targets) == 0L) {
     return(data.frame(
-      frame = character(), unit = character(),
+      frame = character(), member = character(),
       stringsAsFactors = FALSE
     ))
   }
   parts <- lapply(targets, function(t) {
-    codes <- .related(x, frame, unit, t)
+    codes <- .related(x, frame, member, t)
     data.frame(
-      frame = rep(t, length(codes)), unit = codes,
+      frame = rep(t, length(codes)), member = codes,
       stringsAsFactors = FALSE
     )
   })
@@ -342,20 +342,20 @@ scale_ancestors <- function(x, frame, unit, target = NULL) {
   out
 }
 
-#' Codes at `target` that share at least one atom with `unit` at `frame`
+#' Codes at `target` that share at least one leaf with `member` at `frame`
 #' @noRd
-.related <- function(x, frame, unit, target) {
+.related <- function(x, frame, member, target) {
   leaves <- S7::prop(x, "leaftable")
-  unknown <- setdiff(unit, scale_units(x, frame))
+  unknown <- setdiff(member, scale_members(x, frame))
   if (length(unknown) > 0L) {
     .stop(
       "code(s) not found at %s `%s`: %s", scale_vocab(x)$frame, frame,
       .preview(unknown)
     )
   }
-  hit <- leaves[[frame]] %in% unit
+  hit <- leaves[[frame]] %in% member
   out <- unique(stats::na.omit(as.character(leaves[[target]][hit])))
-  ord <- scale_units(x, target)
+  ord <- scale_members(x, target)
   out[order(match(out, ord))]
 }
 

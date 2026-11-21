@@ -35,10 +35,10 @@ preserved as identifiers.}
 the data's columns.}
 
 \item{target}{Target frame name of \code{x}, or another (named) \code{\link{NestedScale}} -- then
-the target is that object's atom layer, matched on shared atom keys.}
+the target is that object's leaf layer, matched on shared leaf codes.}
 
 \item{key}{Name of the code column in \code{data}. Defaults to \code{source} when that
-column exists, otherwise the scale's own key.}
+column exists, otherwise the name of the scale's leaf column.}
 
 \item{values}{Character vector of value columns to convert. Default: all
 numeric columns other than the key and the scale's frame columns. Numeric
@@ -53,10 +53,11 @@ fallback (a silently guessed rule is a silent unit error).}
 \item{weight}{Weight column used by \code{sum} (splitting) and \code{weighted_mean};
 scalar or named per column. \code{NULL} uses each column's registered weight,
 falling back to the object's default weight; when the object declares no
-weights at all, atoms weigh 1 (an equal split, warned about when it is
+weights at all, leaves weigh 1 (an equal split, warned about when it is
 material).}
 
-\item{na_action}{What to do with atoms that have no code at \code{source} or \code{target}:
+\item{na_action}{What to do with leaves that have no code at \code{source} or
+\code{target}:
 \code{"drop"} (default, with a warning -- the affected source share is
 genuinely lost), \code{"error"}, or \code{"keep"} (retain an explicit \code{NA} row so
 totals conserve).}
@@ -69,14 +70,14 @@ shares are taken within. \code{NULL} (default) uses \code{target} when it differ
 the uncollected query (default).}
 
 \item{diagnostics}{Whether to run the checks that need a scan of the data:
-unknown source codes, dropped shares, and source units missing from the
+unknown source codes, dropped shares, and source members missing from the
 data. \code{"auto"} (default) runs them on eager inputs and skips them on
 arrow/dtplyr, where a scan would defeat the point of returning a query;
 \code{"on"} and \code{"off"} force the choice. Errors that do not depend on the
 data -- unknown frames, reserved column names, a missing rule -- are
 raised regardless.}
 
-\item{missing_sources}{What to do when a target unit's sources are only
+\item{missing_sources}{What to do when a target member's sources are only
 partially present in the data. \code{"na"} (default) makes the result \code{NA} --
 a partial answer is not an answer. \code{"ignore"} aggregates whatever is
 there, which is faster but silently turns incomplete data into a
@@ -97,12 +98,12 @@ The recast table in the input's class, with columns
 \code{c(to, identifiers, values)}.
 }
 \description{
-The central conversion verb: takes a table keyed by unit code at frame
+The central conversion verb: takes a table keyed by member code at frame
 \code{source} and returns one keyed at \code{target} -- a frame name of the same
-\code{\link{NestedScale}}, or ANOTHER NestedScale (whose atom layer is the target, matched on
-shared atom keys). Handles both aggregation (fine to coarse) and
+\code{\link{NestedScale}}, or ANOTHER NestedScale (whose leaf layer is the target,
+matched on shared leaf codes). Handles both aggregation (fine to coarse) and
 disaggregation (coarse to fine) with one rule per value column; frames that
-cross-cut work too, because the route always goes through the atom layer.
+cross-cut work too, because the route always goes through the leaf layer.
 A crosswalk registered with \code{\link[=register_scale_map]{register_scale_map()}} short-circuits the
 derivation.
 }
@@ -112,16 +113,16 @@ as identifiers (panel columns -- a year, a technology) and preserved as
 grouping columns, so panel data recasts correctly in one call. This is what
 makes mixed pipelines across two dimensions work: a recast in one dimension
 carries the other dimension's key through untouched. Columns named like the
-scale's own frames are treated as unit attributes and dropped.
+scale's own frames are treated as member attributes and dropped.
 
-\code{"sum"} splits each source value across its unit's atoms proportionally to
+\code{"sum"} splits each source value across its member's leaves proportionally to
 the weight before summing up, so totals are conserved. \code{"weighted_mean"}
-weights by the atom weights; \code{"mean"} is the plain atom-count mean -- the
-two differ exactly when atom weights differ. \code{"copy"} requires a constant
-value per target unit; \code{"sd"} is aggregation-only.
+weights by the leaf weights; \code{"mean"} is the plain leaf-count mean -- the
+two differ exactly when leaf weights differ. \code{"copy"} requires a constant
+value per target member; \code{"sd"} is aggregation-only.
 
 \code{"share"} inverts the output contract: the result stays keyed at \code{source},
-and each value becomes that unit's share of the total over its parent
+and each value becomes that member's share of the total over its parent
 group. \code{source} must nest within the parent. It cannot be combined with other
 rules in one call, and \verb{weight=} is ignored -- the observed values
 themselves are the weights.
@@ -131,7 +132,7 @@ themselves are the weights.
 The data may be a \code{data.frame}, tibble, \code{data.table}, \code{dtplyr} lazy table,
 or an arrow Dataset/Table/query. The result comes back in the input's class;
 lazy inputs return the uncollected query unless \code{collect = TRUE}. Lazy
-results contain the observed target units only -- the full-vocabulary
+results contain the observed target members only -- the full-vocabulary
 completion (and its \code{NA} rows) applies when the result is materialised.
 }
 
@@ -140,10 +141,10 @@ s <- scale_example()
 
 # Extensive quantity, fine -> coarse: totals are preserved
 d <- data.frame(
-  unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
+  item = c("U1", "U2", "U3", "U4", "U5", "U6"),
   capacity = c(1, 2, 3, 4, 5, 6)
 )
-recast_scale(d, s, source = "unit", target = "sector", rule = "sum")
+recast_scale(d, s, source = "item", target = "sector", rule = "sum")
 
 # Coarse -> fine: split proportionally to size
 y <- data.frame(sector = c("P", "S"), capacity = c(10, 20))
@@ -152,10 +153,10 @@ recast_scale(y, s,
   rule = "sum", weight = "size"
 )
 
-# Share within parent: result stays at the atoms, sums to 1 per sector
+# Share within parent: result stays at the leaves, sums to 1 per sector
 recast_scale(
   d, s,
-  source = "unit", target = "sector",
+  source = "item", target = "sector",
   rule = "share",
   na_action = "keep"
 )

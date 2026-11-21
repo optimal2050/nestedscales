@@ -6,14 +6,14 @@
 NULL
 
 .PROP_ROLES <- c(
-  leaftable  = "one row per atom: key, frame codes, weights",
+  leaftable  = "one row per leaf: leaf column, frame codes, weights",
   frames     = "frame names, coarsest first",
   members    = "the codes at each frame",
-  key        = "name of the atom key column",
+  leaf       = "name of the leaf column",
   meta       = "name, description, weights, bookkeeping",
-  attributes = "member values, by (frame, unit)",
-  aliases    = "alternative spellings, by (frame, unit)",
-  labels     = "display names, by (frame, unit, variant)"
+  attributes = "member values, by (frame, member)",
+  aliases    = "alternative spellings, by (frame, member)",
+  labels     = "display names, by (frame, member, variant)"
 )
 
 #' @noRd

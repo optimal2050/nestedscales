@@ -2,27 +2,27 @@
 # Construction
 # =============================================================================
 # `scale_from_leaftable()` is the general escape hatch: a wide table with one
-# row per atom and one column per frame. Dimension packages add their own
+# row per leaf and one column per frame. Dimension packages add their own
 # higher layers on top (a catalog lookup in `timescales`, a data provider in
 # `geoscales`) and delegate here.
 # =============================================================================
 
-#' Build a NestedScale from a flat table of atoms
+#' Build a NestedScale from a flat table of leaves
 #'
-#' The general constructor. Takes a wide `data.frame` with one row per atom
-#' (the finest unit) and one column per frame, and returns a [`NestedScale`].
+#' The general constructor. Takes a wide `data.frame` with one row per leaf
+#' (the finest member) and one column per frame, and returns a [`NestedScale`].
 #'
 #' Blank strings (`""`) in frame columns are normalised to `NA`, meaning "this
-#' atom has no code at this frame" -- partial coverage is normal in real
+#' leaf has no code at this frame" -- partial coverage is normal in real
 #' classification tables.
 #'
-#' @param leaftable `data.frame` with one row per atom, one column per name in
+#' @param leaftable `data.frame` with one row per leaf, one column per name in
 #'   `frames`, and optionally numeric weight columns.
 #' @param frames Ordered character vector of frame names, **coarsest first**.
 #'   Each must be a column of `leaftable`.
-#' @param key Name of the column holding the unique atom key. Defaults to
-#'   `"unit"` if present, otherwise the finest frame (the last entry of
-#'   `frames`), which is copied into a `unit` column.
+#' @param leaf Name of the leaf column: the column that identifies the
+#'   leaves, one unique code per row. Defaults to a column called `"leaf"`
+#'   if present, otherwise to the finest frame (the last entry of `frames`).
 #' @param weights Character vector naming the weight columns. Defaults to all
 #'   numeric columns that are neither frames nor reserved names.
 #' @param default_weight The weight used when a caller does not name one.
@@ -31,11 +31,12 @@
 #'   frame. Derived from `leaftable` when `NULL` (first-appearance order).
 #' @param name,desc Short name and description.
 #' @param attributes Optional table of per-member physical attributes keyed
-#'   by `(frame, unit)`; see [`attach_attributes_scale()`] for the columns.
+#'   by `(frame, member)`; see [`attach_attributes_scale()`] for the columns.
 #' @param aliases Optional table of alternative labels keyed by
-#'   `(frame, unit)`; see [`attach_aliases_scale()`] for the columns.
+#'   `(frame, member)`; see [`attach_aliases_scale()`] for the columns.
 #' @param labels Optional table of display names keyed by
-#'   `(frame, unit, variant)`; see [`attach_labels_scale()`] for the columns.
+#'   `(frame, member, variant)`; see [`attach_labels_scale()`] for the
+#'   columns.
 #' @param ... Further named entries merged into `meta` (e.g. `source`).
 #'
 #' @return A [`NestedScale`].
@@ -44,14 +45,14 @@
 #' df <- data.frame(
 #'   section = c("A", "A", "A", "B"),
 #'   group   = c("A1", "A1", "A2", "B1"),
-#'   unit    = c("A11", "A12", "A21", "B11"),
+#'   item    = c("A11", "A12", "A21", "B11"),
 #'   gva     = c(100, 200, 300, 400)
 #' )
-#' scale_from_leaftable(df, frames = c("section", "group", "unit"))
+#' scale_from_leaftable(df, frames = c("section", "group", "item"))
 #' @export
 scale_from_leaftable <- function(leaftable,
                                  frames,
-                                 key = NULL,
+                                 leaf = NULL,
                                  weights = NULL,
                                  default_weight = NULL,
                                  members = NULL,
@@ -79,27 +80,27 @@ scale_from_leaftable <- function(leaftable,
     leaftable[[f]] <- .blank_to_na(leaftable[[f]])
   }
 
-  # Atom key ------------------------------------------------------------------
-  if (is.null(key)) {
-    key <- if ("unit" %in% names(leaftable)) "unit" else frames[length(frames)]
+  # Leaf column ---------------------------------------------------------------
+  if (is.null(leaf)) {
+    leaf <- if ("leaf" %in% names(leaftable)) "leaf" else frames[length(frames)]
   }
-  if (length(key) != 1L || is.na(key) || !nzchar(key)) {
-    .stop("`key` must be a single non-empty string")
+  if (length(leaf) != 1L || is.na(leaf) || !nzchar(leaf)) {
+    .stop("`leaf` must be a single non-empty string")
   }
-  if (!key %in% names(leaftable)) {
-    .stop("`key` column \"%s\" not found in `leaftable`", key)
+  if (!leaf %in% names(leaftable)) {
+    .stop("`leaf` column \"%s\" not found in `leaftable`", leaf)
   }
-  leaftable[[key]] <- as.character(leaftable[[key]])
-  if (anyNA(leaftable[[key]]) || any(!nzchar(leaftable[[key]]))) {
+  leaftable[[leaf]] <- as.character(leaftable[[leaf]])
+  if (anyNA(leaftable[[leaf]]) || any(!nzchar(leaftable[[leaf]]))) {
     .stop(paste0(
-      "the atom key column \"%s\" has missing or empty values; ",
-      "every atom needs an identifier"
-    ), key)
+      "the leaf column \"%s\" has missing or empty values; ",
+      "every leaf needs an identifier"
+    ), leaf)
   }
 
   # Weights -------------------------------------------------------------------
   if (is.null(weights)) {
-    cand <- setdiff(names(leaftable), c(frames, .RESERVED_COLS, key))
+    cand <- setdiff(names(leaftable), c(frames, .RESERVED_COLS, leaf))
     weights <- cand[vapply(leaftable[cand], is.numeric, logical(1))]
   }
   weights <- as.character(weights)
@@ -174,7 +175,7 @@ scale_from_leaftable <- function(leaftable,
     leaftable  = leaftable,
     frames     = frames,
     members    = members,
-    key        = key,
+    leaf       = leaf,
     meta       = meta,
     attributes = .as_attributes(attributes),
     aliases    = .as_aliases(aliases),
@@ -185,11 +186,11 @@ scale_from_leaftable <- function(leaftable,
 #' A second small example NestedScale
 #'
 #' A different dimension from [`scale_example()`], for the examples that need
-#' two axes. Two frames, four atoms, its own key column (`period`) and a
+#' two axes. Two frames, four leaves, its own leaf column (`period`) and a
 #' weight -- deliberately well behaved, so the awkwardness in an example stays
 #' on the other axis.
 #'
-#' @return A [`NestedScale`] with 4 atoms and frames `era`/`period`.
+#' @return A [`NestedScale`] with 4 leaves and frames `era`/`period`.
 #'
 #' @examples
 #' scale_example2()
@@ -216,11 +217,12 @@ scale_example2 <- function() {
 #'
 #' * a code (`"G1"`) reused at more than one frame, so bare codes are ambiguous
 #'   and every lookup must name its frame;
-#' * a non-nesting pair of frames -- group `"GB"` draws units from two
+#' * a non-nesting pair of frames -- group `"GB"` draws members from two
 #'   different classes, so `class` and `group` do not form a tree;
-#' * a unit (`"OTH"`) with no code at any coarser frame (partial coverage).
+#' * a member (`"OTH"`) with no code at any coarser frame (partial coverage).
 #'
-#' @return A [`NestedScale`] with 7 atoms and frames `sector`/`class`/`group`/`unit`.
+#' @return A [`NestedScale`] with 7 leaves and frames
+#'   `sector`/`class`/`group`/`item`.
 #'
 #' @examples
 #' s <- scale_example()
@@ -232,18 +234,18 @@ scale_example <- function() {
     sector = c("P", "P", "P", "P", "S", "S", NA),
     class = c("G1", "G1", "G2", "G2", "S1", "S1", NA),
     group = c("G1", "G1", "GB", "GB", "GB", "GC", NA),
-    unit = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH"),
+    item = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH"),
     size = c(100, 200, 300, 400, 500, 600, 1000),
     count = c(10, 90, 30, 70, 50, 50, 0),
     stringsAsFactors = FALSE
   )
   scale_from_leaftable(
     df,
-    frames = c("sector", "class", "group", "unit"),
+    frames = c("sector", "class", "group", "item"),
     name = "example",
     desc = paste(
       "Synthetic example: reused code, non-nesting frame pair,",
-      "and an unassigned atom"
+      "and an unassigned leaf"
     )
   )
 }

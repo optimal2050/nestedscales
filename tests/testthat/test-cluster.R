@@ -11,12 +11,12 @@ test_that("the result is the scale with a new frame above the clustered one", {
   expect_true(scale_is(cl))
   expect_identical(
     scale_frames(cl),
-    c("top", "cluster", "unit")
+    c("top", "cluster", "item")
   )
-  expect_identical(scale_key(cl), "unit")
-  expect_length(scale_units(cl, "cluster"), 3L)
-  # the atoms and their weights are untouched
-  expect_identical(scale_units(cl), scale_units(s))
+  expect_identical(scale_leaf_column(cl), "item")
+  expect_length(scale_members(cl, "cluster"), 3L)
+  # the leaves and their weights are untouched
+  expect_identical(scale_members(cl), scale_members(s))
   expect_identical(
     scale_weights(cl),
     scale_weights(s)
@@ -30,7 +30,7 @@ test_that("every method recovers three obvious groups", {
     if (m == "pam") skip_if_not_installed("cluster")
     cl <- cluster_scale(d, s, k = 3, method = m, seed = 1)
     tab <- attr(cl, "clustering")
-    expect_true(recovers_groups(tab, "unit", "cluster"),
+    expect_true(recovers_groups(tab, "item", "cluster"),
       label = sprintf("method %s recovers the groups", m)
     )
   }
@@ -55,7 +55,7 @@ test_that("a shape distance groups by profile, not by level", {
   )
   d <- do.call(rbind, lapply(names(shape), function(u) {
     data.frame(
-      unit = u, t = t, v = as.numeric(shape[[u]]) * mag[[u]],
+      item = u, t = t, v = as.numeric(shape[[u]]) * mag[[u]],
       stringsAsFactors = FALSE
     )
   }))
@@ -65,7 +65,7 @@ test_that("a shape distance groups by profile, not by level", {
     distance = "correlation"
   )
   expect_true(recovers_groups(
-    attr(by_shape, "clustering"), "unit",
+    attr(by_shape, "clustering"), "item",
     "cluster"
   ))
 
@@ -75,7 +75,7 @@ test_that("a shape distance groups by profile, not by level", {
     distance = "euclidean"
   )
   expect_false(recovers_groups(
-    attr(by_level, "clustering"), "unit",
+    attr(by_level, "clustering"), "item",
     "cluster"
   ))
 })
@@ -84,18 +84,18 @@ test_that("the clustering table reports the assignment and the medoids", {
   skip_if_not_installed("cluster")
   s <- three_group_scale()
   tab <- attr(cluster_scale(three_group_data(), s, k = 3), "clustering")
-  expect_named(tab, c("unit", "cluster", "medoid"))
+  expect_named(tab, c("item", "cluster", "medoid"))
   expect_identical(nrow(tab), 8L)
   expect_identical(sum(tab$medoid), 3L) # one representative per cluster
 })
 
-test_that("cluster_medoids() names a real unit per cluster", {
+test_that("cluster_medoids() names a real member per cluster", {
   skip_if_not_installed("cluster")
   s <- three_group_scale()
   med <- cluster_medoids(cluster_scale(three_group_data(), s, k = 3))
   expect_named(med, c("cluster", "representative"))
   expect_identical(nrow(med), 3L)
-  expect_true(all(med$representative %in% scale_units(s)))
+  expect_true(all(med$representative %in% scale_members(s)))
 })
 
 test_that("cluster_medoids() refuses a scale that carries no clustering", {
@@ -106,8 +106,8 @@ test_that("labels = medoid names clusters after their representative", {
   skip_if_not_installed("cluster")
   s <- three_group_scale()
   cl <- cluster_scale(three_group_data(), s, k = 3, labels = "medoid")
-  codes <- scale_units(cl, "cluster")
-  expect_true(all(codes %in% scale_units(s)))
+  codes <- scale_members(cl, "cluster")
+  expect_true(all(codes %in% scale_members(s)))
 })
 
 test_that("the cluster frame works with the rest of nestedscales", {
@@ -116,25 +116,25 @@ test_that("the cluster frame works with the rest of nestedscales", {
 
   # recasting to the clusters is now an ordinary recast
   d <- data.frame(
-    unit = scale_units(s), cap = 1:8,
+    item = scale_members(s), cap = 1:8,
     stringsAsFactors = FALSE
   )
   out <- recast_scale(d, cl,
-    source = "unit", target = "cluster",
+    source = "item", target = "cluster",
     rule = "sum"
   )
   expect_equal(sum(out$cap), sum(d$cap))
   expect_identical(nrow(out), 3L)
 
   # and so is asking what is inside a cluster
-  first <- scale_units(cl, "cluster")[[1L]]
+  first <- scale_members(cl, "cluster")[[1L]]
   expect_gt(length(scale_children(cl, "cluster", first)), 0)
 })
 
-test_that("k is validated against the units available", {
+test_that("k is validated against the members available", {
   s <- three_group_scale()
   d <- three_group_data()
-  expect_error(cluster_scale(d, s, k = 99), "more than the 8 unit")
+  expect_error(cluster_scale(d, s, k = 99), "more than the 8 member")
   expect_error(cluster_scale(d, s, k = 0), "single positive number")
 })
 
@@ -149,17 +149,17 @@ test_that("the new frame may not collide with an existing one", {
   )
 })
 
-test_that("a unit missing observations is an error, not a hole", {
+test_that("a member missing observations is an error, not a hole", {
   s <- three_group_scale()
   d <- three_group_data()
-  d <- d[!(d$unit == "u1" & d$t == "t3"), ]
+  d <- d[!(d$item == "u1" & d$t == "t3"), ]
   expect_error(cluster_scale(d, s, k = 3), "not observed over every")
 })
 
 test_that("data with no feature column is refused", {
   s <- three_group_scale()
   d <- data.frame(
-    unit = scale_units(s), v = 1:8,
+    item = scale_members(s), v = 1:8,
     stringsAsFactors = FALSE
   )
   expect_error(cluster_scale(d, s, k = 2), "no identifier column")
@@ -182,7 +182,7 @@ test_that("kmeans is reproducible through seed", {
 test_that("clustering keeps the concrete class and its member tables", {
   s <- attach_attributes_scale(
     three_group_scale(),
-    data.frame(frame = "top", unit = scale_units(three_group_scale(), "top")[1],
+    data.frame(frame = "top", member = scale_members(three_group_scale(), "top")[1],
                attribute = "density", value = 1, unit_of_measure = "t/m3"),
     source = "t", kind = "property"
   )
@@ -194,10 +194,10 @@ test_that("clustering keeps the concrete class and its member tables", {
   Tagged <- S7::new_class("Tagged", parent = scale_class(),
                           properties = list(tag = S7::class_character))
   t <- Tagged(leaftable = scale_leaftable(s), frames = scale_frames(s),
-              members = S7::prop(s, "members"), key = scale_key(s),
+              members = S7::prop(s, "members"), leaf = scale_leaf_column(s),
               meta = S7::prop(s, "meta"), tag = "keep me")
   clt <- cluster_scale(three_group_data(), t, k = 3)
   expect_true(S7::S7_inherits(clt, Tagged))
   expect_identical(clt@tag, "keep me")
-  expect_identical(scale_frames(clt), c("top", "cluster", "unit"))
+  expect_identical(scale_frames(clt), c("top", "cluster", "item"))
 })

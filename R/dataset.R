@@ -113,7 +113,7 @@ NULL
     leaftable = as.data.frame(leaftable),
     frames = as.character(unlist(entry$frames)),
     members = members,
-    key = entry$key,
+    leaf = entry$key,
     meta = meta
   )
 }
@@ -143,7 +143,7 @@ NULL
 #' @examples
 #' p <- scale_product(a = scale_example(), b = scale_example2())
 #' d <- merge(
-#'   data.frame(unit = c("U1", "U2")),
+#'   data.frame(item = c("U1", "U2")),
 #'   data.frame(period = c("p1", "p2"))
 #' )
 #' d$v <- 1:4
@@ -173,7 +173,7 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
   keys <- if (is_prod) {
     product_keys(x)
   } else {
-    stats::setNames(scale_key(x), names(axes))
+    stats::setNames(scale_leaf_column(x), names(axes))
   }
 
   # The link the data carries is checked against the axes and written to the
@@ -197,7 +197,7 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
   })
   for (a in setdiff(names(axes), vapply(link, `[[`, character(1), "axis"))) {
     link <- c(link, list(list(
-      column = keys[[a]], axis = a, frame = .atom_level(axes[[a]])
+      column = keys[[a]], axis = a, frame = .leaf_frame(axes[[a]])
     )))
   }
 

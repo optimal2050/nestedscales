@@ -12,27 +12,27 @@ cluster_sweep(
   key = NULL,
   value = NULL,
   distance = "euclidean",
-  scale_units = FALSE,
+  scale_members = FALSE,
   FUN = cluster_scale,
   ...
 )
 }
 \arguments{
-\item{data}{Long data: unit codes, one or more identifier columns saying
-which observation each row is, and a value column. A unit that is not
+\item{data}{Long data: member codes, one or more identifier columns saying
+which observation each row is, and a value column. A member that is not
 observed over the same set as the others is an error rather than a hole.}
 
 \item{x}{A \code{NestedScale}.}
 
 \item{ks}{Values of \code{k} to try.}
 
-\item{frame}{Frame whose units are clustered. Defaults to the atom frame.}
+\item{frame}{Frame whose members are clustered. Defaults to the leaf frame.}
 
 \item{key, value}{Columns of \code{data}; inferred when unambiguous.}
 
 \item{distance}{A name from \code{\link[=list_scale_distances]{list_scale_distances()}}.}
 
-\item{scale_units}{Standardise each unit's profile before measuring;
+\item{scale_members}{Standardise each member's profile before measuring;
 see \code{\link[=scale_distance]{scale_distance()}}.}
 
 \item{FUN}{The clustering function to sweep: \code{\link[=cluster_scale]{cluster_scale()}} (default)
@@ -52,7 +52,7 @@ Cluster quality across a range of k
 \examples{
 s <- scale_example()
 d <- data.frame(
-  unit = rep(scale_units(s), each = 4),
+  item = rep(scale_members(s), each = 4),
   t = rep(sprintf("t\%d", 1:4), 7), v = as.numeric(seq_len(28))
 )
 cluster_sweep(d, s, ks = 2:4)

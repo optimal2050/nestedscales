@@ -14,7 +14,7 @@ scale_aliases(x, frame = NULL, source = NULL)
 \item{source}{Restrict to one source (or several); \code{NULL} for all.}
 }
 \value{
-A \code{data.frame} with columns \code{frame}, \code{unit}, \code{alias}, \code{source}.
+A \code{data.frame} with columns \code{frame}, \code{member}, \code{alias}, \code{source}.
 }
 \description{
 Read the alias table
@@ -22,7 +22,7 @@ Read the alias table
 \examples{
 s <- attach_aliases_scale(
   scale_example(),
-  data.frame(frame = "sector", unit = "P", alias = "primary"),
+  data.frame(frame = "sector", member = "P", alias = "primary"),
   source = "labels"
 )
 scale_aliases(s)

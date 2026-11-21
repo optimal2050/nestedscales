@@ -2,8 +2,8 @@
 # Constrained clustering: order and adjacency.
 # =========================================================================== #
 
-.is_contiguous <- function(tab, units, circular = FALSE) {
-  g <- tab[[2L]][match(units, tab[[1L]])]
+.is_contiguous <- function(tab, members, circular = FALSE) {
+  g <- tab[[2L]][match(members, tab[[1L]])]
   r <- rle(g)
   if (!circular) {
     return(!anyDuplicated(r$values))
@@ -19,8 +19,8 @@ test_that("order-constrained clusters are contiguous blocks", {
   s <- ordered_scale()
   cl <- cluster_contiguous(ordered_data(), s, k = 3)
   tab <- attr(cl, "clustering")
-  expect_true(.is_contiguous(tab, scale_units(s)))
-  expect_length(scale_units(cl, "cluster"), 3L)
+  expect_true(.is_contiguous(tab, scale_members(s)))
+  expect_length(scale_members(cl, "cluster"), 3L)
 })
 
 test_that("it finds the three regimes the data actually has", {
@@ -36,7 +36,7 @@ test_that("it finds the three regimes the data actually has", {
 test_that("clusters are numbered in sequence order", {
   s <- ordered_scale()
   tab <- attr(cluster_contiguous(ordered_data(), s, k = 3), "clustering")
-  g <- tab$cluster[match(scale_units(s), tab$period)]
+  g <- tab$cluster[match(scale_members(s), tab$period)]
   expect_identical(unique(g), c("c01", "c02", "c03"))
 })
 
@@ -49,8 +49,8 @@ test_that("an unconstrained clustering of the same data need not be contiguous",
 
   free <- attr(cluster_scale(d, s, k = 2, method = "hclust"), "clustering")
   tied <- attr(cluster_contiguous(d, s, k = 2), "clustering")
-  expect_false(.is_contiguous(free, scale_units(s)))
-  expect_true(.is_contiguous(tied, scale_units(s)))
+  expect_false(.is_contiguous(free, scale_members(s)))
+  expect_true(.is_contiguous(tied, scale_members(s)))
 })
 
 test_that("circular = TRUE lets the sequence wrap", {
@@ -65,39 +65,39 @@ test_that("circular = TRUE lets the sequence wrap", {
   tab <- attr(cl, "clustering")
   g <- stats::setNames(tab$cluster, tab$period)
   expect_identical(unname(g[["p12"]]), unname(g[["p01"]]))
-  expect_true(.is_contiguous(tab, scale_units(s),
+  expect_true(.is_contiguous(tab, scale_members(s),
     circular = TRUE
   ))
 })
 
-test_that("an adjacency graph constrains which units may merge", {
+test_that("an adjacency graph constrains which members may merge", {
   s <- three_group_scale()
-  units <- scale_units(s)
+  members <- scale_members(s)
   # a path graph: u1-u2-...-u8, so clusters must be path segments
   adj <- data.frame(
-    source = units[-8], target = units[-1],
+    source = members[-8], target = members[-1],
     stringsAsFactors = FALSE
   )
   cl <- cluster_contiguous(three_group_data(), s, k = 3, adjacency = adj)
-  expect_true(.is_contiguous(attr(cl, "clustering"), units))
+  expect_true(.is_contiguous(attr(cl, "clustering"), members))
 })
 
 test_that("a matrix adjacency works and is symmetrised", {
   s <- three_group_scale()
-  units <- scale_units(s)
+  members <- scale_members(s)
   m <- matrix(0, 8, 8)
   m[cbind(1:7, 2:8)] <- 1 # upper triangle only
   cl <- cluster_contiguous(three_group_data(), s, k = 3, adjacency = m)
-  expect_true(.is_contiguous(attr(cl, "clustering"), units))
+  expect_true(.is_contiguous(attr(cl, "clustering"), members))
 })
 
 test_that("an unreachable k is refused with the component count", {
   s <- three_group_scale()
-  units <- scale_units(s)
+  members <- scale_members(s)
   # two components of four: {u1..u4} and {u5..u8}
   adj <- data.frame(
-    source = c(units[1:3], units[5:7]),
-    target = c(units[2:4], units[6:8]),
+    source = c(members[1:3], members[5:7]),
+    target = c(members[2:4], members[6:8]),
     stringsAsFactors = FALSE
   )
   expect_error(
@@ -110,7 +110,7 @@ test_that("an unreachable k is refused with the component count", {
   )
 })
 
-test_that("adjacency naming unknown units is an error", {
+test_that("adjacency naming unknown members is an error", {
   s <- three_group_scale()
   adj <- data.frame(source = "nope", target = "u2", stringsAsFactors = FALSE)
   expect_error(
@@ -126,7 +126,7 @@ test_that("a mis-shaped adjacency matrix is reported", {
       k = 2,
       adjacency = matrix(0, 3, 3)
     ),
-    "but this frame has 8 units"
+    "but this frame has 8 members"
   )
 })
 
@@ -138,7 +138,7 @@ test_that("the constrained result is a scale like any other", {
     c("all", "cluster", "period")
   )
   d <- data.frame(
-    period = scale_units(s),
+    period = scale_members(s),
     v = seq_len(12), stringsAsFactors = FALSE
   )
   out <- recast_scale(d, cl,
@@ -155,7 +155,7 @@ test_that("linkage choices all run and stay contiguous", {
     expect_true(
       .is_contiguous(
         attr(cl, "clustering"),
-        scale_units(s)
+        scale_members(s)
       ),
       label = lk
     )

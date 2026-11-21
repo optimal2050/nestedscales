@@ -23,7 +23,7 @@ skip_if_not_installed("geoscales")
   scale_from_leaftable(
     geoscales::geoscale_leaftable(gs),
     frames = geoscales::geoscale_geoframes(gs),
-    key = "atom",
+    leaf = "cell",
     weights = geoscales::geoscale_weights(gs),
     default_weight = S7::prop(gs, "meta")$default_weight,
     name = "example"
@@ -45,7 +45,7 @@ test_that("the two objects really do hold the same data", {
   expect_identical(scale_weights(ms), geoscales::geoscale_weights(gs))
   .same(scale_leaftable(ms), geoscales::geoscale_leaftable(gs), "leaftable")
   for (f in scale_frames(ms)) {
-    expect_identical(scale_units(ms, f), geoscales::geoscale_regions(gs, f),
+    expect_identical(scale_members(ms, f), geoscales::geoscale_regions(gs, f),
       label = paste("members at", f)
     )
   }
@@ -55,35 +55,35 @@ test_that("the two objects really do hold the same data", {
 
 .cases <- list(
   list(
-    nm = "atom->country sum",
-    args = list(source = "atom", target = "country", rule = "sum")
+    nm = "cell->country sum",
+    args = list(source = "cell", target = "country", rule = "sum")
   ),
   list(
-    nm = "atom->country weighted_mean",
+    nm = "cell->country weighted_mean",
     args = list(
-      source = "atom", target = "country", rule = "weighted_mean",
+      source = "cell", target = "country", rule = "weighted_mean",
       weight = "km2"
     )
   ),
   list(
-    nm = "atom->state mean",
-    args = list(source = "atom", target = "state", rule = "mean")
+    nm = "cell->state mean",
+    args = list(source = "cell", target = "state", rule = "mean")
   ),
   list(
-    nm = "atom->country sd",
-    args = list(source = "atom", target = "country", rule = "sd")
+    nm = "cell->country sd",
+    args = list(source = "cell", target = "country", rule = "sd")
   ),
   list(
-    nm = "atom->state pop-weighted",
+    nm = "cell->state pop-weighted",
     args = list(
-      source = "atom", target = "state", rule = "weighted_mean",
+      source = "cell", target = "state", rule = "weighted_mean",
       weight = "pop"
     )
   ),
   list(
     nm = "state->zone cross-cutting",
     data = data.frame(
-      atom = c("N1", "N2", "S1"), v = c(10, 20, 30),
+      cell = c("N1", "N2", "S1"), v = c(10, 20, 30),
       stringsAsFactors = FALSE
     ),
     args = list(
@@ -92,9 +92,9 @@ test_that("the two objects really do hold the same data", {
     )
   ),
   list(
-    nm = "atom->country keep NA",
+    nm = "cell->country keep NA",
     args = list(
-      source = "atom", target = "country", rule = "sum",
+      source = "cell", target = "country", rule = "sum",
       na_action = "keep"
     )
   )
@@ -103,22 +103,22 @@ test_that("the two objects really do hold the same data", {
 test_that("recast agrees with geoscales on every rule and direction", {
   gs <- .gs()
   ms <- .ms()
-  atoms <- data.frame(
-    atom = c("A1", "A2", "A3", "A4", "A5", "A6"),
+  leaves <- data.frame(
+    cell = c("A1", "A2", "A3", "A4", "A5", "A6"),
     v = c(1, 2, 3, 4, 5, 6), stringsAsFactors = FALSE
   )
   for (cs in .cases) {
-    d <- cs$data %||% atoms
+    d <- cs$data %||% leaves
     a <- suppressWarnings(
       do.call(
         geoscales::recast_geoscale,
-        c(list(data = d, gs = gs, key = "atom"), cs$args)
+        c(list(data = d, gs = gs, key = "cell"), cs$args)
       )
     )
     b <- suppressWarnings(
       do.call(
         recast_scale,
-        c(list(data = d, x = ms, key = "atom"), cs$args)
+        c(list(data = d, x = ms, key = "cell"), cs$args)
       )
     )
     .same(a, b, cs$nm)
@@ -153,39 +153,39 @@ test_that("the copy rule agrees, including its refusal", {
   gs <- .gs()
   ms <- .ms()
   ok <- data.frame(
-    atom = c("A1", "A2"), v = c(0.5, 0.5),
+    cell = c("A1", "A2"), v = c(0.5, 0.5),
     stringsAsFactors = FALSE
   )
   .same(
     suppressWarnings(
       geoscales::recast_geoscale(ok, gs,
-        source = "atom", target = "state",
-        rule = "copy", key = "atom"
+        source = "cell", target = "state",
+        rule = "copy", key = "cell"
       )
     ),
     suppressWarnings(
       recast_scale(ok, ms,
-        source = "atom", target = "state", rule = "copy",
-        key = "atom"
+        source = "cell", target = "state", rule = "copy",
+        key = "cell"
       )
     ),
     "copy"
   )
 
   bad <- data.frame(
-    atom = c("A1", "A2"), v = c(0.5, 0.9),
+    cell = c("A1", "A2"), v = c(0.5, 0.9),
     stringsAsFactors = FALSE
   )
   expect_error(suppressWarnings(
     geoscales::recast_geoscale(bad, gs,
-      source = "atom", target = "state",
-      rule = "copy", key = "atom"
+      source = "cell", target = "state",
+      rule = "copy", key = "cell"
     )
   ))
   expect_error(suppressWarnings(
     recast_scale(bad, ms,
-      source = "atom", target = "state", rule = "copy",
-      key = "atom"
+      source = "cell", target = "state", rule = "copy",
+      key = "cell"
     )
   ))
 })
@@ -194,20 +194,20 @@ test_that("share agrees", {
   gs <- .gs()
   ms <- .ms()
   d <- data.frame(
-    atom = c("A1", "A2", "A3", "A4", "A5", "A6"),
+    cell = c("A1", "A2", "A3", "A4", "A5", "A6"),
     v = c(1, 2, 3, 4, 5, 6), stringsAsFactors = FALSE
   )
   .same(
     suppressWarnings(
       geoscales::recast_geoscale(d, gs,
-        source = "atom", target = "country",
-        rule = "share", key = "atom"
+        source = "cell", target = "country",
+        rule = "share", key = "cell"
       )
     ),
     suppressWarnings(
       recast_scale(d, ms,
-        source = "atom", target = "country", rule = "share",
-        key = "atom"
+        source = "cell", target = "country", rule = "share",
+        key = "cell"
       )
     ),
     "share within country"
@@ -218,7 +218,7 @@ test_that("identifier columns are carried the same way", {
   gs <- .gs()
   ms <- .ms()
   d <- data.frame(
-    atom = rep(c("A1", "A2", "A3", "A4", "A5", "A6"), 2),
+    cell = rep(c("A1", "A2", "A3", "A4", "A5", "A6"), 2),
     year = rep(c(2020, 2021), each = 6),
     v = c(1, 2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12),
     stringsAsFactors = FALSE
@@ -226,15 +226,15 @@ test_that("identifier columns are carried the same way", {
   .same(
     suppressWarnings(
       geoscales::recast_geoscale(d, gs,
-        source = "atom", target = "country",
-        rule = "sum", key = "atom",
+        source = "cell", target = "country",
+        rule = "sum", key = "cell",
         values = "v"
       )
     ),
     suppressWarnings(
       recast_scale(d, ms,
-        source = "atom", target = "country", rule = "sum",
-        key = "atom", values = "v"
+        source = "cell", target = "country", rule = "sum",
+        key = "cell", values = "v"
       )
     ),
     "panel recast"
@@ -249,31 +249,31 @@ test_that("the route halves agree", {
     stringsAsFactors = FALSE
   )
   a_down <- suppressWarnings(
-    geoscales::recast_to_geoatoms(d, gs,
+    geoscales::recast_to_geoleaves(d, gs,
       source = "country", rule = "sum",
       weight = "km2"
     )
   )
   b_down <- suppressWarnings(
-    recast_to_atoms(d, ms, source = "country", rule = "sum", weight = "km2")
+    recast_to_leaves(d, ms, source = "country", rule = "sum", weight = "km2")
   )
-  .same(a_down, b_down, "to atoms")
+  .same(a_down, b_down, "to leaves")
 
   a_up <- suppressWarnings(
-    geoscales::recast_from_geoatoms(a_down, gs, target = "state", rule = "sum")
+    geoscales::recast_from_geoleaves(a_down, gs, target = "state", rule = "sum")
   )
   b_up <- suppressWarnings(
-    recast_from_atoms(b_down, ms, target = "state", rule = "sum")
+    recast_from_leaves(b_down, ms, target = "state", rule = "sum")
   )
-  .same(a_up, b_up, "from atoms")
+  .same(a_up, b_up, "from leaves")
 })
 
 test_that("the crosswalk itself agrees", {
   gs <- .gs()
   ms <- .ms()
   for (pair in list(
-    c("atom", "country"), c("state", "zone"),
-    c("country", "atom")
+    c("cell", "country"), c("state", "zone"),
+    c("country", "cell")
   )) {
     .same(
       geoscales::geoscale_map(pair[1], pair[2], gs = gs, weight = "km2"),
@@ -399,7 +399,7 @@ test_that("prune agrees, bookkeeping included", {
   la <- geoscales::geoscale_leaftable(a)
   lb <- scale_leaftable(b)
   .same(la, lb[names(la)], "leaftable")
-  expect_identical(as.character(lb[[scale_key(b)]]), as.character(lb$state))
+  expect_identical(as.character(lb[[scale_leaf_column(b)]]), as.character(lb$state))
   expect_identical(geoscales::geoscale_geoframes(a), scale_frames(b))
   expect_equal(geoscales::geoscale_coverage(a), scale_coverage(b))
   expect_identical(S7::prop(a, "meta")$name, S7::prop(b, "meta")$name)

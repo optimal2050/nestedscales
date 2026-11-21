@@ -17,21 +17,23 @@ NULL
 
 #' Axis specification shared by the array converters
 #'
-#' Normalises a `NestedScale` or `ScaleProduct` into a list of (key column, units)
-#' pairs, so both cases go through one code path.
+#' Normalises a `NestedScale` or `ScaleProduct` into a list of (key column,
+#' members) pairs, so both cases go through one code path.
 #' @noRd
 .array_axes <- function(x, frames = NULL, cols = NULL) {
   one <- function(s, fr) {
     # The column holding codes at frame F is named F -- that is what every
-    # recast emits. At the atom frame the scale's own key is equally valid, so
-    # when the data is in hand, accept whichever of the two it actually has.
-    cand <- if (is.null(fr)) scale_key(s) else fr
-    if (!is.null(cols) && !(cand %in% cols) && scale_key(s) %in% cols) {
-      cand <- scale_key(s)
+    # recast emits. For data on the leaves the name of the leaf column is
+    # equally valid, so when the data is in hand, accept whichever of the two
+    # it actually has.
+    leaf <- scale_leaf_column(s)
+    cand <- if (is.null(fr)) leaf else fr
+    if (!is.null(cols) && !(cand %in% cols) && leaf %in% cols) {
+      cand <- leaf
     }
     list(
       key = cand,
-      units = if (is.null(fr)) scale_units(s) else scale_units(s, fr)
+      members = if (is.null(fr)) scale_members(s) else scale_members(s, fr)
     )
   }
   if (S7::S7_inherits(x, ScaleProduct)) {
@@ -54,7 +56,7 @@ NULL
 #' Data on scales as a dense array
 #'
 #' Reshapes a long table into an array whose dimensions are the scale's axes,
-#' in the order the product declares them, with the units as `dimnames`.
+#' in the order the product declares them, with the members as `dimnames`.
 #'
 #' @param data A long table with one column per axis key plus the value
 #'   column. Lazy inputs are materialised -- an array is a dense in-memory
@@ -63,7 +65,7 @@ NULL
 #' @param value Name of the value column. Defaults to the single numeric
 #'   column that is not a key.
 #' @param frames Optional named list giving the frame each axis is keyed at;
-#'   defaults to each axis's atom frame.
+#'   defaults to each axis's leaf frame.
 #' @param fill Value for cells the data does not cover.
 #' @param limit Refuse to allocate more than this many cells.
 #'
@@ -72,7 +74,7 @@ NULL
 #' @examples
 #' p <- scale_product(a = scale_example(), b = scale_example2())
 #' d <- merge(
-#'   data.frame(unit = c("U1", "U2")),
+#'   data.frame(item = c("U1", "U2")),
 #'   data.frame(period = c("p1", "p2"))
 #' )
 #' d$v <- 1:4
@@ -84,7 +86,7 @@ as_scale_array <- function(data, x, value = NULL, frames = NULL, fill = NA,
   schema <- backend_schema(data)
   axes <- .array_axes(x, frames, cols = names(schema))
   keys <- vapply(axes, function(a) a$key, character(1))
-  dims <- vapply(axes, function(a) length(a$units), integer(1))
+  dims <- vapply(axes, function(a) length(a$members), integer(1))
 
   n_cells <- prod(as.numeric(dims))
   if (n_cells > limit) {
@@ -129,16 +131,16 @@ as_scale_array <- function(data, x, value = NULL, frames = NULL, fill = NA,
     )
   }
 
-  # Every key must be a unit of its axis: an unrecognised code has no cell to
+  # Every key must be a member of its axis: an unrecognised code has no cell to
   # go in, and silently dropping it would lose data without saying so.
   idx <- vector("list", length(axes))
   for (i in seq_along(axes)) {
     codes <- as.character(d[[keys[[i]]]])
-    pos <- match(codes, axes[[i]]$units)
+    pos <- match(codes, axes[[i]]$members)
     bad <- unique(codes[is.na(pos)])
     if (length(bad) > 0L) {
       .stop(
-        "column `%s` holds code(s) that are not units of axis `%s`: %s",
+        "column `%s` holds code(s) that are not members of axis `%s`: %s",
         keys[[i]], names(axes)[[i]], .preview(bad)
       )
     }
@@ -147,7 +149,7 @@ as_scale_array <- function(data, x, value = NULL, frames = NULL, fill = NA,
 
   a <- array(fill,
     dim = unname(dims),
-    dimnames = lapply(axes, function(z) z$units)
+    dimnames = lapply(axes, function(z) z$members)
   )
   a[do.call(cbind, idx)] <- d[[value]]
   a
@@ -169,7 +171,7 @@ as_scale_table <- function(a, x, value = "value", frames = NULL,
                            drop_na = TRUE) {
   axes <- .array_axes(x, frames)
   keys <- vapply(axes, function(z) z$key, character(1))
-  dims <- vapply(axes, function(z) length(z$units), integer(1))
+  dims <- vapply(axes, function(z) length(z$members), integer(1))
 
   if (length(dim(a)) != length(axes) || !identical(
     unname(dim(a)),
@@ -181,7 +183,7 @@ as_scale_table <- function(a, x, value = "value", frames = NULL,
     )
   }
 
-  grid <- expand.grid(lapply(axes, function(z) z$units),
+  grid <- expand.grid(lapply(axes, function(z) z$members),
     stringsAsFactors = FALSE, KEEP.OUT.ATTRS = FALSE
   )
   names(grid) <- unname(keys)

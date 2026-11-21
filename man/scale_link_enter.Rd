@@ -47,7 +47,7 @@ b <- bind_scale(data.frame(class = c("G1", "S1"), v = 1:2), s)
 link <- scale_link_enter(b, s)
 link$key
 link$source
-is_scale_unit(link$data$class)
+is_scale_member(link$data$class)
 }
 \seealso{
 \code{\link[=bind_scale]{bind_scale()}}

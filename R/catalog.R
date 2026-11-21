@@ -30,8 +30,9 @@ NULL
 #'   registered by hand (listed under `package = NA`).
 #'
 #' @return `scale_catalog()` a `data.frame` with one row per definition:
-#'   `id`, `name`, `kind` (the class, without its package prefix), `key`,
-#'   `frames` (joined by `/`), `n_atoms`, `package`, `path`.
+#'   `id`, `name`, `kind` (the class, without its package prefix), `leaf`
+#'   (the name of the leaf column), `frames` (joined by `/`), `n_leaves`,
+#'   `package`, `path`.
 #'   `register_scale_dir()` the registry key, invisibly; `list_scale_dirs()`
 #'   a `data.frame` with `package` and `path`; `clear_scale_dirs()` `NULL`,
 #'   invisibly.
@@ -109,9 +110,9 @@ clear_scale_dirs <- function() {
   do.call(rbind, rows)
 }
 
-#' Atom count of a definition from its header alone where possible
+#' Leaf count of a definition from its header alone where possible
 #' @noRd
-.header_n_atoms <- function(hdr, dir) {
+.header_n_leaves <- function(hdr, dir) {
   ref <- hdr$tables$leaftable
   if (is.null(ref)) {
     return(NA_integer_)
@@ -134,7 +135,7 @@ scale_catalog <- function() {
   dirs <- list_scale_dirs()
   empty <- data.frame(
     id = character(), name = character(), kind = character(),
-    key = character(), frames = character(), n_atoms = integer(),
+    leaf = character(), frames = character(), n_leaves = integer(),
     package = character(), path = character(), stringsAsFactors = FALSE
   )
   if (nrow(dirs) == 0L) {
@@ -152,9 +153,9 @@ scale_catalog <- function() {
         id = defs$id[j],
         name = hdr$name %||% NA_character_,
         kind = sub("^.*::", "", cls),
-        key = hdr$key %||% "unit",
+        leaf = .header_leaf(hdr),
         frames = paste(frames, collapse = "/"),
-        n_atoms = .header_n_atoms(hdr, dirname(defs$file[j])),
+        n_leaves = .header_n_leaves(hdr, dirname(defs$file[j])),
         package = dirs$package[i],
         path = defs$file[j],
         stringsAsFactors = FALSE

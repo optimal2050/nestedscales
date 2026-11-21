@@ -2,16 +2,16 @@
 % Please edit documentation in R/filter.R
 \name{filter_scale}
 \alias{filter_scale}
-\title{Subset a NestedScale by unit}
+\title{Subset a NestedScale by member}
 \usage{
-filter_scale(x, frame, unit, drop_empty_frames = FALSE)
+filter_scale(x, frame, member, drop_empty_frames = FALSE)
 }
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{frame}{Frame that \code{unit} belongs to.}
+\item{frame}{Frame that \code{member} belongs to.}
 
-\item{unit}{Character vector of codes to keep.}
+\item{member}{Character vector of codes to keep.}
 
 \item{drop_empty_frames}{Drop frames left with no codes at all.}
 }
@@ -19,8 +19,8 @@ filter_scale(x, frame, unit, drop_empty_frames = FALSE)
 A \code{\link{NestedScale}}.
 }
 \description{
-Keeps only the atoms belonging to \code{unit} at \code{frame}, and rebuilds the member
-vocabularies accordingly.
+Keeps only the leaves belonging to \code{member} at \code{frame}, and rebuilds the
+member vocabularies accordingly.
 }
 \details{
 A genuine subset is a SAMPLE and is book-kept as one: \code{meta$coverage}
@@ -30,7 +30,7 @@ those root totals (making the coverage claim verifiable by the validator),
 \code{meta$parent_name} records the parent, and \code{meta$name} is mangled to
 \code{"parent[frame:codes]"} so a sample never impersonates its parent in the
 crosswalk registry or in \code{\link[=join_scale]{join_scale()}} column names. A filter that keeps
-every atom is a true no-op. Read the fraction back with \code{\link[=scale_coverage]{scale_coverage()}}.
+every leaf is a true no-op. Read the fraction back with \code{\link[=scale_coverage]{scale_coverage()}}.
 }
 \examples{
 s <- scale_example()

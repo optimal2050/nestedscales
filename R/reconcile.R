@@ -46,7 +46,7 @@ NULL
 #' @param balance What to do about the gap:
 #'   * `"none"` (default) -- report it and change nothing.
 #'   * `"residual"` -- return the data with each group's gap written onto its
-#'     declared residual unit at `source`. Needs exactly one residual per
+#'     declared residual member at `source`. Needs exactly one residual per
 #'     affected group, and `rule = "sum"`.
 #'   * `"proportional"` -- return the data scaled by `target / aggregated`
 #'     within each group, so every group hits its total.
@@ -62,21 +62,21 @@ NULL
 #' @examples
 #' lf <- data.frame(
 #'   country = c("DE", "DE", "DE"),
-#'   unit = c("DE1", "DE2", "DE_XR"),
+#'   item = c("DE1", "DE2", "DE_XR"),
 #'   pop = c(40, 30, 0), stringsAsFactors = FALSE
 #' )
 #' s <- scale_from_leaftable(lf,
-#'   frames = c("country", "unit"), key = "unit",
+#'   frames = c("country", "item"), leaf = "item",
 #'   weights = "pop", name = "geo",
-#'   residuals = list(unit = "DE_XR")
+#'   residuals = list(item = "DE_XR")
 #' )
-#' fine <- data.frame(unit = c("DE1", "DE2", "DE_XR"), gdp = c(400, 300, 0))
+#' fine <- data.frame(item = c("DE1", "DE2", "DE_XR"), gdp = c(400, 300, 0))
 #' published <- data.frame(country = "DE", gdp = 750)
 #'
-#' reconcile_scale(fine, s, source = "unit", target = "country", published)
+#' reconcile_scale(fine, s, source = "item", target = "country", published)
 #'
 #' reconcile_scale(fine, s,
-#'   source = "unit", target = "country", published,
+#'   source = "item", target = "country", published,
 #'   balance = "residual"
 #' )
 #' @export
@@ -102,7 +102,9 @@ reconcile_scale <- function(data, x, source, target, totals,
     .stop("`totals` has no `%s` column to identify the parent groups", target)
   }
 
-  if (is.null(key)) key <- if (source %in% names(data)) source else scale_key(x)
+  if (is.null(key)) {
+    key <- if (source %in% names(data)) source else scale_leaf_column(x)
+  }
   if (!key %in% names(data)) {
     .stop("the data has no column named `%s`; pass `key=`", key)
   }
@@ -190,13 +192,13 @@ reconcile_scale <- function(data, x, source, target, totals,
 
 #' Select the data rows belonging to one gap row
 #' @noRd
-.gap_select <- function(out, key, units, id_cols, g) {
-  sel <- as.character(out[[key]]) %in% units
+.gap_select <- function(out, key, members, id_cols, g) {
+  sel <- as.character(out[[key]]) %in% members
   for (idc in id_cols) sel <- sel & out[[idc]] == g[[idc]]
   sel
 }
 
-#' Write each group's gap onto its declared residual unit
+#' Write each group's gap onto its declared residual member
 #' @noRd
 .balance_residual <- function(data, x, source, target, key, id_cols, gap, rule) {
   if (!identical(rule, "sum")) {
@@ -233,16 +235,16 @@ reconcile_scale <- function(data, x, source, target, totals,
   out <- data
   for (i in .gap_rows(gap)) {
     g <- gap[i, ]
-    unit <- fam$child[fam$parent == g[[target]]]
-    if (length(unit) != 1L) {
+    member <- fam$child[fam$parent == g[[target]]]
+    if (length(member) != 1L) {
       .stop("no declared residual at `%s` for %s `%s`", source, target, g[[target]])
     }
-    sel <- .gap_select(out, key, unit, id_cols, g)
+    sel <- .gap_select(out, key, member, id_cols, g)
     if (!any(sel)) {
       .stop(paste0(
         "the data has no row for residual `%s`, so the gap cannot ",
         "be written there; add a zero row for it"
-      ), unit)
+      ), member)
     }
     out[sel, g$value] <- out[sel, g$value] + g$gap
   }

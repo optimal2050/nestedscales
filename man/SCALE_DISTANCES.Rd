@@ -17,15 +17,15 @@ any registered with \code{\link[=register_scale_distance]{register_scale_distanc
 \description{
 \describe{
 \item{\code{euclidean}, \code{manhattan}, \code{maximum}}{Straight to
-\code{\link[stats:dist]{stats::dist()}}. Compare units by the LEVEL of their profiles.}
-\item{\code{correlation}}{\code{1 - cor(t(x))}, Pearson. Compares SHAPE: two units
+\code{\link[stats:dist]{stats::dist()}}. Compare members by the LEVEL of their profiles.}
+\item{\code{correlation}}{\code{1 - cor(t(x))}, Pearson. Compares SHAPE: two members
 that rise and fall together are close however different their
 magnitudes, which is what you usually want when grouping load or
 generation profiles.}
 \item{\code{spearman}}{The same on ranks -- shape, robust to outliers.}
 \item{\code{cosine}}{\verb{1 - cosine similarity}. Shape again, but sensitive to
-sign and not centred, so a unit that is uniformly positive is close to
-every other such unit.}
+sign and not centred, so a member that is uniformly positive is close to
+every other such member.}
 }
 }
 \examples{

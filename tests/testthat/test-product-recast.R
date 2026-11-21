@@ -12,7 +12,7 @@
 .pdata <- function() {
   d <- merge(
     data.frame(
-      unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
+      item = c("U1", "U2", "U3", "U4", "U5", "U6"),
       stringsAsFactors = FALSE
     ),
     data.frame(
@@ -39,8 +39,8 @@
   for (ax in order_ax) {
     step <- if (ax == "a") {
       recast_scale(step, scale_axes(s, "a"),
-        source = "unit", target = "sector",
-        key = "unit", values = "cap", rule = rule_a
+        source = "item", target = "sector",
+        key = "item", values = "cap", rule = rule_a
       )
     } else {
       recast_scale(step, scale_axes(s, "b"),
@@ -105,7 +105,7 @@ test_that("the output is keyed by the target frames", {
     )
   )
   expect_true(all(c("sector", "era", "cap") %in% names(out)))
-  expect_false(any(c("unit", "period") %in% names(out)))
+  expect_false(any(c("item", "period") %in% names(out)))
 })
 
 test_that("an axis left out of `to` passes through untouched", {
@@ -218,7 +218,7 @@ test_that("share is refused across a product", {
   )
 })
 
-test_that("pooled sd equals the direct sd over the product atoms", {
+test_that("pooled sd equals the direct sd over the product leaves", {
   p <- .pp()
   d <- .pdata()
   out <- suppressWarnings(
@@ -228,11 +228,11 @@ test_that("pooled sd equals the direct sd over the product atoms", {
     )
   )
 
-  # the data is keyed at BOTH atom frames, so every row is one product atom
+  # the data is keyed at BOTH leaf frames, so every row is one product leaf
   # and the pooled sd is just the sd of the values in each block
   lt_a <- scale_leaftable(scale_example())
   lt_b <- scale_leaftable(scale_example2())
-  d$sector <- lt_a$sector[match(d$unit, lt_a$unit)]
+  d$sector <- lt_a$sector[match(d$item, lt_a$item)]
   d$era <- lt_b$era[match(d$period, lt_b$period)]
   ref <- stats::aggregate(cap ~ sector + era, data = d, FUN = stats::sd)
 
@@ -241,9 +241,9 @@ test_that("pooled sd equals the direct sd over the product atoms", {
   expect_gt(nrow(got), 0)
 })
 
-test_that("pooled sd weights by the product atom counts", {
+test_that("pooled sd weights by the product leaf counts", {
   p <- .pp()
-  # keyed at a COARSER frame on axis a, so each row covers several atoms
+  # keyed at a COARSER frame on axis a, so each row covers several leaves
   d <- merge(
     data.frame(class = c("G1", "G2", "S1"), stringsAsFactors = FALSE),
     data.frame(period = c("p1", "p2"), stringsAsFactors = FALSE)
@@ -256,8 +256,8 @@ test_that("pooled sd weights by the product atom counts", {
     )
   )
   # Block (P, E1) covers classes G1 and G2 across periods p1 and p2: four
-  # rows, each standing for 2 atoms (G1 and G2 hold 2 units each; p1 and p2
-  # are single atoms). The pooled sd weights each value by that atom count.
+  # rows, each standing for 2 leaves (G1 and G2 hold 2 members each; p1 and p2
+  # are single leaves). The pooled sd weights each value by that leaf count.
   vals <- d$v[d$class %in% c("G1", "G2") & d$period %in% c("p1", "p2")]
   n <- rep(2, length(vals))
   nn <- sum(n)
@@ -317,14 +317,14 @@ test_that("a missing key column is reported as such", {
 test_that("a target colliding with another axis's frame is refused", {
   # `era` is a frame of axis b; make axis a able to target that name too
   df <- data.frame(
-    era = c("X", "X", "Y"), unit = c("u1", "u2", "u3"),
+    era = c("X", "X", "Y"), item = c("u1", "u2", "u3"),
     w = c(1, 1, 1), stringsAsFactors = FALSE
   )
-  odd <- scale_from_leaftable(df, frames = c("era", "unit"), name = "odd")
+  odd <- scale_from_leaftable(df, frames = c("era", "item"), name = "odd")
   p <- scale_product(a = odd, b = scale_example2())
   d <- merge(
     data.frame(
-      unit = c("u1", "u2", "u3"),
+      item = c("u1", "u2", "u3"),
       stringsAsFactors = FALSE
     ),
     data.frame(period = c("p1", "p2"), stringsAsFactors = FALSE)
@@ -398,7 +398,7 @@ test_that("filter_product() subsets one axis and keeps a product", {
 test_that("join_product() attaches every axis's labels", {
   p <- .pp()
   d <- data.frame(
-    unit = c("U1", "U3"), period = c("p1", "p2"),
+    item = c("U1", "U3"), period = c("p1", "p2"),
     v = 1:2, stringsAsFactors = FALSE
   )
   out <- join_product(d, p, attach = TRUE)

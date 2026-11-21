@@ -27,10 +27,10 @@ is stored and errors on a conflict.}
 their own (default \code{TRUE}). \code{FALSE} reports stored values only.}
 }
 \value{
-A \code{data.frame} with the attribute columns (\code{frame}, \code{unit},
+A \code{data.frame} with the attribute columns (\code{frame}, \code{member},
 \code{attribute}, \code{kind}, \code{value}, \code{lower}, \code{upper}, \code{unit_of_measure},
-\code{source}, \code{note}), plus \code{origin_frame} and \code{origin_unit} when \code{frame}
-is given.
+\code{source}, \code{note}), plus \code{origin_frame} and \code{origin_member} when
+\code{frame} is given.
 }
 \description{
 With \code{frame = NULL}, returns the stored attribute table (filtered by
@@ -38,8 +38,8 @@ With \code{frame = NULL}, returns the stored attribute table (filtered by
 that frame per attribute, \strong{resolved}: a member's own value when it has
 one, otherwise the value of its nearest ancestor that has one, walking
 coarser frames one at a time. The row reports where the value came from
-in \code{origin_frame}/\code{origin_unit}; a member with no value anywhere gets an
-\code{NA} row.
+in \code{origin_frame}/\code{origin_member}; a member with no value anywhere gets
+an \code{NA} row.
 }
 \details{
 Two situations are errors rather than guesses:
@@ -54,11 +54,11 @@ Two situations are errors rather than guesses:
 \examples{
 s <- attach_attributes_scale(
   scale_example(),
-  data.frame(frame = c("sector", "class"), unit = c("P", "S1"),
+  data.frame(frame = c("sector", "class"), member = c("P", "S1"),
              attribute = "density", value = c(10, 5),
              unit_of_measure = "t/m3"),
   source = "survey", kind = "property"
 )
 scale_attributes(s)                           # stored rows
-scale_attributes(s, "density", frame = "unit") # resolved per atom
+scale_attributes(s, "density", frame = "item") # resolved per leaf
 }

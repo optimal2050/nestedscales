@@ -19,7 +19,8 @@ also a \code{scale_dataset} from \code{\link[=open_scale_dataset]{open_scale_dat
 \item{x}{The \code{\link{NestedScale}} the codes belong to.}
 
 \item{cols}{Which columns to bind. \code{NULL} (default) binds every column
-named after a frame of \code{x} (or after its key). Otherwise a character
+named after a frame of \code{x} (or after its leaf column). Otherwise a
+character
 vector of frame names, named by column where the column is called
 something else: \code{c(origin = "sector")}. For \code{unbind_scale()}, the
 columns to unbind; \code{NULL} for all bound columns.}
@@ -31,14 +32,19 @@ a \code{data.frame} with one row per bound column: \code{column}, \code{scale},
 }
 \description{
 Records, on the code columns themselves, which scale and which frame
-their codes are on. A bound column is a \code{\link[=as_scale_unit]{scale_unit}}
+their codes are on. A bound column is a \code{\link[=as_scale_member]{scale_member}}
 vector: it prints and behaves as a character vector, and keeps the link
 through row subsetting, \code{mutate()}, grouping, joins and row binding.
-The verbs (\code{\link[=recast_scale]{recast_scale()}}, \code{\link[=join_scale]{join_scale()}}, the atom routes) then
+The verbs (\code{\link[=recast_scale]{recast_scale()}}, \code{\link[=join_scale]{join_scale()}}, the leaf routes) then
 take the source frame from the link, stop when the data is bound to a
 different scale, and bind their result.
 }
 \details{
+The link is experimental and may change or be removed. It is an R
+construct: converting a bound column to a factor or to a plain character
+vector drops it, and other languages reading the same data do not see
+it. Data that is not bound is matched to a scale by its codes alone.
+
 Every code is checked against the scale when binding; a code that is not a
 member is an error. \code{scale_link()} reports what a table is bound to and
 \code{unbind_scale()} returns the columns to plain character.
@@ -62,5 +68,5 @@ try(recast_scale(b, scale_example2(), target = "sector", rule = "sum"))
 unbind_scale(b)$class
 }
 \seealso{
-\code{\link[=scale_id]{scale_id()}}, \code{\link[=as_scale_unit]{as_scale_unit()}}
+\code{\link[=scale_id]{scale_id()}}, \code{\link[=as_scale_member]{as_scale_member()}}
 }

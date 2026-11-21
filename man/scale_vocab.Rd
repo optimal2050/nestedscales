@@ -12,10 +12,10 @@ scale_vocab(x, ...)
 \item{...}{Passed to methods.}
 }
 \value{
-A named list with elements \code{object}, \code{frame}, \code{frames}, \code{unit},
-\code{units}, \code{atoms}, and optionally \code{register_rule} and \code{register_map}: the
-calls that error messages suggest for registering a value column's rule
-or an explicit crosswalk, when the dimension package offers its own
+A named list with elements \code{object}, \code{frame}, \code{frames}, \code{member},
+\code{members}, \code{leaves}, and optionally \code{register_rule} and \code{register_map}:
+the calls that error messages suggest for registering a value column's
+rule or an explicit crosswalk, when the dimension package offers its own
 (\code{"register_geoscale_rule()"}).
 }
 \description{

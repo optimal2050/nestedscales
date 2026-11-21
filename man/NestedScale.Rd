@@ -8,7 +8,7 @@ NestedScale(
   leaftable,
   frames,
   members,
-  key = "unit",
+  leaf = "leaf",
   meta = list(),
   attributes = NULL,
   aliases = NULL,
@@ -16,8 +16,8 @@ NestedScale(
 )
 }
 \arguments{
-\item{leaftable}{\code{data.frame} with a unique key column, one column per frame
-in \code{frames}, and zero or more numeric weight columns.}
+\item{leaftable}{\code{data.frame} with a unique leaf column, one column per
+frame in \code{frames}, and zero or more numeric weight columns.}
 
 \item{frames}{Ordered character vector of frame names (coarsest first); each
 must appear as a column of \code{leaftable}.}
@@ -26,26 +26,27 @@ must appear as a column of \code{leaftable}.}
 present at frame \code{f}. Must equal the non-\code{NA} values of \code{leaftable[[f]]}
 as a set.}
 
-\item{key}{Name of the atom key column (a single string, default \code{"unit"}).}
+\item{leaf}{Name of the leaf column (a single string, default \code{"leaf"}).}
 
 \item{meta}{Named list of attributes (\code{name}, \code{desc}, \code{weights},
 \code{default_weight}, \code{residuals} (see \code{\link[=scale_residuals]{scale_residuals()}}),
 \code{default_label}, \code{source}, sample bookkeeping).}
 
 \item{attributes}{Optional table of per-member physical attributes keyed
-by \verb{(frame, unit)}; see \code{\link[=attach_attributes_scale]{attach_attributes_scale()}} for the columns.}
+by \verb{(frame, member)}; see \code{\link[=attach_attributes_scale]{attach_attributes_scale()}} for the columns.}
 
 \item{aliases}{Optional table of alternative labels keyed by
-\verb{(frame, unit)}; see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}} for the columns.}
+\verb{(frame, member)}; see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}} for the columns.}
 
 \item{labels}{Optional table of display names keyed by
-\verb{(frame, unit, variant)}; see \code{\link[=attach_labels_scale]{attach_labels_scale()}} for the columns.}
+\verb{(frame, member, variant)}; see \code{\link[=attach_labels_scale]{attach_labels_scale()}} for the
+columns.}
 }
 \value{
 A \code{NestedScale} object.
 }
 \description{
-A nested discrete partition: a flat table of atoms plus the ordered
+A nested discrete partition: a flat table of leaves plus the ordered
 hierarchy of frames that groups them. The dimension is not named -- time and
 space are the subclasses \code{Calendar} (timescales) and \code{Geoscale} (geoscales);
 anything else (industries, income brackets, temperature regimes, technology
@@ -58,5 +59,5 @@ Construct with \code{\link[=scale_from_leaftable]{scale_from_leaftable()}}.
 scale_example()
 }
 \seealso{
-\code{\link[=scale_from_leaftable]{scale_from_leaftable()}}, \code{\link[=scale_frames]{scale_frames()}}, \code{\link[=scale_units]{scale_units()}}
+\code{\link[=scale_from_leaftable]{scale_from_leaftable()}}, \code{\link[=scale_frames]{scale_frames()}}, \code{\link[=scale_members]{scale_members()}}
 }

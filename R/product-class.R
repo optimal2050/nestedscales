@@ -1,11 +1,12 @@
 # =============================================================================
 # ScaleProduct -- several scales combined into one multi-index
 # =============================================================================
-# A product of an hourly calendar (8,760 atoms) and a NUTS3 geoscale (1,477)
-# has ~12.9M atoms. A `NestedScale`'s contract is "leaftable = one row per atom", so
+# A product of an hourly calendar (8,760 leaves) and a NUTS3 geoscale (1,477)
+# has ~12.9M leaves. A `NestedScale`'s contract is "leaftable = one row per
+# leaf", so
 # a product CANNOT be a NestedScale subclass without either lying about that
 # contract or materialising something nobody asked for. It is a sibling class
-# that HOLDS scales instead, and its atoms are never built unless asked for
+# that HOLDS scales instead, and its leaves are never built unless asked for
 # explicitly.
 #
 # Data on a product carries ONE KEY COLUMN PER AXIS -- never a pasted
@@ -22,16 +23,16 @@ NULL
 #' A product of several scales (S7 class)
 #'
 #' Combines two or more [`NestedScale`] objects into one multi-dimensional index --
-#' time x space, time x space x industry, and so on. The atoms of the product
-#' are tuples of the component atoms, and they stay LAZY: nothing is
-#' materialised at construction, and [`product_atoms()`] is the guarded way to
+#' time x space, time x space x industry, and so on. The leaves of the product
+#' are tuples of the component leaves, and they stay LAZY: nothing is
+#' materialised at construction, and [`product_leaves()`] is the guarded way to
 #' realise them.
 #'
 #' Construct with [`scale_product()`].
 #'
 #' @param axes Named list of [`NestedScale`] objects; the names are the axis names.
 #' @param keys Named character vector, one entry per axis, giving the data
-#'   column that carries that axis's unit codes.
+#'   column that carries that axis's member codes.
 #' @param joint_weights Reserved for a weight that varies jointly across axes
 #'   (an hourly profile used as a spatial split weight). `NULL` in this
 #'   version; a supplied table is validated but not yet consumed.
@@ -39,7 +40,7 @@ NULL
 #'
 #' @return A `ScaleProduct` object.
 #'
-#' @seealso [`scale_product()`], [`product_atoms()`], [`product_size()`]
+#' @seealso [`scale_product()`], [`product_leaves()`], [`product_size()`]
 #' @examples
 #' scale_product(a = scale_example(), b = scale_example2())
 #' @export
@@ -156,9 +157,9 @@ ScaleProduct <- S7::new_class(
 #'   the axis names.
 #' @param name,desc Short name and description of the product.
 #' @param keys Optional named character vector overriding the data key column
-#'   per axis. By default each axis uses its scale's own key
-#'   ([`scale_key()`]); if that would make two axes share a column name, the
-#'   AXIS NAMES are used instead.
+#'   per axis. By default each axis uses the name of its scale's leaf column
+#'   ([`scale_leaf_column()`]); if that would make two axes share a column
+#'   name, the AXIS NAMES are used instead.
 #' @param joint_weights Reserved; see [`ScaleProduct`].
 #'
 #' @return A [`ScaleProduct`].
@@ -184,11 +185,15 @@ scale_product <- function(..., name = "", desc = "", keys = NULL,
 
   if (is.null(keys)) {
     keys <- vapply(axes, function(a) {
-      if (S7::S7_inherits(a, NestedScale)) scale_key(a) else NA_character_
+      if (S7::S7_inherits(a, NestedScale)) {
+        scale_leaf_column(a)
+      } else {
+        NA_character_
+      }
     }, character(1))
     names(keys) <- nms
-    # Two generic scales both keyed "unit" would collide; fall back to the
-    # axis names, which are unique by construction.
+    # Two scales with the same leaf column name would collide; fall back to
+    # the axis names, which are unique by construction.
     if (anyDuplicated(stats::na.omit(keys))) {
       keys <- stats::setNames(nms, nms)
     }
@@ -201,7 +206,11 @@ scale_product <- function(..., name = "", desc = "", keys = NULL,
       .stop("`keys` names unknown axes: %s", .preview(unknown))
     }
     full <- vapply(axes, function(a) {
-      if (S7::S7_inherits(a, NestedScale)) scale_key(a) else NA_character_
+      if (S7::S7_inherits(a, NestedScale)) {
+        scale_leaf_column(a)
+      } else {
+        NA_character_
+      }
     }, character(1))
     names(full) <- nms
     full[names(keys)] <- keys
@@ -294,11 +303,11 @@ product_frames <- function(x) {
 
 #' Size of a product
 #'
-#' The per-axis atom counts and their product -- the number of rows a fully
+#' The per-axis leaf counts and their product -- the number of rows a fully
 #' dense realisation would have.
 #'
 #' @param x A [`ScaleProduct`].
-#' @return A list with `axes` (named integer, atoms per axis) and `total`
+#' @return A list with `axes` (named integer, leaves per axis) and `total`
 #'   (double, their product).
 #' @examples
 #' product_size(scale_product(a = scale_example(), b = scale_example2()))
@@ -314,7 +323,7 @@ product_size <- function(x) {
 
 #' Weight columns of each axis
 #'
-#' A product has no weights of its own: the weight of a product atom is the
+#' A product has no weights of its own: the weight of a product leaf is the
 #' product of its components' weights, which is derived when needed and never
 #' stored.
 #'
@@ -360,14 +369,14 @@ product_coverage <- function(x, weight = NULL) {
   }, numeric(1))
 }
 
-#' Realise the atoms of a product
+#' Realise the leaves of a product
 #'
 #' The cross product of the component leaftables: one row per tuple of
-#' component atoms, with each axis's key column named by [`product_keys()`]
+#' component leaves, with each axis's key column named by [`product_keys()`]
 #' and its frame columns prefixed `"<axis>."`.
 #'
 #' This is guarded on purpose. An hourly calendar crossed with NUTS3 is
-#' ~12.9M rows; the whole point of a product is that its atoms exist
+#' ~12.9M rows; the whole point of a product is that its leaves exist
 #' implicitly, and conversion never needs them realised (see
 #' [`recast_scale()`]). Ask for them only when you actually want the grid.
 #'
@@ -379,17 +388,17 @@ product_coverage <- function(x, weight = NULL) {
 #'
 #' @examples
 #' p <- scale_product(a = scale_example(), b = scale_example2())
-#' head(product_atoms(p))
+#' head(product_leaves(p))
 #' @export
-product_atoms <- function(x, limit = 1e6) {
+product_leaves <- function(x, limit = 1e6) {
   .check_product(x)
   sz <- product_size(x)
   if (sz$total > limit) {
     .stop(
       paste0(
-        "this product has %s atoms (%s), above `limit` = %s. Pass a ",
+        "this product has %s leaves (%s), above `limit` = %s. Pass a ",
         "larger `limit=` to build it anyway -- but conversion never ",
-        "needs the atoms realised."
+        "needs the leaves realised."
       ),
       format(sz$total, big.mark = ",", scientific = FALSE),
       paste(sprintf("%s: %d", names(sz$axes), sz$axes), collapse = " x "),
@@ -400,12 +409,12 @@ product_atoms <- function(x, limit = 1e6) {
   parts <- lapply(names(S7::prop(x, "axes")), function(ax) {
     a <- scale_axes(x, ax)
     lt <- scale_leaftable(a)
-    # the finest frame is often the key column itself; carrying it twice
+    # the finest frame is often the leaf column itself; carrying it twice
     # (once as the key, once prefixed) is pure noise
-    fr <- setdiff(scale_frames(a), scale_key(a))
+    fr <- setdiff(scale_frames(a), scale_leaf_column(a))
     out <- lt[, fr, drop = FALSE]
     names(out) <- paste0(ax, ".", fr)
-    out[[keys[[ax]]]] <- as.character(lt[[scale_key(a)]])
+    out[[keys[[ax]]]] <- as.character(lt[[scale_leaf_column(a)]])
     out[, c(keys[[ax]], setdiff(names(out), keys[[ax]])), drop = FALSE]
   })
   out <- Reduce(function(a, b) merge(a, b, by = NULL), parts)
@@ -418,7 +427,7 @@ product_atoms <- function(x, limit = 1e6) {
 S7::method(format, ScaleProduct) <- function(x, ...) {
   sz <- product_size(x)
   sprintf(
-    "<ScaleProduct[%s] atoms=%s>",
+    "<ScaleProduct[%s] leaves=%s>",
     paste(names(S7::prop(x, "axes")), collapse = " x "),
     format(sz$total, big.mark = ",", scientific = FALSE)
   )
@@ -444,12 +453,12 @@ print.ScaleProduct <- function(x, ...) {
     cat("  ", format(ax, width = w), " : ", v$object, " '",
       S7::prop(a, "meta")[["name"]] %||% "", "'  ",
       paste(scale_frames(a), collapse = "/"),
-      "  atoms ", format(sz$axes[[ax]], big.mark = ","),
+      "  leaves ", format(sz$axes[[ax]], big.mark = ","),
       "  key: ", keys[[ax]], "\n",
       sep = ""
     )
   }
-  cat("Atoms: ",
+  cat("Leaves: ",
     paste(format(sz$axes, big.mark = ","), collapse = " x "),
     " = ", format(sz$total, big.mark = ",", scientific = FALSE),
     "  (not materialised)\n",
@@ -509,7 +518,7 @@ summary.ScaleProduct <- function(object, ...) {
       character(1)
     ),
     frames = vapply(axes, function(a) length(scale_frames(a)), integer(1)),
-    atoms = sz$axes,
+    leaves = sz$axes,
     key = unname(keys[names(axes)]),
     coverage = unname(cov[names(axes)]),
     stringsAsFactors = FALSE, row.names = NULL
@@ -547,13 +556,13 @@ print.summary_ScaleProduct <- function(x, ...) {
   for (i in seq_len(nrow(x$axes))) {
     r <- x$axes[i, ]
     cat("    ", r$axis, " -> '", r$scale, "'  ", r$frames, " frames, ",
-      format(r$atoms, big.mark = ","), " atoms, key `", r$key, "`",
+      format(r$leaves, big.mark = ","), " leaves, key `", r$key, "`",
       if (r$coverage < 1) sprintf("  [%.1f%% covered]", 100 * r$coverage),
       "\n",
       sep = ""
     )
   }
-  cat("  atoms:          ",
+  cat("  leaves:         ",
     format(x$total, big.mark = ",", scientific = FALSE), "\n",
     sep = ""
   )

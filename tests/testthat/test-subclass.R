@@ -14,7 +14,7 @@
 #     error messages in their own dimension's words
 # =========================================================================== #
 
-# A stand-in for Calendar: fixes the key, adds a prop, aliases `frames`,
+# A stand-in for Calendar: fixes the leaf column, adds a prop, aliases `frames`,
 # and adds one invariant of its own.
 Widget <- S7::new_class(
   "Widget",
@@ -24,8 +24,8 @@ Widget <- S7::new_class(
     slots = scale_alias_property("frames")
   ),
   validator = function(self) {
-    if (!identical(S7::prop(self, "key"), "widget")) {
-      return("`key` must be \"widget\"")
+    if (!identical(S7::prop(self, "leaf"), "widget")) {
+      return("`leaf` must be \"widget\"")
     }
     NULL
   }
@@ -40,7 +40,7 @@ Widget <- S7::new_class(
   Widget(
     leaftable = df, frames = c("grp", "widget"),
     members = list(grp = c("A", "B"), widget = c("w1", "w2", "w3")),
-    key = "widget", meta = list(
+    leaf = "widget", meta = list(
       name = "wx", weights = "w",
       default_weight = "w"
     ), ...
@@ -60,7 +60,7 @@ test_that("a subclass inherits the parent validator", {
         grp = c("A", "GHOST"),
         widget = c("w1", "w2")
       ),
-      key = "widget"
+      leaf = "widget"
     ),
     "exactly the non-NA"
   )
@@ -68,14 +68,14 @@ test_that("a subclass inherits the parent validator", {
 
 test_that("a subclass adds its own invariants on top", {
   df <- data.frame(
-    grp = c("A", "A"), unit = c("w1", "w2"),
+    grp = c("A", "A"), item = c("w1", "w2"),
     stringsAsFactors = FALSE
   )
   expect_error(
     Widget(
-      leaftable = df, frames = c("grp", "unit"),
-      members = list(grp = "A", unit = c("w1", "w2")),
-      key = "unit"
+      leaftable = df, frames = c("grp", "item"),
+      members = list(grp = "A", item = c("w1", "w2")),
+      leaf = "item"
     ),
     "must be \"widget\""
   )
@@ -127,8 +127,8 @@ test_that("an alias setter no-ops on NULL", {
 test_that("engine accessors work unchanged on a subclass", {
   w <- .widget()
   expect_identical(scale_frames(w), c("grp", "widget"))
-  expect_identical(scale_units(w), c("w1", "w2", "w3"))
-  expect_identical(scale_key(w), "widget")
+  expect_identical(scale_members(w), c("w1", "w2", "w3"))
+  expect_identical(scale_leaf_column(w), "widget")
   expect_identical(scale_weights(w), "w")
   expect_identical(nrow(scale_leaftable(w)), 3L)
   expect_equal(scale_coverage(w), c(w = 1))
@@ -146,16 +146,16 @@ test_that("scale_vocab() can be overridden per dimension", {
   S7::method(scale_vocab, Widget) <- function(x, ...) {
     list(
       object = "Widget", frame = "slot", frames = "slots",
-      unit = "widget", units = "widgets", atoms = "widgetbase"
+      member = "widget", members = "widgets", leaves = "widgetbase"
     )
   }
   w <- .widget()
   expect_identical(scale_vocab(w)$frame, "slot")
   # and the shared checker speaks the subclass's language
-  expect_error(scale_units(w, "nope"), "is not a slot of this Widget")
+  expect_error(scale_members(w, "nope"), "is not a slot of this Widget")
 })
 
-test_that("a positional per-atom payload survives a row subset", {
+test_that("a positional per-leaf payload survives a row subset", {
   Shaped <- S7::new_class("Shaped",
     parent = scale_class(),
     properties = list(shape = S7::class_character),
@@ -173,12 +173,12 @@ test_that("a positional per-atom payload survives a row subset", {
   lt <- scale_leaftable(base)
   s <- Shaped(
     leaftable = lt, frames = scale_frames(base),
-    members = S7::prop(base, "members"), key = scale_key(base),
+    members = S7::prop(base, "members"), leaf = scale_leaf_column(base),
     meta = S7::prop(base, "meta"),
-    shape = paste0("shape_", lt$unit)
+    shape = paste0("shape_", lt$item)
   )
   p <- filter_scale(s, "sector", "P")
-  expect_identical(p@shape, paste0("shape_", scale_leaftable(p)$unit))
+  expect_identical(p@shape, paste0("shape_", scale_leaftable(p)$item))
   expect_true(S7::S7_inherits(p, Shaped))
 })
 
@@ -196,9 +196,9 @@ test_that("a collapse keeps the concrete class and asks the payload to merge", {
   lt <- scale_leaftable(base)
   s <- Shaped(
     leaftable = lt, frames = scale_frames(base),
-    members = S7::prop(base, "members"), key = scale_key(base),
+    members = S7::prop(base, "members"), leaf = scale_leaf_column(base),
     meta = S7::prop(base, "meta"),
-    shape = paste0("shape_", lt$unit)
+    shape = paste0("shape_", lt$item)
   )
   # no collapse method: the positional payload no longer fits and the
   # subclass's own validator says so -- loud, not silently misaligned

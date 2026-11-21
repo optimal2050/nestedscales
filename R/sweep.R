@@ -24,27 +24,27 @@
 #' @examples
 #' s <- scale_example()
 #' d <- data.frame(
-#'   unit = rep(scale_units(s), each = 4),
+#'   item = rep(scale_members(s), each = 4),
 #'   t = rep(sprintf("t%d", 1:4), 7), v = as.numeric(seq_len(28))
 #' )
 #' cluster_sweep(d, s, ks = 2:4)
 #' @export
 cluster_sweep <- function(data, x, ks, frame = NULL, key = NULL, value = NULL,
-                          distance = "euclidean", scale_units = FALSE,
+                          distance = "euclidean", scale_members = FALSE,
                           FUN = cluster_scale, ...) {
   frame <- .resolve_frame(x, frame)
-  units <- scale_units(x, frame)
+  members <- scale_members(x, frame)
   key <- key %||% .resolve_key(x, frame, names(as.data.frame(data)))
   d <- scale_distance(data, x,
     frame = frame, key = key, value = value,
-    method = distance, scale_units = scale_units
+    method = distance, scale_members = scale_members
   )
   dm <- as.matrix(d)
 
   rows <- lapply(ks, function(k) {
     cl <- FUN(data, x,
       k = k, frame = frame, key = key, value = value,
-      distance = distance, scale_units = scale_units, ...
+      distance = distance, scale_members = scale_members, ...
     )
     tab <- attr(cl, "clustering")
     g <- tab[[2L]]
@@ -62,7 +62,7 @@ cluster_sweep <- function(data, x, ks, frame = NULL, key = NULL, value = NULL,
   out
 }
 
-#' Total distance from each unit to its cluster's medoid
+#' Total distance from each member to its cluster's medoid
 #' @noRd
 .within_dispersion <- function(dm, a) {
   sum(vapply(sort(unique(a)), function(g) {
@@ -77,7 +77,7 @@ cluster_sweep <- function(data, x, ks, frame = NULL, key = NULL, value = NULL,
 
 #' Average silhouette width
 #'
-#' For each unit: `b` is the smallest average distance to another cluster, `a`
+#' For each member: `b` is the smallest average distance to another cluster, `a`
 #' the average distance within its own; the width is `(b - a) / max(a, b)`. A
 #' singleton cluster has width 0 by the usual convention -- it has no within
 #' distance to speak of, and calling that a perfect fit would flatter it.

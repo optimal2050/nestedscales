@@ -1,5 +1,5 @@
 # =============================================================================
-# Distances between the units of a scale
+# Distances between the members of a scale
 # =============================================================================
 # Every distance here is either delegated to `stats::dist()` or written from
 # its textbook definition -- `1 - cor` for correlation, `1 - cosine` for
@@ -13,15 +13,15 @@
 #'
 #' \describe{
 #'   \item{`euclidean`, `manhattan`, `maximum`}{Straight to
-#'     [stats::dist()]. Compare units by the LEVEL of their profiles.}
-#'   \item{`correlation`}{`1 - cor(t(x))`, Pearson. Compares SHAPE: two units
+#'     [stats::dist()]. Compare members by the LEVEL of their profiles.}
+#'   \item{`correlation`}{`1 - cor(t(x))`, Pearson. Compares SHAPE: two members
 #'     that rise and fall together are close however different their
 #'     magnitudes, which is what you usually want when grouping load or
 #'     generation profiles.}
 #'   \item{`spearman`}{The same on ranks -- shape, robust to outliers.}
 #'   \item{`cosine`}{`1 - cosine similarity`. Shape again, but sensitive to
-#'     sign and not centred, so a unit that is uniformly positive is close to
-#'     every other such unit.}
+#'     sign and not centred, so a member that is uniformly positive is close to
+#'     every other such member.}
 #' }
 #'
 #' @format A character vector.
@@ -58,10 +58,10 @@ SCALE_DISTANCES <- c(
 
 #' Similarity on the -1..1 scale to a distance on 0..2
 #'
-#' A constant profile has zero variance and undefined correlation; such a unit
+#' A constant profile has zero variance and undefined correlation; such a member
 #' is defined here to be maximally distant from everything (including another
-#' constant unit), because "flat" says nothing about shape and grouping two
-#' flat units together on that basis would be an artefact.
+#' constant member), because "flat" says nothing about shape and grouping two
+#' flat members together on that basis would be an artefact.
 #' @noRd
 .dist_from_similarity <- function(s) {
   s[!is.finite(s)] <- -1
@@ -85,7 +85,7 @@ SCALE_DISTANCES <- c(
 #' and then usable by name everywhere in the package.
 #'
 #' @param name Name to register under.
-#' @param fn A function of the unit-by-feature matrix returning a
+#' @param fn A function of the member-by-feature matrix returning a
 #'   [stats::dist] object (or a square matrix) over its rows.
 #'
 #' @return Invisibly, `name`.
@@ -139,41 +139,41 @@ clear_scale_distances <- function(name = NULL) {
   invisible(NULL)
 }
 
-#' Distance between the units of a scale
+#' Distance between the members of a scale
 #'
-#' Reshapes long, unit-keyed data into a unit-by-observation matrix and
+#' Reshapes long, member-keyed data into a member-by-observation matrix and
 #' measures the distance between its rows.
 #'
-#' @param data Long data: a column of unit codes, one or more identifier
+#' @param data Long data: a column of member codes, one or more identifier
 #'   columns saying which observation each row is, and a value column.
 #' @param x A `NestedScale`.
-#' @param frame Frame whose units are compared. Defaults to the atom frame.
-#' @param key Column of `data` holding the unit codes. Defaults to `frame`
-#'   when present, else the scale's key.
+#' @param frame Frame whose members are compared. Defaults to the leaf frame.
+#' @param key Column of `data` holding the member codes. Defaults to `frame`
+#'   when present, else the scale's leaf column.
 #' @param value Value column; inferred when unambiguous.
 #' @param method A name from [`list_scale_distances()`].
-#' @param scale_units Standardise each unit's profile to mean 0, sd 1 before
+#' @param scale_members Standardise each member's profile to mean 0, sd 1 before
 #'   measuring. Turns a level distance into a shape distance; has no effect on
 #'   `"correlation"`, which already ignores level.
 #'
-#' @return A [stats::dist] object over the frame's units, in member order.
+#' @return A [stats::dist] object over the frame's members, in member order.
 #'
 #' @examples
 #' s <- scale_example()
 #' d <- data.frame(
-#'   unit = rep(scale_units(s), each = 3),
+#'   item = rep(scale_members(s), each = 3),
 #'   t = rep(sprintf("t%d", 1:3), 7), v = as.numeric(seq_len(21))
 #' )
 #' round(scale_distance(d, s, method = "correlation"), 2)
 #' @export
 scale_distance <- function(data, x, frame = NULL, key = NULL, value = NULL,
-                           method = "euclidean", scale_units = FALSE) {
+                           method = "euclidean", scale_members = FALSE) {
   frame <- .resolve_frame(x, frame)
   key <- key %||% .resolve_key(x, frame, names(as.data.frame(data)))
-  units <- scale_units(x, frame)
+  members <- scale_members(x, frame)
 
-  m <- .feature_matrix(data, key = key, value = value, units = units)
-  if (isTRUE(scale_units)) {
+  m <- .feature_matrix(data, key = key, value = value, members = members)
+  if (isTRUE(scale_members)) {
     m <- t(apply(m, 1, function(z) {
       s <- stats::sd(z)
       if (!is.finite(s) || s == 0) {
@@ -186,13 +186,13 @@ scale_distance <- function(data, x, frame = NULL, key = NULL, value = NULL,
   fn <- get_scale_distance(method)
   d <- if (!is.null(fn)) fn(m) else .dist_builtin(m, method)
   if (!inherits(d, "dist")) d <- stats::as.dist(as.matrix(d))
-  if (attr(d, "Size") != length(units)) {
+  if (attr(d, "Size") != length(members)) {
     .stop(
-      paste0("distance `%s` returned %d rows for %d units"),
-      method, attr(d, "Size"), length(units)
+      paste0("distance `%s` returned %d rows for %d members"),
+      method, attr(d, "Size"), length(members)
     )
   }
-  attr(d, "Labels") <- units
+  attr(d, "Labels") <- members
   d
 }
 
@@ -201,7 +201,7 @@ scale_distance <- function(data, x, frame = NULL, key = NULL, value = NULL,
   if (!is.null(frame)) {
     return(frame)
   }
-  .atom_level(x)
+  .leaf_frame(x)
 }
 
 #' @noRd
@@ -209,7 +209,7 @@ scale_distance <- function(data, x, frame = NULL, key = NULL, value = NULL,
   if (frame %in% cols) {
     return(frame)
   }
-  k <- scale_key(x)
+  k <- scale_leaf_column(x)
   if (k %in% cols) {
     return(k)
   }

@@ -22,7 +22,7 @@
   df$season <- ifelse(df$day == "d3", "warm", "cold")
   scale_from_leaftable(
     df[, c("season", "day", "slice", "span")],
-    frames = c("season", "day", "slice"), key = "slice",
+    frames = c("season", "day", "slice"), leaf = "slice",
     weights = "span", name = "clock"
   )
 }
@@ -38,7 +38,7 @@
   )
   scale_from_leaftable(df,
     frames = c("market", "country", "zone"),
-    key = "zone", weights = "pop", name = "grid"
+    leaf = "zone", weights = "pop", name = "grid"
   )
 }
 
@@ -46,8 +46,8 @@
   cl <- .clock()
   gr <- .grid()
   d <- merge(
-    data.frame(slice = scale_units(cl), stringsAsFactors = FALSE),
-    data.frame(zone = scale_units(gr), stringsAsFactors = FALSE)
+    data.frame(slice = scale_members(cl), stringsAsFactors = FALSE),
+    data.frame(zone = scale_members(gr), stringsAsFactors = FALSE)
   )
   set.seed(seed)
   d$load_mw <- round(runif(nrow(d), 50, 150), 3)
@@ -211,12 +211,12 @@ test_that("the flagship runs lazily on arrow without materialising", {
   expect_equal(got$load_mw, ref$load_mw)
 })
 
-test_that("the product never materialises its atoms to do any of this", {
+test_that("the product never materialises its leaves to do any of this", {
   p <- scale_product(time = .clock(), space = .grid())
-  # 72 x 6 = 432 atoms exist only implicitly; the guard proves nothing built
+  # 72 x 6 = 432 leaves exist only implicitly; the guard proves nothing built
   # them, since a limit below that size would have errored
   expect_equal(product_size(p)$total, 432)
-  expect_error(product_atoms(p, limit = 10), "above `limit`")
+  expect_error(product_leaves(p, limit = 10), "above `limit`")
   expect_no_error(
     recast_product(.load(), p,
       target = list(time = "day", space = "country"),

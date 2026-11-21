@@ -6,7 +6,7 @@
 
 .sd <- function() {
   d <- merge(
-    data.frame(unit = c("U1", "U2", "U3"), stringsAsFactors = FALSE),
+    data.frame(item = c("U1", "U2", "U3"), stringsAsFactors = FALSE),
     data.frame(period = c("p1", "p2"), stringsAsFactors = FALSE)
   )
   d$v <- seq_len(nrow(d))
@@ -18,12 +18,12 @@
 test_that("as_scale_array() shapes the table by the axes", {
   p <- .sp()
   a <- as_scale_array(.sd(), p, value = "v")
-  expect_identical(dim(a), c(7L, 4L)) # 7 units x 4 periods
-  expect_identical(dimnames(a)[[1]], scale_units(scale_example()))
-  expect_identical(dimnames(a)[[2]], scale_units(scale_example2()))
+  expect_identical(dim(a), c(7L, 4L)) # 7 members x 4 periods
+  expect_identical(dimnames(a)[[1]], scale_members(scale_example()))
+  expect_identical(dimnames(a)[[2]], scale_members(scale_example2()))
   # supplied cells carry their value, the rest are the fill
   d <- .sd()
-  expect_equal(a["U1", "p1"], d$v[d$unit == "U1" & d$period == "p1"])
+  expect_equal(a["U1", "p1"], d$v[d$item == "U1" & d$period == "p1"])
   expect_true(is.na(a["U6", "p4"]))
 })
 
@@ -31,7 +31,7 @@ test_that("the array round-trips back to the long table", {
   p <- .sp()
   d <- .sd()
   back <- as_scale_table(as_scale_array(d, p, value = "v"), p, value = "v")
-  key <- function(z) paste(z$unit, z$period)
+  key <- function(z) paste(z$item, z$period)
   expect_setequal(key(back), key(d))
   expect_equal(back$v[match(key(d), key(back))], d$v)
 })
@@ -54,7 +54,7 @@ test_that("a fill value other than NA is honoured", {
 
 test_that("a one-dimensional NestedScale also works", {
   s <- scale_example()
-  d <- data.frame(unit = c("U1", "U2"), v = c(5, 6), stringsAsFactors = FALSE)
+  d <- data.frame(item = c("U1", "U2"), v = c(5, 6), stringsAsFactors = FALSE)
   a <- as_scale_array(d, s, value = "v")
   expect_identical(dim(a), 7L)
   expect_equal(a[["U1"]], 5)
@@ -68,11 +68,11 @@ test_that("an oversized array is refused rather than allocated", {
   )
 })
 
-test_that("codes that are not units are an error, never silently dropped", {
+test_that("codes that are not members are an error, never silently dropped", {
   p <- .sp()
   d <- .sd()
-  d$unit[1] <- "NOPE"
-  expect_error(as_scale_array(d, p, value = "v"), "not units of axis")
+  d$item[1] <- "NOPE"
+  expect_error(as_scale_array(d, p, value = "v"), "not members of axis")
 })
 
 test_that("the value column is inferred, and ambiguity is reported", {
@@ -117,7 +117,7 @@ test_that("a product dataset round-trips through the store", {
   expect_identical(product_keys(ds$scale), product_keys(p))
 
   got <- as.data.frame(dplyr::collect(ds$data))
-  expect_setequal(paste(got$unit, got$period), paste(d$unit, d$period))
+  expect_setequal(paste(got$item, got$period), paste(d$item, d$period))
 })
 
 test_that("an unavailable codec falls back to uncompressed IPC", {
@@ -146,8 +146,8 @@ test_that("the reopened scales are the same scales", {
     orig <- scale_axes(p, a)
     got <- scale_axes(back, a)
     expect_identical(scale_frames(got), scale_frames(orig), label = a)
-    expect_identical(scale_key(got), scale_key(orig), label = a)
-    expect_identical(scale_units(got), scale_units(orig), label = a)
+    expect_identical(scale_leaf_column(got), scale_leaf_column(orig), label = a)
+    expect_identical(scale_members(got), scale_members(orig), label = a)
     expect_identical(scale_weights(got), scale_weights(orig), label = a)
     expect_equal(as.data.frame(scale_leaftable(got)),
       as.data.frame(scale_leaftable(orig)),
@@ -188,12 +188,12 @@ test_that("a single NestedScale round-trips too", {
   skip_if_not_installed("arrow")
   skip_if_not_installed("jsonlite")
   s <- scale_example()
-  d <- data.frame(unit = c("U1", "U2"), v = c(1, 2), stringsAsFactors = FALSE)
+  d <- data.frame(item = c("U1", "U2"), v = c(1, 2), stringsAsFactors = FALSE)
   dir <- withr::local_tempdir()
   write_scale_dataset(d, s, file.path(dir, "s"))
   ds <- open_scale_dataset(file.path(dir, "s"))
   expect_s3_class(ds$scale, "nestedscales::NestedScale")
-  expect_identical(scale_units(ds$scale), scale_units(s))
+  expect_identical(scale_members(ds$scale), scale_members(s))
 })
 
 test_that("partitioning writes a pruned layout", {
@@ -246,7 +246,7 @@ test_that("meta that cannot be written as YAML is refused up front", {
   meta <- S7::prop(s, "meta")
   meta$callback <- function() NULL
   S7::prop(s, "meta") <- meta
-  d <- data.frame(unit = "U1", v = 1, stringsAsFactors = FALSE)
+  d <- data.frame(item = "U1", v = 1, stringsAsFactors = FALSE)
   dir <- withr::local_tempdir()
   expect_error(
     write_scale_dataset(d, s, file.path(dir, "s")),

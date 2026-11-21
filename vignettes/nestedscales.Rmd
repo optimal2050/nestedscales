@@ -27,8 +27,8 @@ library(nestedscales)
 
 ## Representation
 
-A **nested scale** is a table with one row per atom, the finest unit of the
-dimension, and one column per frame, a coarser level that groups the atoms.
+A **nested scale** is a table with one row per leaf, the finest member of the
+dimension, and one column per frame, a coarser level that groups the leaves.
 The frames are given coarsest first. Numeric columns that are not frames are
 weights.
 
@@ -48,19 +48,19 @@ ind <- scale_from_leaftable(
 ind
 ```
 
-The scale records the frames, the units at each frame, the atom key and the
+The scale records the frames, the members at each frame, the leaf column and the
 weights:
 
 ```{r accessors}
 scale_frames(ind)
-scale_units(ind, "division")
-scale_key(ind)
+scale_members(ind, "division")
+scale_leaf_column(ind)
 scale_weights(ind)
 ```
 
-Every frame partitions the atoms. Frames need not nest in each other: a
-unit at one frame may belong to several units at a coarser frame, and two
-frames may be independent, in which case the atoms are their combinations.
+Every frame partitions the leaves. Frames need not nest in each other: a
+member at one frame may belong to several members at a coarser frame, and two
+frames may be independent, in which case the leaves are their combinations.
 `scale_nests()`, `scale_crosses()` and `scale_is_uniform()` report the
 relation a given pair of frames has; no relation is assumed.
 
@@ -78,9 +78,9 @@ Data keyed at one frame is converted to another frame with
 |---|---|---|
 | `sum` | sum | split in proportion to the weight |
 | `weighted_mean` | weighted mean | copy |
-| `mean` | mean over atoms | copy |
+| `mean` | mean over leaves | copy |
 | `copy` | the common value | copy |
-| `sd` | standard deviation over atoms | not defined |
+| `sd` | standard deviation over leaves | not defined |
 | `share` | value as a share of its parent's total | not defined |
 
 The rule is given per value column, so extensive and intensive quantities
@@ -116,8 +116,8 @@ column.
 
 ## Labels
 
-`join_scale()` attaches the scale's labels to a dataset: the unit at the
-keyed frame, optionally the coarser frames (`attach =`) and the unit's share
+`join_scale()` attaches the scale's labels to a dataset: the member at the
+keyed frame, optionally the coarser frames (`attach =`) and the member's share
 and weight (`meta =`):
 
 ```{r join}
@@ -126,13 +126,13 @@ join_scale(x, ind, frame = "class", attach = TRUE)
 
 ## Subsets
 
-`filter_scale()` keeps the atoms under given units; the result records what
+`filter_scale()` keeps the leaves under given members; the result records what
 fraction of each weight it retains. `prune_scale()` collapses a scale to a
-coarser atom level.
+coarser leaf frame.
 
 ```{r subset}
 manufacturing <- filter_scale(ind, "section", "C")
-scale_units(manufacturing)
+scale_members(manufacturing)
 scale_coverage(manufacturing)
 
 scale_frames(prune_scale(ind, "division"))
@@ -142,7 +142,7 @@ scale_frames(prune_scale(ind, "division"))
 
 A scale may carry values that belong to its members but are not weights: a
 calorific value per fuel, a density, an emission factor. They live in an
-attribute table keyed by `(frame, unit)`, at whatever level they are
+attribute table keyed by `(frame, member)`, at whatever level they are
 published, and `scale_attributes()` resolves one value per member of a
 frame, walking to the nearest coarser level when a member has none of its
 own. `convert_scale()` applies the resolved value row by row. Alternative
@@ -155,17 +155,17 @@ illustrative:
 fuels <- scale_from_leaftable(
   data.frame(carrier = c("Coal", "Coal", "Gas"),
              fuel = c("Anthracite", "Lignite", "NaturalGas")),
-  frames = c("carrier", "fuel"), key = "fuel", name = "fuels",
+  frames = c("carrier", "fuel"), leaf = "fuel", name = "fuels",
   attributes = data.frame(
-    frame = "fuel", unit = c("Lignite", "NaturalGas"), attribute = "lhv",
+    frame = "fuel", member = c("Lignite", "NaturalGas"), attribute = "lhv",
     kind = "property", value = c(10, 50), unit_of_measure = "GJ/t",
     source = "example"
   ),
-  aliases = data.frame(frame = "fuel", unit = "NaturalGas", alias = "NG",
+  aliases = data.frame(frame = "fuel", member = "NaturalGas", alias = "NG",
                        source = "example")
 )
 scale_attributes(fuels, "lhv", frame = "fuel")[
-  c("unit", "value", "unit_of_measure")]
+  c("member", "value", "unit_of_measure")]
 
 fuel_use <- data.frame(fuel = c("Lignite", "NaturalGas"), t = c(1000, 1000))
 convert_scale(fuel_use, fuels, "lhv", from_unit = "t", to_unit = "GJ")
@@ -186,7 +186,7 @@ as well. `write_scale()` and `read_scale()` exchange them, and
 path <- file.path(tempdir(), "nace.json")
 write_scale(ind, path)
 scale_frames(read_scale(path))
-scale_catalog()[c("id", "name", "frames", "n_atoms", "package")]
+scale_catalog()[c("id", "name", "frames", "n_leaves", "package")]
 ```
 
 ```{r definition-cleanup, include = FALSE}
@@ -196,7 +196,7 @@ unlink(path)
 ## Several dimensions
 
 `scale_product()` combines scales into one multi-dimensional index without
-materialising the product of their atoms. `recast_product()`,
+materialising the product of their leaves. `recast_product()`,
 `join_product()` and `filter_product()` apply the single-scale operations
 axis by axis.
 
@@ -207,7 +207,7 @@ product_size(p)
 
 ## Further operations
 
-* `cluster_scale()` groups units by their data and returns the scale with
+* `cluster_scale()` groups members by their data and returns the scale with
   the clusters as a new frame.
 * `reconcile_scale()` compares aggregated data with an independent total.
 * `as_scale_array()` converts long data to a dense array over a scale, and

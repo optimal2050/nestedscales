@@ -48,19 +48,19 @@ leaf$group <- l2$parent[match(leaf$carrier, l2$name)]
 spelt <- which(!is.na(ct$aliases) & nzchar(ct$aliases))
 al <- unique(do.call(rbind, lapply(spelt, function(i) {
   data.frame(frame = c("group", "carrier", "fuel")[ct$level[i]],
-             unit = ct$name[i],
+             member = ct$name[i],
              alias = trimws(strsplit(ct$aliases[i], ";", fixed = TRUE)[[1]]),
              source = "energypal")
 })))
 es <- scale_from_leaftable(
   leaf[c("group", "carrier", "fuel")],
-  frames = c("group", "carrier", "fuel"), key = "fuel", name = "carriers",
+  frames = c("group", "carrier", "fuel"), leaf = "fuel", name = "carriers",
   aliases = al[nzchar(al$alias), ]
 )
-gs  <- geoscale_example()             # regions: country > state > zone > atom
+gs  <- geoscale_example()             # regions: country > state > zone > cell
 cal <- calendar("m12")                 # time:    MONTH
 
-scale_units(es, "carrier")
+scale_members(es, "carrier")
 geoscale_regions(gs, "country")
 calendar_timeslices(cal)
 ```
@@ -73,7 +73,7 @@ size of each region scales its use.
 
 ```{r use, eval = has_all}
 use <- expand.grid(
-  atom = geoscale_regions(gs)[geoscale_regions(gs) != "ROW"],
+  cell = geoscale_regions(gs)[geoscale_regions(gs) != "ROW"],
   timeslice = calendar_timeslices(cal),
   fuel = c("Anthracite", "Lignite", "DistillateFuelOil", "NaturalGas",
            "Biodiesel"),
@@ -84,15 +84,15 @@ base <- c(Anthracite = 2, Lignite = 6, DistillateFuelOil = 1.5,
 seasonal <- c(Anthracite = 0.6, Lignite = 0.6, DistillateFuelOil = 0.1,
               NaturalGas = 0.8, Biodiesel = 0)
 size <- geoscale_leaftable(gs) |>
-  transmute(atom, size = km2 / mean(km2))
+  transmute(cell, size = km2 / mean(km2))
 use <- use |>
-  left_join(size, by = "atom") |>
+  left_join(size, by = "cell") |>
   mutate(
     month = match(timeslice, calendar_timeslices(cal)),
     kt = base[fuel] * size *
       (1 + seasonal[fuel] * cos(2 * pi * (month - 1) / 12))
   ) |>
-  select(atom, timeslice, fuel, kt)
+  select(cell, timeslice, fuel, kt)
 head(use)
 ```
 
@@ -104,7 +104,7 @@ collide and a reader can see which scale a column came from:
 ```{r join, eval = has_all}
 labelled <- use |>
   join_scale(es, frame = "fuel", attach = TRUE) |>
-  join_geoscale(gs = gs, geoframe = "atom", geoframes = TRUE) |>
+  join_geoscale(gs = gs, geoframe = "cell", geoframes = TRUE) |>
   join_calendar(calendar = cal, meta = TRUE)
 names(labelled)
 head(labelled, 3)
@@ -126,7 +126,7 @@ fuels <- unique(use$fuel)
 es <- attach_attributes_scale(
   es,
   data.frame(
-    frame = "fuel", unit = rep(fuels, 2),
+    frame = "fuel", member = rep(fuels, 2),
     attribute = rep(c("lhv", "ef_co2"), each = length(fuels)),
     kind = rep(c("property", "factor"), each = length(fuels)),
     value = unname(c(
@@ -141,14 +141,14 @@ es <- attach_attributes_scale(
 )
 energy <- use |>
   mutate(t = kt * 1e3) |>
-  select(atom, timeslice, fuel, t) |>
+  select(cell, timeslice, fuel, t) |>
   convert_scale(es, "lhv", from_unit = "t", to_unit = "GJ") |>
-  transmute(atom, timeslice, fuel, tj = t / 1e3)
+  transmute(cell, timeslice, fuel, tj = t / 1e3)
 
 co2 <- energy |>
   convert_scale(es, "ef_co2", from_unit = "TJ", to_unit = "kg") |>
   rename(kg_co2 = tj) |>                 # the converted column: kg CO2
-  transmute(atom, timeslice, fuel, tj = energy$tj, kt_co2 = kg_co2 / 1e6)
+  transmute(cell, timeslice, fuel, tj = energy$tj, kt_co2 = kg_co2 / 1e6)
 head(co2, 3)
 ```
 
@@ -197,7 +197,7 @@ real dates:
 
 ```{r by-quarter, eval = has_all}
 by_quarter <- by_carrier |>
-  select(carrier, atom, timeslice, tj, kt_co2) |>
+  select(carrier, cell, timeslice, tj, kt_co2) |>
   recast_calendar(source = cal, target = calendar("q4"), year = 2024)
 head(by_quarter, 4)
 sum(by_quarter$tj) - sum(by_carrier$tj)
@@ -238,10 +238,10 @@ The GeoScale draws its own hierarchy with data attached -- CO2 summed to
 every geoframe at once:
 
 ```{r co2-icicle, eval = has_all}
-co2_by_atom <- co2 |>
-  group_by(atom) |>
+co2_by_leaf <- co2 |>
+  group_by(cell) |>
   summarise(kt_co2 = sum(kt_co2), .groups = "drop")
-gg_geoscale(gs, data = co2_by_atom, z = "kt_co2", rule = "sum")
+gg_geoscale(gs, data = co2_by_leaf, z = "kt_co2", rule = "sum")
 ```
 
 ## Matching labels from a statistical source
@@ -262,7 +262,7 @@ Join the resolved id on and the palette applies:
 ```{r generation-mix, eval = has_all}
 mix |>
   filter(year == 2024) |>
-  left_join(matched |> select(source = label, carrier = unit),
+  left_join(matched |> select(source = label, carrier = member),
             by = "source") |>
   ggplot(aes(x = country, y = generation_twh, fill = carrier)) +
   geom_col(position = "fill") +

@@ -12,18 +12,18 @@ scale_match(x, labels, frame = NULL, source = NULL)
 \item{labels}{Character vector of labels to resolve.}
 
 \item{frame}{Restrict matching to one frame; \code{NULL} searches all frames
-and the atom level.}
+and the leaf column.}
 
 \item{source}{Restrict the alias stage to one source (or several).}
 }
 \value{
-A \code{data.frame} with one row per label: \code{label}, \code{frame}, \code{unit},
+A \code{data.frame} with one row per label: \code{label}, \code{frame}, \code{member},
 \code{method} (\code{"exact"}, \code{"alias"}, \code{"ambiguous"}, \code{"none"}) and
-\code{candidates} (the \code{frame/unit} pairs of an ambiguous hit, joined by
+\code{candidates} (the \code{frame/member} pairs of an ambiguous hit, joined by
 \code{"; "}, else \code{NA}).
 }
 \description{
-Resolves each label to a \verb{(frame, unit)} member in two stages, stopping
+Resolves each label to a \verb{(frame, member)} member in two stages, stopping
 at the first that hits: an \strong{exact} member name (case-insensitive), then
 an \strong{alias} (case-insensitive). A label that hits several members --
 the same name at two frames, or an alias shared by two members -- is

@@ -2,7 +2,7 @@
 # recast_scale() -- the central conversion verb
 # =============================================================================
 # Aggregation and disaggregation are ONE operation. Every conversion routes
-# through the atom layer; the route is collapsed into a small crosswalk table
+# through the leaf layer; the route is collapsed into a small crosswalk table
 # by `scale_map()` (R/map.R), so the converter is a single dplyr pipeline --
 # ONE right_join plus ONE grouped summarise -- that runs unchanged over
 # data.frame / tibble / data.table / dtplyr / arrow inputs (R/backend.R).
@@ -17,7 +17,7 @@
 #     f = w / w_from        when the crosswalk carries weights
 #     f = n_overlap/n_from  otherwise (the equal split)
 #
-# A dimension whose atom layer is generated rather than enumerated (time)
+# A dimension whose leaf layer is generated rather than enumerated (time)
 # supplies extra identifier columns on the crosswalk through `scale_map(by=)`;
 # from there they ride the identifier-column contract like any panel column.
 # =============================================================================
@@ -115,7 +115,7 @@ utils::globalVariables(c(
   out
 }
 
-#' Aggregation expressions for one group of rows (the atom-layer half)
+#' Aggregation expressions for one group of rows (the leaf-layer half)
 #'
 #' `weighted_mean` falls back to a plain mean when the weights sum to zero,
 #' which keeps a group of zero-weight members at their common value instead of
@@ -186,7 +186,7 @@ utils::globalVariables(c(
 #' Either way a group that cannot be answered is not also reported as
 #' inconsistent.
 #' @noRd
-.check_copy_result <- function(res, copy_cols, backend, unit = "unit") {
+.check_copy_result <- function(res, copy_cols, backend, member = "member") {
   if (length(copy_cols) == 0L) {
     return(invisible(NULL))
   }
@@ -203,7 +203,7 @@ utils::globalVariables(c(
         paste0(
           "rule \"copy\" for `%s`: values are not constant within a ",
           "target %s"
-        ), v, unit
+        ), v, member
       ), call. = FALSE)
     }
   }
@@ -248,7 +248,7 @@ utils::globalVariables(c(
 #' Should this call run its diagnostic scans?
 #'
 #' Every diagnostic in the engine -- unknown source codes, dropped shares,
-#' source units missing from the data -- costs a scan of the DATA, and on a
+#' source members missing from the data -- costs a scan of the DATA, and on a
 #' lazy backend that scan defeats the whole point of returning a query. So the
 #' default is `"auto"`: diagnostics on eager inputs, where the data is already
 #' in memory and the scan is cheap; off on arrow/dtplyr, where it is not.
@@ -282,12 +282,12 @@ utils::globalVariables(c(
 
 #' Recast values from one resolution to another
 #'
-#' The central conversion verb: takes a table keyed by unit code at frame
+#' The central conversion verb: takes a table keyed by member code at frame
 #' `source` and returns one keyed at `target` -- a frame name of the same
-#' [`NestedScale`], or ANOTHER NestedScale (whose atom layer is the target, matched on
-#' shared atom keys). Handles both aggregation (fine to coarse) and
+#' [`NestedScale`], or ANOTHER NestedScale (whose leaf layer is the target,
+#' matched on shared leaf codes). Handles both aggregation (fine to coarse) and
 #' disaggregation (coarse to fine) with one rule per value column; frames that
-#' cross-cut work too, because the route always goes through the atom layer.
+#' cross-cut work too, because the route always goes through the leaf layer.
 #' A crosswalk registered with [`register_scale_map()`] short-circuits the
 #' derivation.
 #'
@@ -296,13 +296,13 @@ utils::globalVariables(c(
 #' grouping columns, so panel data recasts correctly in one call. This is what
 #' makes mixed pipelines across two dimensions work: a recast in one dimension
 #' carries the other dimension's key through untouched. Columns named like the
-#' scale's own frames are treated as unit attributes and dropped.
+#' scale's own frames are treated as member attributes and dropped.
 #'
 #' @section Backends:
 #' The data may be a `data.frame`, tibble, `data.table`, `dtplyr` lazy table,
 #' or an arrow Dataset/Table/query. The result comes back in the input's class;
 #' lazy inputs return the uncollected query unless `collect = TRUE`. Lazy
-#' results contain the observed target units only -- the full-vocabulary
+#' results contain the observed target members only -- the full-vocabulary
 #' completion (and its `NA` rows) applies when the result is materialised.
 #'
 #' @param data The data to recast, in any supported backend, with a column
@@ -313,9 +313,9 @@ utils::globalVariables(c(
 #'   `key` when it is a frame name, else the single frame name appearing among
 #'   the data's columns.
 #' @param target Target frame name of `x`, or another (named) [`NestedScale`] -- then
-#'   the target is that object's atom layer, matched on shared atom keys.
+#'   the target is that object's leaf layer, matched on shared leaf codes.
 #' @param key Name of the code column in `data`. Defaults to `source` when that
-#'   column exists, otherwise the scale's own key.
+#'   column exists, otherwise the name of the scale's leaf column.
 #' @param values Character vector of value columns to convert. Default: all
 #'   numeric columns other than the key and the scale's frame columns. Numeric
 #'   identifiers (e.g. `year`) must be excluded explicitly.
@@ -327,9 +327,10 @@ utils::globalVariables(c(
 #' @param weight Weight column used by `sum` (splitting) and `weighted_mean`;
 #'   scalar or named per column. `NULL` uses each column's registered weight,
 #'   falling back to the object's default weight; when the object declares no
-#'   weights at all, atoms weigh 1 (an equal split, warned about when it is
+#'   weights at all, leaves weigh 1 (an equal split, warned about when it is
 #'   material).
-#' @param na_action What to do with atoms that have no code at `source` or `target`:
+#' @param na_action What to do with leaves that have no code at `source` or
+#'   `target`:
 #'   `"drop"` (default, with a warning -- the affected source share is
 #'   genuinely lost), `"error"`, or `"keep"` (retain an explicit `NA` row so
 #'   totals conserve).
@@ -339,13 +340,13 @@ utils::globalVariables(c(
 #' @param collect For lazy inputs: materialise the result (`TRUE`) or return
 #'   the uncollected query (default).
 #' @param diagnostics Whether to run the checks that need a scan of the data:
-#'   unknown source codes, dropped shares, and source units missing from the
+#'   unknown source codes, dropped shares, and source members missing from the
 #'   data. `"auto"` (default) runs them on eager inputs and skips them on
 #'   arrow/dtplyr, where a scan would defeat the point of returning a query;
 #'   `"on"` and `"off"` force the choice. Errors that do not depend on the
 #'   data -- unknown frames, reserved column names, a missing rule -- are
 #'   raised regardless.
-#' @param missing_sources What to do when a target unit's sources are only
+#' @param missing_sources What to do when a target member's sources are only
 #'   partially present in the data. `"na"` (default) makes the result `NA` --
 #'   a partial answer is not an answer. `"ignore"` aggregates whatever is
 #'   there, which is faster but silently turns incomplete data into a
@@ -363,14 +364,14 @@ utils::globalVariables(c(
 #'   `c(to, identifiers, values)`.
 #'
 #' @details
-#' `"sum"` splits each source value across its unit's atoms proportionally to
+#' `"sum"` splits each source value across its member's leaves proportionally to
 #' the weight before summing up, so totals are conserved. `"weighted_mean"`
-#' weights by the atom weights; `"mean"` is the plain atom-count mean -- the
-#' two differ exactly when atom weights differ. `"copy"` requires a constant
-#' value per target unit; `"sd"` is aggregation-only.
+#' weights by the leaf weights; `"mean"` is the plain leaf-count mean -- the
+#' two differ exactly when leaf weights differ. `"copy"` requires a constant
+#' value per target member; `"sd"` is aggregation-only.
 #'
 #' `"share"` inverts the output contract: the result stays keyed at `source`,
-#' and each value becomes that unit's share of the total over its parent
+#' and each value becomes that member's share of the total over its parent
 #' group. `source` must nest within the parent. It cannot be combined with other
 #' rules in one call, and `weight=` is ignored -- the observed values
 #' themselves are the weights.
@@ -380,10 +381,10 @@ utils::globalVariables(c(
 #'
 #' # Extensive quantity, fine -> coarse: totals are preserved
 #' d <- data.frame(
-#'   unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
+#'   item = c("U1", "U2", "U3", "U4", "U5", "U6"),
 #'   capacity = c(1, 2, 3, 4, 5, 6)
 #' )
-#' recast_scale(d, s, source = "unit", target = "sector", rule = "sum")
+#' recast_scale(d, s, source = "item", target = "sector", rule = "sum")
 #'
 #' # Coarse -> fine: split proportionally to size
 #' y <- data.frame(sector = c("P", "S"), capacity = c(10, 20))
@@ -392,10 +393,10 @@ utils::globalVariables(c(
 #'   rule = "sum", weight = "size"
 #' )
 #'
-#' # Share within parent: result stays at the atoms, sums to 1 per sector
+#' # Share within parent: result stays at the leaves, sums to 1 per sector
 #' recast_scale(
 #'   d, s,
-#'   source = "unit", target = "sector",
+#'   source = "item", target = "sector",
 #'   rule = "share",
 #'   na_action = "keep"
 #' )
@@ -423,8 +424,8 @@ recast_scale <- function(data, x, source = NULL, target,
   )
   new <- if (S7::S7_inherits(target, NestedScale)) {
     stats::setNames(
-      list(list(scale = target, frame = .atom_level(target))),
-      .atom_level(target)
+      list(list(scale = target, frame = .leaf_frame(target))),
+      .leaf_frame(target)
     )
   } else {
     stats::setNames(list(list(scale = x, frame = target)), target)
@@ -458,7 +459,9 @@ recast_scale <- function(data, x, source = NULL, target,
 
   if (is.null(source)) source <- .infer_source(x, schema, key)
   .check_frame(x, source, "source")
-  if (is.null(key)) key <- if (source %in% names(schema)) source else scale_key(x)
+  if (is.null(key)) {
+    key <- if (source %in% names(schema)) source else scale_leaf_column(x)
+  }
   if (!key %in% names(schema)) {
     .stop("the data has no column named `%s`; pass `key=`", key)
   }
@@ -471,12 +474,12 @@ recast_scale <- function(data, x, source = NULL, target,
         "it cannot recast across objects"
       ))
     }
-    g <- recast_to_atoms(data, x,
+    g <- recast_to_leaves(data, x,
       source = source, key = key, values = values,
       rule = rule, weight = weight, collect = collect
     )
-    return(recast_from_atoms(g, target,
-      target = .atom_level(target),
+    return(recast_from_leaves(g, target,
+      target = .leaf_frame(target),
       values = values, rule = rule,
       na_action = na_action, collect = collect
     ))
@@ -593,7 +596,7 @@ recast_scale <- function(data, x, source = NULL, target,
     if (n_bad > 0L) {
       .stop(
         paste0(
-          "%d atom(s) have no code at %s `%s` or `%s`; use ",
+          "%d leaf row(s) have no code at %s `%s` or `%s`; use ",
           "na_action = \"drop\" or \"keep\""
         ),
         n_bad, v$frame, source, target
@@ -611,7 +614,7 @@ recast_scale <- function(data, x, source = NULL, target,
     scale_rank(x, target) > scale_rank(x, source)) {
     .warn(paste0(
       "no weight column declared; splitting `%s` equally across ",
-      "the atoms of each `%s`. Declare a weight for a ",
+      "the leaves of each `%s`. Declare a weight for a ",
       "size-proportional split."
     ), target, source)
   }
@@ -630,7 +633,7 @@ recast_scale <- function(data, x, source = NULL, target,
     c(source, target, "n_from", "n_overlap", "w", "w_from")
   )
 
-  # Coverage is a property of the atoms, so it is the same in every one of
+  # Coverage is a property of the leaves, so it is the same in every one of
   # these crosswalks; decide it once and apply it to all of them.
   uncovered <- is.na(maps[[1L]][[target]])
   uncovered_any <- any(uncovered)
@@ -642,8 +645,8 @@ recast_scale <- function(data, x, source = NULL, target,
       if (length(affected) > 0L) {
         .warn(
           paste0(
-            "%d atom(s) have no code at %s `%s`; the share of %d ",
-            "source unit(s) falling in them is dropped (%s). Use ",
+            "%d leaf row(s) have no code at %s `%s`; the share of %d ",
+            "source member(s) falling in them is dropped (%s). Use ",
             "na_action = \"keep\" to conserve totals."
           ),
           sum(maps[[1L]]$n_overlap[uncovered]), v$frame, target,
@@ -666,7 +669,7 @@ recast_scale <- function(data, x, source = NULL, target,
   wide <- .widen_maps(maps, source, target, key, wt_of, res_targets)
   res <- .recast_pipeline(data, backend, wide$jmap, key, values, rules,
     id_cols, map_by, missing_sources, wide$sfx,
-    unit = v$unit,
+    member = v$member,
     check_copy = !(backend_is_lazy(backend) && !isTRUE(collect))
   )
 
@@ -681,7 +684,7 @@ recast_scale <- function(data, x, source = NULL, target,
     return(dplyr::select(res, dplyr::all_of(c(target, id_cols, values))))
   }
 
-  # Missing-source diagnostic: crosswalk units absent from an identifier
+  # Missing-source diagnostic: crosswalk members absent from an identifier
   # group. This is the most expensive scan in the engine -- DISTINCT over
   # (identifiers, key) approaches the cardinality of the data itself -- and it
   # only produces a warning, so it is the first thing `diagnostics=` turns off.
@@ -706,7 +709,7 @@ recast_scale <- function(data, x, source = NULL, target,
     if (length(all_missing) > 0L) {
       .warn(
         paste0(
-          "%d source unit(s) present in the scale but missing from ",
+          "%d source member(s) present in the scale but missing from ",
           "the data (e.g. %s); produced NAs"
         ),
         length(all_missing), .preview(all_missing)
@@ -734,7 +737,7 @@ recast_scale <- function(data, x, source = NULL, target,
 #' Run a recast in chunks of identifier values and bind the results
 #'
 #' Diagnostics are forced OFF inside chunks, and not to save time: a source
-#' unit absent from one chunk is usually present in another, so per-chunk
+#' member absent from one chunk is usually present in another, so per-chunk
 #' diagnostics would report missing sources that are not missing from the
 #' data. The result is bound with [`backend_bind_rows()`].
 #' @noRd
@@ -797,7 +800,7 @@ recast_scale <- function(data, x, source = NULL, target,
   parent
 }
 
-#' rule = "share": each source unit's value over its parent-group total.
+#' rule = "share": each source member's value over its parent-group total.
 #' Output is keyed at `source` -- the one rule that does not change the key.
 #' @noRd
 .recast_share <- function(data, backend, x, source, target, key, values, id_cols,
@@ -814,7 +817,7 @@ recast_scale <- function(data, x, source = NULL, target,
   if (length(split_codes) > 0L) {
     .stop(
       paste0(
-        "rule \"share\": %d unit(s) of `%s` straddle more than one ",
+        "rule \"share\": %d member(s) of `%s` straddle more than one ",
         "`%s` (%s); `source` must nest within the parent"
       ),
       length(split_codes), source, parent, .preview(split_codes)
@@ -826,7 +829,7 @@ recast_scale <- function(data, x, source = NULL, target,
     if (na_action == "error") {
       .stop(
         paste0(
-          "%d unit(s) of `%s` have no code at parent `%s`; use ",
+          "%d member(s) of `%s` have no code at parent `%s`; use ",
           "na_action = \"drop\" or \"keep\""
         ),
         sum(orphan), source, parent
@@ -835,7 +838,7 @@ recast_scale <- function(data, x, source = NULL, target,
     if (na_action == "drop") {
       .warn(
         paste0(
-          "%d unit(s) of `%s` have no code at parent `%s` and get ",
+          "%d member(s) of `%s` have no code at parent `%s` and get ",
           "NA shares (%s). Use na_action = \"keep\" to treat them ",
           "as one group."
         ),
@@ -897,7 +900,7 @@ recast_scale <- function(data, x, source = NULL, target,
 #' Fold the per-weight crosswalks into ONE
 #'
 #' `source`, `target`, `n_from` and `n_overlap` do not depend on the weight -- they
-#' come from grouping the atoms, which the weight never touches -- so the
+#' come from grouping the leaves, which the weight never touches -- so the
 #' crosswalks for several weights differ only in `w`/`w_from`. Carrying each
 #' weight's split factor as its own column therefore lets one join and one
 #' summarise do what used to take a full pass over the data per weight, plus a
@@ -967,18 +970,18 @@ recast_scale <- function(data, x, source = NULL, target,
 #' The crosswalk-join pipeline for one weight's value columns
 #'
 #' `map_by` names extra identifier columns the crosswalk carries (a dimension
-#' whose atom layer is generated, e.g. time's `year`). Where such a column is
+#' whose leaf layer is generated, e.g. time's `year`). Where such a column is
 #' also an identifier of the data, the identifier grid JOINS the crosswalk on
 #' it instead of crossing with it -- crossing would duplicate the column.
 #' @noRd
 .recast_pipeline <- function(data, backend, jmap, key, values, rules,
                              id_cols, map_by = character(),
                              missing_sources = "na", sfx = NULL,
-                             unit = "unit", check_copy = TRUE) {
+                             member = "member", check_copy = TRUE) {
   shared_ids <- intersect(map_by, id_cols)
 
   # THE JOIN. The crosswalk is the build side -- |map| rows, which is what the
-  # whole route-through-the-atoms design exists to achieve. Previously this
+  # whole route-through-the-leaves design exists to achieve. Previously this
   # was a right join against `cross_join(identifier combos, crosswalk)`, an
   # in-memory frame the size of the source data; that grid existed only to
   # inject NA rows for absent (identifier, source) pairs, and the counting
@@ -1041,7 +1044,7 @@ recast_scale <- function(data, x, source = NULL, target,
   # The constancy guard collects the aggregate; a caller that wants a lazy
   # query passes check_copy = FALSE, as for the other diagnostics.
   if (check_copy && length(copy_cols) > 0L) {
-    .check_copy_result(res, copy_cols, backend, unit)
+    .check_copy_result(res, copy_cols, backend, member)
   }
 
   drop_cols <- c(
@@ -1072,13 +1075,13 @@ recast_scale <- function(data, x, source = NULL, target,
 #' The crosswalk is a data frame with one row per (source, target) pair:
 #'
 #' * the source and target codes, in the columns named by `source` and `target`;
-#' * `n_from`, the number of atoms (grid points) in the source code, and
+#' * `n_from`, the number of leaves (grid points) in the source code, and
 #'   `n_overlap`, the number of them that fall in the target;
 #' * optionally `w`, the weight of the pair for `"weighted_mean"` -- by default
 #'   `n_overlap`;
 #' * optionally `w_from`, the source's total weight. With it, `"sum"` splits a
 #'   source across its targets by `w / w_from`; without it, by
-#'   `n_overlap / n_from`, an equal split over atoms;
+#'   `n_overlap / n_from`, an equal split over leaves;
 #' * any columns named in `by`.
 #'
 #' A target whose sources are only partly present in the data, per identifier
@@ -1104,14 +1107,14 @@ recast_scale <- function(data, x, source = NULL, target,
 #'   `NA` where nothing landed; an `NA` entry adds an explicit `NA` row.
 #' @param missing_sources `"na"` (default) or `"ignore"`; see
 #'   [`recast_scale()`].
-#' @param unit The word for a target code in error messages.
+#' @param member The word for a target code in error messages.
 #' @param collect For lazy inputs: materialise (`TRUE`) or return the query.
 #'
 #' @return The recast data in its own class, with columns
 #'   `c(to, ids, values)`. Lazy in, lazy out.
 #'
 #' @examples
-#' # Two months onto one quarter, with the months' day counts as atoms
+#' # Two months onto one quarter, with the months' day counts as leaves
 #' map <- data.frame(
 #'   month = c("m01", "m02"), quarter = "Q1",
 #'   n_from = c(31, 28), n_overlap = c(31, 28)
@@ -1129,7 +1132,7 @@ recast_crosswalk <- function(data, map, source, target, key = source,
                              values = NULL, rule = NULL, ids = NULL,
                              by = character(), targets = NULL,
                              missing_sources = c("na", "ignore"),
-                             unit = "unit", collect = NULL) {
+                             member = "member", collect = NULL) {
   missing_sources <- match.arg(missing_sources)
   backend <- backend_of(data, "data")
   schema <- backend_schema(data)
@@ -1172,7 +1175,7 @@ recast_crosswalk <- function(data, map, source, target, key = source,
 
   res <- .recast_pipeline(data, backend, jmap, key, values, rules, ids,
     map_by = by, missing_sources = missing_sources,
-    unit = unit,
+    member = member,
     check_copy = !(backend_is_lazy(backend) && !isTRUE(collect))
   )
   if (!identical(key, target)) {
@@ -1203,76 +1206,76 @@ recast_crosswalk <- function(data, map, source, target, key = source,
 # The route halves
 # -----------------------------------------------------------------------------
 
-#' Recast unit data down to the atom layer, and back
+#' Recast member data down to the leaf layer, and back
 #'
-#' The two public halves of the `from -> atoms -> to` route:
-#' `recast_to_atoms()` projects unit-keyed data DOWN to the atom layer (one
-#' row per atom), and `recast_from_atoms()` aggregates atom-keyed data UP into
-#' a frame's units. Their composition is [`recast_scale()`], and because the
-#' atom rows are keyed by the atom IDs,
-#' `recast_from_atoms(recast_to_atoms(data, a), b, target)` recasts across two
-#' scales that share atom keys.
+#' The two public halves of the `from -> leaves -> to` route:
+#' `recast_to_leaves()` projects member-keyed data DOWN to the leaf layer (one
+#' row per leaf), and `recast_from_leaves()` aggregates leaf-keyed data UP into
+#' a frame's members. Their composition is [`recast_scale()`], and because the
+#' leaf rows are keyed by the leaf codes,
+#' `recast_from_leaves(recast_to_leaves(data, a), b, target)` recasts across
+#' two scales that share leaf codes.
 #'
-#' Going down, extensive columns (rule `"sum"`) are split across a unit's
-#' atoms proportionally to the chosen weight so totals conserve; intensive
+#' Going down, extensive columns (rule `"sum"`) are split across a member's
+#' leaves proportionally to the chosen weight so totals conserve; intensive
 #' columns are repeated. A `weight` column is attached by default so the
 #' return trip's `"weighted_mean"` reproduces the source weighting exactly.
 #'
-#' @param data The data: for `recast_to_atoms()` keyed by unit code at frame
-#'   `source`; for `recast_from_atoms()` keyed by atom IDs.
+#' @param data The data: for `recast_to_leaves()` keyed by member code at frame
+#'   `source`; for `recast_from_leaves()` keyed by leaf codes.
 #' @param x The [`NestedScale`] the data is keyed in, or aggregated into.
-#' @param source `to_atoms` only: frame name the codes belong to. `NULL`
+#' @param source `to_leaves` only: frame name the codes belong to. `NULL`
 #'   (default) is inferred as in [`recast_scale()`].
-#' @param target `from_atoms` only: target frame name.
+#' @param target `from_leaves` only: target frame name.
 #' @param key The key column; defaults as in [`recast_scale()`].
 #' @param values,rule As in [`recast_scale()`].
-#' @param weight `to_atoms`: a declared weight column of `x`. `from_atoms`:
+#' @param weight `to_leaves`: a declared weight column of `x`. `from_leaves`:
 #'   the name of a column of `data` to weight by, so the weight may vary by
 #'   identifier. `NULL` uses a `weight` column of the data if present, else
 #'   the scale's declared weight.
-#' @param attach_weight `to_atoms` only: attach the `weight` column (default
+#' @param attach_weight `to_leaves` only: attach the `weight` column (default
 #'   `TRUE`).
-#' @param na_rm `from_atoms` only: read an `NA` value as "this member says
+#' @param na_rm `from_leaves` only: read an `NA` value as "this member says
 #'   nothing" rather than as an unknown that makes the whole group `NA`.
-#' @param na_action `from_atoms` only: what to do with atoms that have no code
+#' @param na_action `from_leaves` only: what to do with leaves that have no code
 #'   at `target`.
 #' @param collect For lazy inputs: materialise (`TRUE`) or return the query.
 #'
-#' @return `recast_to_atoms()`: one row per (atom x identifier combination).
-#'   `recast_from_atoms()`: one row per (unit x identifier combination). Both
+#' @return `recast_to_leaves()`: one row per (leaf x identifier combination).
+#'   `recast_from_leaves()`: one row per (member x identifier combination). Both
 #'   in the input's class; lazy in, lazy out.
 #'
 #' @examples
 #' s <- scale_example()
 #' d <- data.frame(sector = c("P", "S"), capacity = c(10, 20))
-#' atoms <- recast_to_atoms(d, s,
+#' leaves <- recast_to_leaves(d, s,
 #'   source = "sector", rule = "sum",
 #'   weight = "size"
 #' )
-#' head(atoms)
-#' recast_from_atoms(
-#'   atoms, s,
+#' head(leaves)
+#' recast_from_leaves(
+#'   leaves, s,
 #'   target = "class",
 #'   rule = "sum",
 #'   na_action = "keep"
 #' )
 #' @export
-recast_to_atoms <- function(data, x, source = NULL, key = NULL, values = NULL,
+recast_to_leaves <- function(data, x, source = NULL, key = NULL, values = NULL,
                             rule = NULL, weight = NULL, attach_weight = TRUE,
                             collect = NULL) {
   .check_scale(x, "x")
   link <- .link_enter(data, x, key = key, source = source)
-  out <- .recast_to_atoms(link$data, x,
+  out <- .recast_to_leaves(link$data, x,
     source = link$source, key = link$key, values = values, rule = rule,
     weight = weight, attach_weight = attach_weight, collect = collect
   )
   .link_exit(out, link, stats::setNames(
-    list(list(scale = x, frame = .atom_level(x))), scale_key(x)
+    list(list(scale = x, frame = .leaf_frame(x))), scale_leaf_column(x)
   ))
 }
 
 #' @noRd
-.recast_to_atoms <- function(data, x, source = NULL, key = NULL,
+.recast_to_leaves <- function(data, x, source = NULL, key = NULL,
                              values = NULL, rule = NULL, weight = NULL,
                              attach_weight = TRUE, collect = NULL) {
   backend <- backend_of(data, "data")
@@ -1281,7 +1284,9 @@ recast_to_atoms <- function(data, x, source = NULL, key = NULL, values = NULL,
 
   if (is.null(source)) source <- .infer_source(x, schema, key)
   .check_frame(x, source, "source")
-  if (is.null(key)) key <- if (source %in% names(schema)) source else scale_key(x)
+  if (is.null(key)) {
+    key <- if (source %in% names(schema)) source else scale_leaf_column(x)
+  }
   if (!key %in% names(schema)) {
     .stop("the data has no column named `%s`; pass `key=`", key)
   }
@@ -1293,33 +1298,33 @@ recast_to_atoms <- function(data, x, source = NULL, key = NULL, values = NULL,
     scope = .scale_scope(x),
     hint = .rule_hint(x)
   )
-  .no_share(rules, "recast_to_atoms")
+  .no_share(rules, "recast_to_leaves")
 
-  akey <- scale_key(x)
+  akey <- scale_leaf_column(x)
   leaves <- S7::prop(x, "leaftable")
   wcol <- .map_weight(x, weight)
 
-  atoms <- data.frame(
+  lmap <- data.frame(
     .from = as.character(leaves[[source]]),
-    .atom = as.character(leaves[[akey]]),
+    .leaf = as.character(leaves[[akey]]),
     .w = if (is.null(wcol)) 1 else as.numeric(leaves[[wcol]]),
     stringsAsFactors = FALSE
   )
-  atoms <- atoms[!is.na(atoms$.from), , drop = FALSE]
-  atoms$.w[is.na(atoms$.w)] <- 0
-  tot <- stats::aggregate(list(.w_from = atoms$.w),
-    by = list(.from = atoms$.from), FUN = sum
+  lmap <- lmap[!is.na(lmap$.from), , drop = FALSE]
+  lmap$.w[is.na(lmap$.w)] <- 0
+  tot <- stats::aggregate(list(.w_from = lmap$.w),
+    by = list(.from = lmap$.from), FUN = sum
   )
-  atoms <- merge(atoms, tot, by = ".from", all.x = TRUE)
-  n <- stats::aggregate(list(.n = rep(1L, nrow(atoms))),
-    by = list(.from = atoms$.from), FUN = sum
+  lmap <- merge(lmap, tot, by = ".from", all.x = TRUE)
+  n <- stats::aggregate(list(.n = rep(1L, nrow(lmap))),
+    by = list(.from = lmap$.from), FUN = sum
   )
-  atoms <- merge(atoms, n, by = ".from", all.x = TRUE)
-  atoms$.f <- ifelse(atoms$.w_from > 0, atoms$.w / atoms$.w_from,
-    1 / atoms$.n
+  lmap <- merge(lmap, n, by = ".from", all.x = TRUE)
+  lmap$.f <- ifelse(lmap$.w_from > 0, lmap$.w / lmap$.w_from,
+    1 / lmap$.n
   )
 
-  jmap <- atoms[, c(".from", ".atom", ".w", ".f")]
+  jmap <- lmap[, c(".from", ".leaf", ".w", ".f")]
   names(jmap) <- c(key, akey, "weight", ".ms_f")
   if (identical(key, akey)) names(jmap)[1L] <- ".ms_src"
 
@@ -1352,15 +1357,15 @@ recast_to_atoms <- function(data, x, source = NULL, key = NULL, values = NULL,
   backend_restore(out, backend, collect = collect)
 }
 
-#' @rdname recast_to_atoms
+#' @rdname recast_to_leaves
 #' @export
-recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
+recast_from_leaves <- function(data, x, target, key = NULL, values = NULL,
                               rule = NULL, weight = NULL, na_rm = FALSE,
                               na_action = c("drop", "error", "keep"),
                               collect = NULL) {
   .check_scale(x, "x")
   link <- .link_enter(data, x, key = key, infer = FALSE)
-  out <- .recast_from_atoms(link$data, x,
+  out <- .recast_from_leaves(link$data, x,
     target = target, key = key, values = values, rule = rule,
     weight = weight, na_rm = na_rm, na_action = na_action, collect = collect
   )
@@ -1370,7 +1375,7 @@ recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
 }
 
 #' @noRd
-.recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
+.recast_from_leaves <- function(data, x, target, key = NULL, values = NULL,
                                rule = NULL, weight = NULL, na_rm = FALSE,
                                na_action = c("drop", "error", "keep"),
                                collect = NULL) {
@@ -1380,7 +1385,7 @@ recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
   schema <- backend_schema(data)
   .check_ms_cols(schema)
 
-  akey <- scale_key(x)
+  akey <- scale_leaf_column(x)
   if (is.null(key)) key <- akey
   if (!key %in% names(schema)) {
     .stop("the data has no column named `%s`; pass `key=`", key)
@@ -1405,7 +1410,7 @@ recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
     weight = NULL, scope = .scale_scope(x),
     hint = .rule_hint(x)
   )
-  .no_share(rules, "recast_from_atoms")
+  .no_share(rules, "recast_from_leaves")
 
   leaves <- S7::prop(x, "leaftable")
   jmem <- data.frame(
@@ -1417,13 +1422,16 @@ recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
   if (uncovered_any) {
     if (na_action == "error") {
       .stop(
-        "%d atom(s) have no code at `%s`; use na_action = \"drop\" or \"keep\"",
+        paste0(
+          "%d leaf row(s) have no code at `%s`; use na_action = \"drop\" ",
+          "or \"keep\""
+        ),
         sum(is.na(jmem$t)), target
       )
     }
     if (na_action == "drop") {
       .warn(
-        "%d atom(s) have no code at `%s` and were dropped",
+        "%d leaf row(s) have no code at `%s` and were dropped",
         sum(is.na(jmem$t)), target
       )
       jmem <- jmem[!is.na(jmem$t), , drop = FALSE]
@@ -1469,7 +1477,7 @@ recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
     dplyr::summarise(!!!exprs, .groups = "drop")
   if (length(copy_cols) > 0L) {
     if (!(backend_is_lazy(backend) && !isTRUE(collect))) {
-      .check_copy_result(res, copy_cols, backend, scale_vocab(x)$unit)
+      .check_copy_result(res, copy_cols, backend, scale_vocab(x)$member)
     }
     res <- dplyr::select(res, -dplyr::any_of(
       c(paste0(".ms_mx_", copy_cols), paste0(".ms_mn_", copy_cols))
@@ -1526,7 +1534,7 @@ recast_from_atoms <- function(data, x, target, key = NULL, values = NULL,
 #' @examples
 #' s <- scale_example()
 #' d <- data.frame(
-#'   unit = c("U1", "U2", "U3", "U4", "U5", "U6"),
+#'   item = c("U1", "U2", "U3", "U4", "U5", "U6"),
 #'   capacity = c(1, 2, 3, 4, 5, 6)
 #' )
 #' recast(d, s, target = "sector", rule = "sum")

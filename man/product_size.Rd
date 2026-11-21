@@ -10,11 +10,11 @@ product_size(x)
 \item{x}{A \code{\link{ScaleProduct}}.}
 }
 \value{
-A list with \code{axes} (named integer, atoms per axis) and \code{total}
+A list with \code{axes} (named integer, leaves per axis) and \code{total}
 (double, their product).
 }
 \description{
-The per-axis atom counts and their product -- the number of rows a fully
+The per-axis leaf counts and their product -- the number of rows a fully
 dense realisation would have.
 }
 \examples{

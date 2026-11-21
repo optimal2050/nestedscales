@@ -1,8 +1,8 @@
 # =============================================================================
 # Member attributes -- physical factors that live on the members of a scale
 # =============================================================================
-# One long table on the object, keyed by (frame, unit): a value may sit on an
-# atom or on any coarser member. `scale_attributes()` resolves a value for
+# One long table on the object, keyed by (frame, member): a value may sit on an
+# leaf or on any coarser member. `scale_attributes()` resolves a value for
 # every member of a frame by taking the member's own entry first and
 # otherwise walking to the nearest coarser frame that holds one.
 #
@@ -16,7 +16,7 @@
 NULL
 
 .ATTR_COLS <- c(
-  "frame", "unit", "attribute", "kind", "value", "lower", "upper",
+  "frame", "member", "attribute", "kind", "value", "lower", "upper",
   "unit_of_measure", "source", "note"
 )
 
@@ -45,7 +45,7 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' @noRd
 .empty_attributes <- function() {
   data.frame(
-    frame = character(), unit = character(), attribute = character(),
+    frame = character(), member = character(), attribute = character(),
     kind = character(), value = numeric(), lower = numeric(),
     upper = numeric(), unit_of_measure = character(), source = character(),
     note = character(),
@@ -60,7 +60,33 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' property the embedded class does not know.
 #' @noRd
 .attr_table <- function(x) {
-  attr(x, "attributes", exact = TRUE) %||% .empty_attributes()
+  .legacy_member_col(
+    attr(x, "attributes", exact = TRUE) %||% .empty_attributes()
+  )
+}
+
+#' A member table with its code column under the current name
+#'
+#' The attribute, alias and label tables name the member code column
+#' `member`; up to 0.2.0 it was `unit`. A table that has `unit` and no
+#' `member` gets the column renamed in place, anything else is returned
+#' unchanged.
+#' @noRd
+.legacy_member_col <- function(tab) {
+  if (is.data.frame(tab) && "unit" %in% names(tab) &&
+    !"member" %in% names(tab)) {
+    names(tab)[names(tab) == "unit"] <- "member"
+  }
+  tab
+}
+
+#' The name of the leaf column
+#'
+#' Read with `attr()`, not `S7::prop()`: the property is `leaf`, and an
+#' object saved under a class definition up to 0.2.0 stores it as `key`.
+#' @noRd
+.leaf_col <- function(x) {
+  attr(x, "leaf", exact = TRUE) %||% attr(x, "key", exact = TRUE)
 }
 
 #' The class an object carries, or NULL for one that carries none
@@ -91,12 +117,14 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' Bring an object saved under an earlier class definition up to date
 #'
 #' An S7 object embeds its class. One saved before the `attributes`,
-#' `aliases` or `labels` properties existed validates and reads fine (the accessors
-#' tolerate the missing attributes), but any WRITE -- `S7::prop<-`,
+#' `aliases` or `labels` properties existed, or while the leaf column was
+#' the property `key`, validates and reads fine (the accessors tolerate the
+#' missing attributes and the earlier names), but any WRITE -- `S7::prop<-`,
 #' `S7::set_props()`, hence every rebuild -- is refused by the embedded
 #' class. So the write paths call this first: it swaps in the current class
-#' of the same name and package and fills the missing tables with empty
-#' ones. A no-op for an up-to-date object.
+#' of the same name and package, fills the missing tables with empty ones,
+#' moves `key` to `leaf` and renames the `unit` column of the stored tables
+#' to `member`. A no-op for an up-to-date object.
 #' @noRd
 .upgrade_scale <- function(x) {
   cls <- .s7_class(x)
@@ -105,7 +133,7 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
   }
   props <- names(cls@properties)
   core <- all(c("attributes", "aliases") %in% props)
-  if (core && "labels" %in% props) {
+  if (core && all(c("labels", "leaf") %in% props)) {
     return(x)
   }
   spec <- strsplit(class(x)[[1L]], "::", fixed = TRUE)[[1L]]
@@ -116,7 +144,8 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
     )
   }
   if (!inherits(current, "S7_class")) {
-    # Only `labels` is missing: every write path but the label one works.
+    # Only `labels` or `leaf` is missing: every write path but the label
+    # one works, and the leaf column is read from `key`.
     if (core) {
       return(x)
     }
@@ -137,10 +166,19 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
     is.null(attr(x, "labels", exact = TRUE))) {
     attr(x, "labels") <- .empty_labels()
   }
+  if ("leaf" %in% names(current@properties) &&
+    is.null(attr(x, "leaf", exact = TRUE))) {
+    attr(x, "leaf") <- attr(x, "key", exact = TRUE)
+    attr(x, "key") <- NULL
+  }
+  for (tab in c("attributes", "aliases", "labels")) {
+    old <- attr(x, tab, exact = TRUE)
+    if (!is.null(old)) attr(x, tab) <- .legacy_member_col(old)
+  }
   x
 }
 
-#' Every (frame, unit) pair the object currently has, as "frame\runit"
+#' Every (frame, member) pair the object currently has, as "frame\rmember"
 #' @noRd
 .member_keys <- function(x) {
   members <- S7::prop(x, "members")
@@ -185,7 +223,7 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
   }
   out <- attributes[.ATTR_COLS]
   for (ch in c(
-    "frame", "unit", "attribute", "kind", "unit_of_measure", "source", "note"
+    "frame", "member", "attribute", "kind", "unit_of_measure", "source", "note"
   )) {
     out[[ch]] <- as.character(out[[ch]])
   }
@@ -201,6 +239,7 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' @noRd
 .check_attributes_table <- function(at, frames, members, v) {
   errs <- character()
+  at <- .legacy_member_col(at)
   if (!identical(names(at), .ATTR_COLS)) {
     return(sprintf(
       "`attributes` must have exactly the columns: %s",
@@ -221,13 +260,13 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
   is_member <- rep(FALSE, nrow(at))
   is_member[ok_frame] <- mapply(
     function(f, u) u %in% members[[f]], at$frame[ok_frame],
-    at$unit[ok_frame]
+    at$member[ok_frame]
   )
   if (any(!is_member & ok_frame)) {
-    bad <- unique(paste0(at$frame, "/", at$unit)[!is_member & ok_frame])
+    bad <- unique(paste0(at$frame, "/", at$member)[!is_member & ok_frame])
     errs <- c(errs, sprintf(
       "`attributes` names (%s/%s) pairs that are not members: %s",
-      v$frame, v$unit, .preview(bad)
+      v$frame, v$member, .preview(bad)
     ))
   }
   if (!is.numeric(at$value) || any(!is.finite(at$value))) {
@@ -259,14 +298,14 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
       ))
     }
   }
-  k <- paste(at$frame, at$unit, at$attribute, at$source, sep = "\r")
+  k <- paste(at$frame, at$member, at$attribute, at$source, sep = "\r")
   if (anyDuplicated(k)) {
     dup <- unique(paste0(
-      at$frame, "/", at$unit, ":", at$attribute, "@", at$source
+      at$frame, "/", at$member, ":", at$attribute, "@", at$source
     )[duplicated(k)])
     errs <- c(errs, sprintf(
       "`attributes` has duplicate (%s, %s, attribute, source) rows: %s",
-      v$frame, v$unit, .preview(dup)
+      v$frame, v$member, .preview(dup)
     ))
   }
   errs
@@ -275,7 +314,7 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' Attach physical attributes to a scale
 #'
 #' Appends rows to the object's attribute table. A row names the member it
-#' belongs to (`frame`, `unit`), the attribute (`attribute`, e.g. `"lhv"`),
+#' belongs to (`frame`, `member`), the attribute (`attribute`, e.g. `"lhv"`),
 #' its `kind` (see [`SCALE_ATTRIBUTE_KINDS`]), its `value`, an optional
 #' `lower`/`upper` range, the physical `unit_of_measure` (`"GJ/t"`,
 #' `"kg/TJ"`), the `source` the figure was taken from and an optional `note`.
@@ -283,13 +322,13 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' carrier is inherited by every fuel under it that has no value of its own
 #' (see [`scale_attributes()`]).
 #'
-#' Existing rows are never overwritten: a row whose `(frame, unit,
+#' Existing rows are never overwritten: a row whose `(frame, member,
 #' attribute, source)` already exists is an error. Attach a second source
 #' under its own `source` name and choose between them with `source=` when
 #' reading.
 #'
 #' @param x A [`NestedScale`].
-#' @param attributes A `data.frame` with columns `frame`, `unit`,
+#' @param attributes A `data.frame` with columns `frame`, `member`,
 #'   `attribute`, `value`, `unit_of_measure`, and optionally `lower`,
 #'   `upper`, `note`; `kind` and `source` as columns or through the
 #'   arguments.
@@ -304,12 +343,12 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' s <- scale_example()
 #' s2 <- attach_attributes_scale(
 #'   s,
-#'   data.frame(frame = "class", unit = c("G1", "G2", "S1"),
+#'   data.frame(frame = "class", member = c("G1", "G2", "S1"),
 #'              attribute = "density", value = c(10, 20, 5),
 #'              unit_of_measure = "t/m3"),
 #'   source = "survey", kind = "property"
 #' )
-#' scale_attributes(s2, "density", frame = "unit")
+#' scale_attributes(s2, "density", frame = "item")
 #' @export
 attach_attributes_scale <- function(x, attributes, source = NULL,
                                     kind = NULL) {
@@ -317,8 +356,8 @@ attach_attributes_scale <- function(x, attributes, source = NULL,
   x <- .upgrade_scale(x)
   new <- .as_attributes(attributes, source = source, kind = kind)
   old <- .attr_table(x)
-  k_old <- paste(old$frame, old$unit, old$attribute, old$source, sep = "\r")
-  k_new <- paste(new$frame, new$unit, new$attribute, new$source, sep = "\r")
+  k_old <- paste(old$frame, old$member, old$attribute, old$source, sep = "\r")
+  k_new <- paste(new$frame, new$member, new$attribute, new$source, sep = "\r")
   clash <- intersect(k_new, k_old)
   if (length(clash) > 0L) {
     hit <- new[k_new %in% clash, , drop = FALSE]
@@ -328,7 +367,7 @@ attach_attributes_scale <- function(x, attributes, source = NULL,
         "attach under another `source`"
       ),
       .preview(paste0(
-        hit$frame, "/", hit$unit, ":", hit$attribute, "@", hit$source
+        hit$frame, "/", hit$member, ":", hit$attribute, "@", hit$source
       ))
     )
   }
@@ -345,8 +384,8 @@ attach_attributes_scale <- function(x, attributes, source = NULL,
 #' that frame per attribute, **resolved**: a member's own value when it has
 #' one, otherwise the value of its nearest ancestor that has one, walking
 #' coarser frames one at a time. The row reports where the value came from
-#' in `origin_frame`/`origin_unit`; a member with no value anywhere gets an
-#' `NA` row.
+#' in `origin_frame`/`origin_member`; a member with no value anywhere gets
+#' an `NA` row.
 #'
 #' Two situations are errors rather than guesses:
 #'
@@ -365,21 +404,21 @@ attach_attributes_scale <- function(x, attributes, source = NULL,
 #' @param inherit Walk to coarser frames for members without a value of
 #'   their own (default `TRUE`). `FALSE` reports stored values only.
 #'
-#' @return A `data.frame` with the attribute columns (`frame`, `unit`,
+#' @return A `data.frame` with the attribute columns (`frame`, `member`,
 #'   `attribute`, `kind`, `value`, `lower`, `upper`, `unit_of_measure`,
-#'   `source`, `note`), plus `origin_frame` and `origin_unit` when `frame`
-#'   is given.
+#'   `source`, `note`), plus `origin_frame` and `origin_member` when
+#'   `frame` is given.
 #'
 #' @examples
 #' s <- attach_attributes_scale(
 #'   scale_example(),
-#'   data.frame(frame = c("sector", "class"), unit = c("P", "S1"),
+#'   data.frame(frame = c("sector", "class"), member = c("P", "S1"),
 #'              attribute = "density", value = c(10, 5),
 #'              unit_of_measure = "t/m3"),
 #'   source = "survey", kind = "property"
 #' )
 #' scale_attributes(s)                           # stored rows
-#' scale_attributes(s, "density", frame = "unit") # resolved per atom
+#' scale_attributes(s, "density", frame = "item") # resolved per leaf
 #' @export
 scale_attributes <- function(x, attribute = NULL, frame = NULL,
                              source = NULL, inherit = TRUE) {
@@ -418,7 +457,7 @@ scale_attributes <- function(x, attribute = NULL, frame = NULL,
 #' @noRd
 .resolve_attributes <- function(x, at, frame, inherit) {
   frames <- S7::prop(x, "frames")
-  units <- scale_units(x, frame)
+  members <- scale_members(x, frame)
   attrs <- unique(at$attribute)
   v <- scale_vocab(x)
   rank <- match(frame, frames)
@@ -429,7 +468,7 @@ scale_attributes <- function(x, attribute = NULL, frame = NULL,
     anc <- .ancestry_to(x, frame)
   }
 
-  key_at <- paste(at$frame, at$unit, at$attribute, sep = "\r")
+  key_at <- paste(at$frame, at$member, at$attribute, sep = "\r")
 
   pick <- function(a, u) {
     hit <- at[key_at == paste(frame, u, a, sep = "\r"), , drop = FALSE]
@@ -439,7 +478,7 @@ scale_attributes <- function(x, attribute = NULL, frame = NULL,
         parents <- unique(anc$parent[anc$parent_frame == cf & anc$child == u])
         if (length(parents) == 0L) next
         cand <- at[at$attribute == a & at$frame == cf &
-          at$unit %in% parents, , drop = FALSE]
+          at$member %in% parents, , drop = FALSE]
         if (nrow(cand) == 0L) next
         if (length(parents) > 1L) {
           .stop(
@@ -469,7 +508,7 @@ scale_attributes <- function(x, attribute = NULL, frame = NULL,
     }
     if (nrow(hit) == 0L) {
       hit <- data.frame(
-        frame = frame, unit = u, attribute = a, kind = NA_character_,
+        frame = frame, member = u, attribute = a, kind = NA_character_,
         value = NA_real_, lower = NA_real_, upper = NA_real_,
         unit_of_measure = NA_character_, source = NA_character_,
         note = NA_character_, stringsAsFactors = FALSE
@@ -477,21 +516,21 @@ scale_attributes <- function(x, attribute = NULL, frame = NULL,
       origin <- c(NA_character_, NA_character_)
     } else {
       hit$frame <- frame
-      hit$unit <- u
+      hit$member <- u
     }
     hit$origin_frame <- origin[1L]
-    hit$origin_unit <- origin[2L]
+    hit$origin_member <- origin[2L]
     hit
   }
 
   rows <- list()
   for (a in attrs) {
-    for (u in units) rows[[length(rows) + 1L]] <- pick(a, u)
+    for (u in members) rows[[length(rows) + 1L]] <- pick(a, u)
   }
   if (length(rows) == 0L) {
     out <- .empty_attributes()
     out$origin_frame <- character()
-    out$origin_unit <- character()
+    out$origin_member <- character()
     return(out)
   }
   out <- do.call(rbind, rows)
@@ -499,8 +538,8 @@ scale_attributes <- function(x, attribute = NULL, frame = NULL,
   out
 }
 
-#' Ancestry rows whose child frame is `frame` -- including the key level,
-#' which `scale_ancestry()` does not list when the key is the atom level
+#' Ancestry rows whose child frame is `frame` -- including the leaf column,
+#' which `scale_ancestry()` does not list when no frame enumerates the leaves
 #' @noRd
 .ancestry_to <- function(x, frame) {
   frames <- S7::prop(x, "frames")

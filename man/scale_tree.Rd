@@ -28,7 +28,7 @@ draws the tree.
 Lists the parts of a scale as a tree: its properties, the columns of the
 leaftable, and whatever a subclass adds. Each part carries one of three
 marks, defined by the identity of the scale (\code{\link[=scale_id]{scale_id()}}), which is
-computed from the key column, the frame names and the frame codes:
+computed from the leaf column, the frame names and the frame codes:
 }
 \details{
 \itemize{

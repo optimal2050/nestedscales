@@ -16,16 +16,16 @@ test_that("a registered directory is listed with its definitions", {
   dirs <- list_scale_dirs()
   expect_identical(dirs$package, "testpkg")
   cat <- scale_catalog()
-  expect_named(cat, c("id", "name", "kind", "key", "frames", "n_atoms",
+  expect_named(cat, c("id", "name", "kind", "leaf", "frames", "n_leaves",
                       "package", "path"))
   expect_setequal(cat$id, c("example", "fuels"))
   ex <- cat[cat$id == "example", ]
   expect_identical(ex$kind, "NestedScale")
-  expect_identical(ex$key, "unit")
-  expect_identical(ex$frames, "sector/class/group/unit")
-  expect_identical(ex$n_atoms, 7L)
+  expect_identical(ex$leaf, "item")
+  expect_identical(ex$frames, "sector/class/group/item")
+  expect_identical(ex$n_leaves, 7L)
   fu <- cat[cat$id == "fuels", ]
-  expect_identical(fu$n_atoms, 9L)
+  expect_identical(fu$n_leaves, 9L)
   expect_identical(fu$name, "fuels")
 })
 
@@ -35,7 +35,7 @@ test_that("read_scale() resolves an id, and ambiguity needs `package=`", {
   d1 <- .catalog_dir()
   register_scale_dir(d1, package = "one")
   s <- read_scale("fuels")
-  expect_identical(scale_units(s), scale_units(.fuels()))
+  expect_identical(scale_members(s), scale_members(.fuels()))
   expect_error(read_scale("nope"), "neither a file nor a definition")
 
   d2 <- withr::local_tempdir()

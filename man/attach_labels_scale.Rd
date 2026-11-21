@@ -15,7 +15,7 @@ attach_labels_scale(
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{labels}{A \code{data.frame} with columns \code{frame}, \code{unit}, \code{label} and,
+\item{labels}{A \code{data.frame} with columns \code{frame}, \code{member}, \code{label} and,
 unless \code{variant} is given, optionally \code{variant}.}
 
 \item{variant}{Single string filled into the \code{variant} column when
@@ -25,7 +25,7 @@ unless \code{variant} is given, optionally \code{variant}.}
 none. \code{NULL} keeps the current default (initially the first variant
 attached).}
 
-\item{overwrite}{Replace the label of a (\code{frame}, \code{unit}, \code{variant})
+\item{overwrite}{Replace the label of a (\code{frame}, \code{member}, \code{variant})
 already present. \code{FALSE} (default) makes that an error.}
 }
 \value{
@@ -33,10 +33,10 @@ The scale with the rows added.
 }
 \description{
 Adds display names to the object's label table. A label belongs to a
-member (\code{frame}, \code{unit}) and to a \code{variant} -- a free name such as
+member (\code{frame}, \code{member}) and to a \code{variant} -- a free name such as
 \code{"name"}, \code{"short"} or a language code -- so a member may carry several.
 The table is sparse: frames and members without a row are shown by their
-code. A row with \code{unit = NA} labels the frame itself.
+code. A row with \code{member = NA} labels the frame itself.
 }
 \details{
 Labels are for display. Alternative spellings to be \emph{matched} belong in
@@ -45,7 +45,7 @@ the alias table, see \code{\link[=attach_aliases_scale]{attach_aliases_scale()}}
 \examples{
 s <- attach_labels_scale(
   scale_example(),
-  data.frame(frame = "sector", unit = c("P", "S", NA),
+  data.frame(frame = "sector", member = c("P", "S", NA),
              label = c("Primary", "Secondary", "Sector"))
 )
 scale_labels(s)

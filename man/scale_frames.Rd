@@ -12,17 +12,17 @@ scale_frames(x, finest = FALSE)
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{finest}{Return only the finest (atom) frame.}
+\item{finest}{Return only the finest (leaf) frame.}
 }
 \value{
 A character vector of frame names, or a single name when
 \code{finest = TRUE}.
 }
 \description{
-The hierarchy names, ordered coarsest first. The last entry is the atom
-frame whenever one frame enumerates the atoms; when none does -- a
-\code{Calendar}'s atoms are combinations of its frames -- the key column is the
-atom level instead.
+The hierarchy names, ordered coarsest first. The last entry is the leaf
+frame whenever one frame enumerates the leaves; when none does -- a
+\code{Calendar}'s leaves are combinations of its frames -- the leaf column
+identifies them instead.
 }
 \examples{
 s <- scale_example()

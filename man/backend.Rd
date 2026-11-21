@@ -89,10 +89,10 @@ first-appearance order, read into memory.
 }
 }
 \examples{
-d <- data.frame(unit = c("U1", "U2", "U2"), v = 1:3)
+d <- data.frame(item = c("U1", "U2", "U2"), v = 1:3)
 backend_of(d)
 backend_is_lazy(backend_of(d))
 backend_schema(d)
-backend_distinct(d, "unit")
+backend_distinct(d, "item")
 backend_scan(d, columns = "v", filter = rlang::expr(v > 1))
 }

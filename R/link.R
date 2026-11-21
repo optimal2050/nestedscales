@@ -2,7 +2,7 @@
 # The data link -- which scale, and which frame, a column of codes is on
 # =============================================================================
 # A scale never holds data. The link between a table and a scale is carried by
-# the code column itself: `bind_scale()` turns it into a `scale_unit` vector,
+# the code column itself: `bind_scale()` turns it into a `scale_member` vector,
 # a character vector that remembers the scale's name, the scale's identity
 # (`scale_id()`) and the frame its codes are at. Living on the column, the
 # link follows it through subsetting, joins and row binding, and is gone the
@@ -23,8 +23,9 @@ NULL
 #' The identity of a scale
 #'
 #' A short string that says which scale an object is: its name and a hash of
-#' its structure, `"<name>@<hash>"`. The hash covers the key, the frames and
-#' the atom-to-frame memberships; weights, attributes, aliases, labels and the
+#' its structure, `"<name>@<hash>"`. The hash covers the leaf column, the
+#' frames and
+#' the leaf-to-frame memberships; weights, attributes, aliases, labels and the
 #' order of rows or members do not enter, so adding a weight keeps data bound
 #' to the scale valid, while a subset or a re-grouping is a different scale.
 #' A data link compares the hash alone: two objects with the same structure
@@ -32,9 +33,11 @@ NULL
 #' messages.
 #'
 #' The hash is the first eight hexadecimal digits of the MD5 of a canonical
-#' UTF-8 text: the line `key=<key>`, the line `frames=` with the frame names
-#' tab-separated, then one tab-separated line per atom (key first, then its
-#' code at each frame, empty where unassigned), atoms sorted by key in the C
+#' UTF-8 text: the line `key=<leaf column name>` (the prefix `key=` is part
+#' of the hashed text and is kept so that identities do not change), the
+#' line `frames=` with the frame names tab-separated, then one tab-separated
+#' line per leaf (its code in the leaf column first, then its code at each
+#' frame, empty where unassigned), leaves sorted by the leaf column in the C
 #' locale, lines joined by `"\n"`.
 #'
 #' @param x A [`NestedScale`].
@@ -45,7 +48,7 @@ NULL
 #' @export
 scale_id <- function(x) {
   .check_scale(x)
-  key <- S7::prop(x, "key")
+  key <- .leaf_col(x)
   fr <- S7::prop(x, "frames")
   lt <- S7::prop(x, "leaftable")
   cols <- unique(c(key, fr))
@@ -76,16 +79,17 @@ scale_id <- function(x) {
 # The vector class -------------------------------------------------------------
 
 #' @noRd
-.new_scale_unit <- function(x = character(), scale = "", id = "", frame = "") {
+.new_scale_member <- function(x = character(), scale = "", id = "",
+                              frame = "") {
   vctrs::new_vctr(
     as.character(x),
     scale = scale, id = id, frame = frame,
-    class = "scale_unit", inherit_base_type = TRUE
+    class = "scale_member", inherit_base_type = TRUE
   )
 }
 
 #' @noRd
-.is_scale_unit <- function(x) inherits(x, "scale_unit")
+.is_scale_member <- function(x) inherits(x, "scale_member")
 
 #' The structure hash of an identity. Two scales are the same scale for a
 #' link when their hashes agree; the name is carried for messages only.
@@ -105,63 +109,66 @@ scale_id <- function(x) {
 
 #' Codes bound to a scale
 #'
-#' `as_scale_unit()` marks a vector of codes as belonging to one frame of
+#' `as_scale_member()` marks a vector of codes as belonging to one frame of
 #' one scale; it is what [`bind_scale()`] puts in a column. The result is a
-#' character vector of class `scale_unit` that carries the scale's name, its
-#' [`scale_id()`] and the frame. `is_scale_unit()` tests for it.
+#' character vector of class `scale_member` that carries the scale's name, its
+#' [`scale_id()`] and the frame. `is_scale_member()` tests for it.
+#' Experimental, with the rest of the data link; see [`bind_scale()`].
 #'
 #' Combining two such vectors (binding rows, joining) works when they are on
 #' the same scale and frame and is an error otherwise. Combined with a plain
 #' character vector the result stays bound, the plain codes being taken on
 #' trust; the verbs check codes against the scale when they use them.
 #'
-#' @param x A vector of codes; for `is_scale_unit()`, any object.
+#' @param x A vector of codes; for `is_scale_member()`, any object.
 #' @param scale The [`NestedScale`] the codes belong to.
 #' @param frame The frame the codes are at.
 #'
-#' @return `as_scale_unit()` a `scale_unit` vector as long as `x`;
-#'   `is_scale_unit()` a single logical.
+#' @return `as_scale_member()` a `scale_member` vector as long as `x`;
+#'   `is_scale_member()` a single logical.
 #'
 #' @examples
 #' s <- scale_example()
-#' u <- as_scale_unit(c("P", "S", "P"), s, "sector")
+#' u <- as_scale_member(c("P", "S", "P"), s, "sector")
 #' u
-#' is_scale_unit(u)
+#' is_scale_member(u)
 #' as.character(u)
 #' @seealso [`bind_scale()`], [`scale_link()`]
 #' @export
-as_scale_unit <- function(x, scale, frame) {
+as_scale_member <- function(x, scale, frame) {
   .check_scale(scale, "scale")
   .check_frame(scale, frame, "frame")
   codes <- as.character(x)
-  strangers <- setdiff(unique(codes[!is.na(codes)]), scale_units(scale, frame))
+  strangers <- setdiff(
+    unique(codes[!is.na(codes)]), scale_members(scale, frame)
+  )
   if (length(strangers) > 0L) {
     v <- scale_vocab(scale)
     .stop(
       "%d code(s) are not %s at %s '%s': %s",
-      length(strangers), v$units, v$frame, frame, .preview(strangers)
+      length(strangers), v$members, v$frame, frame, .preview(strangers)
     )
   }
-  .new_scale_unit(
+  .new_scale_member(
     codes,
     scale = .scale_name(scale, require = FALSE),
     id = scale_id(scale), frame = frame
   )
 }
 
-#' @rdname as_scale_unit
+#' @rdname as_scale_member
 #' @export
-is_scale_unit <- function(x) .is_scale_unit(x)
+is_scale_member <- function(x) .is_scale_member(x)
 
 #' @export
-vec_ptype_abbr.scale_unit <- function(x, ...) {
+vec_ptype_abbr.scale_member <- function(x, ...) {
   sc <- attr(x, "scale")
   paste0(attr(x, "frame"), if (nzchar(sc)) paste0("[", sc, "]"))
 }
 
 #' @export
-vec_ptype_full.scale_unit <- function(x, ...) {
-  paste0("scale_unit<", .tag_text(attr(x, "scale"), attr(x, "id"),
+vec_ptype_full.scale_member <- function(x, ...) {
+  paste0("scale_member<", .tag_text(attr(x, "scale"), attr(x, "id"),
     attr(x, "frame")
   ), ">")
 }
@@ -174,7 +181,7 @@ vec_ptype_full.scale_unit <- function(x, ...) {
 
 #' @noRd
 .ptype_like <- function(x) {
-  .new_scale_unit(
+  .new_scale_member(
     scale = attr(x, "scale"), id = attr(x, "id"), frame = attr(x, "frame")
   )
 }
@@ -188,9 +195,9 @@ vec_ptype_full.scale_unit <- function(x, ...) {
   )
 }
 
-#' @method vec_ptype2 scale_unit.scale_unit
+#' @method vec_ptype2 scale_member.scale_member
 #' @export
-vec_ptype2.scale_unit.scale_unit <- function(x, y, ..., x_arg = "",
+vec_ptype2.scale_member.scale_member <- function(x, y, ..., x_arg = "",
                                              y_arg = "") {
   if (!.same_tag(x, y)) {
     vctrs::stop_incompatible_type(x, y,
@@ -200,17 +207,17 @@ vec_ptype2.scale_unit.scale_unit <- function(x, y, ..., x_arg = "",
   .ptype_like(x)
 }
 
-#' @method vec_ptype2 scale_unit.character
+#' @method vec_ptype2 scale_member.character
 #' @export
-vec_ptype2.scale_unit.character <- function(x, y, ...) .ptype_like(x)
+vec_ptype2.scale_member.character <- function(x, y, ...) .ptype_like(x)
 
-#' @method vec_ptype2 character.scale_unit
+#' @method vec_ptype2 character.scale_member
 #' @export
-vec_ptype2.character.scale_unit <- function(x, y, ...) .ptype_like(y)
+vec_ptype2.character.scale_member <- function(x, y, ...) .ptype_like(y)
 
-#' @method vec_cast scale_unit.scale_unit
+#' @method vec_cast scale_member.scale_member
 #' @export
-vec_cast.scale_unit.scale_unit <- function(x, to, ..., x_arg = "",
+vec_cast.scale_member.scale_member <- function(x, to, ..., x_arg = "",
                                            to_arg = "") {
   if (!.same_tag(x, to)) {
     vctrs::stop_incompatible_cast(x, to,
@@ -220,17 +227,17 @@ vec_cast.scale_unit.scale_unit <- function(x, to, ..., x_arg = "",
   x
 }
 
-#' @method vec_cast scale_unit.character
+#' @method vec_cast scale_member.character
 #' @export
-vec_cast.scale_unit.character <- function(x, to, ...) {
-  .new_scale_unit(x,
+vec_cast.scale_member.character <- function(x, to, ...) {
+  .new_scale_member(x,
     scale = attr(to, "scale"), id = attr(to, "id"), frame = attr(to, "frame")
   )
 }
 
-#' @method vec_cast character.scale_unit
+#' @method vec_cast character.scale_member
 #' @export
-vec_cast.character.scale_unit <- function(x, to, ...) vctrs::vec_data(x)
+vec_cast.character.scale_member <- function(x, to, ...) vctrs::vec_data(x)
 
 # Binding a table --------------------------------------------------------------
 
@@ -244,7 +251,7 @@ vec_cast.character.scale_unit <- function(x, to, ...) vctrs::vec_data(x)
   if (!is.data.frame(data)) {
     return(empty)
   }
-  hit <- names(data)[vapply(data, .is_scale_unit, logical(1))]
+  hit <- names(data)[vapply(data, .is_scale_member, logical(1))]
   if (length(hit) == 0L) {
     return(empty)
   }
@@ -273,12 +280,17 @@ vec_cast.character.scale_unit <- function(x, to, ...) vctrs::vec_data(x)
 #' Bind a table to a scale
 #'
 #' Records, on the code columns themselves, which scale and which frame
-#' their codes are on. A bound column is a [`scale_unit`][as_scale_unit()]
+#' their codes are on. A bound column is a [`scale_member`][as_scale_member()]
 #' vector: it prints and behaves as a character vector, and keeps the link
 #' through row subsetting, `mutate()`, grouping, joins and row binding.
-#' The verbs ([`recast_scale()`], [`join_scale()`], the atom routes) then
+#' The verbs ([`recast_scale()`], [`join_scale()`], the leaf routes) then
 #' take the source frame from the link, stop when the data is bound to a
 #' different scale, and bind their result.
+#'
+#' The link is experimental and may change or be removed. It is an R
+#' construct: converting a bound column to a factor or to a plain character
+#' vector drops it, and other languages reading the same data do not see
+#' it. Data that is not bound is matched to a scale by its codes alone.
 #'
 #' Every code is checked against the scale when binding; a code that is not a
 #' member is an error. `scale_link()` reports what a table is bound to and
@@ -291,7 +303,8 @@ vec_cast.character.scale_unit <- function(x, to, ...) vctrs::vec_data(x)
 #'   also a `scale_dataset` from [`open_scale_dataset()`].
 #' @param x The [`NestedScale`] the codes belong to.
 #' @param cols Which columns to bind. `NULL` (default) binds every column
-#'   named after a frame of `x` (or after its key). Otherwise a character
+#'   named after a frame of `x` (or after its leaf column). Otherwise a
+#'   character
 #'   vector of frame names, named by column where the column is called
 #'   something else: `c(origin = "sector")`. For `unbind_scale()`, the
 #'   columns to unbind; `NULL` for all bound columns.
@@ -314,7 +327,7 @@ vec_cast.character.scale_unit <- function(x, to, ...) vctrs::vec_data(x)
 #' try(recast_scale(b, scale_example2(), target = "sector", rule = "sum"))
 #'
 #' unbind_scale(b)$class
-#' @seealso [`scale_id()`], [`as_scale_unit()`]
+#' @seealso [`scale_id()`], [`as_scale_member()`]
 #' @export
 bind_scale <- function(data, x, cols = NULL) {
   .check_scale(x)
@@ -353,14 +366,14 @@ bind_scale <- function(data, x, cols = NULL) {
     frame <- cols[[col]]
     .check_frame(x, frame, "cols")
     codes <- as.character(data[[col]])
-    strangers <- setdiff(unique(codes[!is.na(codes)]), scale_units(x, frame))
+    strangers <- setdiff(unique(codes[!is.na(codes)]), scale_members(x, frame))
     if (length(strangers) > 0L) {
       .stop(
         "%d code(s) in the `%s` column are not %s at %s '%s': %s",
-        length(strangers), col, v$units, v$frame, frame, .preview(strangers)
+        length(strangers), col, v$members, v$frame, frame, .preview(strangers)
       )
     }
-    data <- .set_col(data, col, .new_scale_unit(codes,
+    data <- .set_col(data, col, .new_scale_member(codes,
       scale = sc, id = id, frame = frame
     ))
   }
@@ -389,8 +402,8 @@ scale_link <- function(data) {
 
 #' The link of a stored dataset, from its manifest
 #'
-#' A store written before the link was recorded is keyed by one atom column
-#' per axis, which is what the fallback reports.
+#' A store written before the link was recorded is keyed by the leaves of
+#' each axis, one column per axis, which is what the fallback reports.
 #' @noRd
 .dataset_link <- function(ds) {
   manifest <- .read_manifest(ds$path)$manifest
@@ -404,7 +417,7 @@ scale_link <- function(data) {
     link <- lapply(names(axes), function(a) {
       list(
         column = manifest$keys[[a]], axis = a,
-        frame = .atom_level(axes[[a]])
+        frame = .leaf_frame(axes[[a]])
       )
     })
   }
@@ -438,7 +451,7 @@ scale_link <- function(data) {
   mine <- tags[same, , drop = FALSE]
 
   # A column this scale would read as its own codes, bound to another scale.
-  own_names <- unique(c(.nav_levels(x), S7::prop(x, "key"), if (nzchar(sc)) sc))
+  own_names <- unique(c(.nav_levels(x), .leaf_col(x), if (nzchar(sc)) sc))
   foreign <- tags[!same &
     tags$column %in% c(own_names, key), , drop = FALSE]
   if (nrow(foreign) > 0L) {
@@ -498,7 +511,7 @@ scale_link <- function(data) {
     col <- tags$column[[i]]
     if (col %in% names(out) && !col %in% names(new) &&
       is.character(out[[col]])) {
-      out <- .set_col(out, col, .new_scale_unit(out[[col]],
+      out <- .set_col(out, col, .new_scale_member(out[[col]],
         scale = tags$scale[[i]], id = tags$id[[i]], frame = tags$frame[[i]]
       ))
     }
@@ -506,7 +519,7 @@ scale_link <- function(data) {
   for (col in names(new)) {
     if (col %in% names(out) && is.character(out[[col]])) {
       s <- new[[col]]$scale
-      out <- .set_col(out, col, .new_scale_unit(out[[col]],
+      out <- .set_col(out, col, .new_scale_member(out[[col]],
         scale = .scale_name(s, require = FALSE), id = scale_id(s),
         frame = new[[col]]$frame
       ))
@@ -546,7 +559,7 @@ scale_link <- function(data) {
 #' link <- scale_link_enter(b, s)
 #' link$key
 #' link$source
-#' is_scale_unit(link$data$class)
+#' is_scale_member(link$data$class)
 #' @seealso [`bind_scale()`]
 #' @export
 scale_link_enter <- function(data, x, key = NULL, source = NULL,

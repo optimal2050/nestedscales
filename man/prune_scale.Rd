@@ -9,18 +9,18 @@ prune_scale(x, frame)
 \arguments{
 \item{x}{A \code{\link{NestedScale}}.}
 
-\item{frame}{The frame to become the new atom layer.}
+\item{frame}{The frame to become the new leaf layer.}
 }
 \value{
 A \code{\link{NestedScale}}.
 }
 \description{
-Returns a new \code{\link{NestedScale}} whose atom layer is \code{frame}, dropping every finer
-frame. Weights are summed over the collapsed atoms.
+Returns a new \code{\link{NestedScale}} whose leaf layer is \code{frame}, dropping every
+finer frame. Weights are summed over the collapsed leaves.
 }
 \details{
 The result is renamed \code{"name@frame"} with the parent recorded in
-\code{meta$parent_name}; every other meta field is preserved. Atoms with no code
+\code{meta$parent_name}; every other meta field is preserved. Leaves with no code
 at \code{frame} are dropped, and that loss is reflected in \code{meta$coverage}.
 The concrete class is kept: a subclass comes back as itself, its
 attribute and alias rows at the surviving frames kept, and a positional

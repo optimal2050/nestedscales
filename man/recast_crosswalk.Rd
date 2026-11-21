@@ -16,7 +16,7 @@ recast_crosswalk(
   by = character(),
   targets = NULL,
   missing_sources = c("na", "ignore"),
-  unit = "unit",
+  member = "member",
   collect = NULL
 )
 }
@@ -51,7 +51,7 @@ completed to every target per identifier combination, in this order, with
 \item{missing_sources}{\code{"na"} (default) or \code{"ignore"}; see
 \code{\link[=recast_scale]{recast_scale()}}.}
 
-\item{unit}{The word for a target code in error messages.}
+\item{member}{The word for a target code in error messages.}
 
 \item{collect}{For lazy inputs: materialise (\code{TRUE}) or return the query.}
 }
@@ -71,13 +71,13 @@ on any supported backend.
 The crosswalk is a data frame with one row per (source, target) pair:
 \itemize{
 \item the source and target codes, in the columns named by \code{source} and \code{target};
-\item \code{n_from}, the number of atoms (grid points) in the source code, and
+\item \code{n_from}, the number of leaves (grid points) in the source code, and
 \code{n_overlap}, the number of them that fall in the target;
 \item optionally \code{w}, the weight of the pair for \code{"weighted_mean"} -- by default
 \code{n_overlap};
 \item optionally \code{w_from}, the source's total weight. With it, \code{"sum"} splits a
 source across its targets by \code{w / w_from}; without it, by
-\code{n_overlap / n_from}, an equal split over atoms;
+\code{n_overlap / n_from}, an equal split over leaves;
 \item any columns named in \code{by}.
 }
 
@@ -85,7 +85,7 @@ A target whose sources are only partly present in the data, per identifier
 combination, comes back \code{NA} unless \code{missing_sources = "ignore"}.
 }
 \examples{
-# Two months onto one quarter, with the months' day counts as atoms
+# Two months onto one quarter, with the months' day counts as leaves
 map <- data.frame(
   month = c("m01", "m02"), quarter = "Q1",
   n_from = c(31, 28), n_overlap = c(31, 28)

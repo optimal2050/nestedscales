@@ -44,7 +44,7 @@ NULL
 #'
 #' The update is made on a copy of `x` itself, which preserves the concrete
 #' class and any extra properties a subclass carries. The payload hook then
-#' subsets whatever the subclass keeps per atom, and the object is validated
+#' subsets whatever the subclass keeps per leaf, and the object is validated
 #' once, when everything is consistent.
 #' @noRd
 .rebuild <- function(x, keep, fr, drop_empty_frames = FALSE,
@@ -75,7 +75,7 @@ NULL
     }
   }
 
-  # The core props are set unchecked: a subclass's per-atom payload still has
+  # The core props are set unchecked: a subclass's per-leaf payload still has
   # the old rows until the hook slices it, and validating in between would
   # reject a payload that is positional (one element per leaftable row).
   out <- S7::set_props(x,
@@ -113,7 +113,7 @@ NULL
 
 #' Keep the attribute, alias and label rows of the members that still exist
 #'
-#' The core's own payload is keyed by `(frame, unit)`, so a subset is a
+#' The core's own payload is keyed by `(frame, member)`, so a subset is a
 #' membership test, never a positional one -- correct under
 #' `drop_empty_frames = TRUE` and for a collapse alike. Written unchecked:
 #' the caller validates once everything is consistent.
@@ -122,15 +122,15 @@ NULL
   keep <- .member_keys(x)
   at <- .attr_table(x)
   al <- .alias_table(x)
-  at <- at[paste(at$frame, at$unit, sep = "\r") %in% keep, , drop = FALSE]
-  al <- al[paste(al$frame, al$unit, sep = "\r") %in% keep, , drop = FALSE]
+  at <- at[paste(at$frame, at$member, sep = "\r") %in% keep, , drop = FALSE]
+  al <- al[paste(al$frame, al$member, sep = "\r") %in% keep, , drop = FALSE]
   rownames(at) <- NULL
   rownames(al) <- NULL
   x <- S7::set_props(x, attributes = at, aliases = al, .check = FALSE)
   if (.has_labels_prop(x)) {
     lb <- .label_table(x)
-    ok <- ifelse(is.na(lb$unit), lb$frame %in% S7::prop(x, "frames"),
-      paste(lb$frame, lb$unit, sep = "\r") %in% keep
+    ok <- ifelse(is.na(lb$member), lb$frame %in% S7::prop(x, "frames"),
+      paste(lb$frame, lb$member, sep = "\r") %in% keep
     )
     lb <- lb[ok, , drop = FALSE]
     rownames(lb) <- NULL
@@ -139,10 +139,10 @@ NULL
   x
 }
 
-#' Subset a NestedScale by unit
+#' Subset a NestedScale by member
 #'
-#' Keeps only the atoms belonging to `unit` at `frame`, and rebuilds the member
-#' vocabularies accordingly.
+#' Keeps only the leaves belonging to `member` at `frame`, and rebuilds the
+#' member vocabularies accordingly.
 #'
 #' A genuine subset is a SAMPLE and is book-kept as one: `meta$coverage`
 #' records, per weight column, the kept fraction of the ROOT parent's total (so
@@ -151,11 +151,11 @@ NULL
 #' `meta$parent_name` records the parent, and `meta$name` is mangled to
 #' `"parent[frame:codes]"` so a sample never impersonates its parent in the
 #' crosswalk registry or in [`join_scale()`] column names. A filter that keeps
-#' every atom is a true no-op. Read the fraction back with [`scale_coverage()`].
+#' every leaf is a true no-op. Read the fraction back with [`scale_coverage()`].
 #'
 #' @param x A [`NestedScale`].
-#' @param frame Frame that `unit` belongs to.
-#' @param unit Character vector of codes to keep.
+#' @param frame Frame that `member` belongs to.
+#' @param member Character vector of codes to keep.
 #' @param drop_empty_frames Drop frames left with no codes at all.
 #'
 #' @return A [`NestedScale`].
@@ -166,13 +166,13 @@ NULL
 #' p
 #' scale_coverage(p)
 #' @export
-filter_scale <- function(x, frame, unit, drop_empty_frames = FALSE) {
+filter_scale <- function(x, frame, member, drop_empty_frames = FALSE) {
   .check_scale(x)
   .check_frame(x, frame)
   leaves <- S7::prop(x, "leaftable")
   fr <- S7::prop(x, "frames")
 
-  unknown <- setdiff(unit, S7::prop(x, "members")[[frame]])
+  unknown <- setdiff(member, S7::prop(x, "members")[[frame]])
   if (length(unknown) > 0L) {
     .stop(
       "code(s) not found at %s `%s`: %s", scale_vocab(x)$frame, frame,
@@ -180,16 +180,16 @@ filter_scale <- function(x, frame, unit, drop_empty_frames = FALSE) {
     )
   }
 
-  keep <- which(leaves[[frame]] %in% unit)
+  keep <- which(leaves[[frame]] %in% member)
   if (length(keep) == 0L) {
-    .stop("no atoms remain after filtering")
+    .stop("no leaves remain after filtering")
   }
 
   meta <- S7::prop(x, "meta")
   if (length(keep) < nrow(leaves)) { # a real sample, not a no-op
     codes <- unique(as.character(leaves[[frame]][keep]))
     # the tag must IDENTIFY the sample, not just count it -- two different
-    # single-unit samples may not share a name
+    # single-member samples may not share a name
     id <- if (sum(nchar(codes)) + length(codes) <= 24L) {
       paste(codes, collapse = "+")
     } else {
@@ -205,11 +205,11 @@ filter_scale <- function(x, frame, unit, drop_empty_frames = FALSE) {
 
 #' Subset a NestedScale
 #'
-#' `x[frame, unit]` is [`filter_scale()`].
+#' `x[frame, member]` is [`filter_scale()`].
 #'
 #' @param x A [`NestedScale`].
 #' @param i Frame name.
-#' @param j Unit codes to keep.
+#' @param j Member codes to keep.
 #' @param ... Unused.
 #' @return A [`NestedScale`].
 #' @examples
@@ -217,13 +217,13 @@ filter_scale <- function(x, frame, unit, drop_empty_frames = FALSE) {
 #' @method [ NestedScale
 `[.NestedScale` <- function(x, i, j, ...) {
   if (missing(i) || missing(j)) {
-    .stop("subset a scale as `x[frame, unit]`")
+    .stop("subset a scale as `x[frame, member]`")
   }
   filter_scale(x, i, j)
 }
 
 # The fully-qualified spelling is what `class()` reports for an installed
-# package, so without this alias `x[frame, unit]` falls through to
+# package, so without this alias `x[frame, member]` falls through to
 # `[.S7_object`, which errors.
 #' @rdname sub-.NestedScale
 #' @export
@@ -231,18 +231,18 @@ filter_scale <- function(x, frame, unit, drop_empty_frames = FALSE) {
 
 #' Collapse a NestedScale to a coarser frame
 #'
-#' Returns a new [`NestedScale`] whose atom layer is `frame`, dropping every finer
-#' frame. Weights are summed over the collapsed atoms.
+#' Returns a new [`NestedScale`] whose leaf layer is `frame`, dropping every
+#' finer frame. Weights are summed over the collapsed leaves.
 #'
 #' The result is renamed `"name@frame"` with the parent recorded in
-#' `meta$parent_name`; every other meta field is preserved. Atoms with no code
+#' `meta$parent_name`; every other meta field is preserved. Leaves with no code
 #' at `frame` are dropped, and that loss is reflected in `meta$coverage`.
 #' The concrete class is kept: a subclass comes back as itself, its
 #' attribute and alias rows at the surviving frames kept, and a positional
 #' payload merged through [`scale_payload_collapse()`].
 #'
 #' @param x A [`NestedScale`].
-#' @param frame The frame to become the new atom layer.
+#' @param frame The frame to become the new leaf layer.
 #'
 #' @return A [`NestedScale`].
 #'
@@ -253,7 +253,7 @@ prune_scale <- function(x, frame) {
   .check_scale(x)
   .check_frame(x, frame)
   fr <- S7::prop(x, "frames")
-  # The key as atom level is finer than every frame: nothing to prune.
+  # The leaf column is finer than every frame: nothing to prune.
   if (!frame %in% fr) {
     return(x)
   }
@@ -263,7 +263,7 @@ prune_scale <- function(x, frame) {
   covered <- !is.na(leaves0[[frame]])
   leaves <- leaves0[covered, , drop = FALSE]
   if (nrow(leaves) == 0L) {
-    .stop("no atoms have a code at %s `%s`", scale_vocab(x)$frame, frame)
+    .stop("no leaves have a code at %s `%s`", scale_vocab(x)$frame, frame)
   }
 
   wts <- scale_weights(x)
@@ -276,14 +276,14 @@ prune_scale <- function(x, frame) {
     totals <- tapply(leaves[[w]], gkey, sum, na.rm = TRUE)
     out[[w]] <- as.numeric(totals[gkey[idx]])
   }
-  akey <- scale_key(x)
+  akey <- scale_leaf_column(x)
   out[[akey]] <- as.character(out[[frame]])
   rownames(out) <- NULL
 
   # meta: preserve EVERYTHING, then adjust identity and coverage
   meta <- S7::prop(x, "meta")
   new_meta <- meta
-  if (!all(covered)) { # NA atoms dropped = coverage loss
+  if (!all(covered)) { # NA leaves dropped = coverage loss
     new_meta <- .sample_meta(x, new_meta, kept = leaves, tag = "")
   }
   new_meta$parent_name <- meta[["name"]] %||% ""
@@ -295,7 +295,7 @@ prune_scale <- function(x, frame) {
     old[old %in% unique(stats::na.omit(as.character(out[[f]])))]
   })
   names(members) <- keep_fr
-  # the new row index of every OLD atom (NA = dropped), for the payload hook
+  # the new row index of every OLD leaf (NA = dropped), for the payload hook
   map <- rep(NA_integer_, nrow(leaves0))
   map[covered] <- match(gkey, gkey[idx])
   .reconstruct(x, out, keep_fr, members, new_meta, map = map)
@@ -327,7 +327,7 @@ scale_share <- function(x, frame, weight = NULL, within = NULL) {
   leaves <- S7::prop(x, "leaftable")
 
   d <- data.frame(
-    unit = as.character(leaves[[frame]]),
+    member = as.character(leaves[[frame]]),
     w = as.numeric(leaves[[weight]]),
     stringsAsFactors = FALSE
   )
@@ -337,16 +337,16 @@ scale_share <- function(x, frame, weight = NULL, within = NULL) {
     .check_frame(x, within, "within")
     d$grp <- as.character(leaves[[within]])
   }
-  d <- d[!is.na(d$unit), , drop = FALSE]
+  d <- d[!is.na(d$member), , drop = FALSE]
   d$w[is.na(d$w)] <- 0
 
-  agg <- stats::aggregate(w ~ unit + grp, data = d, FUN = sum)
+  agg <- stats::aggregate(w ~ member + grp, data = d, FUN = sum)
   agg$share <- agg$w / stats::ave(agg$w, agg$grp, FUN = sum)
 
   ord <- S7::prop(x, "members")[[frame]]
-  agg <- agg[order(match(agg$unit, ord)), , drop = FALSE]
+  agg <- agg[order(match(agg$member, ord)), , drop = FALSE]
 
-  out <- data.frame(code = agg$unit, stringsAsFactors = FALSE)
+  out <- data.frame(code = agg$member, stringsAsFactors = FALSE)
   names(out) <- frame
   if (!is.null(within)) out[[within]] <- agg$grp
   out[[weight]] <- agg$w

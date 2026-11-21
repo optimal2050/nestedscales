@@ -1,10 +1,10 @@
-# Labels: display names per (frame, unit, variant).
+# Labels: display names per (frame, member, variant).
 
 .labelled <- function() {
   attach_labels_scale(
     scale_example(),
     data.frame(
-      frame = "sector", unit = c("P", "S", NA),
+      frame = "sector", member = c("P", "S", NA),
       label = c("Primary", "Secondary", "Sector")
     ),
     variant = "name"
@@ -22,7 +22,7 @@ test_that("labels are sparse: a frame without rows shows its codes", {
   expect_equal(nrow(scale_labels(s, frame = "class")), 0L)
 })
 
-test_that("an NA unit is the label of the frame itself", {
+test_that("an NA member is the label of the frame itself", {
   s <- .labelled()
   expect_equal(scale_label(s, NA, frame = "sector"), "Sector")
   expect_equal(scale_label(s, NA, frame = "class"), "class")
@@ -31,14 +31,14 @@ test_that("an NA unit is the label of the frame itself", {
 test_that("a member carries several variants and one is the default", {
   s <- attach_labels_scale(
     .labelled(),
-    data.frame(frame = "sector", unit = "P", label = "Prim."),
+    data.frame(frame = "sector", member = "P", label = "Prim."),
     variant = "short"
   )
   expect_equal(scale_label(s, "P", frame = "sector"), "Primary")
   expect_equal(scale_label(s, c("P", "S"), "sector", variant = "short"),
                c("Prim.", "S"))
   s2 <- attach_labels_scale(
-    s, data.frame(frame = "sector", unit = "S", label = "Sec."),
+    s, data.frame(frame = "sector", member = "S", label = "Sec."),
     variant = "short", default = "short"
   )
   expect_equal(scale_label(s2, c("P", "S"), "sector"), c("Prim.", "Sec."))
@@ -49,24 +49,24 @@ test_that("the table is validated", {
   s <- scale_example()
   lab <- function(...) data.frame(..., stringsAsFactors = FALSE)
   expect_error(
-    attach_labels_scale(s, lab(frame = "nope", unit = "P", label = "x")),
+    attach_labels_scale(s, lab(frame = "nope", member = "P", label = "x")),
     "not in the object"
   )
   expect_error(
-    attach_labels_scale(s, lab(frame = "sector", unit = "ZZ", label = "x")),
+    attach_labels_scale(s, lab(frame = "sector", member = "ZZ", label = "x")),
     "not members"
   )
   expect_error(
-    attach_labels_scale(s, lab(frame = "sector", unit = "P", label = "")),
+    attach_labels_scale(s, lab(frame = "sector", member = "P", label = "")),
     "non-empty"
   )
   expect_error(
-    attach_labels_scale(s, lab(frame = "sector", unit = c("P", "P"),
+    attach_labels_scale(s, lab(frame = "sector", member = c("P", "P"),
                                label = c("a", "b"))),
     "more than one label"
   )
   expect_error(
-    attach_labels_scale(s, lab(frame = "sector", unit = "P", label = "x",
+    attach_labels_scale(s, lab(frame = "sector", member = "P", label = "x",
                                extra = 1)),
     "unknown column"
   )
@@ -74,7 +74,7 @@ test_that("the table is validated", {
 
 test_that("a label is replaced only with overwrite = TRUE", {
   s <- .labelled()
-  new <- data.frame(frame = "sector", unit = "P", label = "Primary sector")
+  new <- data.frame(frame = "sector", member = "P", label = "Primary sector")
   expect_error(attach_labels_scale(s, new, variant = "name"), "already present")
   s2 <- attach_labels_scale(s, new, variant = "name", overwrite = TRUE)
   expect_equal(scale_label(s2, "P", "sector"), "Primary sector")
@@ -82,10 +82,10 @@ test_that("a label is replaced only with overwrite = TRUE", {
 })
 
 test_that("scale_from_leaftable() takes labels", {
-  df <- data.frame(g = c("a", "a", "b"), unit = c("u1", "u2", "u3"))
+  df <- data.frame(g = c("a", "a", "b"), leaf = c("u1", "u2", "u3"))
   s <- scale_from_leaftable(
     df, frames = "g",
-    labels = data.frame(frame = "g", unit = "a", label = "Alpha")
+    labels = data.frame(frame = "g", member = "a", label = "Alpha")
   )
   expect_equal(scale_label(s, c("a", "b"), "g"), c("Alpha", "b"))
 })
@@ -93,7 +93,7 @@ test_that("scale_from_leaftable() takes labels", {
 test_that("subsetting trims the labels to the members that remain", {
   s <- .labelled()
   f <- filter_scale(s, "sector", "P")
-  expect_equal(scale_labels(f)$unit, c("P", NA))
+  expect_equal(scale_labels(f)$member, c("P", NA))
   expect_equal(scale_label(f, "P", "sector"), "Primary")
 })
 

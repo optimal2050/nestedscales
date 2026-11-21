@@ -13,12 +13,12 @@ scale_crosses(x, a, b)
 }
 \value{
 A logical scalar. When \code{FALSE}, the attribute \code{"offenders"} names
-the units of \code{a} whose set of \code{b} units differs from the first one's.
+the members of \code{a} whose set of \code{b} members differs from the first one's.
 }
 \description{
-\code{TRUE} when every unit of \code{a} combines with the same set of units of \code{b},
+\code{TRUE} when every member of \code{a} combines with the same set of members of \code{b},
 as the months and hours of a \verb{MONTH x HOUR} calendar do: the frames overlay
-rather than nest, and the atoms are their combinations. The complement of
+rather than nest, and the leaves are their combinations. The complement of
 \code{\link[=scale_nests]{scale_nests()}} for the other common shape; a pair can be neither.
 }
 \examples{
@@ -27,8 +27,8 @@ scale_crosses(s, "class", "group")
 
 grid <- expand.grid(m = c("m1", "m2"), h = c("h1", "h2", "h3"),
                     stringsAsFactors = FALSE)
-grid$unit <- paste(grid$m, grid$h, sep = "_")
-mh <- scale_from_leaftable(grid, frames = c("m", "h"), key = "unit")
+grid$item <- paste(grid$m, grid$h, sep = "_")
+mh <- scale_from_leaftable(grid, frames = c("m", "h"), leaf = "item")
 scale_crosses(mh, "m", "h")
 scale_nests(mh, "m", "h")
 }

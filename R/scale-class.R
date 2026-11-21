@@ -1,30 +1,30 @@
 # =============================================================================
 # NestedScale (S7 class) -- the dimension-agnostic core type
 # =============================================================================
-# A `NestedScale` is a nested partition of a set of atoms, in ANY dimension:
+# A `NestedScale` is a nested partition of a set of leaves, in ANY dimension:
 #
-#   * `leaftable` -- flat enumeration of the atoms, with one column per frame
-#                    in the hierarchy, a unique key column (named by `key`),
+#   * `leaftable` -- flat enumeration of the leaves, with one column per frame
+#                    in the hierarchy, a unique leaf column (named by `leaf`),
 #                    and zero or more named weight columns
 #   * `frames`    -- ordered character vector naming the hierarchy, COARSEST
 #                    first (e.g. `c("section", "division", "class")`)
 #   * `members`   -- named list giving the full ordered code vocabulary at each
 #                    frame (e.g. `members$section = c("A", "B", ...)`)
-#   * `key`       -- name of the atom key column (default `"unit"`)
+#   * `leaf`      -- name of the leaf column (default `"leaf"`)
 #   * `attributes` -- long table of per-member physical attributes (a
 #                    calorific value, a population density) keyed by
-#                    `(frame, unit)`, so a value may sit on an atom OR on any
+#                    `(frame, member)`, so a value may sit on a leaf OR on any
 #                    coarser member; see R/attributes.R
-#   * `aliases`   -- long table of alternative labels keyed by `(frame, unit)`;
-#                    see R/aliases.R
+#   * `aliases`   -- long table of alternative labels keyed by
+#                    `(frame, member)`; see R/aliases.R
 #   * `labels`    -- long table of display names keyed by
-#                    `(frame, unit, variant)`; see R/labels.R
+#                    `(frame, member, variant)`; see R/labels.R
 #   * `meta`      -- small named list: `name`, `desc`, `weights`,
 #                    `default_weight`, the sample bookkeeping triple
 #                    (`coverage`, `parent_totals`, `parent_name`),
 #                    `residuals`, `default_label`, `source`
 #
-# Attributes are NOT weights: a weight says how big an atom is and drives
+# Attributes are NOT weights: a weight says how big a leaf is and drives
 # aggregation; an attribute is a per-member factor consumed row by row by
 # `convert_scale()`. The two tables are typed `class_any` with an empty-table
 # default so that an object saved before they existed (which reads them as
@@ -34,18 +34,18 @@
 # ranks, resolved attributes) is computed on demand. Nothing is cached on the
 # object.
 #
-# Frames are *partitions of the atoms*, NOT necessarily a strict tree. Real
-# hierarchies cross-cut, which is precisely why the atom layer exists and why
+# Frames are *partitions of the leaves*, NOT necessarily a strict tree. Real
+# hierarchies cross-cut, which is precisely why the leaf layer exists and why
 # conversion always routes through it. Test a given pair with `scale_nests()`.
 #
 # `timescales::Calendar` and `geoscales::Geoscale` are subclasses: they fix the
-# key name, add their own invariants, and supply a dimension vocabulary through
-# `scale_vocab()`.
+# name of the leaf column, add their own invariants, and supply a dimension
+# vocabulary through `scale_vocab()`.
 # =============================================================================
 
 #' NestedScale (S7 class)
 #'
-#' A nested discrete partition: a flat table of atoms plus the ordered
+#' A nested discrete partition: a flat table of leaves plus the ordered
 #' hierarchy of frames that groups them. The dimension is not named -- time and
 #' space are the subclasses `Calendar` (timescales) and `Geoscale` (geoscales);
 #' anything else (industries, income brackets, temperature regimes, technology
@@ -53,27 +53,28 @@
 #'
 #' Construct with [`scale_from_leaftable()`].
 #'
-#' @param leaftable `data.frame` with a unique key column, one column per frame
-#'   in `frames`, and zero or more numeric weight columns.
+#' @param leaftable `data.frame` with a unique leaf column, one column per
+#'   frame in `frames`, and zero or more numeric weight columns.
 #' @param frames Ordered character vector of frame names (coarsest first); each
 #'   must appear as a column of `leaftable`.
 #' @param members Named list; `members[[f]]` is the full ordered set of codes
 #'   present at frame `f`. Must equal the non-`NA` values of `leaftable[[f]]`
 #'   as a set.
-#' @param key Name of the atom key column (a single string, default `"unit"`).
+#' @param leaf Name of the leaf column (a single string, default `"leaf"`).
 #' @param meta Named list of attributes (`name`, `desc`, `weights`,
 #'   `default_weight`, `residuals` (see [`scale_residuals()`]),
 #'   `default_label`, `source`, sample bookkeeping).
 #' @param attributes Optional table of per-member physical attributes keyed
-#'   by `(frame, unit)`; see [`attach_attributes_scale()`] for the columns.
+#'   by `(frame, member)`; see [`attach_attributes_scale()`] for the columns.
 #' @param aliases Optional table of alternative labels keyed by
-#'   `(frame, unit)`; see [`attach_aliases_scale()`] for the columns.
+#'   `(frame, member)`; see [`attach_aliases_scale()`] for the columns.
 #' @param labels Optional table of display names keyed by
-#'   `(frame, unit, variant)`; see [`attach_labels_scale()`] for the columns.
+#'   `(frame, member, variant)`; see [`attach_labels_scale()`] for the
+#'   columns.
 #'
 #' @return A `NestedScale` object.
 #'
-#' @seealso [`scale_from_leaftable()`], [`scale_frames()`], [`scale_units()`]
+#' @seealso [`scale_from_leaftable()`], [`scale_frames()`], [`scale_members()`]
 #' @examples
 #' scale_example()
 #' @export
@@ -84,7 +85,7 @@ NestedScale <- S7::new_class(
     leaftable  = S7::new_property(S7::class_data.frame),
     frames     = S7::new_property(S7::class_character),
     members    = S7::new_property(S7::class_list),
-    key        = S7::new_property(S7::class_character, default = "unit"),
+    leaf       = S7::new_property(S7::class_character, default = "leaf"),
     meta       = S7::new_property(S7::class_list, default = quote(list())),
     # `class_any`, not `class_data.frame`: an object saved before these
     # properties existed reads them as NULL, and a typed property would then
@@ -97,7 +98,7 @@ NestedScale <- S7::new_class(
     labels     = S7::new_property(S7::class_any,
                                   default = quote(.empty_labels()))
   ),
-  constructor = function(leaftable, frames, members, key = "unit",
+  constructor = function(leaftable, frames, members, leaf = "leaf",
                          meta = list(), attributes = NULL, aliases = NULL,
                          labels = NULL) {
     S7::new_object(
@@ -105,7 +106,7 @@ NestedScale <- S7::new_class(
       leaftable  = leaftable,
       frames     = frames,
       members    = members,
-      key        = key,
+      leaf       = leaf,
       meta       = meta,
       attributes = attributes %||% .empty_attributes(),
       aliases    = aliases %||% .empty_aliases(),
@@ -118,7 +119,9 @@ NestedScale <- S7::new_class(
     leaftable <- S7::prop(self, "leaftable")
     frames <- S7::prop(self, "frames")
     members <- S7::prop(self, "members")
-    key <- S7::prop(self, "key")
+    # `.leaf_col()`, not `S7::prop()`: an object saved under an earlier
+    # definition of this class stores the name as `key`.
+    leaf <- .leaf_col(self)
     meta <- S7::prop(self, "meta")
     attributes <- S7::prop(self, "attributes")
     aliases <- S7::prop(self, "aliases")
@@ -134,14 +137,14 @@ NestedScale <- S7::new_class(
       errs <- c(errs, "`leaftable` must have at least one row")
     }
 
-    # key ---------------------------------------------------------------------
-    if (!is.character(key) || length(key) != 1L || is.na(key) ||
-      !nzchar(key)) {
-      return("`key` must be a single non-empty string")
+    # leaf column -------------------------------------------------------------
+    if (!is.character(leaf) || length(leaf) != 1L || is.na(leaf) ||
+      !nzchar(leaf)) {
+      return("`leaf` must be a single non-empty string")
     }
-    if (!key %in% names(leaftable)) {
+    if (!leaf %in% names(leaftable)) {
       errs <- c(errs, sprintf(
-        "`leaftable` must have a `%s` column (the atom key)", key
+        "`leaftable` must have a `%s` column (the leaf column)", leaf
       ))
     }
 
@@ -157,12 +160,12 @@ NestedScale <- S7::new_class(
           "`frames` contains invalid names: %s", .preview(bad)
         ))
       }
-      # The key name is allowed as the FINEST frame: there the frame column
-      # *is* the key column, so nothing collides. As a coarser frame it would
-      # clash with the key column, so it stays reserved there.
+      # The name of the leaf column is allowed as the FINEST frame: there the
+      # frame column *is* the leaf column, so nothing collides. As a coarser
+      # frame it would clash with the leaf column, so it stays reserved there.
       clash <- intersect(frames, .RESERVED_COLS)
-      if (key %in% frames && !identical(frames[length(frames)], key)) {
-        clash <- c(clash, key)
+      if (leaf %in% frames && !identical(frames[length(frames)], leaf)) {
+        clash <- c(clash, leaf)
       }
       if (length(clash) > 0L) {
         errs <- c(errs, sprintf(
@@ -177,12 +180,12 @@ NestedScale <- S7::new_class(
       }
     }
 
-    # atom key values ---------------------------------------------------------
-    if (key %in% names(leaftable)) {
-      uid <- leaftable[[key]]
+    # leaf column values ------------------------------------------------------
+    if (leaf %in% names(leaftable)) {
+      uid <- leaftable[[leaf]]
       if (!is.character(uid) || anyNA(uid) || any(!nzchar(uid))) {
         errs <- c(errs, sprintf(
-          "`leaftable$%s` must be a non-empty character vector", key
+          "`leaftable$%s` must be a non-empty character vector", leaf
         ))
       } else if (anyDuplicated(uid)) {
         dup <- unique(uid[duplicated(uid)])
@@ -191,7 +194,7 @@ NestedScale <- S7::new_class(
             "`leaftable$%s` must be unique; duplicated: %s. ",
             "Parallel dimensions belong in separate NestedScale objects."
           ),
-          key, .preview(dup)
+          leaf, .preview(dup)
         ))
       }
     }
@@ -293,7 +296,7 @@ NestedScale <- S7::new_class(
     }
 
     # residuals ---------------------------------------------------------------
-    # Units that carry a real value but are not a destination for allocation:
+    # Members that carry a real value but are not a destination for allocation:
     # non-regionalized GDP, non-allocable taxes, an "n.e.c." bucket. Declared
     # per frame because codes are not unique across frames.
     res <- meta[["residuals"]]
@@ -386,10 +389,10 @@ NestedScale <- S7::new_class(
 #' @param x A [`NestedScale`].
 #' @param ... Passed to methods.
 #'
-#' @return A named list with elements `object`, `frame`, `frames`, `unit`,
-#'   `units`, `atoms`, and optionally `register_rule` and `register_map`: the
-#'   calls that error messages suggest for registering a value column's rule
-#'   or an explicit crosswalk, when the dimension package offers its own
+#' @return A named list with elements `object`, `frame`, `frames`, `member`,
+#'   `members`, `leaves`, and optionally `register_rule` and `register_map`:
+#'   the calls that error messages suggest for registering a value column's
+#'   rule or an explicit crosswalk, when the dimension package offers its own
 #'   (`"register_geoscale_rule()"`).
 #'
 #' @examples
@@ -400,7 +403,7 @@ scale_vocab <- S7::new_generic("scale_vocab", "x")
 S7::method(scale_vocab, NestedScale) <- function(x, ...) {
   list(
     object = "NestedScale", frame = "frame", frames = "frames",
-    unit = "unit", units = "units", atoms = "atoms"
+    member = "member", members = "members", leaves = "leaves"
   )
 }
 
@@ -418,29 +421,29 @@ S7::method(scale_vocab, NestedScale) <- function(x, ...) {
 #'
 #' @examples
 #' s <- scale_example()
-#' scale_rank(s, c("group", "unit"))
+#' scale_rank(s, c("group", "item"))
 #' @export
 scale_rank <- function(x, frame) {
   .check_scale(x)
   frames <- S7::prop(x, "frames")
   r <- match(frame, frames)
-  # The key is finer than every frame when it is the atom level, so it ranks
-  # one past the last. Without this the direction test in the recast pipeline
-  # compares against NA.
-  key <- S7::prop(x, "key")
-  r[is.na(r) & frame == key] <- length(frames) + 1L
+  # The leaf column is finer than every frame when no frame enumerates the
+  # leaves, so it ranks one past the last. Without this the direction test in
+  # the recast pipeline compares against NA.
+  leaf <- .leaf_col(x)
+  r[is.na(r) & frame == leaf] <- length(frames) + 1L
   r
 }
 
 #' Frames of a NestedScale
 #'
-#' The hierarchy names, ordered coarsest first. The last entry is the atom
-#' frame whenever one frame enumerates the atoms; when none does -- a
-#' `Calendar`'s atoms are combinations of its frames -- the key column is the
-#' atom level instead.
+#' The hierarchy names, ordered coarsest first. The last entry is the leaf
+#' frame whenever one frame enumerates the leaves; when none does -- a
+#' `Calendar`'s leaves are combinations of its frames -- the leaf column
+#' identifies them instead.
 #'
 #' @param x A [`NestedScale`].
-#' @param finest Return only the finest (atom) frame.
+#' @param finest Return only the finest (leaf) frame.
 #'
 #' @return A character vector of frame names, or a single name when
 #'   `finest = TRUE`.
@@ -456,102 +459,106 @@ scale_frames <- function(x, finest = FALSE) {
   if (isTRUE(finest)) f[length(f)] else f
 }
 
-#' Units of a NestedScale
+#' Members of a NestedScale
 #'
 #' The code vocabulary at one frame, in canonical order.
 #'
 #' @param x A [`NestedScale`].
-#' @param frame A single frame name; defaults to the finest frame (the atoms).
+#' @param frame A single frame name; defaults to the finest frame (the leaves).
 #'
-#' @return A character vector of unit codes.
+#' @return A character vector of member codes.
 #'
 #' @examples
 #' s <- scale_example()
-#' scale_units(s)
-#' scale_units(s, "group")
+#' scale_members(s)
+#' scale_members(s, "group")
 #' @export
-scale_units <- function(x, frame = NULL) {
+scale_members <- function(x, frame = NULL) {
   .check_scale(x)
-  if (is.null(frame)) frame <- .atom_level(x)
+  if (is.null(frame)) frame <- .leaf_frame(x)
   .check_frame(x, frame)
-  if (identical(frame, S7::prop(x, "key")) &&
+  if (identical(frame, .leaf_col(x)) &&
     !frame %in% S7::prop(x, "frames")) {
     return(unique(as.character(S7::prop(x, "leaftable")[[frame]])))
   }
   S7::prop(x, "members")[[frame]]
 }
 
-#' The level at which a scale enumerates its atoms
+#' The frame whose members are the leaves
 #'
 #' The finest frame when one code of it sits on each leaftable row, and the
-#' key column otherwise. A [`NestedScale`] built from a nested hierarchy is the
-#' first kind; a timescales `Calendar` is the second, because its timeslices
-#' are combinations of its frames rather than codes of any one of them.
+#' leaf column otherwise. A [`NestedScale`] built from a nested hierarchy is
+#' the first kind; a timescales `Calendar` is the second, because its
+#' timeslices are combinations of its frames rather than codes of any one of
+#' them.
 #'
 #' Needed by the dimension packages: it is the `frame` to pass to
-#' [`join_scale()`] or [`recast_scale()`] for data keyed at the atoms.
+#' [`join_scale()`] or [`recast_scale()`] for data keyed at the leaves.
 #'
 #' @param x A [`NestedScale`].
-#' @return A single string -- a frame name, or the key.
+#' @return A single string: the name of the frame whose members are the
+#'   leaves, or of the leaf column when no frame is.
 #' @examples
-#' scale_atom_level(scale_example())
+#' scale_leaf_frame(scale_example())
 #' @export
-scale_atom_level <- function(x) {
+scale_leaf_frame <- function(x) {
   .check_scale(x)
-  .atom_level(x)
+  .leaf_frame(x)
 }
 
-#' The level at which the leaftable enumerates atoms
+#' The frame, or column, by which the leaftable enumerates its leaves
 #'
 #' Usually the finest frame, which is how `scale_example()` and `Geoscale` are
 #' built: there the finest frame has one code per leaftable row. A `Calendar`
-#' is not like that -- its atoms are combinations of its frames
+#' is not like that -- its leaves are combinations of its frames
 #' (`d365_h24` has 8760 timeslices over YDAY x HOUR, and the irregular
 #' `m12_md365` has 365 over MONTH x MDAY, which is not even a full product) --
-#' so no frame enumerates them and the KEY column does.
+#' so no frame enumerates them and the LEAF column does.
 #'
-#' Decided this way rather than having the dimension packages declare an
-#' atom-level frame (so `calendar_timeframes()` would return
+#' Decided this way rather than having the dimension packages declare a
+#' frame of leaves (so `calendar_timeframes()` would return
 #' `YDAY, HOUR, timeslice`). That alternative fits this package untouched and
 #' is worth reconsidering, but it changes the public output of a released
 #' package and reaches into every consumer that reads `@timeframes`, energyRt
 #' included. Declined on blast radius, not on merit.
 #' @noRd
-.atom_level <- function(x) {
+.leaf_frame <- function(x) {
   frames <- S7::prop(x, "frames")
   finest <- frames[length(frames)]
   n <- length(S7::prop(x, "members")[[finest]])
   if (!is.null(n) && n == nrow(S7::prop(x, "leaftable"))) {
     finest
   } else {
-    S7::prop(x, "key")
+    .leaf_col(x)
   }
 }
 
-#' The levels the navigation verbs step through: the frames, plus the key as
-#' the finest level when the key is the atom level.
+#' The levels the navigation verbs step through: the frames, plus the leaf
+#' column as the finest level when no frame enumerates the leaves.
 #' @noRd
 .nav_levels <- function(x) {
   fr <- S7::prop(x, "frames")
-  at <- .atom_level(x)
+  at <- .leaf_frame(x)
   if (at %in% fr) fr else c(fr, at)
 }
 
-#' The atom key column name
+#' The name of the leaf column
+#'
+#' The column of the leaftable that identifies the leaves.
 #'
 #' @param x A [`NestedScale`].
 #' @return A single string.
 #' @examples
-#' scale_key(scale_example())
+#' scale_leaf_column(scale_example())
 #' @export
-scale_key <- function(x) {
+scale_leaf_column <- function(x) {
   .check_scale(x)
-  S7::prop(x, "key")
+  .leaf_col(x)
 }
 
 #' The leaftable of a NestedScale
 #'
-#' The one-row-per-atom table the scale is built on, as a plain `data.frame` --
+#' The one-row-per-leaf table the scale is built on, as a plain `data.frame` --
 #' the exported accessor to prefer over reaching for `x@leaftable`.
 #' `as.data.frame()` and `ggplot2::fortify()` on a NestedScale are equivalent, so
 #' `ggplot(s) + geom_*()` pipelines work directly.
@@ -559,7 +566,7 @@ scale_key <- function(x) {
 #' @param x A [`NestedScale`].
 #' @param row.names,optional Ignored (S3 signature compatibility).
 #' @param ... Ignored.
-#' @return A `data.frame`: one row per atom, with the frame columns plus any
+#' @return A `data.frame`: one row per leaf, with the frame columns plus any
 #'   weight columns.
 #' @examples
 #' head(scale_leaftable(scale_example()))
@@ -596,9 +603,9 @@ scale_weights <- function(x) {
   S7::prop(x, "meta")[["weights"]] %||% character()
 }
 
-#' Subset a subclass's per-atom payload
+#' Subset a subclass's per-leaf payload
 #'
-#' The seam a dimension package overrides when it carries per-atom data
+#' The seam a dimension package overrides when it carries per-leaf data
 #' alongside the leaftable -- geoscales' `Geoscale` and its geometry. Called
 #' whenever the engine rebuilds an object from a row subset, with the kept row
 #' indices. The `NestedScale` default has no payload and returns `x` unchanged.
@@ -619,13 +626,13 @@ scale_payload_slice <- S7::new_generic("scale_payload_slice", "x")
 
 S7::method(scale_payload_slice, NestedScale) <- function(x, i, ...) x
 
-#' Collapse a subclass's per-atom payload
+#' Collapse a subclass's per-leaf payload
 #'
 #' The companion of [`scale_payload_slice()`] for the rebuilds that MERGE
-#' atoms rather than keep a subset of them -- [`prune_scale()`], which makes
-#' a coarser frame the new atom layer. Called with `map`, an integer vector
+#' leaves rather than keep a subset of them -- [`prune_scale()`], which makes
+#' a coarser frame the new leaf layer. Called with `map`, an integer vector
 #' with one entry per row of the OLD leaftable giving the index of the NEW
-#' row that atom was merged into, or `NA` for an atom that was dropped.
+#' row that leaf was merged into, or `NA` for a leaf that was dropped.
 #'
 #' The `NestedScale` default returns `x` unchanged, which is right for a
 #' payload keyed by member codes (the core's own attribute and alias tables
@@ -673,7 +680,8 @@ S7::method(scale_payload_collapse, NestedScale) <- function(x, map, ...) x
 #' a <- Aliased(
 #'   leaftable = scale_leaftable(scale_example()),
 #'   frames = scale_frames(scale_example()),
-#'   members = S7::prop(scale_example(), "members")
+#'   members = S7::prop(scale_example(), "members"),
+#'   leaf = scale_leaf_column(scale_example())
 #' )
 #' a@levels
 #' @export
@@ -691,23 +699,23 @@ scale_alias_property <- function(name) {
   )
 }
 
-#' Units that are residuals
+#' Members that are residuals
 #'
 #' A residual carries a real value but is not a destination for allocation:
 #' non-regionalized GDP, taxes that belong to no industry, an "n.e.c." bucket.
-#' It aggregates upward like any other unit -- that is the point, it is what
+#' It aggregates upward like any other member -- that is the point, it is what
 #' makes the parent total reconcile -- but [`recast_scale()`] never splits a
 #' coarse figure INTO one.
 #'
 #' Declare them when building the scale, per frame, because codes are not
 #' unique across frames:
-#' `scale_from_leaftable(..., residuals = list(unit = "DE_XR"))`.
+#' `scale_from_leaftable(..., residuals = list(item = "DE_XR"))`.
 #'
 #' @param x A [`NestedScale`].
 #' @param frame A single frame name for just that frame's residuals, or
 #'   `NULL` for the whole named list.
 #'
-#' @return A character vector of unit codes, or the named list over frames.
+#' @return A character vector of member codes, or the named list over frames.
 #'   Empty when the scale declares none.
 #'
 #' @examples
@@ -717,11 +725,11 @@ scale_alias_property <- function(name) {
 #' lf <- scale_leaftable(s)
 #' r <- scale_from_leaftable(
 #'   lf,
-#'   frames = scale_frames(s), key = "unit",
+#'   frames = scale_frames(s), leaf = "item",
 #'   weights = scale_weights(s), name = "with_residual",
-#'   residuals = list(unit = "OTH")
+#'   residuals = list(item = "OTH")
 #' )
-#' scale_residuals(r, "unit")
+#' scale_residuals(r, "item")
 #' @export
 scale_residuals <- function(x, frame = NULL) {
   .check_scale(x)
@@ -740,12 +748,12 @@ scale_residuals <- function(x, frame = NULL) {
 .check_scale <- function(x, arg = "x") {
   if (!S7::S7_inherits(x, NestedScale)) {
     # A product is the near miss worth naming: it holds scales but is not one,
-    # and its per-atom table is the thing a caller must ask for deliberately.
+    # and its per-leaf table is the thing a caller must ask for deliberately.
     if (S7::S7_inherits(x, ScaleProduct)) {
       .stop(paste0(
-        "`%s` is a ScaleProduct, not a single NestedScale. Its atoms ",
+        "`%s` is a ScaleProduct, not a single NestedScale. Its leaves ",
         "are not materialised -- use `scale_axes()` for the ",
-        "component scales, or `product_atoms()` to build the ",
+        "component scales, or `product_leaves()` to build the ",
         "grid."
       ), arg)
     }
@@ -770,11 +778,11 @@ scale_residuals <- function(x, frame = NULL) {
       arg, v$frame, paste(f, collapse = ", ")
     )
   }
-  if (!frame %in% c(f, S7::prop(x, "key"))) {
+  if (!frame %in% c(f, .leaf_col(x))) {
     .stop(
       "`%s` = \"%s\" is not a %s of this %s; one of: %s",
       arg, frame, v$frame, v$object,
-      paste(unique(c(f, S7::prop(x, "key"))), collapse = ", ")
+      paste(unique(c(f, .leaf_col(x))), collapse = ", ")
     )
   }
   invisible(frame)
@@ -807,7 +815,7 @@ scale_residuals <- function(x, frame = NULL) {
 
 S7::method(format, NestedScale) <- function(x, ...) {
   sprintf(
-    "<NestedScale[%s] atoms=%d>",
+    "<NestedScale[%s] leaves=%d>",
     paste(S7::prop(x, "frames"), collapse = "/"),
     nrow(S7::prop(x, "leaftable"))
   )
@@ -836,12 +844,12 @@ print.NestedScale <- function(x, ...) {
     n_code <- length(mb[[l]])
     n_na <- sum(is.na(lf[[l]]))
     cat("  ", strrep("  ", i - 1L), "- ", l, " (", n_code, ")",
-      if (n_na > 0L) sprintf("  [%d %s unassigned]", n_na, v$unit) else "",
+      if (n_na > 0L) sprintf("  [%d %s unassigned]", n_na, v$member) else "",
       "\n",
       sep = ""
     )
   }
-  cat("Atoms: ", nrow(lf), "\n", sep = "")
+  cat("Leaves: ", nrow(lf), "\n", sep = "")
 
   wts <- scale_weights(x)
   if (length(wts) > 0L) {
@@ -907,8 +915,8 @@ S7::method(print, NestedScale) <- print.NestedScale
 #' @param x A `"summary_Scale"` object (the print method's argument).
 #' @param ... Ignored.
 #' @return `summary()` returns a list of class `"summary_Scale"`: `name`,
-#'   `desc`, `frames` (named member counts), `unassigned` (named NA-atom
-#'   counts), `n_atoms`, `weights`, `weight_totals`, `default_weight`,
+#'   `desc`, `frames` (named member counts), `unassigned` (named NA-leaf
+#'   counts), `n_leaves`, `weights`, `weight_totals`, `default_weight`,
 #'   `coverage` (see [scale_coverage()]), `sampled`, `parent_name`, `nesting`
 #'   (adjacent-pair table with offender counts, see [scale_nests()]),
 #'   `attributes` (a `data.frame` of row counts by `attribute`, `frame` and
@@ -987,7 +995,7 @@ summary.NestedScale <- function(object, ...) {
     desc = meta[["desc"]] %||% "",
     frames = vapply(S7::prop(object, "members")[fr], length, integer(1)),
     unassigned = vapply(fr, function(l) sum(is.na(lt[[l]])), integer(1)),
-    n_atoms = nrow(lt),
+    n_leaves = nrow(lt),
     weights = wts,
     weight_totals = if (length(wts)) {
       colSums(as.data.frame(lt)[, wts, drop = FALSE], na.rm = TRUE)
@@ -1019,7 +1027,8 @@ S7::method(summary, NestedScale) <- summary.NestedScale
 #' @export
 #' @method print summary_Scale
 print.summary_Scale <- function(x, ...) {
-  v <- x$vocab %||% list(object = "NestedScale", frames = "frames", units = "units")
+  v <- x$vocab %||%
+    list(object = "NestedScale", frames = "frames", members = "members")
   cat("<summary of ", v$object,
     if (nzchar(x$name)) paste0(" '", x$name, "'"), ">\n",
     sep = ""
@@ -1030,7 +1039,7 @@ print.summary_Scale <- function(x, ...) {
     "\n",
     sep = ""
   )
-  cat("  atoms:          ", x$n_atoms, "\n", sep = "")
+  cat("  leaves:         ", x$n_leaves, "\n", sep = "")
   if (any(x$unassigned > 0)) {
     ua <- x$unassigned[x$unassigned > 0]
     cat("  unassigned:     ",
@@ -1133,10 +1142,10 @@ S7::method(names, NestedScale) <- names.NestedScale
 #'
 #' @param x Any object.
 #' @return A single `TRUE` or `FALSE`. A product is NOT a scale: it holds
-#'   several and materialises no atoms of its own.
+#'   several and materialises no leaves of its own.
 #' @examples
 #' scale_is(scale_example())
-#' scale_is(data.frame(unit = "U1"))
+#' scale_is(data.frame(item = "U1"))
 #' scale_is_product(scale_product(a = scale_example(), b = scale_example2()))
 #' @export
 scale_is <- function(x) {

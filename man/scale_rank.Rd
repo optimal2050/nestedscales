@@ -20,5 +20,5 @@ Position of a frame in the hierarchy: 1 is the coarsest.
 }
 \examples{
 s <- scale_example()
-scale_rank(s, c("group", "unit"))
+scale_rank(s, c("group", "item"))
 }

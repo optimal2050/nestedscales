@@ -7,7 +7,8 @@
 scale_example()
 }
 \value{
-A \code{\link{NestedScale}} with 7 atoms and frames \code{sector}/\code{class}/\code{group}/\code{unit}.
+A \code{\link{NestedScale}} with 7 leaves and frames
+\code{sector}/\code{class}/\code{group}/\code{item}.
 }
 \description{
 A synthetic 3-frame hierarchy used in examples and tests. It deliberately
@@ -17,9 +18,9 @@ reproduces three awkward features of real classification tables:
 \itemize{
 \item a code (\code{"G1"}) reused at more than one frame, so bare codes are ambiguous
 and every lookup must name its frame;
-\item a non-nesting pair of frames -- group \code{"GB"} draws units from two
+\item a non-nesting pair of frames -- group \code{"GB"} draws members from two
 different classes, so \code{class} and \code{group} do not form a tree;
-\item a unit (\code{"OTH"}) with no code at any coarser frame (partial coverage).
+\item a member (\code{"OTH"}) with no code at any coarser frame (partial coverage).
 }
 }
 \examples{

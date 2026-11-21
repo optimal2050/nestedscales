@@ -22,8 +22,8 @@ can straddle two parents, and a reporting classification can assign one
 detailed class to several aggregates.
 }
 \details{
-Nesting is \emph{not} required by \code{\link{NestedScale}} -- conversion routes through the atom
-layer and works either way. This function is a diagnostic.
+Nesting is \emph{not} required by \code{\link{NestedScale}} -- conversion routes through
+the leaf layer and works either way. This function is a diagnostic.
 }
 \examples{
 s <- scale_example()

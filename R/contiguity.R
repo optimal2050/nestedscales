@@ -17,20 +17,20 @@
 # `stats::hclust()` has no notion of a forbidden merge.
 # =============================================================================
 
-#' Cluster the units of a scale under a contiguity constraint
+#' Cluster the members of a scale under a contiguity constraint
 #'
-#' Merges only units the constraint allows to be merged, so the resulting
+#' Merges only members the constraint allows to be merged, so the resulting
 #' groups are contiguous in order (an ordered scale) or connected in space (an
 #' adjacency graph).
 #'
 #' @inheritParams cluster_scale
-#' @param adjacency How units may be merged. `"order"` (the default) treats
-#'   the units at `frame` as a sequence in member order and permits only
+#' @param adjacency How members may be merged. `"order"` (the default) treats
+#'   the members at `frame` as a sequence in member order and permits only
 #'   neighbours -- the clusters come out as consecutive blocks. Otherwise a
-#'   two-column data frame or a square logical/0-1 matrix over the units,
+#'   two-column data frame or a square logical/0-1 matrix over the members,
 #'   giving the pairs that may merge.
 #' @param circular For `"order"`: treat the sequence as a loop, so the last
-#'   unit neighbours the first. Right for a yearly cycle, wrong for a
+#'   member neighbours the first. Right for a yearly cycle, wrong for a
 #'   trajectory.
 #' @param linkage How the distance between two clusters is measured:
 #'   `"average"`, `"complete"` or `"single"`.
@@ -47,7 +47,7 @@
 #' @examples
 #' s <- scale_example()
 #' d <- data.frame(
-#'   unit = rep(scale_units(s), each = 4),
+#'   item = rep(scale_members(s), each = 4),
 #'   t = rep(sprintf("t%d", 1:4), 7), v = as.numeric(seq_len(28))
 #' )
 #' cl <- cluster_contiguous(d, s, k = 3)
@@ -55,35 +55,35 @@
 #' @export
 cluster_contiguous <- function(data, x, k, frame = NULL, key = NULL,
                                value = NULL, distance = "euclidean",
-                               scale_units = FALSE, adjacency = "order",
+                               scale_members = FALSE, adjacency = "order",
                                circular = FALSE, linkage = "average",
                                new_frame = "cluster", labels = "c") {
   linkage <- match.arg(linkage, c("average", "complete", "single"))
   frame <- .resolve_frame(x, frame)
-  units <- scale_units(x, frame)
-  .check_k(k, length(units))
+  members <- scale_members(x, frame)
+  .check_k(k, length(members))
   .check_new_frame(x, new_frame)
 
   key <- key %||% .resolve_key(x, frame, names(as.data.frame(data)))
   d <- scale_distance(data, x,
     frame = frame, key = key, value = value,
-    method = distance, scale_units = scale_units
+    method = distance, scale_members = scale_members
   )
 
-  adj <- .adjacency_matrix(adjacency, units, circular)
+  adj <- .adjacency_matrix(adjacency, members, circular)
   fit <- .agglomerate(as.matrix(d), adj, k = as.integer(k), linkage = linkage)
 
   .attach_cluster_frame(
-    x, frame, new_frame, units, fit$assignment,
+    x, frame, new_frame, members, fit$assignment,
     .medoids_from_dist(d, fit$assignment), labels
   )
 }
 
 #' Normalise the adjacency specification into a logical matrix
 #' @noRd
-.adjacency_matrix <- function(adjacency, units, circular) {
-  n <- length(units)
-  a <- matrix(FALSE, n, n, dimnames = list(units, units))
+.adjacency_matrix <- function(adjacency, members, circular) {
+  n <- length(members)
+  a <- matrix(FALSE, n, n, dimnames = list(members, members))
 
   if (identical(adjacency, "order")) {
     if (n > 1L) {
@@ -103,17 +103,17 @@ cluster_contiguous <- function(data, x, k, frame = NULL, key = NULL,
     !is.numeric(adjacency)) {
     pairs <- as.data.frame(adjacency)
     if (ncol(pairs) < 2L) {
-      .stop("`adjacency` must have two columns of unit codes")
+      .stop("`adjacency` must have two columns of member codes")
     }
-    source <- match(as.character(pairs[[1L]]), units)
-    target <- match(as.character(pairs[[2L]]), units)
+    source <- match(as.character(pairs[[1L]]), members)
+    target <- match(as.character(pairs[[2L]]), members)
     bad <- unique(c(
       as.character(pairs[[1L]])[is.na(source)],
       as.character(pairs[[2L]])[is.na(target)]
     ))
     if (length(bad) > 0L) {
       .stop(
-        "`adjacency` names unit(s) that are not at this frame: %s",
+        "`adjacency` names member(s) that are not at this frame: %s",
         .preview(bad)
       )
     }
@@ -126,20 +126,20 @@ cluster_contiguous <- function(data, x, k, frame = NULL, key = NULL,
   if (is.matrix(adjacency)) {
     if (!identical(dim(adjacency), c(n, n))) {
       .stop(
-        "`adjacency` is %s but this frame has %d units",
+        "`adjacency` is %s but this frame has %d members",
         paste(dim(adjacency), collapse = " x "), n
       )
     }
     a[] <- adjacency != 0
     a <- a | t(a)
     diag(a) <- FALSE
-    dimnames(a) <- list(units, units)
+    dimnames(a) <- list(members, members)
     return(a)
   }
 
   .stop(paste0(
     "`adjacency` must be \"order\", a two-column data frame of ",
-    "unit pairs, or a square matrix over the units"
+    "member pairs, or a square matrix over the members"
   ))
 }
 
@@ -185,7 +185,7 @@ cluster_contiguous <- function(data, x, k, frame = NULL, key = NULL,
       comp <- length(live)
       .stop(paste0(
         "the constraint allows no further merges at %d cluster(s), ",
-        "so k = %d is unreachable: the units fall into %d group(s) ",
+        "so k = %d is unreachable: the members fall into %d group(s) ",
         "that cannot be joined"
       ), comp, k, comp)
     }

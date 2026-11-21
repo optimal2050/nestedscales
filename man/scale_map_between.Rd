@@ -2,26 +2,27 @@
 % Please edit documentation in R/map.R
 \name{scale_map_between}
 \alias{scale_map_between}
-\title{Crosswalk between two scales through their shared atoms}
+\title{Crosswalk between two scales through their shared leaves}
 \usage{
 scale_map_between(source, target, weight = NULL)
 }
 \arguments{
-\item{source, target}{Two named \code{\link{NestedScale}} objects whose atom keys overlap.}
+\item{source, target}{Two named \code{\link{NestedScale}} objects whose leaf codes
+overlap.}
 
 \item{weight}{Weight column of \code{source} for \code{w}; \code{NULL} uses its default
-weight, or weight 1 per atom when it declares none.}
+weight, or weight 1 per leaf when it declares none.}
 }
 \value{
 A \code{data.frame} with columns \verb{<from name>}, \verb{<to name>}, \code{n_from},
 \code{n_overlap}, \code{w}, \code{w_from}.
 }
 \description{
-The counterpart of \code{\link[=scale_map]{scale_map()}} for two scales: atoms are matched on
-their keys, so a unit of \code{source} overlaps a unit of \code{target} where they contain
-the same atoms. Same columns as \code{\link[=scale_map]{scale_map()}}, with the two label columns
-named after the scales. Atoms of \code{source} absent from \code{target} get an \code{NA} target
-(with a warning). A crosswalk registered with
+The counterpart of \code{\link[=scale_map]{scale_map()}} for two scales: leaves are matched on
+their codes, so a member of \code{source} overlaps a member of \code{target} where
+they contain the same leaves. Same columns as \code{\link[=scale_map]{scale_map()}}, with the two
+label columns named after the scales. Leaves of \code{source} absent from
+\code{target} get an \code{NA} target (with a warning). A crosswalk registered with
 \code{\link[=register_scale_map_between]{register_scale_map_between()}} is returned as-is instead of being derived.
 }
 \examples{
@@ -29,9 +30,9 @@ a <- scale_example()
 b <- scale_from_leaftable(
   data.frame(
     big = c("X", "X", "Y", "Y", "Y", "Y", "Z"),
-    unit = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH")
+    item = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH")
   ),
-  frames = c("big", "unit"), name = "other"
+  frames = c("big", "item"), name = "other"
 )
 scale_map_between(a, b)
 }

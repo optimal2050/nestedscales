@@ -10,36 +10,36 @@ test_that("the map has the documented schema", {
   expect_true(is.integer(m$n_overlap))
 })
 
-test_that("n_from is the source unit's full atom count", {
+test_that("n_from is the source member's full leaf count", {
   s <- scale_example()
-  m <- scale_map(s, "class", "unit")
+  m <- scale_map(s, "class", "item")
   # class G1 holds U1 and U2
   expect_equal(unique(m$n_from[m$class == "G1"]), 2L)
   expect_true(all(m$n_overlap == 1L))
 })
 
-test_that("w_from is the source unit's full weight", {
+test_that("w_from is the source member's full weight", {
   s <- scale_example()
-  m <- scale_map(s, "class", "unit", weight = "size")
+  m <- scale_map(s, "class", "item", weight = "size")
   expect_equal(unique(m$w_from[m$class == "G1"]), 300)
   expect_equal(sum(m$w[m$class == "G1"]), 300)
 })
 
-test_that("uncovered atoms appear with an NA target", {
+test_that("uncovered leaves appear with an NA target", {
   s <- scale_example()
-  m <- scale_map(s, "unit", "sector")
+  m <- scale_map(s, "item", "sector")
   expect_true(any(is.na(m$sector)))
-  expect_identical(m$unit[is.na(m$sector)], "OTH")
+  expect_identical(m$item[is.na(m$sector)], "OTH")
 })
 
 test_that("the split factor is well defined when no weight is declared", {
   df <- data.frame(
-    grp = c("A", "A", "B"), unit = c("u1", "u2", "u3"),
+    grp = c("A", "A", "B"), item = c("u1", "u2", "u3"),
     stringsAsFactors = FALSE
   )
-  s <- scale_from_leaftable(df, frames = c("grp", "unit"), name = "noweights")
-  m <- scale_map(s, "grp", "unit")
-  # every atom weighs 1, so w/w_from == n_overlap/n_from
+  s <- scale_from_leaftable(df, frames = c("grp", "item"), name = "noweights")
+  m <- scale_map(s, "grp", "item")
+  # every leaf weighs 1, so w/w_from == n_overlap/n_from
   expect_equal(m$w / m$w_from, m$n_overlap / m$n_from)
 })
 
@@ -50,15 +50,15 @@ test_that("scale_map() rejects a same-frame pair and NestedScale arguments", {
   expect_error(scale_map(s, "nope", "group"), "is not a frame")
 })
 
-test_that("cross-object maps match on shared atom keys", {
+test_that("cross-object maps match on shared leaf keys", {
   a <- scale_example()
   df <- data.frame(
     big = c("X", "X", "Y", "Y", "Y", "Y", "Z"),
-    unit = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH"),
+    item = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH"),
     size = c(1, 1, 1, 1, 1, 1, 1),
     stringsAsFactors = FALSE
   )
-  b <- scale_from_leaftable(df, frames = c("big", "unit"), name = "other")
+  b <- scale_from_leaftable(df, frames = c("big", "item"), name = "other")
   m <- scale_map_between(a, b)
   expect_named(m, c("example", "other", "n_from", "n_overlap", "w", "w_from"))
   expect_identical(nrow(m), 7L)
@@ -69,23 +69,23 @@ test_that("cross-object maps need distinct names and shared keys", {
   expect_error(scale_map_between(a, a), "same name")
 
   df <- data.frame(
-    grp = c("A", "B"), unit = c("z1", "z2"),
+    grp = c("A", "B"), item = c("z1", "z2"),
     stringsAsFactors = FALSE
   )
-  b <- scale_from_leaftable(df, frames = c("grp", "unit"), name = "disjoint")
-  expect_error(scale_map_between(a, b), "share no `unit` keys")
+  b <- scale_from_leaftable(df, frames = c("grp", "item"), name = "disjoint")
+  expect_error(scale_map_between(a, b), "share no `item` codes")
 })
 
-test_that("scale_atom_pairs() is the documented seam", {
+test_that("scale_leaf_pairs() is the documented seam", {
   s <- scale_example()
-  d <- scale_atom_pairs(s, "class", "group")
+  d <- scale_leaf_pairs(s, "class", "group")
   expect_named(d, c("source", "target", "w"))
   expect_identical(nrow(d), 7L)
 })
 
 test_that("extra map columns are carried through `by`", {
   s <- scale_example()
-  d <- scale_atom_pairs(s, "class", "group")
+  d <- scale_leaf_pairs(s, "class", "group")
   d2 <- rbind(cbind(d, year = 2020), cbind(d, year = 2021))
   m <- nestedscales:::.finish_map(d2, "class", "group", by = "year")
   expect_true("year" %in% names(m))

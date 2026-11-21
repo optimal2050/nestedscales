@@ -23,8 +23,9 @@ registered by hand (listed under \code{package = NA}).}
 }
 \value{
 \code{scale_catalog()} a \code{data.frame} with one row per definition:
-\code{id}, \code{name}, \code{kind} (the class, without its package prefix), \code{key},
-\code{frames} (joined by \code{/}), \code{n_atoms}, \code{package}, \code{path}.
+\code{id}, \code{name}, \code{kind} (the class, without its package prefix), \code{leaf}
+(the name of the leaf column), \code{frames} (joined by \code{/}), \code{n_leaves},
+\code{package}, \code{path}.
 \code{register_scale_dir()} the registry key, invisibly; \code{list_scale_dirs()}
 a \code{data.frame} with \code{package} and \code{path}; \code{clear_scale_dirs()} \code{NULL},
 invisibly.

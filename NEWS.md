@@ -1,25 +1,65 @@
 # nestedscales 0.3.0
 
+## Breaking changes
+
+* New vocabulary, with no deprecated aliases: a *member* is one item of a
+  frame (was "unit"), a *leaf* is a member of the finest layer and one row
+  of the leaftable (was "atom"), and the *leaf column* is the column of the
+  leaftable that identifies the leaves (was "key"). "Unit" now means a unit
+  of measure only (`unit_of_measure`, `from_unit`, `to_unit`), and `key=`
+  the column of a data table that holds the codes.
+* Renamed functions: `scale_units()` to `scale_members()`, `scale_key()` to
+  `scale_leaf_column()`, `scale_atom_level()` to `scale_leaf_frame()`,
+  `recast_to_atoms()` and `recast_from_atoms()` to `recast_to_leaves()` and
+  `recast_from_leaves()`, `product_atoms()` to `product_leaves()`,
+  `scale_atom_pairs()` to `scale_leaf_pairs()`, `as_scale_unit()` and
+  `is_scale_unit()` to `as_scale_member()` and `is_scale_member()` (class
+  `scale_member`). Renamed arguments: `unit` to `member` in `filter_scale()`,
+  `filter_product()`, `scale_children()`, `scale_parents()`,
+  `scale_descendants()`, `scale_ancestors()` and `recast_crosswalk()`;
+  `units` to `members` in `scale_label()`; `scale_units` to `scale_members`
+  in `scale_distance()`, `cluster_scale()`, `cluster_contiguous()` and
+  `cluster_sweep()`; `key` to `leaf` in `NestedScale()` and
+  `scale_from_leaftable()`. The property `NestedScale@key` is `@leaf`, and
+  `scale_vocab()` returns `member`, `members` and `leaves`.
+* The label, alias and attribute tables, and the results of
+  `scale_labels()`, `scale_aliases()`, `scale_attributes()`, `scale_match()`,
+  `scale_descendants()` and `scale_ancestors()`, name the code column
+  `member` (was `unit`); `origin_unit` is `origin_member`. `scale_catalog()`
+  returns `leaf` and `n_leaves` (were `key` and `n_atoms`), `summary()`
+  returns `n_leaves` for a scale and the column `leaves` for a product, and
+  `scale_tree()` lists the part `leaf` with the kind `leaf column`. Printed
+  output says "Leaves" and "member".
+* `scale_from_leaftable()` takes a column called `leaf` as the leaf column
+  when `leaf=` is not given, otherwise the finest frame; a column called
+  `unit` is no longer picked up. The finest frame of `scale_example()` is
+  `item` (was `unit`), which changes its `scale_id()`.
+* Definition files are written with schema version 2: the header field
+  `leaf` and the table column `member`. Version 1 files and stores, and
+  objects saved by earlier versions, are still read.
+
 ## New features
 
 * Labels. A scale carries an optional table of display names keyed by
-  `(frame, unit, variant)`: a member may have several named variants, a frame
-  may have none, and a row with `unit = NA` names the frame itself.
+  `(frame, member, variant)`: a member may have several named variants, a
+  frame may have none, and a row with `member = NA` names the frame itself.
   `scale_from_leaftable()` takes it as `labels=`; `attach_labels_scale()`
   adds rows and sets the default variant, `scale_labels()` reads the table
   and `scale_label()` looks names up, returning the code where there is no
   label. `join_scale(labels = )` attaches them as `"<name>.label"`. Subsets
   keep the labels of the members that remain, and `write_scale()` /
   `read_scale()` carry the table.
-* The data link. `bind_scale()` records on a table's code columns which
+* The data link (experimental). `bind_scale()` records on a table's code columns which
   scale and frame they are on; `scale_link()` reports it and
   `unbind_scale()` removes it. A bound column is a character vector of class
-  `scale_unit` (`as_scale_unit()`, `is_scale_unit()`) that keeps the link
-  through subsetting, joins and row binding. `recast_scale()`, `recast()`,
-  `recast_to_atoms()`, `recast_from_atoms()` and `join_scale()` take the
-  source frame from the link, stop when the data is bound to another scale,
-  and bind their result; unbound data is handled as before.
-  `write_scale_dataset()` records the link in the store.
+  `scale_member` (`as_scale_member()`, `is_scale_member()`) that keeps the
+  link through subsetting, joins and row binding. `recast_scale()`,
+  `recast()`, `recast_to_leaves()`, `recast_from_leaves()` and `join_scale()`
+  take the source frame from the link, stop when the data is bound to another
+  scale, and bind their result; unbound data is handled as before.
+  `write_scale_dataset()` records the link in the store. The link is lost
+  when a bound column is converted to a factor or a plain character vector,
+  and may change or be removed.
 * `scale_id()` gives the identity of a scale: its name and a hash of its
   structure. A link compares the hash alone, so objects with the same
   structure under different names are interchangeable.

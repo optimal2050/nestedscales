@@ -7,11 +7,11 @@
 scale_example2()
 }
 \value{
-A \code{\link{NestedScale}} with 4 atoms and frames \code{era}/\code{period}.
+A \code{\link{NestedScale}} with 4 leaves and frames \code{era}/\code{period}.
 }
 \description{
 A different dimension from \code{\link[=scale_example]{scale_example()}}, for the examples that need
-two axes. Two frames, four atoms, its own key column (\code{period}) and a
+two axes. Two frames, four leaves, its own leaf column (\code{period}) and a
 weight -- deliberately well behaved, so the awkwardness in an example stays
 on the other axis.
 }

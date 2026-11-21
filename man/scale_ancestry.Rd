@@ -14,15 +14,15 @@ A \code{data.frame} with columns \code{parent_frame}, \code{parent},
 \code{child_frame}, \code{child}.
 }
 \description{
-Every \verb{(coarser, finer)} code pair that shares at least one atom, for all
+Every \verb{(coarser, finer)} code pair that shares at least one leaf, for all
 frame pairs.
 }
 \details{
-Computed \strong{atom-mediated}, directly from the leaftable -- deliberately not
+Computed \strong{leaf-mediated}, directly from the leaftable -- deliberately not
 as a transitive closure of \code{\link[=scale_family]{scale_family()}}. Closing a hierarchy that
 cross-cuts manufactures false relationships: in the example scale, group
-\code{GB} straddles both sectors, so closing \code{sector -> class -> group -> unit}
-would wrongly report sector \code{P} as an ancestor of unit \code{U5}, which lies in
+\code{GB} straddles both sectors, so closing \code{sector -> class -> group -> item}
+would wrongly report sector \code{P} as an ancestor of member \code{U5}, which lies in
 sector \code{S}.
 
 For frames that do not nest this relation is \emph{overlap}, not containment --

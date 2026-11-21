@@ -12,35 +12,35 @@ scale_map(x, source, target, weight = NULL, by = character(), ...)
 \item{source, target}{Frame names of \code{x}.}
 
 \item{weight}{Weight column for \code{w}. \code{NULL} uses the default weight; when
-the object declares no weights at all, every atom gets weight 1 (an equal
+the object declares no weights at all, every leaf gets weight 1 (an equal
 split).}
 
 \item{by}{Extra identifier columns carried through from
-\code{\link[=scale_atom_pairs]{scale_atom_pairs()}} (e.g. \code{"year"}).}
+\code{\link[=scale_leaf_pairs]{scale_leaf_pairs()}} (e.g. \code{"year"}).}
 
-\item{...}{Passed to \code{\link[=scale_atom_pairs]{scale_atom_pairs()}}.}
+\item{...}{Passed to \code{\link[=scale_leaf_pairs]{scale_leaf_pairs()}}.}
 }
 \value{
 A \code{data.frame} with columns \verb{<from>}, \verb{<to>} (\code{NA} = uncovered by
 \code{target}), \code{n_from}, \code{n_overlap}, \code{w}, \code{w_from}, plus any \code{by} columns.
 }
 \description{
-Materialises the \code{from -> atoms -> to} route as a table: one row per pair of
-overlapping units with
+Materialises the \code{from -> leaves -> to} route as a table: one row per pair of
+overlapping members with
 }
 \details{
 \itemize{
-\item \code{n_from} -- atoms in the \code{source} unit (its full set, before any target
+\item \code{n_from} -- leaves in the \code{source} member (its full set, before any target
 coverage is considered),
-\item \code{n_overlap} -- atoms the pair shares,
-\item \code{w} -- the weight of the overlap (summed atom weights, chosen weight
+\item \code{n_overlap} -- leaves the pair shares,
+\item \code{w} -- the weight of the overlap (summed leaf weights, chosen weight
 column), the quantity \code{"weighted_mean"} aggregation uses,
-\item \code{w_from} -- the full weight of the \code{source} unit; \code{w / w_from} is the split
-share \code{"sum"} disaggregation uses.
+\item \code{w_from} -- the full weight of the \code{source} member; \code{w / w_from} is the
+split share \code{"sum"} disaggregation uses.
 }
 
 The two label columns are named by the frames; rows with an \code{NA} target
-label are atoms \code{target} does not cover. A crosswalk registered with
+label are leaves \code{target} does not cover. A crosswalk registered with
 \code{\link[=register_scale_map]{register_scale_map()}} is returned as-is instead of being derived.
 }
 \examples{

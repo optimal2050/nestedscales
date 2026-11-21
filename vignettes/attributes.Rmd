@@ -40,7 +40,7 @@ kg/TJ) for four, under the source `"example"`.
 ```{r fuels}
 values <- data.frame(
   frame = "fuel",
-  unit = c("Anthracite", "Bituminous", "Lignite", "NaturalGas", "Biodiesel",
+  member = c("Anthracite", "Bituminous", "Lignite", "NaturalGas", "Biodiesel",
            "Anthracite", "Lignite", "NaturalGas", "Biodiesel"),
   attribute = rep(c("lhv", "ef_co2"), c(5, 4)),
   kind = rep(c("property", "factor"), c(5, 4)),
@@ -50,7 +50,7 @@ values <- data.frame(
 )
 codes <- data.frame(
   frame = c("carrier", "fuel", "carrier", "carrier"),
-  unit = c("Gas", "Lignite", "Electricity", "Coal"),
+  member = c("Gas", "Lignite", "Electricity", "Coal"),
   alias = c("GAS", "LIG", "ELC", "coal"),
   source = "commodity"
 )
@@ -63,11 +63,11 @@ fuels <- scale_from_leaftable(
     fuel = c("Anthracite", "Bituminous", "Lignite", "NaturalGas", "LNG",
              "Diesel", "Biodiesel", "Electricity")
   ),
-  frames = c("group", "carrier", "fuel"), key = "fuel", name = "fuels",
+  frames = c("group", "carrier", "fuel"), leaf = "fuel", name = "fuels",
   attributes = values, aliases = codes
 )
 fuels
-scale_units(fuels, "carrier")
+scale_members(fuels, "carrier")
 scale_children(fuels, "carrier", "Coal")
 ```
 
@@ -79,12 +79,12 @@ one in:
 
 ```{r lhv}
 lhv <- scale_attributes(fuels, "lhv", frame = "fuel")
-lhv[c("unit", "value", "unit_of_measure", "source")]
+lhv[c("member", "value", "unit_of_measure", "source")]
 ```
 
 ## Attributes are not weights
 
-A weight says *how big an atom is*: hours in a time slice, area of a
+A weight says *how big a leaf is*: hours in a time slice, area of a
 region, consumption of a fuel. Weights drive aggregation (`weighted_mean`
 up) and disaggregation (`sum` split down). They are declared on the
 leaftable and sum over the scale.
@@ -92,7 +92,7 @@ leaftable and sum over the scale.
 A calorific value is none of those things. It is a *conversion factor*: it
 turns a tonne of this fuel into gigajoules, row by row, and summing it over
 fuels is meaningless. So a scale keeps attributes in a separate table,
-keyed by `(frame, unit)`, and consumes them only in `convert_scale()`.
+keyed by `(frame, member)`, and consumes them only in `convert_scale()`.
 The constructor promotes numeric leaftable columns to weights; a calorific
 value passed as a column would become a weight and be summed. Pass it as
 `attributes=`.
@@ -108,12 +108,12 @@ coal <- filter_scale(fuels, "carrier", "Coal")
 lt <- scale_leaftable(coal)
 lt$tj <- c(100, 300, 400)
 mix <- scale_from_leaftable(
-  lt, frames = c("group", "carrier", "fuel"), key = "fuel",
+  lt, frames = c("group", "carrier", "fuel"), leaf = "fuel",
   attributes = scale_attributes(coal), name = "mix"
 )
 lhv_coal <- scale_attributes(mix, "lhv", frame = "fuel")
 recast_scale(
-  data.frame(fuel = lhv_coal$unit, lhv = lhv_coal$value), mix,
+  data.frame(fuel = lhv_coal$member, lhv = lhv_coal$value), mix,
   source = "fuel", target = "carrier", rule = "weighted_mean", weight = "tj"
 )
 ```
@@ -132,13 +132,13 @@ the gaps below it without touching the fuels that have their own:
 ```{r inherit}
 gas <- attach_attributes_scale(
   fuels,
-  data.frame(frame = "carrier", unit = "Gas", attribute = "lhv",
+  data.frame(frame = "carrier", member = "Gas", attribute = "lhv",
              kind = "property", value = 46, unit_of_measure = "GJ/t"),
   source = "carrier-level"
 )
 res <- scale_attributes(gas, "lhv", frame = "fuel")
-res[res$unit %in% scale_children(gas, "carrier", "Gas"),
-    c("unit", "value", "source", "origin_frame", "origin_unit")]
+res[res$member %in% scale_children(gas, "carrier", "Gas"),
+    c("member", "value", "source", "origin_frame", "origin_member")]
 ```
 
 `NaturalGas` keeps its own value; `LNG` inherits the carrier's. Nothing is
@@ -159,19 +159,19 @@ Two situations are refused rather than resolved:
 ```{r sources, error = TRUE}
 two <- attach_attributes_scale(
   fuels,
-  data.frame(frame = "fuel", unit = "Anthracite", attribute = "lhv",
+  data.frame(frame = "fuel", member = "Anthracite", attribute = "lhv",
              kind = "property", value = 27.5, unit_of_measure = "GJ/t"),
   source = "other"
 )
 scale_attributes(two, "lhv", frame = "fuel")
 other <- scale_attributes(two, "lhv", frame = "fuel", source = "other")
-other[!is.na(other$value), c("unit", "value", "source")]
+other[!is.na(other$value), c("member", "value", "source")]
 ```
 
 ## Sources and provenance
 
 Every attribute row names its `source` and `unit_of_measure`. Attaching
-never overwrites: a row with the same `(frame, unit, attribute, source)` is
+never overwrites: a row with the same `(frame, member, attribute, source)` is
 an error, so the way to add a better number is to attach it under its own
 source name and select it. Every attribute name carries a `kind`
 (`SCALE_ATTRIBUTE_KINDS`): a `property` is an invertible ratio, a `factor`
@@ -249,12 +249,12 @@ is overwritten.
 ```{r plant}
 mine <- attach_attributes_scale(
   fuels,
-  data.frame(frame = "fuel", unit = "Lignite", attribute = "lhv",
+  data.frame(frame = "fuel", member = "Lignite", attribute = "lhv",
              kind = "property", value = 8.4, unit_of_measure = "GJ/t"),
   source = "plant"
 )
 plant <- scale_attributes(mine, "lhv", frame = "fuel", source = "plant")
-plant[!is.na(plant$value), c("unit", "value", "source")]
+plant[!is.na(plant$value), c("member", "value", "source")]
 ```
 
 ## Model commodity codes

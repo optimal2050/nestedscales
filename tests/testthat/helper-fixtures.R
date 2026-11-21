@@ -2,7 +2,7 @@
 # Shared fixtures.
 #
 # `scale_example()` is the package's own awkward-on-purpose hierarchy (reused
-# code, cross-cutting pair, unassigned atom). These helpers add the small
+# code, cross-cutting pair, unassigned leaf). These helpers add the small
 # well-behaved cases that make single assertions readable.
 # =========================================================================== #
 
@@ -18,7 +18,7 @@ tidy_scale <- function(name = "tidy") {
   scale_from_leaftable(df, frames = c("top", "mid", "leaf"), name = name)
 }
 
-# A scale whose key column is named something other than a frame.
+# A scale whose leaf column is named something other than a frame.
 keyed_scale <- function(key = "id") {
   df <- data.frame(
     grp = c("A", "A", "B"),
@@ -27,14 +27,14 @@ keyed_scale <- function(key = "id") {
     w = c(1, 1, 2),
     stringsAsFactors = FALSE
   )
-  scale_from_leaftable(df, frames = c("grp", "sub"), key = key, name = "keyed")
+  scale_from_leaftable(df, frames = c("grp", "sub"), leaf = key, name = "keyed")
 }
 
 # A minimal single-frame scale (the degenerate hierarchy).
 flat_scale <- function() {
   scale_from_leaftable(
-    data.frame(unit = c("u1", "u2"), w = c(1, 3), stringsAsFactors = FALSE),
-    frames = "unit", name = "flat"
+    data.frame(item = c("u1", "u2"), w = c(1, 3), stringsAsFactors = FALSE),
+    frames = "item", name = "flat"
   )
 }
 
@@ -43,7 +43,7 @@ flat_scale <- function() {
 # =========================================================================== #
 # Fixtures.
 #
-# A scale of 8 units whose profiles fall into THREE obvious groups: flat-ish,
+# A scale of 8 members whose profiles fall into THREE obvious groups: flat-ish,
 # rising, and a sharp spike. Any sensible clustering at k = 3 must recover
 # them, so the tests can assert on structure rather than on numbers that would
 # change with an algorithm's tie-breaking.
@@ -53,11 +53,11 @@ three_group_scale <- function() {
   scale_from_leaftable(
     data.frame(
       top = "T",
-      unit = sprintf("u%d", 1:8),
+      item = sprintf("u%d", 1:8),
       w = c(1, 1, 1, 2, 2, 2, 3, 3),
       stringsAsFactors = FALSE
     ),
-    frames = c("top", "unit"), key = "unit", weights = "w",
+    frames = c("top", "item"), leaf = "item", weights = "w",
     name = "fixture"
   )
 }
@@ -74,7 +74,7 @@ three_group_data <- function(noise = 0.01, seed = 42) {
   )
   d <- do.call(rbind, lapply(names(shape), function(u) {
     data.frame(
-      unit = u, t = t,
+      item = u, t = t,
       v = shape[[u]] + stats::rnorm(6, sd = noise),
       stringsAsFactors = FALSE
     )
@@ -87,11 +87,11 @@ three_group_truth <- function() {
   list(A = c("u1", "u2", "u3"), B = c("u4", "u5", "u6"), C = c("u7", "u8"))
 }
 
-# TRUE when `assignment` (named by unit) recovers the three groups, whatever
+# TRUE when `assignment` (named by member) recovers the three groups, whatever
 # the cluster codes happen to be called.
-recovers_groups <- function(tab, unit_col, cluster_col,
+recovers_groups <- function(tab, member_col, cluster_col,
                             truth = three_group_truth()) {
-  g <- stats::setNames(tab[[cluster_col]], tab[[unit_col]])
+  g <- stats::setNames(tab[[cluster_col]], tab[[member_col]])
   all(vapply(truth, function(members) {
     length(unique(g[members])) == 1L
   }, logical(1))) &&
@@ -107,7 +107,7 @@ ordered_scale <- function() {
       period = sprintf("p%02d", 1:12),
       w = 1, stringsAsFactors = FALSE
     ),
-    frames = c("all", "period"), key = "period", weights = "w",
+    frames = c("all", "period"), leaf = "period", weights = "w",
     name = "cycle"
   )
 }
@@ -139,7 +139,7 @@ ordered_data <- function() {
   )
   at <- data.frame(
     frame     = c("fuel", "fuel", "carrier", "group", "fuel", "carrier"),
-    unit      = c("Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"),
+    member    = c("Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"),
     attribute = c("lhv", "lhv", "lhv", "lhv", "ef_co2", "ef_co2"),
     kind      = c(rep("property", 4L), "factor", "factor"),
     value     = c(26.7, 11.9, 42.5, 15.0, 98300, 56100),
@@ -151,7 +151,7 @@ ordered_data <- function() {
   )
   al <- data.frame(
     frame  = c("fuel", "carrier", "fuel", "carrier", "carrier"),
-    unit   = c("Anthracite", "Coal", "Electricity", "Electricity",
+    member = c("Anthracite", "Coal", "Electricity", "Electricity",
                "Electricity"),
     alias  = c("hard coal", "coal", "elc", "elc", "power"),
     source = "example",
@@ -159,7 +159,7 @@ ordered_data <- function() {
   )
   scale_from_leaftable(
     lt,
-    frames = c("group", "phase", "carrier", "fuel"), key = "fuel",
+    frames = c("group", "phase", "carrier", "fuel"), leaf = "fuel",
     attributes = at, aliases = al, name = "fuels",
     desc = "Fuels: reused code, cross-cutting phase, attributes at 3 levels"
   )
@@ -171,7 +171,7 @@ ordered_data <- function() {
   lt <- scale_leaftable(es)
   lt$phase <- NULL
   scale_from_leaftable(
-    lt, frames = c("group", "carrier", "fuel"), key = "fuel",
+    lt, frames = c("group", "carrier", "fuel"), leaf = "fuel",
     attributes = S7::prop(es, "attributes"),
     aliases = S7::prop(es, "aliases"), name = "tree"
   )

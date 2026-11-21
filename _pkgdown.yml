@@ -50,12 +50,12 @@ reference:
   - scale_class
   - scale_is
   - scale_frames
-  - scale_units
-  - scale_key
+  - scale_members
+  - scale_leaf_column
   - scale_leaftable
   - scale_weights
   - scale_rank
-  - scale_atom_level
+  - scale_leaf_frame
   - scale_residuals
   - is_valid_frame
   - summary.NestedScale
@@ -63,7 +63,7 @@ reference:
   - scale_tree
   - "`[.NestedScale`"
 - title: Navigation and shares
-  desc: Move between frames and report what a unit holds.
+  desc: Move between frames and report what a member holds.
   contents:
   - scale_navigate
   - scale_family
@@ -90,18 +90,18 @@ reference:
   - scale_labels
   - scale_label
   - convert_scale
-- title: The data link
+- title: The data link (experimental)
   desc: Record which scale and frame a table's code columns are on.
   contents:
   - bind_scale
   - scale_id
-  - as_scale_unit
+  - as_scale_member
 - title: Conversion
   desc: Recast data between resolutions, attach labels, and declare rules.
   contents:
   - recast_scale
   - recast
-  - recast_to_atoms
+  - recast_to_leaves
   - recast_crosswalk
   - join_scale
   - reconcile_scale
@@ -128,13 +128,13 @@ reference:
   - product_frames
   - product_weights
   - product_coverage
-  - product_atoms
+  - product_leaves
   - recast_product
   - join_product
   - filter_product
   - summary.ScaleProduct
 - title: Clustering
-  desc: Group units by their data into a new, coarser frame.
+  desc: Group members by their data into a new, coarser frame.
   contents:
   - cluster_scale
   - cluster_contiguous
@@ -163,7 +163,7 @@ reference:
   - scale_payload_collapse
   - scale_payload_parts
   - scale_payload_io
-  - scale_atom_pairs
+  - scale_leaf_pairs
   - scale_link_enter
   - starts_with("backend_")
 - title: Package

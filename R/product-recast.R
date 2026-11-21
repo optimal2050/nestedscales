@@ -23,7 +23,7 @@
 # `sd` is the exception, because it is not linear. Per-axis `sd` is genuinely
 # order-dependent -- the sd of spatial totals is a different quantity from the
 # total of per-region sds -- so it is refused rather than silently resolved.
-# A scalar `"sd"` means the POOLED sd over all product atoms in a block, which
+# A scalar `"sd"` means the POOLED sd over all product leaves in a block, which
 # IS well defined; its sufficient statistics (sum n, sum n.x, sum n.x^2) each
 # factorise, so it is computed by chaining the small per-axis map joins rather
 # than by materialising the product.
@@ -145,7 +145,7 @@ NULL
           "single answer here: the sd of the `%s`-aggregated totals and the ",
           "total of the per-`%s` sds are different quantities.\n",
           "  * for one of those, recast the axes in two explicit calls;\n",
-          "  * for the pooled sd over all product atoms in a block, pass ",
+          "  * for the pooled sd over all product leaves in a block, pass ",
           "rules = list(%s = \"sd\")."
         ),
         v, ax[!is_sd][[1L]], ax[!is_sd][[1L]], v
@@ -244,11 +244,11 @@ NULL
 #' @param collect For lazy inputs: materialise (`TRUE`) or return the query.
 #'
 #' @return The recast data in the input's class, keyed by the converted axes'
-#'   target units.
+#'   target members.
 #'
 #' @details
 #' A per-axis `"sd"` is refused because it is order-dependent; a scalar
-#' `"sd"` means the pooled sd over all product atoms in a target block, which
+#' `"sd"` means the pooled sd over all product leaves in a target block, which
 #' is well defined and is computed without materialising the product.
 #' `"share"` is not defined across a product, because it changes which axis
 #' the result is keyed by.
@@ -256,7 +256,7 @@ NULL
 #' @examples
 #' p <- scale_product(a = scale_example(), b = scale_example2())
 #' d <- merge(
-#'   data.frame(unit = c("U1", "U2", "U3", "U4", "U5", "U6")),
+#'   data.frame(item = c("U1", "U2", "U3", "U4", "U5", "U6")),
 #'   data.frame(period = c("p1", "p2", "p3", "p4"))
 #' )
 #' d$cap <- seq_len(nrow(d))
@@ -401,13 +401,13 @@ recast_product <- function(data, x, target,
 #' Target column name an axis's pass will produce
 #' @noRd
 .axis_target_name <- function(to_a) {
-  if (S7::S7_inherits(to_a, NestedScale)) .atom_level(to_a) else to_a
+  if (S7::S7_inherits(to_a, NestedScale)) .leaf_frame(to_a) else to_a
 }
 
 #' Guard the one way a sequence of passes can silently lose a column
 #'
 #' Each pass drops columns named like ITS OWN scale's frames, treating them as
-#' unit attributes. So if one axis converts into a name that happens to be a
+#' member attributes. So if one axis converts into a name that happens to be a
 #' frame of another axis still to be processed, that freshly written column
 #' would be dropped by the later pass. Caught here rather than discovered as a
 #' missing column.
@@ -430,7 +430,7 @@ recast_product <- function(data, x, target,
   invisible(TRUE)
 }
 
-#' Joint path: pooled sd over the product atoms of each target block
+#' Joint path: pooled sd over the product leaves of each target block
 #'
 #' The pooled statistics factorise, so the two SMALL per-axis crosswalks are
 #' chained onto the data and one grouped summarise closes it out with
@@ -469,7 +469,7 @@ recast_product <- function(data, x, target,
     q <- dplyr::inner_join(q, jm, by = keys[[a]])
   }
 
-  # n for a product atom is the product of the per-axis overlap counts
+  # n for a product leaf is the product of the per-axis overlap counts
   n_expr <- Reduce(
     function(l, r) rlang::expr(!!l * !!r),
     lapply(n_syms, rlang::sym)
@@ -537,7 +537,7 @@ S7::method(recast, list(S7::class_any, ScaleProduct)) <-
 #'
 #' @examples
 #' p <- scale_product(a = scale_example(), b = scale_example2())
-#' d <- data.frame(unit = c("U1", "U3"), period = c("p1", "p2"), v = 1:2)
+#' d <- data.frame(item = c("U1", "U3"), period = c("p1", "p2"), v = 1:2)
 #' join_product(d, p, attach = TRUE)
 #' @export
 join_product <- function(data, x, axes = NULL, ...) {
@@ -560,7 +560,7 @@ join_product <- function(data, x, axes = NULL, ...) {
 #'
 #' @param x A [`ScaleProduct`].
 #' @param axis Axis to filter.
-#' @param frame,unit Passed to [`filter_scale()`].
+#' @param frame,member Passed to [`filter_scale()`].
 #' @param ... Passed to [`filter_scale()`].
 #'
 #' @return A [`ScaleProduct`].
@@ -569,11 +569,11 @@ join_product <- function(data, x, axes = NULL, ...) {
 #' p <- scale_product(a = scale_example(), b = scale_example2())
 #' filter_product(p, "a", "sector", "P")
 #' @export
-filter_product <- function(x, axis, frame, unit, ...) {
+filter_product <- function(x, axis, frame, member, ...) {
   .check_product(x, "x")
   .check_axis(x, axis)
   axes <- S7::prop(x, "axes")
-  axes[[axis]] <- filter_scale(axes[[axis]], frame, unit, ...)
+  axes[[axis]] <- filter_scale(axes[[axis]], frame, member, ...)
   S7::prop(x, "axes") <- axes
   x
 }

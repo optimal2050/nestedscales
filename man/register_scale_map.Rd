@@ -34,7 +34,7 @@ registered map (or \code{NULL}); \code{list_scale_maps()} a \code{data.frame} of
 keys.
 }
 \description{
-A registered map short-circuits the atom-layer derivation in
+A registered map short-circuits the leaf-layer derivation in
 \code{\link[=scale_map]{scale_map()}} or \code{\link[=scale_map_between]{scale_map_between()}} (and thereby \code{\link[=recast_scale]{recast_scale()}})
 for one pair of resolutions -- for cases where the exact correspondence is
 known (hand-audited crosswalks, official concordance tables).

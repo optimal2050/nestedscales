@@ -7,8 +7,8 @@
 \title{nestedscales: Nested Scales and Multi-Dimensional Indexes for Modeling}
 \description{
 A multi-level discrete representation of a data dimension, for modeling,
-data processing and visualization. A nested scale is a flat table of atoms
-plus the frames that group them; every frame nests in the atoms, and frames
+data processing and visualization. A nested scale is a flat table of leaves
+plus the frames that group them; every frame nests in the leaves, and frames
 may nest in or overlay each other. The package defines the transition rules
 between levels (sum, weighted mean, mean, copy, sd, share) and the
 operations on them: conversion of data between resolutions, labelling,
