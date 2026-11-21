@@ -48,6 +48,9 @@ The recast data in the input's class, keyed by the converted axes'
 target members.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Converts one or more axes of a product in a single call. Axes named in \code{target}
 are converted; axes left out pass through untouched.
 }

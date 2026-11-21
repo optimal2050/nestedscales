@@ -24,7 +24,8 @@ by). Feed them to the verbs as
 columns of the stored data are on which scale and frame.
 }
 \description{
-Open a scale-aware dataset
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
 }
 \examples{
 # see write_scale_dataset()

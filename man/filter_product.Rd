@@ -19,6 +19,9 @@ filter_product(x, axis, frame, member, ...)
 A \code{\link{ScaleProduct}}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Applies \code{\link[=filter_scale]{filter_scale()}} to one axis and returns a new product.
 }
 \examples{

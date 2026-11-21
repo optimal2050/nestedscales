@@ -38,6 +38,9 @@ An array with one dimension per axis.
 plus the value column.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Reshapes a long table into an array whose dimensions are the scale's axes,
 in the order the product declares them, with the members as \code{dimnames}.
 }

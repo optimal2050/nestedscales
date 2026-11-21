@@ -16,7 +16,8 @@ A named list of \code{\link{NestedScale}} objects, or one NestedScale when \code
 given.
 }
 \description{
-Axes of a product
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
 }
 \examples{
 p <- scale_product(a = scale_example(), b = scale_example2())

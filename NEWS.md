@@ -37,6 +37,13 @@
 * Definition files are written with schema version 2: the header field
   `leaf` and the table column `member`. Version 1 files and stores, and
   objects saved by earlier versions, are still read.
+* `backend_scan()` and `backend_distinct()` are no longer exported.
+* Marked experimental, which means they may change or be removed in a later
+  version: attributes with `convert_scale()`, products of scales
+  (`scale_product()`, `recast_product()` and the `product_*()` functions),
+  arrays and stored datasets (`as_scale_array()`, `write_scale_dataset()`,
+  `open_scale_dataset()`), distances (`scale_distance()` and its registry)
+  and `reconcile_scale()`.
 
 ## New features
 

@@ -120,6 +120,10 @@ NULL
 
 #' Write data and the scales that index it to one folder
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' The data is written as a hive-partitioned Arrow IPC dataset and the scales
 #' travel with it, so [`open_scale_dataset()`] gives back both and the result
 #' can be recast without re-declaring anything. Each scale is stored as the
@@ -280,6 +284,10 @@ write_scale_dataset <- function(data, x, path, partitioning = NULL,
 
 #' Open a scale-aware dataset
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' @param path A folder written by [`write_scale_dataset()`].
 #'
 #' @return A `scale_dataset`: a list with `data` (a lazily-read arrow
@@ -332,6 +340,10 @@ open_scale_dataset <- function(path) {
 }
 
 #' Describe a stored dataset without opening it fully
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
 #'
 #' @param path A folder written by [`write_scale_dataset()`].
 #' @return A list with `kind`, `axes`, `keys`, `files` and `bytes`.

@@ -21,6 +21,9 @@ is_scale_member(x)
 \code{is_scale_member()} a single logical.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 \code{as_scale_member()} marks a vector of codes as belonging to one frame of
 one scale; it is what \code{\link[=bind_scale]{bind_scale()}} puts in a column. The result is a
 character vector of class \code{scale_member} that carries the scale's name, its

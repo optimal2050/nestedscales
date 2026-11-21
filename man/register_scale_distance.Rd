@@ -26,6 +26,9 @@ Built-ins cannot be removed.}
 Invisibly, \code{name}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 The built-ins cover level and shape; anything else -- dynamic time warping,
 a domain-specific dissimilarity, a precomputed matrix -- is registered here
 and then usable by name everywhere in the package.

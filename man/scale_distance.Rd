@@ -37,6 +37,9 @@ measuring. Turns a level distance into a shape distance; has no effect on
 A \link[stats:dist]{stats::dist} object over the frame's members, in member order.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Reshapes long, member-keyed data into a member-by-observation matrix and
 measures the distance between its rows.
 }

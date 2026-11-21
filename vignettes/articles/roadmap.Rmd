@@ -34,6 +34,12 @@ The package covers three things:
 
 ## Available now (0.3.0)
 
+The core is the structure, the transition rules, conversion and joining.
+Five features are marked experimental and may change or be removed:
+attributes with `convert_scale()`, products of scales, arrays and stored
+datasets, distances, and `reconcile_scale()`. The data link is experimental
+as well.
+
 ### Structure
 
 * `scale_from_leaftable()` builds a scale from a table; `scale_frames()`,

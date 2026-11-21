@@ -55,6 +55,10 @@ NULL
 
 #' Data on scales as a dense array
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Reshapes a long table into an array whose dimensions are the scale's axes,
 #' in the order the product declares them, with the members as `dimnames`.
 #'

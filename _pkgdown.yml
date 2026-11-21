@@ -117,7 +117,7 @@ reference:
   - scale_map_between
   - register_scale_map
   - clear_scale_maps
-- title: Products of scales
+- title: Products of scales (experimental)
   desc: Several scales as one multi-index.
   contents:
   - scale_product
@@ -148,7 +148,7 @@ reference:
   contents:
   - write_scale
   - scale_catalog
-- title: Arrays and storage
+- title: Arrays and storage (experimental)
   contents:
   - as_scale_array
   - write_scale_dataset
@@ -164,7 +164,6 @@ reference:
   - scale_payload_parts
   - scale_payload_io
   - scale_leaf_pairs
-  - scale_link_enter
   - starts_with("backend_")
 - title: Package
   contents:

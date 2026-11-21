@@ -35,6 +35,9 @@ Arrow build, the files are written uncompressed with a warning.}
 \code{path}, invisibly.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 The data is written as a hive-partitioned Arrow IPC dataset and the scales
 travel with it, so \code{\link[=open_scale_dataset]{open_scale_dataset()}} gives back both and the result
 can be recast without re-declaring anything. Each scale is stored as the

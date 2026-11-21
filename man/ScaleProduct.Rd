@@ -22,6 +22,9 @@ version; a supplied table is validated but not yet consumed.}
 A \code{ScaleProduct} object.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Combines two or more \code{\link{NestedScale}} objects into one multi-dimensional index --
 time x space, time x space x industry, and so on. The leaves of the product
 are tuples of the component leaves, and they stay LAZY: nothing is

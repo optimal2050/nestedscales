@@ -13,6 +13,9 @@ product_weights(x)
 A named list of character vectors.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 A product has no weights of its own: the weight of a product leaf is the
 product of its components' weights, which is derived when needed and never
 stored.

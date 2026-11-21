@@ -16,6 +16,9 @@ reports the size, rather than a very long wait.}
 A \code{data.frame} with \code{product_size(x)$total} rows.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 The cross product of the component leaftables: one row per tuple of
 component leaves, with each axis's key column named by \code{\link[=product_keys]{product_keys()}}
 and its frame columns prefixed \code{"<axis>."}.

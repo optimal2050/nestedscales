@@ -15,6 +15,9 @@ A character vector of the two attribute kinds accepted in the
 \code{"factor"}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Every attribute name carries a kind, which \code{\link[=convert_scale]{convert_scale()}} consults:
 }
 \details{

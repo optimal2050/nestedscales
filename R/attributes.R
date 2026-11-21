@@ -22,8 +22,13 @@ NULL
 
 #' Kinds of attribute
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Every attribute name carries a kind, which [`convert_scale()`] consults:
 #'
+#' @details
 #' \describe{
 #'   \item{`property`}{A physical property of the member, an invertible
 #'     ratio: a calorific value in GJ/t converts tonnes to gigajoules and
@@ -313,6 +318,10 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 
 #' Attach physical attributes to a scale
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Appends rows to the object's attribute table. A row names the member it
 #' belongs to (`frame`, `member`), the attribute (`attribute`, e.g. `"lhv"`),
 #' its `kind` (see [`SCALE_ATTRIBUTE_KINDS`]), its `value`, an optional
@@ -322,6 +331,7 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' carrier is inherited by every fuel under it that has no value of its own
 #' (see [`scale_attributes()`]).
 #'
+#' @details
 #' Existing rows are never overwritten: a row whose `(frame, member,
 #' attribute, source)` already exists is an error. Attach a second source
 #' under its own `source` name and choose between them with `source=` when
@@ -379,6 +389,10 @@ attach_attributes_scale <- function(x, attributes, source = NULL,
 
 #' Read attributes, resolved along the hierarchy
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' With `frame = NULL`, returns the stored attribute table (filtered by
 #' `attribute` and `source`). With a `frame`, returns one row per member of
 #' that frame per attribute, **resolved**: a member's own value when it has
@@ -387,6 +401,7 @@ attach_attributes_scale <- function(x, attributes, source = NULL,
 #' in `origin_frame`/`origin_member`; a member with no value anywhere gets
 #' an `NA` row.
 #'
+#' @details
 #' Two situations are errors rather than guesses:
 #'
 #' * the walk reaches a frame where the member has **several** ancestors

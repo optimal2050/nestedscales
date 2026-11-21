@@ -109,12 +109,17 @@ scale_id <- function(x) {
 
 #' Codes bound to a scale
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' `as_scale_member()` marks a vector of codes as belonging to one frame of
 #' one scale; it is what [`bind_scale()`] puts in a column. The result is a
 #' character vector of class `scale_member` that carries the scale's name, its
 #' [`scale_id()`] and the frame. `is_scale_member()` tests for it.
 #' Experimental, with the rest of the data link; see [`bind_scale()`].
 #'
+#' @details
 #' Combining two such vectors (binding rows, joining) works when they are on
 #' the same scale and frame and is an error otherwise. Combined with a plain
 #' character vector the result stays bound, the plain codes being taken on
@@ -279,6 +284,10 @@ vec_cast.character.scale_member <- function(x, to, ...) vctrs::vec_data(x)
 
 #' Bind a table to a scale
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Records, on the code columns themselves, which scale and which frame
 #' their codes are on. A bound column is a [`scale_member`][as_scale_member()]
 #' vector: it prints and behaves as a character vector, and keeps the link
@@ -287,6 +296,7 @@ vec_cast.character.scale_member <- function(x, to, ...) vctrs::vec_data(x)
 #' take the source frame from the link, stop when the data is bound to a
 #' different scale, and bind their result.
 #'
+#' @details
 #' The link is experimental and may change or be removed. It is an R
 #' construct: converting a bound column to a factor or to a plain character
 #' vector drops it, and other languages reading the same data do not see
@@ -530,8 +540,8 @@ scale_link <- function(data) {
 
 #' The data link, for dimension packages
 #'
-#' The two halves of what every verb here does with bound data, exposed so a
-#' package that builds its own verbs on a subclass reads and writes the link
+#' The two halves of what every verb here does with bound data, kept as
+#' functions so that verbs built on a subclass can read and write the link
 #' the same way. `scale_link_enter()` resolves `key` and `source` from the
 #' bound columns where the caller left them open, stops when a code column
 #' is bound to another scale, and returns the data with plain character
@@ -561,15 +571,14 @@ scale_link <- function(data) {
 #' link$source
 #' is_scale_member(link$data$class)
 #' @seealso [`bind_scale()`]
-#' @export
+#' @noRd
 scale_link_enter <- function(data, x, key = NULL, source = NULL,
                              infer = TRUE) {
   .check_scale(x)
   .link_enter(data, x, key = key, source = source, infer = infer)
 }
 
-#' @rdname scale_link_enter
-#' @export
+#' @noRd
 scale_link_exit <- function(out, link, new = list()) {
   .link_exit(out, link, new)
 }

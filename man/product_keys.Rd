@@ -13,6 +13,9 @@ product_keys(x)
 A named character vector, axis -> column name.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Data on a product carries one of these columns per axis.
 }
 \examples{

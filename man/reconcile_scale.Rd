@@ -63,6 +63,9 @@ adjusted data keyed as the input was, carrying that same table as its
 \code{"reconciliation"} attribute.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Aggregates \code{data} from \code{source} to \code{target} and compares the result with
 \code{totals}, the parent figure from another source. Reports the gap by
 default; can also close it.

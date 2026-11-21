@@ -19,6 +19,9 @@ join_product(data, x, axes = NULL, ...)
 \code{data} with each axis's labels attached, in its own class.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 \code{\link[=join_scale]{join_scale()}} applied to each axis in turn, keyed by that axis's column.
 Because every attached column is named after its scale, the result carries
 all the axes' labels side by side.

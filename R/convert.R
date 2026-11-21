@@ -18,6 +18,10 @@ utils::globalVariables(c(".ms_factor", ".ms_origin_frame"))
 
 #' Convert member-keyed quantities with a member attribute
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Multiplies (or divides) the numeric value columns of `data` by the value
 #' of `attribute` resolved for each row's member -- a net calorific value to
 #' turn mass into energy, an emission factor to turn energy into CO2, a
@@ -25,6 +29,7 @@ utils::globalVariables(c(".ms_factor", ".ms_origin_frame"))
 #' exactly as [`scale_attributes()`] does, so a factor stored on a coarser
 #' member applies to every leaf under it that has no factor of its own.
 #'
+#' @details
 #' Direction comes from the attribute's unit of measure, read as
 #' `"<numerator>/<denominator>"`: with `lhv` in `"GJ/t"`, `from_unit = "t",
 #' to_unit = "GJ"` multiplies, and `from_unit = "GJ", to_unit = "t"` divides.

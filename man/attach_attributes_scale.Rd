@@ -24,6 +24,9 @@ when \code{attributes} has none.}
 The scale with the rows appended.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Appends rows to the object's attribute table. A row names the member it
 belongs to (\code{frame}, \code{member}), the attribute (\code{attribute}, e.g. \code{"lhv"}),
 its \code{kind} (see \code{\link{SCALE_ATTRIBUTE_KINDS}}), its \code{value}, an optional

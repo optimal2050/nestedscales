@@ -13,7 +13,8 @@ product_frames(x)
 A named list of character vectors, each coarsest-first.
 }
 \description{
-Frames of each axis
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
 }
 \examples{
 product_frames(scale_product(a = scale_example(), b = scale_example2()))

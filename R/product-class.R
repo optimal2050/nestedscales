@@ -22,12 +22,17 @@ NULL
 
 #' A product of several scales (S7 class)
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Combines two or more [`NestedScale`] objects into one multi-dimensional index --
 #' time x space, time x space x industry, and so on. The leaves of the product
 #' are tuples of the component leaves, and they stay LAZY: nothing is
 #' materialised at construction, and [`product_leaves()`] is the guarded way to
 #' realise them.
 #'
+#' @details
 #' Construct with [`scale_product()`].
 #'
 #' @param axes Named list of [`NestedScale`] objects; the names are the axis names.
@@ -153,6 +158,10 @@ ScaleProduct <- S7::new_class(
 
 #' Combine scales into a product index
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' @param ... Two or more named [`NestedScale`] objects; the argument names become
 #'   the axis names.
 #' @param name,desc Short name and description of the product.
@@ -254,6 +263,10 @@ scale_product <- function(..., name = "", desc = "", keys = NULL,
 
 #' Axes of a product
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' @param x A [`ScaleProduct`].
 #' @param axis Optional single axis name, to get just that [`NestedScale`].
 #'
@@ -277,6 +290,10 @@ scale_axes <- function(x, axis = NULL) {
 
 #' The data key column of each axis
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Data on a product carries one of these columns per axis.
 #'
 #' @param x A [`ScaleProduct`].
@@ -291,6 +308,10 @@ product_keys <- function(x) {
 
 #' Frames of each axis
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' @param x A [`ScaleProduct`].
 #' @return A named list of character vectors, each coarsest-first.
 #' @examples
@@ -302,6 +323,10 @@ product_frames <- function(x) {
 }
 
 #' Size of a product
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
 #'
 #' The per-axis leaf counts and their product -- the number of rows a fully
 #' dense realisation would have.
@@ -323,6 +348,10 @@ product_size <- function(x) {
 
 #' Weight columns of each axis
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' A product has no weights of its own: the weight of a product leaf is the
 #' product of its components' weights, which is derived when needed and never
 #' stored.
@@ -338,6 +367,10 @@ product_weights <- function(x) {
 }
 
 #' Coverage of each axis
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
 #'
 #' Sampling is per-axis and independent, so the coverage of the product is the
 #' product of its axes' coverages -- `prod(product_coverage(p))`.
@@ -371,10 +404,15 @@ product_coverage <- function(x, weight = NULL) {
 
 #' Realise the leaves of a product
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' The cross product of the component leaftables: one row per tuple of
 #' component leaves, with each axis's key column named by [`product_keys()`]
 #' and its frame columns prefixed `"<axis>."`.
 #'
+#' @details
 #' This is guarded on purpose. An hourly calendar crossed with NUTS3 is
 #' ~12.9M rows; the whole point of a product is that its leaves exist
 #' implicitly, and conversion never needs them realised (see

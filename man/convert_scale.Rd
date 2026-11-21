@@ -52,6 +52,9 @@ after the attribute: \verb{<attribute>} (the factor applied) and
 input's class.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Multiplies (or divides) the numeric value columns of \code{data} by the value
 of \code{attribute} resolved for each row's member -- a net calorific value to
 turn mass into energy, an emission factor to turn energy into CO2, a

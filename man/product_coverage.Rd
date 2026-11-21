@@ -16,6 +16,9 @@ axis's own default weight.}
 A named numeric, one entry per axis.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Sampling is per-axis and independent, so the coverage of the product is the
 product of its axes' coverages -- \code{prod(product_coverage(p))}.
 }

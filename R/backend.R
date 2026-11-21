@@ -68,9 +68,6 @@
 #' * `backend_schema()` describes the columns without scanning the data.
 #' * `backend_lazy()` lifts `data` into a dplyr-compatible carrier for a
 #'   pipeline (a `data.table` becomes a dtplyr step when dtplyr is installed).
-#' * `backend_scan()` reads the needed columns and rows into memory.
-#' * `backend_distinct()` is the distinct rows of some columns, in
-#'   first-appearance order, read into memory.
 #' * `backend_pull()` materialises a query or table as a `data.frame`.
 #' * `backend_restore()` returns a pipeline result in the caller's type.
 #' * `backend_bind_rows()` binds chunk results into one frame.
@@ -79,9 +76,6 @@
 #' @param arg Argument name used in the error message.
 #' @param backend A backend name from `backend_of()`; `NULL` resolves it from
 #'   `data`.
-#' @param columns Column names to read; `NULL` reads every column.
-#' @param filter An unevaluated dplyr filter expression (built with
-#'   `rlang::expr()`), or `NULL` for every row.
 #' @param table A query or table.
 #' @param collect Force materialisation of a lazy result.
 #' @param parts List of data frames.
@@ -91,8 +85,8 @@
 #' @return `backend_of()` a single string naming the backend;
 #'   `backend_is_lazy()` a logical; `backend_schema()` a zero-row
 #'   `data.frame`; `backend_lazy()` `data`, wrapped where the backend needs
-#'   it; `backend_scan()`, `backend_distinct()` and `backend_pull()` a
-#'   `data.frame`; `backend_restore()` the result in the input's class;
+#'   it; `backend_pull()` a `data.frame`; `backend_restore()` the result in
+#'   the input's class;
 #'   `backend_bind_rows()` one data frame, or `NULL` when every part is
 #'   empty.
 #'
@@ -101,8 +95,6 @@
 #' backend_of(d)
 #' backend_is_lazy(backend_of(d))
 #' backend_schema(d)
-#' backend_distinct(d, "item")
-#' backend_scan(d, columns = "v", filter = rlang::expr(v > 1))
 #' @name backend
 NULL
 
@@ -144,8 +136,8 @@ backend_lazy <- function(data, backend = NULL) {
   data
 }
 
-#' @rdname backend
-#' @export
+#' The needed columns and rows of `data`, read into memory
+#' @noRd
 backend_scan <- function(data, backend = NULL, columns = NULL, filter = NULL) {
   if (is.null(backend)) backend <- backend_of(data)
   q <- backend_lazy(data, backend)
@@ -154,8 +146,8 @@ backend_scan <- function(data, backend = NULL, columns = NULL, filter = NULL) {
   backend_pull(q)
 }
 
-#' @rdname backend
-#' @export
+#' The distinct rows of some columns, in first-appearance order
+#' @noRd
 backend_distinct <- function(data, columns, backend = NULL) {
   if (is.null(backend)) backend <- backend_of(data)
   backend_pull(dplyr::distinct(dplyr::select(

@@ -31,6 +31,9 @@ a \code{data.frame} with one row per bound column: \code{column}, \code{scale},
 \code{frame}, \code{id}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 Records, on the code columns themselves, which scale and which frame
 their codes are on. A bound column is a \code{\link[=as_scale_member]{scale_member}}
 vector: it prints and behaves as a character vector, and keeps the link

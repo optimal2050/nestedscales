@@ -24,6 +24,10 @@ NULL
 
 #' Check fine data against an independent parent total
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Aggregates `data` from `source` to `target` and compares the result with
 #' `totals`, the parent figure from another source. Reports the gap by
 #' default; can also close it.

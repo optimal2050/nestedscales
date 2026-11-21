@@ -13,7 +13,8 @@ scale_dataset_info(path)
 A list with \code{kind}, \code{axes}, \code{keys}, \code{files} and \code{bytes}.
 }
 \description{
-Describe a stored dataset without opening it fully
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
 }
 \examples{
 # see write_scale_dataset()

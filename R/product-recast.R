@@ -214,9 +214,14 @@ NULL
 
 #' Recast data indexed by a product of scales
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' Converts one or more axes of a product in a single call. Axes named in `target`
 #' are converted; axes left out pass through untouched.
 #'
+#' @details
 #' Execution is a sequence of ordinary single-axis [`recast_scale()`] calls --
 #' see the file comment in `R/product-recast.R` for why that is exactly
 #' equivalent to a joint recast for every supported rule, and why the joint
@@ -524,6 +529,10 @@ S7::method(recast, list(S7::class_any, ScaleProduct)) <-
 
 #' Attach every axis's labels to product-indexed data
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' [`join_scale()`] applied to each axis in turn, keyed by that axis's column.
 #' Because every attached column is named after its scale, the result carries
 #' all the axes' labels side by side.
@@ -555,6 +564,10 @@ join_product <- function(data, x, axes = NULL, ...) {
 }
 
 #' Subset a product componentwise
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
 #'
 #' Applies [`filter_scale()`] to one axis and returns a new product.
 #'

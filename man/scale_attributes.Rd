@@ -33,6 +33,9 @@ A \code{data.frame} with the attribute columns (\code{frame}, \code{member},
 \code{frame} is given.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 With \code{frame = NULL}, returns the stored attribute table (filtered by
 \code{attribute} and \code{source}). With a \code{frame}, returns one row per member of
 that frame per attribute, \strong{resolved}: a member's own value when it has

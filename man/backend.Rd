@@ -6,8 +6,6 @@
 \alias{backend_is_lazy}
 \alias{backend_schema}
 \alias{backend_lazy}
-\alias{backend_scan}
-\alias{backend_distinct}
 \alias{backend_pull}
 \alias{backend_restore}
 \alias{backend_bind_rows}
@@ -20,10 +18,6 @@ backend_is_lazy(backend)
 backend_schema(data, backend = NULL)
 
 backend_lazy(data, backend = NULL)
-
-backend_scan(data, backend = NULL, columns = NULL, filter = NULL)
-
-backend_distinct(data, columns, backend = NULL)
 
 backend_pull(table)
 
@@ -42,11 +36,6 @@ backend_bind_rows(
 \item{backend}{A backend name from \code{backend_of()}; \code{NULL} resolves it from
 \code{data}.}
 
-\item{columns}{Column names to read; \code{NULL} reads every column.}
-
-\item{filter}{An unevaluated dplyr filter expression (built with
-\code{rlang::expr()}), or \code{NULL} for every row.}
-
 \item{table}{A query or table.}
 
 \item{collect}{Force materialisation of a lazy result.}
@@ -60,8 +49,8 @@ is installed; an explicit value makes both branches testable.}
 \code{backend_of()} a single string naming the backend;
 \code{backend_is_lazy()} a logical; \code{backend_schema()} a zero-row
 \code{data.frame}; \code{backend_lazy()} \code{data}, wrapped where the backend needs
-it; \code{backend_scan()}, \code{backend_distinct()} and \code{backend_pull()} a
-\code{data.frame}; \code{backend_restore()} the result in the input's class;
+it; \code{backend_pull()} a \code{data.frame}; \code{backend_restore()} the result in
+the input's class;
 \code{backend_bind_rows()} one data frame, or \code{NULL} when every part is
 empty.
 }
@@ -80,9 +69,6 @@ input -- the one place that message is written.
 \item \code{backend_schema()} describes the columns without scanning the data.
 \item \code{backend_lazy()} lifts \code{data} into a dplyr-compatible carrier for a
 pipeline (a \code{data.table} becomes a dtplyr step when dtplyr is installed).
-\item \code{backend_scan()} reads the needed columns and rows into memory.
-\item \code{backend_distinct()} is the distinct rows of some columns, in
-first-appearance order, read into memory.
 \item \code{backend_pull()} materialises a query or table as a \code{data.frame}.
 \item \code{backend_restore()} returns a pipeline result in the caller's type.
 \item \code{backend_bind_rows()} binds chunk results into one frame.
@@ -93,6 +79,4 @@ d <- data.frame(item = c("U1", "U2", "U2"), v = 1:3)
 backend_of(d)
 backend_is_lazy(backend_of(d))
 backend_schema(d)
-backend_distinct(d, "item")
-backend_scan(d, columns = "v", filter = rlang::expr(v > 1))
 }

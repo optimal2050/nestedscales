@@ -11,6 +11,10 @@
 
 #' Built-in distances
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' \describe{
 #'   \item{`euclidean`, `manhattan`, `maximum`}{Straight to
 #'     [stats::dist()]. Compare members by the LEVEL of their profiles.}
@@ -80,6 +84,10 @@ SCALE_DISTANCES <- c(
 
 #' Register a distance
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
+#'
 #' The built-ins cover level and shape; anything else -- dynamic time warping,
 #' a domain-specific dissimilarity, a precomputed matrix -- is registered here
 #' and then usable by name everywhere in the package.
@@ -140,6 +148,10 @@ clear_scale_distances <- function(name = NULL) {
 }
 
 #' Distance between the members of a scale
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This feature may change or be removed in a later version.
 #'
 #' Reshapes long, member-keyed data into a member-by-observation matrix and
 #' measures the distance between its rows.

@@ -15,6 +15,9 @@ the \code{method} argument of \code{\link[=scale_distance]{scale_distance()}}; \
 any registered with \code{\link[=register_scale_distance]{register_scale_distance()}}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+This feature may change or be removed in a later version.
+
 \describe{
 \item{\code{euclidean}, \code{manhattan}, \code{maximum}}{Straight to
 \code{\link[stats:dist]{stats::dist()}}. Compare members by the LEVEL of their profiles.}
