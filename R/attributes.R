@@ -63,6 +63,31 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
   attr(x, "attributes", exact = TRUE) %||% .empty_attributes()
 }
 
+#' The class an object carries, or NULL for one that carries none
+#'
+#' The attribute holding it is `S7_class` up to 'S7' 0.2 and `_S7_class`,
+#' a reference, from 1.0; `S7::S7_class()` reads either.
+#' @noRd
+.s7_class <- function(x) {
+  if (is.null(attr(x, "_S7_class", exact = TRUE)) &&
+    is.null(attr(x, "S7_class", exact = TRUE))) {
+    return(NULL)
+  }
+  S7::S7_class(x)
+}
+
+#' Replace the class an object carries, under the attribute it already uses
+#' @noRd
+.set_s7_class <- function(x, class) {
+  nm <- if (is.null(attr(x, "_S7_class", exact = TRUE))) {
+    "S7_class"
+  } else {
+    "_S7_class"
+  }
+  attr(x, nm) <- class
+  x
+}
+
 #' Bring an object saved under an earlier class definition up to date
 #'
 #' An S7 object embeds its class. One saved before the `attributes`,
@@ -74,7 +99,7 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
 #' ones. A no-op for an up-to-date object.
 #' @noRd
 .upgrade_scale <- function(x) {
-  cls <- attr(x, "S7_class", exact = TRUE)
+  cls <- .s7_class(x)
   if (is.null(cls)) {
     return(x)
   }
@@ -101,7 +126,7 @@ SCALE_ATTRIBUTE_KINDS <- c("property", "factor")
       "rebuild it from its leaftable"
     ), cls@name, if (length(spec) == 2L) spec[[1L]] else "unknown")
   }
-  attr(x, "S7_class") <- current
+  x <- .set_s7_class(x, current)
   if (is.null(attr(x, "attributes", exact = TRUE))) {
     attr(x, "attributes") <- .empty_attributes()
   }

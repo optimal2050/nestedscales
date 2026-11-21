@@ -44,7 +44,7 @@ test_that("the 0.1.1 fixture still loads and behaves", {
   skip_if_not(file.exists(path))
   s <- readRDS(path)
   expect_true(scale_is(s))
-  expect_false("attributes" %in% names(attr(s, "S7_class")@properties))
+  expect_false("attributes" %in% names(S7::S7_class(s)@properties))
   # no message pattern: the wording is S7's and differs between its versions
   expect_error(S7::prop(s, "attributes"))
   expect_no_error(S7::validate(s))
@@ -56,7 +56,7 @@ test_that("the 0.1.1 fixture still loads and behaves", {
                                rule = "sum"))
   f <- filter_scale(s, "sector", "P")
   expect_identical(scale_units(f, "sector"), "P")
-  expect_true("attributes" %in% names(attr(f, "S7_class")@properties))
+  expect_true("attributes" %in% names(S7::S7_class(f)@properties))
   expect_s3_class(S7::prop(f, "attributes"), "data.frame")
   s2 <- attach_attributes_scale(
     s, data.frame(frame = "sector", unit = "P", attribute = "density",

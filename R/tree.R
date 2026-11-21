@@ -86,7 +86,7 @@ S7::method(scale_payload_parts, NestedScale) <- function(x, ...) NULL
 #' The parts of one scale, core rows first
 #' @noRd
 .scale_parts <- function(x) {
-  cls <- attr(x, "S7_class", exact = TRUE)
+  cls <- .s7_class(x)
   props <- names(cls@properties)
   core <- intersect(names(.PROP_ROLES), props)
   extra <- setdiff(props, core)

@@ -30,7 +30,7 @@ NULL
 #' Whether the object's embedded class declares the `labels` property
 #' @noRd
 .has_labels_prop <- function(x) {
-  cls <- attr(x, "S7_class", exact = TRUE)
+  cls <- .s7_class(x)
   !is.null(cls) && "labels" %in% names(cls@properties)
 }
 
