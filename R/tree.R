@@ -299,7 +299,7 @@ scale_tree <- function(x) {
     list(tee = "+- ", end = "+- ", bar = "|  ", gap = "   ")
   } else {
     list(
-      tee = "├─ ", end = "└─ ", bar = "│  ",
+      tee = "\u251c\u2500 ", end = "\u2514\u2500 ", bar = "\u2502  ",
       gap = "   "
     )
   }

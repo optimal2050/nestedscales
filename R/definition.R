@@ -158,7 +158,7 @@ NULL
   fmt <- ref$format %||% tools::file_ext(ref$file)
   if (identical(fmt, "arrow")) {
     .need_arrow("read_scale()")
-    df <- as.data.frame(arrow::read_feather(path))
+    df <- as.data.frame(arrow::read_feather(path, mmap = FALSE))
     for (n in names(df)) if (is.factor(df[[n]])) df[[n]] <- as.character(df[[n]])
     return(df)
   }

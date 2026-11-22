@@ -308,7 +308,8 @@ open_scale_dataset <- function(path) {
   scales <- lapply(names(manifest$axes), function(a) {
     if (m$legacy) {
       lt <- as.data.frame(arrow::read_feather(
-        file.path(sdir, paste0(a, "-leaftable.arrow"))
+        file.path(sdir, paste0(a, "-leaftable.arrow")),
+        mmap = FALSE
       ))
       .scale_from_legacy_manifest(manifest$axes[[a]], lt)
     } else {

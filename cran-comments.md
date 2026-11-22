@@ -1,32 +1,35 @@
-## Resubmission
+## Update
 
-This is a resubmission. In this version (0.2.0) I have:
+This is an update of 'nestedscales' from 0.2.0 to 0.3.0. It answers the
+request to correct the check problems of 0.2.0 before 2026-12-11.
 
-* added `\value` to `SCALE_DISTANCES.Rd` and `SCALE_RULES.Rd`, describing the
-  class and meaning of each exported constant, as requested. Every other
-  exported topic documents its value, including the new
-  `SCALE_ATTRIBUTE_KINDS.Rd`.
+* The ERROR on the r-devel Linux flavors came from one test that matched the
+  wording of an 'S7' error message; the wording changed in 'S7' 1.0.0. The
+  test no longer depends on it.
+* 'S7' 1.0.0 also keeps the class of an object under another attribute. The
+  package now reads it through `S7::S7_class()`. It is tested with 'S7'
+  1.0.0 and with 'S7' 0.2.2.
 
-The version also contains development made while the package was under
-review, listed in NEWS.md: member attributes and aliases, conversion with
-them, language-neutral definition files with a catalogue of shipped
-definitions, and a public backend layer (`backend_*`) for packages built on
-this one. Argument names were harmonised (`source`/`target` instead of
-`from`/`to`). The package has not been on CRAN, so no released code depends on
-the old names.
+Other changes, listed in NEWS.md:
 
-The previous resubmission (0.1.1) made Arrow IPC storage fall back to
-uncompressed files when the requested compression codec is unavailable.
+* A change of vocabulary, with renamed functions and arguments and no
+  aliases for the old names. No package on CRAN depends on 'nestedscales'.
+* The example data files that were shipped under `inst/` are removed; the
+  package ships no data.
+* Two helper functions are no longer exported, and five features are marked
+  experimental in their help pages.
+* New: display labels for members and frames, `scale_id()`, `scale_tree()`,
+  an experimental link between a data table and a scale, and the two classes
+  are exported.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* This is a new release.
+0 errors | 0 warnings | 0 notes
 
 The package is pure R with no compiled code and no system requirements.
 
 ## Test environments
 
-* Windows 11, R 4.6.1 and R 4.5.3 (local, `--as-cran`)
+* Windows 11, R 4.6.2 (local, `--as-cran`)
 * win-builder, R-devel
+* R-hub: linux (R-devel), ubuntu-release, macos-arm64
