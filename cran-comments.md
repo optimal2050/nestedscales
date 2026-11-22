@@ -32,4 +32,8 @@ The package is pure R with no compiled code and no system requirements.
 
 * Windows 11, R 4.6.2 (local, `--as-cran`)
 * win-builder, R-devel
-* R-hub: linux (R-devel), ubuntu-release, macos-arm64
+* R-hub: linux (R-devel), ubuntu-release
+
+On R-hub macos-arm64 (R-devel) the check did not start: the suggested
+package 'arrow' has no binary there and its source build failed while
+configuring its C++ library, before 'nestedscales' was checked.

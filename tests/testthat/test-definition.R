@@ -142,6 +142,25 @@ test_that("meta that cannot be written is refused by name before any file", {
   expect_false(file.exists(f))
 })
 
+test_that("a scale held in meta is written as a reference", {
+  s <- scale_example()
+  other <- scale_example2()
+  meta <- S7::prop(s, "meta")
+  meta$origin <- other
+  meta$nested <- list(a = 1, scale = other)
+  S7::prop(s, "meta") <- meta
+  f <- withr::local_tempfile(fileext = ".json")
+  expect_no_error(write_scale(s, f, overwrite = TRUE))
+  h <- jsonlite::fromJSON(f, simplifyVector = FALSE)
+  ref <- list(name = "example2", id = scale_id(other))
+  expect_identical(h$meta$origin[["_scale"]], ref)
+  expect_identical(h$meta$nested$scale[["_scale"]], ref)
+  back <- S7::prop(read_scale(f), "meta")
+  expect_identical(back$origin[["_scale"]], ref)
+  expect_equal(back$nested$a, 1)
+  expect_identical(scale_id(read_scale(f)), scale_id(s))
+})
+
 test_that("a newer schema version is refused", {
   f <- withr::local_tempfile(fileext = ".json")
   write_scale(scale_example(), f, overwrite = TRUE)

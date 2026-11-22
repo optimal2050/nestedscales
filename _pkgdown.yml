@@ -1,6 +1,10 @@
 url: https://optimal2050.github.io/nestedscales/r/
 destination: docs/r
 
+template:
+  bootstrap: 5
+  light-switch: true
+
 home:
   sidebar:
     structure: [links, license, community, citation, dev]

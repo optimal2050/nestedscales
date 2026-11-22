@@ -1,6 +1,6 @@
 ---
 title: "Attributes, aliases and conversion"
-description: "Why attributes are not weights, how a value resolves along the hierarchy, explicit sources, strict label matching, and converting mass to energy to emissions on a small fuel taxonomy."
+description: "Why attributes are not weights, how a value resolves along the hierarchy, explicit sources, strict label matching, and converting people to households and to litres of water on a small scale of cities."
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Attributes, aliases and conversion}
@@ -13,108 +13,107 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(nestedscales)
 ```
 
-## What problem does this solve?
+## Motivation
 
-Energy models, statistics and inventories carve fuels into categories, and
-every source carves differently: an inventory guideline lists fifty-odd
-fuels, a model has a handful of commodity codes, a chart wants a dozen
-colours. The numbers that turn one quantity into another -- a net calorific
-value in GJ/t, a CO2 factor in kg/TJ -- are published per category, for
-*some* categories, and the category a figure is published for is rarely the
-one the data is keyed by.
+Figures about people are collected for places, and every table describes
+the places at its own resolution: one lists cities, another regions, a
+third whole countries. The numbers that turn one quantity into another --
+the persons that make a household, the litres of water a person uses in a
+day -- are published in the same uneven way: for *some* places, and often
+at a resolution other than the one the data is recorded at.
 
 A nested scale keeps such numbers as **attributes**: values that belong to
-a member at whatever level they are published, resolved down the hierarchy
+a member at whatever frame they are published, resolved down the hierarchy
 when a finer member has none of its own, and applied row by row. The same
-mechanism serves any dimension -- an area per region, an hour count per
-time slice -- but fuels are where it earns its keep, so this vignette works
-on a small fuel taxonomy.
+mechanism serves any dimension -- a wage per industry, an hour count per
+time slice. This vignette works on people in cities.
 
-## An example taxonomy
+## An example scale
 
-Eight fuels under five carriers under three groups. The values attached to
-them are round numbers chosen for illustration, not reference data: a net
-calorific value (`lhv`, GJ/t) for five fuels and a CO2 factor (`ef_co2`,
-kg/TJ) for four, under the source `"example"`.
+Eight cities in four regions in two countries. All names and all numbers in
+this vignette are invented round values, chosen for illustration; none is a
+statistic. Two attributes are attached under the source `"census"`: the
+persons per household (`hh_size`, in persons/household) for six cities, and
+the water use per person and day (`water_use`, in litres/person) for four.
 
-```{r fuels}
+```{r places}
 values <- data.frame(
-  frame = "fuel",
-  member = c("Anthracite", "Bituminous", "Lignite", "NaturalGas", "Biodiesel",
-           "Anthracite", "Lignite", "NaturalGas", "Biodiesel"),
-  attribute = rep(c("lhv", "ef_co2"), c(5, 4)),
-  kind = rep(c("property", "factor"), c(5, 4)),
-  value = c(28, 25, 10, 50, 37, 95000, 100000, 55000, 70000),
-  unit_of_measure = rep(c("GJ/t", "kg/TJ"), c(5, 4)),
-  source = "example"
+  frame = "city",
+  member = c("Alder", "Birch", "Cedar", "Elm", "Fern", "Grove",
+             "Alder", "Cedar", "Elm", "Grove"),
+  attribute = rep(c("hh_size", "water_use"), c(6, 4)),
+  kind = rep(c("property", "factor"), c(6, 4)),
+  value = c(2, 3, 2.5, 2, 2.5, 3.5, 150, 120, 100, 200),
+  unit_of_measure = rep(c("persons/household", "litres/person"), c(6, 4)),
+  source = "census"
 )
 codes <- data.frame(
-  frame = c("carrier", "fuel", "carrier", "carrier"),
-  member = c("Gas", "Lignite", "Electricity", "Coal"),
-  alias = c("GAS", "LIG", "ELC", "coal"),
-  source = "commodity"
+  frame = c("city", "city", "region", "country"),
+  member = c("Alder", "Grove", "Harbour", "North"),
+  alias = c("ALD", "GRV", "HBR", "NTH"),
+  source = "short"
 )
-fuels <- scale_from_leaftable(
+places <- scale_from_leaftable(
   data.frame(
-    group = c("Fossil", "Fossil", "Fossil", "Fossil", "Fossil", "Fossil",
-              "Renewable", "Electricity"),
-    carrier = c("Coal", "Coal", "Coal", "Gas", "Gas", "Oil", "Biofuel",
-                "Electricity"),
-    fuel = c("Anthracite", "Bituminous", "Lignite", "NaturalGas", "LNG",
-             "Diesel", "Biodiesel", "Electricity")
+    country = c("North", "North", "North", "North",
+                "South", "South", "South", "South"),
+    region = c("N1", "N1", "N2", "N2", "S1", "S1", "S1", "Harbour"),
+    city = c("Alder", "Birch", "Cedar", "Dale", "Elm", "Fern", "Grove",
+             "Harbour")
   ),
-  frames = c("group", "carrier", "fuel"), leaf = "fuel", name = "fuels",
+  frames = c("country", "region", "city"), name = "places",
   attributes = values, aliases = codes
 )
-fuels
-scale_members(fuels, "carrier")
-scale_children(fuels, "carrier", "Coal")
+places
+scale_members(places, "region")
+scale_children(places, "region", "S1")
 ```
 
-Codes repeat across frames (`Electricity` is a group, the carrier inside it
-and that carrier's only fuel), so every lookup names its frame.
+Codes repeat across frames (`Harbour` is a region and the only city inside
+it), so every lookup names its frame.
 
-Where a fuel has no value, there is no number -- the package never fills
+Where a city has no value, there is no number -- the package never fills
 one in:
 
-```{r lhv}
-lhv <- scale_attributes(fuels, "lhv", frame = "fuel")
-lhv[c("member", "value", "unit_of_measure", "source")]
+```{r hh-size}
+hh_size <- scale_attributes(places, "hh_size", frame = "city")
+hh_size[c("member", "value", "unit_of_measure", "source")]
 ```
 
 ## Attributes are not weights
 
-A weight says *how big a leaf is*: hours in a time slice, area of a
-region, consumption of a fuel. Weights drive aggregation (`weighted_mean`
+A weight says *how big a leaf is*: the hours in a time slice, the area of a
+region, the people of a city. Weights drive aggregation (`weighted_mean`
 up) and disaggregation (`sum` split down). They are declared on the
 leaftable and sum over the scale.
 
-A calorific value is none of those things. It is a *conversion factor*: it
-turns a tonne of this fuel into gigajoules, row by row, and summing it over
-fuels is meaningless. So a scale keeps attributes in a separate table,
-keyed by `(frame, member)`, and consumes them only in `convert_scale()`.
-The constructor promotes numeric leaftable columns to weights; a calorific
-value passed as a column would become a weight and be summed. Pass it as
-`attributes=`.
+A household size is none of those things. It is a *conversion factor*: it
+turns the households of this city into persons, row by row, and summing it
+over cities is meaningless. A scale therefore keeps attributes in a
+separate table, keyed by `(frame, member)`, and consumes them only in
+`convert_scale()`. The constructor promotes numeric leaftable columns to
+weights; a household size passed as a column would become a weight and be
+summed. It is passed as `attributes=` instead.
 
-Averaging an attribute over a fuel mix *is* a legitimate aggregation -- the
-mean calorific value of "coal" given how much of each coal is burnt. That is
-an ordinary recast of a resolved attribute with the `weighted_mean` rule,
-and the weight is where weights live: on the scale, as the consumption of
-each fuel.
+Averaging an attribute over several members *is* a legitimate aggregation
+-- the mean household size of a region, given how many households each of
+its cities has. That is an ordinary recast of a resolved attribute with the
+`weighted_mean` rule, and the weight is where weights live: on the scale,
+as the number of households of each city.
 
 ```{r mix}
-coal <- filter_scale(fuels, "carrier", "Coal")
-lt <- scale_leaftable(coal)
-lt$tj <- c(100, 300, 400)
-mix <- scale_from_leaftable(
-  lt, frames = c("group", "carrier", "fuel"), leaf = "fuel",
-  attributes = scale_attributes(coal), name = "mix"
+s1 <- filter_scale(places, "region", "S1")
+lt <- scale_leaftable(s1)
+lt$households <- c(3000, 400, 2000)
+south1 <- scale_from_leaftable(
+  lt, frames = c("country", "region", "city"),
+  attributes = scale_attributes(s1), name = "south1"
 )
-lhv_coal <- scale_attributes(mix, "lhv", frame = "fuel")
+hh_s1 <- scale_attributes(south1, "hh_size", frame = "city")
 recast_scale(
-  data.frame(fuel = lhv_coal$member, lhv = lhv_coal$value), mix,
-  source = "fuel", target = "carrier", rule = "weighted_mean", weight = "tj"
+  data.frame(city = hh_s1$member, hh_size = hh_s1$value), south1,
+  source = "city", target = "region", rule = "weighted_mean",
+  weight = "households"
 )
 ```
 
@@ -123,26 +122,27 @@ so the subset's table is exactly what the new scale may take.)
 
 ## Attributes live at any frame, and resolve by nearest ancestor
 
-A value may be stored on a fuel, on a carrier or on a group. When a fuel has
-no value of its own, `scale_attributes()` walks to the nearest coarser frame
-that holds one and reports where the value came from. The example values
-are all at the fuel level; a carrier-level figure from another source fills
-the gaps below it without touching the fuels that have their own:
+A value may be stored on a city, on a region or on a country. When a city
+has no value of its own, `scale_attributes()` walks to the nearest coarser
+frame that holds one and reports where the value came from. The census
+values are all at the city frame; a region-wide figure from another source
+fills the gaps below it without touching the cities that have their own:
 
 ```{r inherit}
-gas <- attach_attributes_scale(
-  fuels,
-  data.frame(frame = "carrier", member = "Gas", attribute = "lhv",
-             kind = "property", value = 46, unit_of_measure = "GJ/t"),
-  source = "carrier-level"
+regional <- attach_attributes_scale(
+  places,
+  data.frame(frame = "region", member = "N2", attribute = "hh_size",
+             kind = "property", value = 3,
+             unit_of_measure = "persons/household"),
+  source = "regional"
 )
-res <- scale_attributes(gas, "lhv", frame = "fuel")
-res[res$member %in% scale_children(gas, "carrier", "Gas"),
+res <- scale_attributes(regional, "hh_size", frame = "city")
+res[res$member %in% scale_children(regional, "region", "N2"),
     c("member", "value", "source", "origin_frame", "origin_member")]
 ```
 
-`NaturalGas` keeps its own value; `LNG` inherits the carrier's. Nothing is
-guessed from a sibling or an average.
+`Cedar` keeps its own value; `Dale` inherits the region's. Nothing is
+guessed from a neighbouring city or an average.
 
 Two situations are refused rather than resolved:
 
@@ -153,145 +153,184 @@ Two situations are refused rather than resolved:
   frame.
 * **Several sources.** Two sources publishing the same attribute for the
   same member is an error unless `source=` chooses. The walk stays within
-  the chosen source: a source that lacks a fuel reports `NA` rather than
+  the chosen source: a source that lacks a city reports `NA` rather than
   borrowing another's figure.
+
+In the chunk below a survey reports its own household size for `Alder`,
+which the census already covers. The first read fails for that reason; the
+second names the source.
 
 ```{r sources, error = TRUE}
 two <- attach_attributes_scale(
-  fuels,
-  data.frame(frame = "fuel", member = "Anthracite", attribute = "lhv",
-             kind = "property", value = 27.5, unit_of_measure = "GJ/t"),
-  source = "other"
+  places,
+  data.frame(frame = "city", member = "Alder", attribute = "hh_size",
+             kind = "property", value = 2.2,
+             unit_of_measure = "persons/household"),
+  source = "survey"
 )
-scale_attributes(two, "lhv", frame = "fuel")
-other <- scale_attributes(two, "lhv", frame = "fuel", source = "other")
-other[!is.na(other$value), c("member", "value", "source")]
+scale_attributes(two, "hh_size", frame = "city")
+survey <- scale_attributes(two, "hh_size", frame = "city", source = "survey")
+survey[!is.na(survey$value), c("member", "value", "source")]
 ```
 
 ## Sources and provenance
 
 Every attribute row names its `source` and `unit_of_measure`. Attaching
 never overwrites: a row with the same `(frame, member, attribute, source)` is
-an error, so the way to add a better number is to attach it under its own
-source name and select it. Every attribute name carries a `kind`
+an error, so a better number is added by attaching it under its own source
+name and selecting it. Every attribute name carries a `kind`
 (`SCALE_ATTRIBUTE_KINDS`): a `property` is an invertible ratio, a `factor`
 converts one way only. Any attribute name is accepted.
 
-## Mass to energy, with the calorific value
+## People to households, with the household size
 
-`convert_scale()` multiplies each row by the attribute resolved for its
-fuel. `lhv` is stored in GJ/t, so the direction is tonnes to gigajoules; the
-result reports which factor was applied and where it came from.
+`convert_scale()` applies to each row the attribute resolved for its city.
+`hh_size` is stored in persons/household, so it multiplies households into
+persons and, being a `property`, divides persons into households. The two
+units are matched as plain strings, exactly as they are written in
+`unit_of_measure`. The result reports which value was applied and where it
+came from.
 
 ```{r convert}
-use <- data.frame(
-  fuel = c("Anthracite", "Lignite", "NaturalGas", "Biodiesel"),
-  kt   = c(120, 900, 0, 15)
+pop <- data.frame(
+  city     = c("Alder", "Cedar", "Elm", "Grove"),
+  people_k = c(3, 5, 6, 7)
 )
-use$t <- use$kt * 1e3                 # kt -> t: no prefix arithmetic is done
-energy <- convert_scale(use[c("fuel", "t")], fuels, "lhv",
-                        from_unit = "t", to_unit = "GJ")
-energy
+# thousands -> persons: no prefix arithmetic is done
+pop$persons <- pop$people_k * 1e3
+hh <- convert_scale(pop[c("city", "persons")], places, "hh_size",
+                    from_unit = "persons", to_unit = "household")
+names(hh)[names(hh) == "persons"] <- "households"
+hh
 ```
 
-A fuel without a value is an error, not a silent zero. Pass
-`na_action = "keep"` to carry `NA` instead. A `property` converts both ways:
+A `property` converts both ways, so the households return the persons:
 
 ```{r invert}
-convert_scale(energy[c("fuel", "t")], fuels, "lhv",
-              from_unit = "GJ", to_unit = "t")
+convert_scale(hh[c("city", "households")], places, "hh_size",
+              from_unit = "household", to_unit = "persons")
 ```
 
-## Aggregate to carriers
+## A city without a value
+
+A city without a value is an error, not a silent zero. `Dale` has no
+household size in the census, so a table that includes it is refused:
+
+```{r missing, error = TRUE}
+more <- data.frame(city = c("Cedar", "Dale"), persons = c(5000, 4000))
+convert_scale(more, places, "hh_size",
+              from_unit = "persons", to_unit = "household")
+```
+
+`na_action = "keep"` converts the rows that have a value and carries `NA`
+in the others:
+
+```{r missing-keep}
+convert_scale(more, places, "hh_size",
+              from_unit = "persons", to_unit = "household",
+              na_action = "keep")
+```
+
+## Aggregate to regions
 
 Aggregation is a recast with an explicit rule; `sum` conserves the total.
-Register the rule once per column, or pass `rule=` each time.
+The rule is registered once per column, or passed as `rule=` each time.
 
-One decision has to be stated. The table reports four fuels against a
-taxonomy of eight. By default an absent fuel is *unknown*, and every carrier
+One decision has to be stated. The table reports four cities against a
+scale of eight. By default an absent city is *unknown*, and every region
 that contains one aggregates to `NA` with a warning -- the safe reading for
-incomplete data. Fuel statistics usually mean the other thing, that an
-unreported fuel was not used, and `missing_sources = "ignore"` says so.
+incomplete data. Here the table is meant as the complete list of what is to
+be counted, the households of the four cities and no others, and
+`missing_sources = "ignore"` says so. The regional figures are then totals
+of the reported cities, not estimates for the whole regions. The warning
+still names the absent cities, and a region with no reported city at all,
+`Harbour`, has no total.
 
 ```{r recast}
-tj <- data.frame(fuel = energy$fuel, tj = energy$t / 1e3)   # GJ -> TJ
-register_scale_rule("tj", "sum")
-by_carrier <- recast_scale(tj, fuels, source = "fuel", target = "carrier",
-                           missing_sources = "ignore")
-by_carrier[which(by_carrier$tj > 0), ]
-sum(by_carrier$tj, na.rm = TRUE) == sum(tj$tj)
+households <- hh[c("city", "households")]
+register_scale_rule("households", "sum")
+by_region <- recast_scale(households, places, source = "city",
+                          target = "region", missing_sources = "ignore")
+by_region
+sum(by_region$households, na.rm = TRUE) == sum(households$households)
 ```
 
-## Emissions, one-way
+## Water use, one-way
 
-An emission factor converts energy to CO2 and nothing else:
-`convert_scale()` refuses the inverse because `ef_co2` is stored with kind
-`factor`, not `property`.
+A water use per person converts persons to litres and nothing else: the
+litres drawn in a city say nothing certain about how many people live
+there. `water_use` is therefore stored with kind `factor`, not `property`,
+and `convert_scale()` refuses the inverse.
 
-```{r emissions}
-co2 <- convert_scale(tj, fuels, "ef_co2", from_unit = "TJ", to_unit = "kg")
-names(co2)[names(co2) == "tj"] <- "co2_kg"
-co2
+```{r water}
+water <- convert_scale(pop[c("city", "persons")], places, "water_use",
+                       from_unit = "person", to_unit = "litres")
+names(water)[names(water) == "persons"] <- "litres"
+water
 ```
 
-```{r emissions-inverse, error = TRUE}
-convert_scale(tj, fuels, "ef_co2", from_unit = "kg", to_unit = "TJ")
+```{r water-inverse, error = TRUE}
+convert_scale(water[c("city", "litres")], places, "water_use",
+              from_unit = "litres", to_unit = "person")
 ```
 
 ## Values from a published source
 
-Reference values -- the defaults of an inventory guideline, the figures of
-a national statistical office, a plant-level measurement -- are attached
-the same way: a table with one row per member and attribute, under the name
-of its source. Each source is chosen with `source=` when reading; nothing
-is overwritten.
+Reference values -- the tables of a census, the results of a household
+survey, the register of a single municipality -- are attached the same way:
+a table with one row per member and attribute, under the name of its
+source. Each source is chosen with `source=` when reading; nothing is
+overwritten.
 
-```{r plant}
-mine <- attach_attributes_scale(
-  fuels,
-  data.frame(frame = "fuel", member = "Lignite", attribute = "lhv",
-             kind = "property", value = 8.4, unit_of_measure = "GJ/t"),
-  source = "plant"
+```{r register}
+own <- attach_attributes_scale(
+  places,
+  data.frame(frame = "city", member = "Grove", attribute = "hh_size",
+             kind = "property", value = 3.4,
+             unit_of_measure = "persons/household"),
+  source = "register"
 )
-plant <- scale_attributes(mine, "lhv", frame = "fuel", source = "plant")
-plant[!is.na(plant$value), c("member", "value", "source")]
+register <- scale_attributes(own, "hh_size", frame = "city",
+                             source = "register")
+register[!is.na(register$value), c("member", "value", "source")]
 ```
 
-## Model commodity codes
+## Names and short codes
 
-Models key fuels by short codes. `scale_match()` resolves them through the
-alias table, exactly and case-insensitively, first against member names and
-then against aliases, and reports ambiguity instead of guessing. There is
-no fuzzy or substring stage: a model input is not the place for a near
-miss.
+Tables name places in different ways: one by the official name, another by
+a short code. `scale_match()` resolves both through the alias table,
+exactly and case-insensitively, first against member names and then against
+aliases, and reports ambiguity instead of guessing. There is no fuzzy or
+substring stage: a near miss is reported as unmatched, not repaired.
 
 ```{r match}
-scale_match(fuels, c("GAS", "LIG", "ELC", "Electricity"))
-scale_match(fuels, "Electricity", frame = "carrier")
+scale_match(places, c("ALD", "grove", "HBR", "Harbour", "Zed"))
+scale_match(places, "Harbour", frame = "city")
 ```
 
 ## Attaching the hierarchy, and colours
 
-A table keyed by fuel gets its carrier and group with one join; the added
+A table keyed by city gets its region and country with one join; the added
 columns are prefixed by the scale's name, so a second scale on the same
 table never collides with the first.
 
 ```{r join}
-join_scale(use[c("fuel", "kt")], fuels, frame = "fuel", attach = TRUE)
+join_scale(pop[c("city", "people_k")], places, frame = "city",
+           attach = TRUE)
 ```
 
 Colours are presentation and are not stored on a scale. When a figure needs
-them, join them by member name from the palette it uses -- the article
-*Fuels, regions and months* on the package site does so.
+them, they are joined by member name from the palette it uses -- the
+article *Fuels, regions and months* on the package site does so.
 
-## Country-specific values
+## Values that differ by year
 
-Published defaults are usually global. A calorific value for hard coal in
-one country is the same attribute at the same fuel with a different
-*region* -- a second dimension, not a deeper frame. That belongs to a
-`scale_product()` of the fuel scale and a `GeoScale` from geoscales, with
-the regional values attached as their own source; it is not built in this
-version.
+The values above have no date. A household size counted in one year and
+again ten years later is the same attribute of the same city with a
+different *year* -- a second dimension, not a deeper frame. That belongs to
+a `scale_product()` of the scale of places and a scale of years, such as a
+`Calendar` from timescales, with the values of each year attached as their
+own source; it is not built in this version.
 
 ```{r cleanup, include = FALSE}
 clear_scale_rules()
@@ -301,5 +340,6 @@ clear_scale_rules()
 
 * `vignette("anatomy")` takes the object apart: its tables, what the
   validator guarantees, definition files, the registry.
-* The article *Fuels, regions and months* on the package site joins a fuel
-  scale with a `GeoScale` and a `Calendar` on one table.
+* The article *Fuels, regions and months* on the package site joins three
+  scales of different dimensions, among them a `GeoScale` and a `Calendar`,
+  on one table.

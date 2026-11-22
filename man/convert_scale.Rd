@@ -78,15 +78,15 @@ which leaves \code{NA} in its rows.
 s <- attach_attributes_scale(
   scale_example(),
   data.frame(frame = c("sector", "item"), member = c("P", "U5"),
-             attribute = "lhv", value = c(20, 30),
-             unit_of_measure = "GJ/t"),
+             attribute = "pack_size", value = c(20, 30),
+             unit_of_measure = "pieces/box"),
   source = "example", kind = "property"
 )
-mass <- data.frame(item = c("U1", "U2", "U5"), t = c(100, 200, 50))
-energy <- convert_scale(mass, s, attribute = "lhv",
-                        from_unit = "t", to_unit = "GJ")
-energy
-# back to tonnes: a property is invertible
-convert_scale(energy[c("item", "t")], s, attribute = "lhv",
-              from_unit = "GJ", to_unit = "t")
+boxes <- data.frame(item = c("U1", "U2", "U5"), n = c(100, 200, 50))
+pieces <- convert_scale(boxes, s, attribute = "pack_size",
+                        from_unit = "box", to_unit = "pieces")
+pieces
+# back to boxes: a property is invertible
+convert_scale(pieces[c("item", "n")], s, attribute = "pack_size",
+              from_unit = "pieces", to_unit = "box")
 }

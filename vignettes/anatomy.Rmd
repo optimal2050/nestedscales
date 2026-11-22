@@ -13,40 +13,49 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(nestedscales)
 ```
 
-This vignette takes one object apart. The example is a small fuel
-classification with every awkward feature: a code reused at two frames, a
-frame that cross-cuts another, a leaf with no code at one frame, and
-attributes stored at three different levels.
+This vignette takes one object apart. The example is a small classification
+of industries by business code, in the style of a statistical classification
+of activities: sections (`C`, Manufacturing) hold divisions (`C10`, Food
+products), which hold classes (`C101`). The codes, the names and every
+number are invented for illustration and reproduce no official
+classification. The example has every awkward feature: a code reused at two
+frames, a frame that cross-cuts another, a leaf with no code at one frame,
+and attributes stored at three different frames.
 
-```{r fuels}
+The cross-cutting frame is `size`, a grouping of the classes by the typical
+size of their firms, `small` or `large`. Public administration (`O84`) is
+not made of firms and has no size, and it is not subdivided, so its only
+class carries the code of its division.
+
+```{r industries}
 lt <- data.frame(
-  group   = c("Fossil", "Fossil", "Fossil", "Fossil", "Fossil",
-              "Bio", "Bio", "Bio", "Power"),
-  phase   = c("solid", "solid", "liquid", "liquid", "gas",
-              "solid", "liquid", "gas", NA),
-  carrier = c("Coal", "Coal", "Oil", "Oil", "Gas",
-              "Biomass", "Biomass", "Biomass", "Electricity"),
-  fuel    = c("Anthracite", "Lignite", "Diesel", "Gasoline", "NaturalGas",
-              "Wood", "Biodiesel", "Biogas", "Electricity")
+  section  = c("C", "C", "C", "C", "C", "D", "D", "D", "O"),
+  size     = c("small", "large", "small", "large", "large",
+               "large", "small", "small", NA),
+  division = c("C10", "C10", "C11", "C24", "C24",
+               "D35", "D35", "D35", "O84"),
+  class    = c("C101", "C102", "C110", "C241", "C242",
+               "D351", "D352", "D353", "O84")
 )
 at <- data.frame(
-  frame     = c("fuel", "fuel", "carrier", "group", "fuel", "carrier"),
-  member    = c("Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"),
-  attribute = c("lhv", "lhv", "lhv", "lhv", "ef_co2", "ef_co2"),
+  frame     = c("class", "class", "division", "section", "class", "division"),
+  member    = c("C101", "C102", "D35", "C", "C241", "D35"),
+  attribute = c("wage", "wage", "wage", "wage", "floor_area", "floor_area"),
   kind      = c(rep("property", 4), "factor", "factor"),
-  value     = c(28, 10, 43, 15, 95000, 55000),
-  unit_of_measure = c(rep("GJ/t", 4), "kg/TJ", "kg/TJ"),
+  value     = c(30, 28, 45, 32, 60, 20),
+  unit_of_measure = c(rep("thousand/employee", 4), "m2/employee",
+                      "m2/employee"),
   source    = "example"
 )
 al <- data.frame(
-  frame  = c("fuel", "carrier", "fuel", "carrier", "carrier"),
-  member = c("Anthracite", "Coal", "Electricity", "Electricity", "Electricity"),
-  alias  = c("hard coal", "coal", "elc", "elc", "power"),
+  frame  = c("class", "division", "class", "division", "division"),
+  member = c("C101", "C10", "O84", "O84", "O84"),
+  alias  = c("meat", "food", "public admin", "public admin", "government"),
   source = "example"
 )
 x <- scale_from_leaftable(
-  lt, frames = c("group", "phase", "carrier", "fuel"), leaf = "fuel",
-  attributes = at, aliases = al, name = "fuels"
+  lt, frames = c("section", "size", "division", "class"), leaf = "class",
+  attributes = at, aliases = al, name = "industries"
 )
 x
 ```
@@ -97,9 +106,9 @@ unchanged.
 scale_leaftable(x)
 ```
 
-Each row is one leaf. The leaf column (`fuel` here) is unique and complete.
-Frame columns may hold `NA`: `Electricity` has no physical state, so it does
-not participate at the `phase` frame, and `na_action=` decides what recasts
+Each row is one leaf. The leaf column (`class` here) is unique and
+complete. Frame columns may hold `NA`: `O84` has no firm size, so it does
+not participate at the `size` frame, and `na_action=` decides what recasts
 do about it. The leaf column may be the finest frame, as here: the frame
 column *is* the leaf column.
 
@@ -108,32 +117,33 @@ column *is* the leaf column.
 ```{r frames}
 scale_frames(x)
 scale_leaf_frame(x)                # the finest frame, or the leaf column
-scale_members(x, "carrier")        # the members at one frame
+scale_members(x, "division")       # the members at one frame
 scale_members(x)                   # the leaves
-scale_rank(x, "carrier")
+scale_rank(x, "division")
 ```
 
-Codes are **not unique across frames**: `Electricity` is a group and a
-carrier here. Every function that takes a code therefore takes its frame
-as well.
+Codes are **not unique across frames**: `O84` is a division and a class
+here. Every function that takes a code therefore takes its frame as well.
 
 Navigation is derived from the leaftable and routed through the leaves, so a
 frame that cross-cuts another reports overlap rather than invented
 containment:
 
 ```{r navigate}
-scale_nests(x, "carrier", "fuel")    # a tree
-scale_nests(x, "phase", "carrier")   # Biomass is solid, liquid and gas
-scale_parents(x, "carrier", "Biomass", target = "phase")
-scale_ancestors(x, "fuel", "Biogas")
-scale_descendants(x, "group", "Fossil")
+scale_nests(x, "division", "class")  # a tree
+scale_nests(x, "size", "division")   # C10 and D35 are small and large
+scale_parents(x, "division", "D35", target = "size")
+scale_ancestors(x, "class", "D352")
+scale_descendants(x, "section", "C")
 head(scale_ancestry(x), 4)
 ```
 
 ## The attribute table
 
-Physical attributes live in one long table, and a row may sit on **any**
-member, not only on a leaf:
+Attributes live in one long table, and a row may sit on **any** member, not
+only on a leaf. Here a wage per employee is given for two classes, one
+division and one section, and a floor area per employee for one class and
+one division:
 
 ```{r attributes}
 scale_attributes(x)
@@ -144,16 +154,16 @@ nearest coarser frame when a member has none of its own, and says where the
 value came from:
 
 ```{r resolve}
-scale_attributes(x, "lhv", frame = "fuel")[
+scale_attributes(x, "wage", frame = "class")[
   c("member", "value", "unit_of_measure", "origin_frame", "origin_member")]
 ```
 
 Attributes are **not weights**. A weight says how big a leaf is and drives
 aggregation; an attribute is a per-member conversion factor and is consumed
 only by `convert_scale()`. The constructor promotes numeric leaftable
-columns to weights, so a calorific value must be passed as `attributes=`,
-never as a leaftable column. Every attribute name carries a `kind`:
-`property` (an invertible ratio) or `factor` (one-way).
+columns to weights, so a wage must be passed as `attributes=`, never as a
+leaftable column. Every attribute name carries a `kind`: `property` (an
+invertible ratio) or `factor` (one-way).
 
 ```{r kinds}
 SCALE_ATTRIBUTE_KINDS
@@ -164,13 +174,16 @@ inheritance, sources and conversion.
 
 ## The alias table
 
+The members of this scale are codes; the alias table holds the names and
+spellings by which other tables refer to the same activities.
+
 ```{r aliases}
 scale_aliases(x)
-scale_match(x, c("hard coal", "elc", "Lignite"))
+scale_match(x, c("meat", "Public Admin", "C242"))
 ```
 
-One alias may point at several members (`elc` above); matching reports that
-as ambiguous unless `frame=` narrows it. Matching is exact and
+One alias may point at several members (`public admin` above); matching
+reports that as ambiguous unless `frame=` narrows it. Matching is exact and
 case-insensitive, with no fuzzy stage.
 
 ## The label table
@@ -178,26 +191,34 @@ case-insensitive, with no fuzzy stage.
 Labels are display names. A label belongs to a member and to a named
 *variant*, so one member may carry a full name, a short one and a
 translation, while another frame carries none at all and is shown by its
-codes. A row with `member = NA` names the frame itself.
+codes. A row with `member = NA` names the frame itself. The divisions get
+two variants here, a short name and a long one, and the short one is
+declared the default:
 
 ```{r labels}
 x <- attach_labels_scale(
   x,
   data.frame(
-    frame = "carrier",
-    member  = c("Coal", "Electricity", NA),
-    label = c("Coal and coal products", "Electric power", "Energy carrier")
+    frame   = "division",
+    member  = rep(c("C10", "C24", "O84", NA), 2),
+    variant = rep(c("short", "long"), each = 4),
+    label   = c("Food", "Metals", "Administration", "Division",
+                "Manufacture of food products",
+                "Manufacture of basic metals",
+                "Public administration", "Division of activity")
   ),
-  variant = "long"
+  default = "short"
 )
 scale_labels(x)
-scale_label(x, c("Coal", "Electricity"), frame = "carrier")
-scale_label(x, scale_members(x, "group"), frame = "group")   # no labels: codes
+scale_label(x, c("C10", "C11", "O84"), frame = "division")
+scale_label(x, c("C10", "C11", "O84"), frame = "division", variant = "long")
+scale_label(x, scale_members(x, "size"), frame = "size")   # no labels: codes
 ```
 
-Aliases and labels answer different questions. An alias is a spelling to be
-*recognised* (`scale_match()`); a label is a name to be *shown*
-(`scale_label()`, `join_scale(labels = )`).
+`C11` has no label in either variant and is shown by its code. Aliases and
+labels serve different purposes. An alias is a spelling to be *recognised*
+(`scale_match()`); a label is a name to be *shown* (`scale_label()`,
+`join_scale(labels = )`).
 
 ## Weights and meta
 
@@ -214,8 +235,8 @@ fields passed to the constructor are kept in `meta` as given.
 ## The data link
 
 A table of data is tied to a scale by its code columns. Unbound, the tie is
-the column name alone: a column called `carrier` is read as codes at the
-`carrier` frame. Two scales can share frame names and codes, so the name
+the column name alone: a column called `division` is read as codes at the
+`division` frame. Two scales can share frame names and codes, so the name
 does not say *which* scale the data is on. `bind_scale()` records it on the
 column itself, together with the scale's identity. The link is
 experimental: it is lost when the column is converted to a factor or a
@@ -223,7 +244,7 @@ plain character vector, and it may change.
 
 ```{r link}
 scale_id(x)
-d <- data.frame(fuel = scale_members(x), pj = seq_along(scale_members(x)))
+d <- data.frame(class = scale_members(x), jobs = seq_along(scale_members(x)))
 b <- bind_scale(d, x)
 scale_link(b)
 ```
@@ -239,10 +260,10 @@ it: the source frame is taken from the link, the result is bound to the
 target frame, and data bound to another scale is refused.
 
 ```{r link-verbs}
-register_scale_rule("pj", "sum")
-out <- recast_scale(b, x, target = "carrier")
+register_scale_rule("jobs", "sum")
+out <- recast_scale(b, x, target = "division")
 scale_link(out)
-clear_scale_rules("pj")
+clear_scale_rules("jobs")
 ```
 
 Unbound data behaves as before, and its results stay unbound. A lazy table
@@ -271,19 +292,20 @@ attribute and alias rows of every surviving member at every frame, and
 `prune_scale()` keeps the rows at the frames that survive the collapse.
 
 ```{r subset}
-fossil <- x["group", "Fossil"]
-scale_attributes(fossil)[c("frame", "member", "attribute", "value")]
+manufacturing <- x["section", "C"]
+scale_attributes(manufacturing)[c("frame", "member", "attribute", "value")]
 ```
 
 `prune_scale()` needs the frames above the new leaf frame to nest, so the
-cross-cutting `phase` has to go first:
+cross-cutting `size` has to go first:
 
 ```{r prune}
 tree <- scale_from_leaftable(
-  lt[c("group", "carrier", "fuel")], frames = c("group", "carrier", "fuel"),
-  leaf = "fuel", attributes = at, aliases = al, name = "tree"
+  lt[c("section", "division", "class")],
+  frames = c("section", "division", "class"),
+  leaf = "class", attributes = at, aliases = al, name = "tree"
 )
-scale_aliases(prune_scale(tree, "carrier"))
+scale_aliases(prune_scale(tree, "division"))
 ```
 
 ## Definition files
@@ -294,7 +316,7 @@ directory holding the header and the tables as Arrow IPC or CSV files. The
 Python binding reads and writes the same files.
 
 ```{r definition}
-path <- file.path(tempdir(), "fuels.json")
+path <- file.path(tempdir(), "industries.json")
 write_scale(x, path)
 cat(head(readLines(path), 12), sep = "\n")
 back <- read_scale(path)
@@ -323,19 +345,19 @@ unregistered column without `rule=` is an error:
 
 ```{r rules}
 SCALE_RULES
-register_scale_rule("tj", "sum")
-register_scale_rule("price", "weighted_mean", weight = "tj")
-get_scale_rule("price")
+register_scale_rule("jobs", "sum")
+register_scale_rule("wage", "weighted_mean", weight = "jobs")
+get_scale_rule("wage")
 list_scale_rules()
 clear_scale_rules()
 ```
 
-A rule may be scoped to one dimension with `scope=`, so a model's `tj`
-column aggregates the same way over fuels, regions and months without
-being registered three times -- or differently, when it should.
+A rule may be scoped to one dimension with `scope=`, so a `jobs` column
+aggregates the same way over industries, regions and months without being
+registered three times -- or differently, when it should.
 
 ## Where to next?
 
 - `vignette("nestedscales")` -- the tour of the main functions.
 - `vignette("attributes")` -- attributes, aliases and conversion on a
-  small fuel taxonomy.
+  small scale of cities.

@@ -190,8 +190,9 @@ NULL
 #' Scalars stay scalars, vectors become arrays, a NAMED atomic vector becomes
 #' an object and is listed in `vectors` (an object is otherwise a list, and
 #' nothing in JSON tells the two apart), a data.frame becomes `{"_table":
-#' {columns, types}}`, lists recurse. Anything else (a function, an sf CRS)
-#' is refused by name before any file is written.
+#' {columns, types}}`, a scale becomes `{"_scale": {name, id}}` (a reference;
+#' the object is not written), lists recurse. Anything else (a function, an
+#' sf CRS) is refused by name before any file is written.
 #' @noRd
 .meta_encode <- function(meta, nm = "") {
   vectors <- character()
@@ -201,6 +202,12 @@ NULL
     }
     if (is.data.frame(z)) {
       return(list(`_table` = .table_inline(z)))
+    }
+    # a scale held in `meta` is written as a reference, not as an object
+    if (S7::S7_inherits(z, NestedScale)) {
+      return(list(`_scale` = list(
+        name = .scale_name(z, require = FALSE), id = scale_id(z)
+      )))
     }
     if (is.factor(z)) z <- as.character(z)
     if (is.atomic(z)) {

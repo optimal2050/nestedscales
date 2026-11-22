@@ -11,8 +11,8 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-nestedscales provides a multi-level discrete representation of a data
-dimension and the operations that move data between its levels. This
+nestedscales provides a discrete representation of a data dimension at
+several resolutions and the operations that move data between them. This
 vignette introduces the representation and the main functions on a small
 industry classification. The dimension packages
 [timescales](https://github.com/optimal2050/timescales) and
@@ -28,7 +28,8 @@ library(nestedscales)
 ## Representation
 
 A **nested scale** is a table with one row per leaf, the finest member of the
-dimension, and one column per frame, a coarser level that groups the leaves.
+dimension, and one column per frame, a resolution at which the leaves are
+grouped.
 The frames are given coarsest first. Numeric columns that are not frames are
 weights.
 
@@ -100,7 +101,7 @@ recast_scale(x, ind,
 ```
 
 The same function converts in the other direction. A total at the section
-level is split over the classes in proportion to the weight:
+frame is split over the classes in proportion to the weight:
 
 ```{r recast-down}
 y <- data.frame(section = c("C", "D"), investment = c(100, 400))
@@ -113,6 +114,60 @@ preserved as groups, so a panel of several years or scenarios converts in
 one call. A rule may also be registered once for a named value column with
 `register_scale_rule()`, after which `rule =` can be omitted for that
 column.
+
+## The same on time
+
+Nothing above is specific to industries. Time is a dimension like any
+other: minutes group into hours and hours into days. The scale below is
+built from a table generated in code, two days of 24 hours of 60 minutes,
+with one row per minute. The codes of the hours and of the minutes include
+the day, so that every code names one member.
+
+```{r time-scale}
+grid <- expand.grid(m = 0:59, h = 0:23, d = 1:2)
+clock <- data.frame(
+  day    = sprintf("d%d", grid$d),
+  hour   = sprintf("d%d_h%02d", grid$d, grid$h),
+  minute = sprintf("d%d_h%02d_m%02d", grid$d, grid$h, grid$m)
+)
+time <- scale_from_leaftable(clock, frames = c("day", "hour", "minute"),
+                             name = "clock")
+time
+```
+
+A series recorded per minute is recast to hours and to days. A count, here
+the visitors entering a shop, is summed; a reading, here the temperature of
+the room, is averaged. Both series are invented.
+
+```{r time-recast}
+series <- data.frame(
+  minute   = clock$minute,
+  visitors = grid$h %/% 6 + 1,
+  temp     = 18 + grid$h / 4
+)
+head(series, 3)
+
+hourly <- recast_scale(series, time, source = "minute", target = "hour",
+                       rule = c(visitors = "sum", temp = "mean"))
+head(hourly, 3)
+
+recast_scale(series, time, source = "minute", target = "day",
+             rule = c(visitors = "sum", temp = "mean"))
+```
+
+The hourly table moves on in the same way, since `hour` is a frame like
+any other:
+
+```{r time-hours}
+recast_scale(hourly[c("hour", "visitors")], time,
+             source = "hour", target = "day", rule = "sum")
+```
+
+This example is only the bare mechanism: its minutes carry no dates, and
+every hour and every day has the same length.
+[timescales](https://github.com/optimal2050/timescales) builds on it for
+calendars with real dates, time zones, months of unequal length and typical
+or sampled periods.
 
 ## Labels
 
@@ -140,38 +195,47 @@ scale_frames(prune_scale(ind, "division"))
 
 ## Attributes and aliases
 
-A scale may carry values that belong to its members but are not weights: a
-calorific value per fuel, a density, an emission factor. They live in an
-attribute table keyed by `(frame, member)`, at whatever level they are
-published, and `scale_attributes()` resolves one value per member of a
-frame, walking to the nearest coarser level when a member has none of its
-own. `convert_scale()` applies the resolved value row by row. Alternative
-labels live in an alias table, and `scale_match()` resolves labels against
-member names and aliases exactly, reporting ambiguity rather than guessing.
-A small fuel scale shows all three; its two calorific values are
-illustrative:
+A scale may carry values that belong to its members but are not weights:
+the persons per household of a city, a price per item, a wage per employee.
+They live in an attribute table keyed by `(frame, member)`, at whatever
+frame they are published, and `scale_attributes()` resolves one value per
+member of a frame, walking to the nearest coarser frame when a member has
+none of its own. `convert_scale()` applies the resolved value row by row.
+Alternative names live in an alias table, and `scale_match()` resolves
+names against member names and aliases exactly, reporting ambiguity rather
+than guessing. A small scale of cities shows all three: seven cities in
+three regions in two countries, with a household size for region `N1` and
+for city `e`, and a longer name for city `a`. The values are invented.
 
 ```{r attributes}
-fuels <- scale_from_leaftable(
-  data.frame(carrier = c("Coal", "Coal", "Gas"),
-             fuel = c("Anthracite", "Lignite", "NaturalGas")),
-  frames = c("carrier", "fuel"), leaf = "fuel", name = "fuels",
-  attributes = data.frame(
-    frame = "fuel", member = c("Lignite", "NaturalGas"), attribute = "lhv",
-    kind = "property", value = c(10, 50), unit_of_measure = "GJ/t",
-    source = "example"
+places <- scale_from_leaftable(
+  data.frame(
+    country = c("North", "North", "North", "North", "South", "South", "South"),
+    region  = c("N1", "N1", "N2", "N2", "S1", "S1", "S1"),
+    city    = c("a", "b", "c", "d", "e", "f", "g")
   ),
-  aliases = data.frame(frame = "fuel", member = "NaturalGas", alias = "NG",
+  frames = c("country", "region", "city"), name = "places",
+  attributes = data.frame(
+    frame = c("region", "city"), member = c("N1", "e"),
+    attribute = "hh_size", kind = "property", value = c(2.5, 2),
+    unit_of_measure = "persons/household", source = "example"
+  ),
+  aliases = data.frame(frame = "city", member = "a", alias = "Alder",
                        source = "example")
 )
-scale_attributes(fuels, "lhv", frame = "fuel")[
-  c("member", "value", "unit_of_measure")]
+scale_attributes(places, "hh_size", frame = "city")[
+  c("member", "value", "unit_of_measure", "origin_frame")]
 
-fuel_use <- data.frame(fuel = c("Lignite", "NaturalGas"), t = c(1000, 1000))
-convert_scale(fuel_use, fuels, "lhv", from_unit = "t", to_unit = "GJ")
+people <- data.frame(city = c("a", "b", "e"), people = c(3, 2, 6))
+convert_scale(people, places, "hh_size",
+              from_unit = "persons", to_unit = "household")
 
-scale_match(fuels, c("NG", "lignite", "Peat"))
+scale_match(places, c("Alder", "B", "Zed"))
 ```
+
+The cities `a` and `b` take the value of their region. The people are
+counted in thousands, so the converted column holds thousands of
+households.
 
 `vignette("attributes")` has the full account.
 

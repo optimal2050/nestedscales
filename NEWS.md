@@ -38,6 +38,8 @@
   `leaf` and the table column `member`. Version 1 files and stores, and
   objects saved by earlier versions, are still read.
 * `backend_scan()` and `backend_distinct()` are no longer exported.
+* `write_scale()` writes a scale held in `meta` as a reference, its name and
+  `scale_id()`, and no longer stops on it.
 * Marked experimental, which means they may change or be removed in a later
   version: attributes with `convert_scale()`, products of scales
   (`scale_product()`, `recast_product()` and the `product_*()` functions),
