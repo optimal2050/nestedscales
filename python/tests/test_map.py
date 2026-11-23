@@ -23,7 +23,7 @@ def test_schema():
 
 def test_n_from_and_w_from():
     s = ns.scale_example()
-    m = ns.scale_map(s, "class", "unit", weight="size").to_pylist()
+    m = ns.scale_map(s, "class", "item", weight="size").to_pylist()
     g1 = [r for r in m if r["class"] == "G1"]
     assert {r["n_from"] for r in g1} == {2}
     assert all(r["n_overlap"] == 1 for r in m)
@@ -31,16 +31,16 @@ def test_n_from_and_w_from():
     assert sum(r["w"] for r in g1) == 300.0
 
 
-def test_uncovered_atoms_have_null_target():
-    m = ns.scale_map(ns.scale_example(), "unit", "sector").to_pylist()
-    assert [r["unit"] for r in m if r["sector"] is None] == ["OTH"]
+def test_uncovered_leaves_have_null_target():
+    m = ns.scale_map(ns.scale_example(), "item", "sector").to_pylist()
+    assert [r["item"] for r in m if r["sector"] is None] == ["OTH"]
 
 
 def test_equal_split_without_weights():
     s = ns.scale_from_leaftable(
-        pa.table({"grp": ["A", "A", "B"], "unit": ["u1", "u2", "u3"]}),
-        frames=["grp", "unit"], name="noweights")
-    for r in ns.scale_map(s, "grp", "unit").to_pylist():
+        pa.table({"grp": ["A", "A", "B"], "item": ["u1", "u2", "u3"]}),
+        frames=["grp", "item"], name="noweights")
+    for r in ns.scale_map(s, "grp", "item").to_pylist():
         assert r["w"] / r["w_from"] == r["n_overlap"] / r["n_from"]
 
 
@@ -58,19 +58,19 @@ def test_between_names_and_keys():
     a = ns.scale_example()
     with pytest.raises(NestedScalesError, match="same name"):
         ns.scale_map_between(a, a)
-    b = ns.scale_from_leaftable(pa.table({"grp": ["A", "B"], "unit": ["z1", "z2"]}),
-                                frames=["grp", "unit"], name="disjoint")
-    with pytest.raises(NestedScalesError, match="share no `unit` keys"):
+    b = ns.scale_from_leaftable(pa.table({"grp": ["A", "B"], "item": ["z1", "z2"]}),
+                                frames=["grp", "item"], name="disjoint")
+    with pytest.raises(NestedScalesError, match="share no `item` codes"):
         ns.scale_map_between(a, b)
 
 
-def test_atom_pairs_seam():
-    d = ns.scale_atom_pairs(ns.scale_example(), "class", "group")
+def test_leaf_pairs_seam():
+    d = ns.scale_leaf_pairs(ns.scale_example(), "class", "group")
     assert d.column_names == ["source", "target", "w"] and d.num_rows == 7
 
 
 def test_by_columns_are_carried():
-    d = ns.scale_atom_pairs(ns.scale_example(), "class", "group")
+    d = ns.scale_leaf_pairs(ns.scale_example(), "class", "group")
     d2 = pa.concat_tables([d.append_column("year", pa.array([2020] * 7)),
                            d.append_column("year", pa.array([2021] * 7))])
     m = _finish_map(d2, "class", "group", by=["year"])
@@ -78,17 +78,17 @@ def test_by_columns_are_carried():
     assert {r["n_from"] for r in m.to_pylist() if r["class"] == "G1"} == {2}
 
 
-def test_atom_pairs_override_for_subclass():
+def test_leaf_pairs_override_for_subclass():
     class Gen(ns.NestedScale):
         pass
 
-    @ns.scale_atom_pairs.register(Gen)
+    @ns.scale_leaf_pairs.register(Gen)
     def _(x, source, target, weight=None, **kw):
         return pa.table({"source": ["a", "a"], "target": ["b1", "b2"],
                          "w": [1.0, 3.0]})
 
     s = ns.scale_example2()
-    g = Gen(leaftable=s.leaftable, frames=s.frames, members=s.members, key=s.key,
+    g = Gen(leaftable=s.leaftable, frames=s.frames, members=s.members, leaf=s.leaf,
             meta=s.meta)
     m = ns.scale_map(g, "era", "period").to_pylist()
     assert [r["w"] / r["w_from"] for r in m] == [0.25, 0.75]

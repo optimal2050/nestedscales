@@ -12,24 +12,24 @@ from nestedscales import NestedScalesError, NestedScalesWarning
 def lt3():
     return pa.table({"section": ["A", "A", "A", "B"],
                      "group": ["A1", "A1", "A2", "B1"],
-                     "unit": ["A11", "A12", "A21", "B11"],
+                     "item": ["A11", "A12", "A21", "B11"],
                      "gva": [100.0, 200.0, 300.0, 400.0]})
 
 
 def test_constructor_defaults():
-    s = ns.scale_from_leaftable(lt3(), frames=["section", "group", "unit"])
-    assert ns.scale_key(s) == "unit"
+    s = ns.scale_from_leaftable(lt3(), frames=["section", "group", "item"])
+    assert ns.scale_leaf_column(s) == "item"
     assert ns.scale_weights(s) == ["gva"]
     assert s.meta["default_weight"] == "gva"
-    assert ns.scale_units(s, "group") == ["A1", "A2", "B1"]
-    assert repr(s) == "<NestedScale[section/group/unit] atoms=4>"
+    assert ns.scale_members(s, "group") == ["A1", "A2", "B1"]
+    assert repr(s) == "<NestedScale[section/group/item] leaves=4>"
 
 
 def test_polars_and_pandas_input():
     pl = pytest.importorskip("polars")
-    fr = ["section", "group", "unit"]
+    fr = ["section", "group", "item"]
     s = ns.scale_from_leaftable(pl.from_arrow(lt3()), frames=fr)
-    assert ns.scale_units(s) == ["A11", "A12", "A21", "B11"]
+    assert ns.scale_members(s) == ["A11", "A12", "A21", "B11"]
     pytest.importorskip("pandas")
     s2 = ns.scale_from_leaftable(lt3().to_pandas(), frames=fr)
     assert s2 == s
@@ -37,14 +37,14 @@ def test_polars_and_pandas_input():
 
 def test_blank_codes_become_null():
     t = lt3().set_column(1, "group", pa.array(["A1", "  ", "A2", ""]))
-    s = ns.scale_from_leaftable(t, frames=["section", "group", "unit"])
-    assert ns.scale_units(s, "group") == ["A1", "A2"]
+    s = ns.scale_from_leaftable(t, frames=["section", "group", "item"])
+    assert ns.scale_members(s, "group") == ["A1", "A2"]
     assert s.leaftable["group"].null_count == 2
 
 
 def test_inverted_frames_warn():
     with pytest.warns(NestedScalesWarning, match="CONTAINS the frame before it"):
-        ns.scale_from_leaftable(lt3(), frames=["group", "section"], key="unit")
+        ns.scale_from_leaftable(lt3(), frames=["group", "section"], leaf="item")
 
 
 def test_crosscutting_frames_do_not_warn():
@@ -61,16 +61,16 @@ def test_constructor_errors(frames, msg):
         ns.scale_from_leaftable(lt3(), frames=frames)
 
 
-def test_missing_key_values_error():
-    t = lt3().set_column(2, "unit", pa.array(["A11", None, "A21", "B11"]))
-    with pytest.raises(NestedScalesError, match="every atom needs an identifier"):
-        ns.scale_from_leaftable(t, frames=["section", "group"], key="unit")
+def test_missing_leaf_values_error():
+    t = lt3().set_column(2, "item", pa.array(["A11", None, "A21", "B11"]))
+    with pytest.raises(NestedScalesError, match="every leaf needs an identifier"):
+        ns.scale_from_leaftable(t, frames=["section", "group"], leaf="item")
 
 
 def make(**kw):
     s = ns.scale_example()
     args = dict(leaftable=s.leaftable, frames=s.frames, members=s.members,
-                key=s.key, meta=s.meta)
+                leaf=s.leaf, meta=s.meta)
     args.update(kw)
     return ns.NestedScale(**args)
 
@@ -85,17 +85,17 @@ def test_validator_collects_errors():
 
 
 @pytest.mark.parametrize("kw, msg", [
-    ({"key": ""}, "`key` must be a single non-empty string"),
+    ({"leaf": ""}, "`leaf` must be a single non-empty string"),
     ({"frames": ("sector", "sector")}, "`frames` must be unique"),
-    ({"frames": ("share", "unit")}, "reserved names: share"),
-    ({"frames": ("unit", "group")}, "reserved names: unit"),
+    ({"frames": ("share", "item")}, "reserved names: share"),
+    ({"frames": ("item", "group")}, "reserved names: item"),
     ({"members": {"sector": ["P"], "class": ["G1", "G2", "S1"],
                   "group": ["G1", "GB", "GC"],
-                  "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]}},
+                  "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]}},
      'members\\[\\["sector"\\]\\]` must contain exactly'),
     ({"meta": {"weights": ["size"], "residuals": {"nope": ["x"]}}},
      "names frame\\(s\\) that are not frames: nope"),
-    ({"meta": {"weights": ["size"], "residuals": {"unit": ["ZZ"]}}},
+    ({"meta": {"weights": ["size"], "residuals": {"item": ["ZZ"]}}},
      "names non-member\\(s\\): ZZ"),
     ({"meta": {"weights": ["size"], "coverage": {"size": 1.5}}},
      "values must lie in \\(0, 1\\]"),
@@ -128,20 +128,20 @@ def test_coverage_consistent_with_parent_totals():
 
 
 def test_residuals_accessor():
-    s = make(meta={"weights": ["size"], "residuals": {"unit": ["OTH"]}})
-    assert ns.scale_residuals(s) == {"unit": ["OTH"]}
-    assert ns.scale_residuals(s, "unit") == ["OTH"]
+    s = make(meta={"weights": ["size"], "residuals": {"item": ["OTH"]}})
+    assert ns.scale_residuals(s) == {"item": ["OTH"]}
+    assert ns.scale_residuals(s, "item") == ["OTH"]
     assert ns.scale_residuals(ns.scale_example()) == {}
-    assert ns.scale_residuals(ns.scale_example(), "unit") == []
+    assert ns.scale_residuals(ns.scale_example(), "item") == []
 
 
 def test_check_frame_messages():
     s = ns.scale_example()
     with pytest.raises(NestedScalesError, match='`frame` = "zz" is not a frame of this '
                                                 "NestedScale"):
-        ns.scale_units(s, "zz")
+        ns.scale_members(s, "zz")
     with pytest.raises(NestedScalesError, match="is the finest frame"):
-        ns.scale_children(s, "unit", "U1")
+        ns.scale_children(s, "item", "U1")
     with pytest.raises(NestedScalesError, match="code\\(s\\) not found"):
         ns.scale_children(s, "sector", ["Q", "P"])
 
@@ -150,11 +150,11 @@ def test_print_and_summary():
     s = ns.scale_example()
     txt = str(s)
     assert txt.splitlines()[0] == "NestedScale: example"
-    assert "      - unit (7)" in txt
-    assert "  - sector (2)  [1 unit unassigned]" in txt
+    assert "      - item (7)" in txt
+    assert "  - sector (2)  [1 member unassigned]" in txt
     assert "Weights: size, count (default: size)" in txt
     sm = ns.scale_summary(s)
-    assert sm.n_atoms == 7 and sm.weight_totals == {"size": 3100.0, "count": 300.0}
+    assert sm.n_leaves == 7 and sm.weight_totals == {"size": 3100.0, "count": 300.0}
     assert [r["nests"] for r in sm.nesting] == [True, False, True]
     assert "class > group: CROSS-CUTTING (1 offender(s))" in str(sm)
 
@@ -163,7 +163,7 @@ def test_value_semantics():
     a, b = ns.scale_example(), ns.scale_example()
     assert a == b and a is not b
     with pytest.raises(AttributeError):
-        a.key = "x"
+        a.leaf = "x"
     assert ns.scale_is(a) and not ns.scale_is(a.leaftable)
     assert ns.scale_class() is ns.NestedScale
 
@@ -181,14 +181,14 @@ def test_subclass_vocab_and_alias():
     @ns.scale_vocab.register(Calendar)
     def _(x):
         return {"object": "Calendar", "frame": "timeframe", "frames": "timeframes",
-                "unit": "timeslice", "units": "timeslices", "atoms": "timeslices"}
+                "member": "timeslice", "members": "timeslices", "leaves": "timeslices"}
 
     s = ns.scale_example2()
     c = Calendar(leaftable=s.leaftable, frames=s.frames, members=s.members,
-                 key=s.key, meta=s.meta)
+                 leaf=s.leaf, meta=s.meta)
     assert c.timeframes == ("era", "period")
     with pytest.raises(NestedScalesError, match="is not a timeframe of this Calendar"):
-        ns.scale_units(c, "zz")
+        ns.scale_members(c, "zz")
     assert str(c).startswith("Calendar: example2\n")
 
 

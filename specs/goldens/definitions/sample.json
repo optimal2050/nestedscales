@@ -1,0 +1,100 @@
+{
+  "schema_version": 2,
+  "nestedscales": "0.3.0",
+  "class": "nestedscales::NestedScale",
+  "name": "example[sector:P+S]",
+  "leaf": "item",
+  "frames": ["sector", "class", "group", "item"],
+  "members": {
+    "sector": ["P", "S"],
+    "class": ["G1", "G2", "S1"],
+    "group": ["G1", "GB", "GC"],
+    "item": ["U1", "U2", "U3", "U4", "U5", "U6"]
+  },
+  "meta": {
+    "name": "example[sector:P+S]",
+    "desc": "",
+    "weights": ["size", "count"],
+    "default_weight": "size",
+    "residuals": {
+      "item": "U6"
+    },
+    "parent_totals": {
+      "size": 3100,
+      "count": 300
+    },
+    "coverage": {
+      "size": 0.67741935483871,
+      "count": 1
+    },
+    "parent_name": "example"
+  },
+  "tables": {
+    "leaftable": {
+      "inline": {
+        "columns": {
+          "sector": ["P", "P", "P", "P", "S", "S"],
+          "class": ["G1", "G1", "G2", "G2", "S1", "S1"],
+          "group": ["G1", "G1", "GB", "GB", "GB", "GC"],
+          "item": ["U1", "U2", "U3", "U4", "U5", "U6"],
+          "size": [100, 200, 300, 400, 500, 600],
+          "count": [10, 90, 30, 70, 50, 50]
+        },
+        "types": {
+          "sector": "string",
+          "class": "string",
+          "group": "string",
+          "item": "string",
+          "size": "double",
+          "count": "double"
+        }
+      }
+    },
+    "attributes": {
+      "inline": {
+        "columns": {
+          "frame": [],
+          "member": [],
+          "attribute": [],
+          "kind": [],
+          "value": [],
+          "lower": [],
+          "upper": [],
+          "unit_of_measure": [],
+          "source": [],
+          "note": []
+        },
+        "types": {
+          "frame": "string",
+          "member": "string",
+          "attribute": "string",
+          "kind": "string",
+          "value": "double",
+          "lower": "double",
+          "upper": "double",
+          "unit_of_measure": "string",
+          "source": "string",
+          "note": "string"
+        }
+      }
+    },
+    "aliases": {
+      "inline": {
+        "columns": {
+          "frame": [],
+          "member": [],
+          "alias": [],
+          "source": []
+        },
+        "types": {
+          "frame": "string",
+          "member": "string",
+          "alias": "string",
+          "source": "string"
+        }
+      }
+    }
+  },
+  "payload": {},
+  "meta_vectors": ["parent_totals", "coverage"]
+}

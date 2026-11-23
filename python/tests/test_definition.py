@@ -25,7 +25,7 @@ def fuels():
                  "Wood", "Biodiesel", "Biogas", "Electricity"]})
     at = pa.table({
         "frame": ["fuel", "fuel", "carrier", "group", "fuel", "carrier"],
-        "unit": ["Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"],
+        "member": ["Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"],
         "attribute": ["lhv", "lhv", "lhv", "lhv", "ef_co2", "ef_co2"],
         "kind": ["property"] * 4 + ["factor"] * 2,
         "value": [26.7, 11.9, 42.5, 15.0, 98300.0, 56100.0],
@@ -35,17 +35,18 @@ def fuels():
         "source": ["example"] * 6})
     al = pa.table({
         "frame": ["fuel", "carrier", "fuel", "carrier", "carrier"],
-        "unit": ["Anthracite", "Coal", "Electricity", "Electricity", "Electricity"],
+        "member": ["Anthracite", "Coal", "Electricity", "Electricity",
+                   "Electricity"],
         "alias": ["hard coal", "coal", "elc", "elc", "power"],
         "source": ["example"] * 5})
     return ns.scale_from_leaftable(lt, frames=["group", "phase", "carrier", "fuel"],
-                                   key="fuel", name="fuels", attributes=at,
+                                   leaf="fuel", name="fuels", attributes=at,
                                    aliases=al, tokens={"group": "g", "carrier": "c"},
                                    flag=True)
 
 
 def same(a, b, meta=True):
-    assert a.frames == b.frames and a.key == b.key and a.members == b.members
+    assert a.frames == b.frames and a.leaf == b.leaf and a.members == b.members
     assert rows(a.leaftable) == rows(b.leaftable)
     assert rows(a.attributes) == rows(b.attributes)
     assert rows(a.aliases) == rows(b.aliases)
@@ -60,7 +61,7 @@ def test_single_file_round_trip(tmp_path):
     f = tmp_path / "fuels.json"
     ns.write_scale(s, f)
     hdr = json.loads(f.read_text(encoding="utf-8"))
-    assert hdr["schema_version"] == 1
+    assert hdr["schema_version"] == 2 and hdr["leaf"] == "fuel"
     assert hdr["class"] == "nestedscales::NestedScale"
     assert hdr["tables"]["attributes"]["inline"]["types"]["value"] == "double"
     assert hdr["tables"]["leaftable"]["inline"]["columns"]["phase"][8] is None
@@ -99,7 +100,7 @@ def test_yaml_in_and_out(tmp_path):
 def test_meta_refused_by_name(tmp_path):
     s = ns.scale_example()
     bad = ns.NestedScale(leaftable=s.leaftable, frames=s.frames, members=s.members,
-                         key=s.key, meta={**s.meta, "crs": object()})
+                         leaf=s.leaf, meta={**s.meta, "crs": object()})
     with pytest.raises(NestedScalesError, match="cannot be written: crs"):
         ns.write_scale(bad, tmp_path / "bad.json")
     assert not (tmp_path / "bad.json").exists()

@@ -39,8 +39,9 @@ def run_steps(s, steps):
 
 def describe(s):
     return {
-        "frames": list(s.frames), "key": s.key,
+        "frames": list(s.frames), "leaf": s.leaf,
         "members": {k: list(v) for k, v in s.members.items()},
+        "default_label": s.meta.get("default_label"),
     }
 
 
@@ -80,10 +81,12 @@ def test_attributes_golden(i):
         got = run()
     if c["kind"] == "scale":
         want = dict(c["value"])
-        at, al = want.pop("attributes"), want.pop("aliases")
+        at, al, lb = (want.pop(k) for k in ("attributes", "aliases", "labels"))
+        want.setdefault("default_label", None)
         assert norm(describe(got)) == norm(want)
         same_rows(ns.scale_attributes(got), at)
         same_rows(ns.scale_aliases(got), al)
+        same_rows(ns.scale_labels(got), lb)
         return
     assert [str(w.message) for w in rec] == [r_message(w) for w in c["warnings"]]
     if c["fn"] in ("scale_match", "convert_scale"):

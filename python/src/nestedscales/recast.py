@@ -1,7 +1,7 @@
 """recast_scale() -- the central conversion verb (port of R/recast.R).
 
 Aggregation and disaggregation are one operation. Every conversion routes
-through the atom layer; the route is collapsed into a small crosswalk by
+through the leaf layer; the route is collapsed into a small crosswalk by
 `scale_map()`, so the converter is one join plus one grouped aggregation.
 
 The split factor is fixed for every dimension:
@@ -38,11 +38,11 @@ from .map import _map_weight, scale_map
 from .rules import _SHARE_RULES, _rules_for
 from .scale_class import (
     NestedScale,
-    _atom_level,
     _check_frame,
     _check_scale,
+    _leaf_frame,
     _strings,
-    scale_key,
+    scale_leaf_column,
     scale_rank,
     scale_residuals,
     scale_vocab,
@@ -59,7 +59,7 @@ _COUNT_ALL = pc.CountOptions(mode="all")
 _COUNT_VALID = pc.CountOptions(mode="only_valid")
 _NULL = pa.scalar(None, pa.float64())
 
-#: What to do with atoms that have no code at the source or target frame.
+#: What to do with leaves that have no code at the source or target frame.
 NaAction = Literal["drop", "error", "keep"]
 #: Whether to run the checks that scan the data.
 Diagnostics = Literal["auto", "on", "off"]
@@ -208,7 +208,7 @@ def _rule_hint(x: NestedScale) -> str:
 
 
 def _check_copy_result(res: pa.Table, copy_cols: Sequence[str],
-                       unit: str = "unit") -> None:
+                       member: str = "member") -> None:
     """Constancy guard for `copy` columns, over the per-group max and min."""
     for v in copy_cols:
         rng = pc.subtract(res["__ms_mx_" + v], res["__ms_mn_" + v])
@@ -216,7 +216,7 @@ def _check_copy_result(res: pa.Table, copy_cols: Sequence[str],
         bad = pc.and_(ok, pc.greater(rng, 1e-9))
         if pc.any(pc.fill_null(bad, False)).as_py():
             _stop('rule "copy" for `%s`: values are not constant within a target %s',
-                  v, unit)
+                  v, member)
 
 
 def _recast_complete(res: pa.Table, idc: pa.Table, out_keys: Sequence[str | None],
@@ -284,7 +284,7 @@ def _rule_result(rule: str, g: dict) -> pa.ChunkedArray:
 def _pipeline(t: pa.Table, jmap: pa.Table, key: str, values: Sequence[str],
               rules: Mapping[str, dict], id_cols: Sequence[str],
               map_by: Sequence[str] = (), missing_sources: str = "na",
-              sfx: Mapping[str, str] | None = None, unit: str = "unit",
+              sfx: Mapping[str, str] | None = None, member: str = "member",
               check_copy: bool = True) -> pa.Table:
     """Join the data to the crosswalk and aggregate; result keyed `__ms_to`."""
     id_cols = list(id_cols)
@@ -357,7 +357,7 @@ def _pipeline(t: pa.Table, jmap: pa.Table, key: str, values: Sequence[str],
         res = res.drop_columns(["__ms_nsrc", "__ms_nexp"])
 
     if check_copy and copy_cols:
-        _check_copy_result(res, copy_cols, unit)
+        _check_copy_result(res, copy_cols, member)
     res = res.drop_columns([c for c in res.column_names
                             if c.startswith(("__ms_mx_", "__ms_mn_"))])
     return res.select([*grp, *values])
@@ -437,10 +437,10 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
                  batch_by: str | None = None, **kwargs: Any) -> Any:
     """Recast values from one resolution to another.
 
-    The central conversion verb. Takes a table keyed by unit code at frame
+    The central conversion verb. Takes a table keyed by member code at frame
     `source` and returns one keyed at `target`, aggregating (fine to coarse)
     or disaggregating (coarse to fine) with one rule per value column. Frames
-    that cross-cut work too: the route always goes through the atoms. A
+    that cross-cut work too: the route always goes through the leaves. A
     crosswalk registered with `register_scale_map()` short-circuits it.
 
     Columns that are neither the key nor a value column are identifiers (a
@@ -458,8 +458,8 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
         Frame of the codes. None infers it: `key` when that is a frame, else
         the single frame name among the data's columns.
     target
-        Target frame of `x`, or another named scale (its atom layer is the
-        target, matched on shared atom keys).
+        Target frame of `x`, or another named scale (its leaf layer is the
+        target, matched on shared leaf codes).
     key
         The code column of `data`. Defaults to `source` when that column
         exists, else the scale's key.
@@ -474,16 +474,16 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
     weight
         Weight column for `sum` splits and `weighted_mean`; one name or a dict
         per column. None uses the registered weight, else the scale's default;
-        with no declared weights every atom weighs 1.
+        with no declared weights every leaf weighs 1.
     na_action
-        Atoms with no code at `source` or `target`: "drop" (with a warning),
+        Leaves with no code at `source` or `target`: "drop" (with a warning),
         "error", or "keep" (an explicit null row, so totals conserve).
     parent
         Rule "share" only: the frame the shares are taken within. Default:
         `target` when it differs from `source`, else the frame above.
     collect
         Lazy inputs: True materialises and completes the result; otherwise
-        only the observed target units are returned.
+        only the observed target members are returned.
     diagnostics
         The checks that scan the data (unknown codes, dropped shares, missing
         sources): "auto" runs them on eager inputs only; "on"/"off" force.
@@ -519,7 +519,7 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
         source = _infer_from(x, schema, key)
     _check_frame(x, source, "source")
     if key is None:
-        key = source if source in schema.names else scale_key(x)
+        key = source if source in schema.names else scale_leaf_column(x)
     if key not in schema.names:
         _stop("the data has no column named `%s`; pass `key=`", key)
 
@@ -530,9 +530,9 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
         if any(r in _SHARE_RULES for r in rule_vals):
             _stop('rule "share" needs a parent frame of the same scale; it cannot '
                   "recast across objects")
-        g = recast_to_atoms(data, x, source=source, key=key, values=values,
+        g = recast_to_leaves(data, x, source=source, key=key, values=values,
                             rule=rule, weight=weight, collect=collect)
-        return recast_from_atoms(g, target, target=_atom_level(target), values=values,
+        return recast_from_leaves(g, target, target=_leaf_frame(target), values=values,
                                  rule=rule, na_action=na_action, collect=collect)
     _check_frame(x, target, "target")
 
@@ -600,7 +600,7 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
                     for a, b in zip(_strings(lt, source), _strings(lt, target),
                                     strict=True))
         if n_bad > 0:
-            _stop('%d atom(s) have no code at %s `%s` or `%s`; use na_action = '
+            _stop('%d leaf row(s) have no code at %s `%s` or `%s`; use na_action = '
                   '"drop" or "keep"', n_bad, v["frame"], source, target)
 
     wt_of = {c: (r["weight"] or "") for c, r in rules.items()}
@@ -608,7 +608,7 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
     if (not scale_weights(x) and weight is None and need_split
             and scale_rank(x, target) > scale_rank(x, source)):
         _warn("no weight column declared; splitting `%s` equally across the "
-              "atoms of each `%s`. Declare a weight for a size-proportional "
+              "leaves of each `%s`. Declare a weight for a size-proportional "
               "split.", target, source)
 
     maps = {wt: scale_map(x, source, target, weight=wt or None, **kwargs)
@@ -626,8 +626,8 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
             affected = [k for k in dict.fromkeys(_strings(unc, source))
                         if k in src_set]
             if affected:
-                _warn('%d atom(s) have no code at %s `%s`; the share of %d source '
-                      "unit(s) falling in them is dropped (%s). Use na_action = "
+                _warn('%d leaf row(s) have no code at %s `%s`; the share of %d source '
+                      "member(s) falling in them is dropped (%s). Use na_action = "
                       '"keep" to conserve totals.',
                       pc.sum(unc["n_overlap"]).as_py(), v["frame"], target,
                       len(affected), _preview(affected))
@@ -640,7 +640,7 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
     jmap, sfx = _widen_maps(maps, source, target, key, wt_of, res_targets)
     lazy_out = bk.lazy and not collect
     res = _pipeline(t, jmap, key, values, rules, id_cols, map_by, missing_sources,
-                    sfx, unit=v["unit"], check_copy=not lazy_out)
+                    sfx, member=v["member"], check_copy=not lazy_out)
     res = _rename(res, {"__ms_to": target})
 
     if lazy_out:
@@ -659,7 +659,7 @@ def recast_scale(data: Any, x: NestedScale, source: str | None = None,
             present = set(src_keys)
             all_missing = shown = [k for k in retained_from if k not in present]
         if all_missing:
-            _warn("%d source unit(s) present in the scale but missing from the "
+            _warn("%d source member(s) present in the scale but missing from the "
                   "data (e.g. %s); produced NAs", len(all_missing),
                   _preview_total(shown, len(all_missing)))
 
@@ -767,7 +767,7 @@ def _share_parent(x: NestedScale, source: str, target: str, parent: str | None) 
 def _recast_share(t: pa.Table, bk: Backend, x: NestedScale, source: str, target: str,
                   key: str, values: Sequence[str], id_cols: Sequence[str],
                   parent: str | None, na_action: str, collect: bool | None) -> Any:
-    """Each source unit's value over its parent-group total, keyed at `source`."""
+    """Each source member's value over its parent-group total, keyed at `source`."""
     parent = _share_parent(x, source, target, parent)
     m = scale_map(x, source, parent)
     mem = distinct_rows(m, [source, parent])
@@ -778,7 +778,7 @@ def _recast_share(t: pa.Table, bk: Backend, x: NestedScale, source: str, target:
             n_par[a] = n_par.get(a, 0) + 1
     split_codes = sorted(k for k, n in n_par.items() if n > 1)
     if split_codes:
-        _stop('rule "share": %d unit(s) of `%s` straddle more than one `%s` (%s); '
+        _stop('rule "share": %d member(s) of `%s` straddle more than one `%s` (%s); '
               "`source` must nest within the parent", len(split_codes), source,
               parent, _preview(split_codes))
 
@@ -786,10 +786,10 @@ def _recast_share(t: pa.Table, bk: Backend, x: NestedScale, source: str, target:
     n_orphan = pc.sum(pc.cast(orphan, pa.int64())).as_py() or 0
     if n_orphan:
         if na_action == "error":
-            _stop('%d unit(s) of `%s` have no code at parent `%s`; use na_action = '
+            _stop('%d member(s) of `%s` have no code at parent `%s`; use na_action = '
                   '"drop" or "keep"', n_orphan, source, parent)
         if na_action == "drop":
-            _warn('%d unit(s) of `%s` have no code at parent `%s` and get NA '
+            _warn('%d member(s) of `%s` have no code at parent `%s` and get NA '
                   'shares (%s). Use na_action = "keep" to treat them as one group.',
                   n_orphan, source, parent,
                   _preview(_strings(mem.filter(orphan), source)))
@@ -829,7 +829,7 @@ def recast_crosswalk(data: Any, map: Any, source: str, target: str,
                      rule: str | Mapping[str, str] | None = None,
                      ids: Sequence[str] | None = None, by: Sequence[str] = (),
                      targets: Sequence[str | None] | None = None,
-                     missing_sources: MissingSources = "na", unit: str = "unit",
+                     missing_sources: MissingSources = "na", member: str = "member",
                      collect: bool | None = None) -> Any:
     """Recast values through a given crosswalk.
 
@@ -889,7 +889,7 @@ def recast_crosswalk(data: Any, map: Any, source: str, target: str,
     lazy_out = bk.lazy and not collect
     t = _as_string_key(scan(data, bk, [*ids, key, *values]), key)
     res = _pipeline(t, jmap, key, values, rules, ids, map_by=by,
-                    missing_sources=missing_sources, unit=unit,
+                    missing_sources=missing_sources, member=member,
                     check_copy=not lazy_out)
     res = _rename(res, {"__ms_to": target})
     if lazy_out:
@@ -906,15 +906,15 @@ def recast_crosswalk(data: Any, map: Any, source: str, target: str,
 # the route halves
 # -----------------------------------------------------------------------------
 
-def recast_to_atoms(data: Any, x: NestedScale, source: str | None = None,
+def recast_to_leaves(data: Any, x: NestedScale, source: str | None = None,
                     key: str | None = None,
                     values: str | Sequence[str] | None = None,
                     rule: str | Mapping[str, str] | None = None,
                     weight: str | Mapping[str, str] | None = None,
                     attach_weight: bool = True, collect: bool | None = None) -> Any:
-    """Project unit-keyed data DOWN to the atom layer (one row per atom).
+    """Project member-keyed data DOWN to the leaf layer (one row per leaf).
 
-    Extensive columns (rule `sum`) are split across a unit's atoms by weight
+    Extensive columns (rule `sum`) are split across a member's leaves by weight
     so totals conserve; intensive columns are repeated. A `weight` column is
     attached so the return trip's `weighted_mean` reproduces the weighting.
     """
@@ -926,7 +926,7 @@ def recast_to_atoms(data: Any, x: NestedScale, source: str | None = None,
         source = _infer_from(x, schema, key)
     _check_frame(x, source, "source")
     if key is None:
-        key = source if source in schema.names else scale_key(x)
+        key = source if source in schema.names else scale_leaf_column(x)
     if key not in schema.names:
         _stop("the data has no column named `%s`; pass `key=`", key)
 
@@ -936,17 +936,17 @@ def recast_to_atoms(data: Any, x: NestedScale, source: str | None = None,
                if c != key and c not in values and c not in frames_all]
     rules = _rules_for(values, rule, weight, scope=_scale_scope(x),
                        hint=_rule_hint(x))
-    _no_share(rules, "recast_to_atoms")
+    _no_share(rules, "recast_to_leaves")
 
-    akey = scale_key(x)
+    akey = scale_leaf_column(x)
     lt = x.leaftable
     wcol = _map_weight(x, weight if isinstance(weight, str) or weight is None
                        else None)
     frm = _strings(lt, source)
-    atom = _strings(lt, akey)
+    leaf = _strings(lt, akey)
     w = ([1.0] * lt.num_rows if wcol is None else
          [0.0 if z is None else float(z) for z in lt[wcol].to_pylist()])
-    rows = [(a, b, c) for a, b, c in zip(frm, atom, w, strict=True) if a is not None]
+    rows = [(a, b, c) for a, b, c in zip(frm, leaf, w, strict=True) if a is not None]
     w_from: dict = {}
     n: dict = {}
     for a, _, c in rows:
@@ -973,7 +973,7 @@ def recast_to_atoms(data: Any, x: NestedScale, source: str | None = None,
 
 def _group_parts(rule: str, val: pa.ChunkedArray, ww: pa.ChunkedArray,
                  na_rm: bool) -> tuple[dict, list]:
-    """Columns and aggregates for one value column of recast_from_atoms()."""
+    """Columns and aggregates for one value column of recast_from_leaves()."""
     if na_rm:
         # R's na.rm drops NaN too
         val = pc.if_else(pc.is_nan(val), _NULL, val)
@@ -1017,18 +1017,18 @@ def _group_result(rule: str, g: dict, na_rm: bool) -> pa.ChunkedArray:
     return r
 
 
-def recast_from_atoms(data: Any, x: NestedScale, target: str, key: str | None = None,
+def recast_from_leaves(data: Any, x: NestedScale, target: str, key: str | None = None,
                       values: str | Sequence[str] | None = None,
                       rule: str | Mapping[str, str] | None = None,
                       weight: str | None = None, na_rm: bool = False,
                       na_action: NaAction = "drop",
                       collect: bool | None = None) -> Any:
-    """Aggregate atom-keyed data UP into the units of frame `target`.
+    """Aggregate leaf-keyed data UP into the members of frame `target`.
 
     `weight` names a column of the data to weight by (so it may vary by
     identifier); None uses a `weight` column if present, else the scale's
     declared weight. With `na_rm=True` a null member says nothing rather than
-    making its group null. Unlike `recast_scale()`, a missing atom simply
+    making its group null. Unlike `recast_scale()`, a missing leaf simply
     does not contribute (no partial-source poisoning).
     """
     na_action = _match_choice(na_action, ("drop", "error", "keep"), "na_action")
@@ -1038,7 +1038,7 @@ def recast_from_atoms(data: Any, x: NestedScale, target: str, key: str | None = 
     schema = schema_of(data, bk)
     _check_ms_cols(schema)
 
-    akey = scale_key(x)
+    akey = scale_leaf_column(x)
     if key is None:
         key = akey
     if key not in schema.names:
@@ -1055,7 +1055,7 @@ def recast_from_atoms(data: Any, x: NestedScale, target: str, key: str | None = 
                if c != key and c not in values and c not in drop]
     rules = _rules_for(values, rule, None, scope=_scale_scope(x),
                        hint=_rule_hint(x))
-    _no_share(rules, "recast_from_atoms")
+    _no_share(rules, "recast_from_leaves")
 
     lt = x.leaftable
     ks, ts = _strings(lt, akey), _strings(lt, target)
@@ -1064,10 +1064,10 @@ def recast_from_atoms(data: Any, x: NestedScale, target: str, key: str | None = 
     pairs = list(zip(ks, ts, strict=True))
     if uncovered_any:
         if na_action == "error":
-            _stop('%d atom(s) have no code at `%s`; use na_action = "drop" or '
+            _stop('%d leaf row(s) have no code at `%s`; use na_action = "drop" or '
                   '"keep"', n_unc, target)
         if na_action == "drop":
-            _warn("%d atom(s) have no code at `%s` and were dropped", n_unc, target)
+            _warn("%d leaf row(s) have no code at `%s` and were dropped", n_unc, target)
             pairs = [p for p in pairs if p[1] is not None]
     jmem = pa.table({key: pa.array([p[0] for p in pairs], pa.string()),
                      "__ms_to": pa.array([p[1] for p in pairs], pa.string())})
@@ -1107,7 +1107,7 @@ def recast_from_atoms(data: Any, x: NestedScale, target: str, key: str | None = 
             res = res.append_column("__ms_mn_" + v, gv["v_min"])
     lazy_out = bk.lazy and not collect
     if copy_cols and not lazy_out:
-        _check_copy_result(res, copy_cols, scale_vocab(x)["unit"])
+        _check_copy_result(res, copy_cols, scale_vocab(x)["member"])
     res = _rename(res.select([*grp, *values]), {"__ms_to": target})
     if lazy_out:
         return _restore(res.select([target, *id_cols, *values]), bk, collect)

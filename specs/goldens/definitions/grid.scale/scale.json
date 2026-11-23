@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
-  "nestedscales": "0.1.1.9000",
+  "schema_version": 2,
+  "nestedscales": "0.3.0",
   "class": "nestedscales::NestedScale",
   "name": "grid",
-  "key": "unit",
+  "leaf": "item",
   "frames": ["m", "h"],
   "members": {
     "m": ["m1", "m2"],
@@ -28,7 +28,7 @@
       "inline": {
         "columns": {
           "frame": [],
-          "unit": [],
+          "member": [],
           "attribute": [],
           "kind": [],
           "value": [],
@@ -40,7 +40,7 @@
         },
         "types": {
           "frame": "string",
-          "unit": "string",
+          "member": "string",
           "attribute": "string",
           "kind": "string",
           "value": "double",
@@ -56,13 +56,13 @@
       "inline": {
         "columns": {
           "frame": [],
-          "unit": [],
+          "member": [],
           "alias": [],
           "source": []
         },
         "types": {
           "frame": "string",
-          "unit": "string",
+          "member": "string",
           "alias": "string",
           "source": "string"
         }

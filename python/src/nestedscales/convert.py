@@ -81,7 +81,7 @@ def convert_scale(data: Any, x: NestedScale, attribute: str, from_unit: str,
     res = scale_attributes(x, attribute, frame=frame, source=source, inherit=True)
     uom = _unique(u for u in res["unit_of_measure"].to_pylist() if u is not None)
     if not uom:
-        _stop("no `%s` value resolves for any %s at %s `%s`", attribute, v["unit"],
+        _stop("no `%s` value resolves for any %s at %s `%s`", attribute, v["member"],
               v["frame"], frame)
     if len(uom) > 1:
         _stop("`%s` is stored in several units of measure (%s); pass `source=`",
@@ -110,13 +110,13 @@ def convert_scale(data: Any, x: NestedScale, attribute: str, from_unit: str,
     t = backend_scan(data, bk)
     kcol = pc.cast(t[key], pa.string()).to_pylist()
     codes = _unique(c for c in kcol if c is not None)
-    units = res["unit"].to_pylist()
-    unknown = [c for c in codes if c not in set(units)]
+    members = res["member"].to_pylist()
+    unknown = [c for c in codes if c not in set(members)]
     if unknown:
-        _stop("code(s) in `data$%s` that are not %s of %s `%s`: %s", key, v["units"],
+        _stop("code(s) in `data$%s` that are not %s of %s `%s`: %s", key, v["members"],
               v["frame"], frame, _preview(unknown))
-    fac = dict(zip(units, res["value"].to_pylist(), strict=True))
-    org = dict(zip(units, res["origin_frame"].to_pylist(), strict=True))
+    fac = dict(zip(members, res["value"].to_pylist(), strict=True))
+    org = dict(zip(members, res["origin_frame"].to_pylist(), strict=True))
     unresolved = [c for c in codes if fac.get(c) is None]
     if unresolved and na_action == "error":
         _stop("no `%s` value resolves for %s at %s `%s`; attach one with "

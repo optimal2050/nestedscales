@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "nestedscales": "0.1.1.9000",
+  "class": "nestedscales::NestedScale",
+  "name": "grid",
+  "key": "unit",
+  "frames": ["m", "h"],
+  "members": {
+    "m": ["m1", "m2"],
+    "h": ["h1", "h2", "h3"]
+  },
+  "meta": {
+    "name": "grid",
+    "desc": "",
+    "weights": "hours",
+    "default_weight": "hours",
+    "tokens": {
+      "m": "month",
+      "h": "hour"
+    }
+  },
+  "tables": {
+    "leaftable": {
+      "file": "leaftable.arrow",
+      "format": "arrow"
+    },
+    "attributes": {
+      "inline": {
+        "columns": {
+          "frame": [],
+          "unit": [],
+          "attribute": [],
+          "kind": [],
+          "value": [],
+          "lower": [],
+          "upper": [],
+          "unit_of_measure": [],
+          "source": [],
+          "note": []
+        },
+        "types": {
+          "frame": "string",
+          "unit": "string",
+          "attribute": "string",
+          "kind": "string",
+          "value": "double",
+          "lower": "double",
+          "upper": "double",
+          "unit_of_measure": "string",
+          "source": "string",
+          "note": "string"
+        }
+      }
+    },
+    "aliases": {
+      "inline": {
+        "columns": {
+          "frame": [],
+          "unit": [],
+          "alias": [],
+          "source": []
+        },
+        "types": {
+          "frame": "string",
+          "unit": "string",
+          "alias": "string",
+          "source": "string"
+        }
+      }
+    }
+  },
+  "payload": {},
+  "meta_vectors": ["tokens"]
+}

@@ -2,7 +2,7 @@
 
 The long table is canonical; the array is a view, the shape optimisation
 models think in. The size is checked before anything is allocated. Axis
-labels are the scale's units (`scale_units()`), in that order.
+labels are the scale's members (`scale_members()`), in that order.
 """
 from __future__ import annotations
 
@@ -15,27 +15,27 @@ import pyarrow.compute as pc
 
 from ._backend import backend_of, scan, schema_of
 from ._utils import _preview, _stop
-from .scale_class import NestedScale, _check_scale, scale_key, scale_units
+from .scale_class import NestedScale, _check_scale, scale_leaf_column, scale_members
 
 
 def _axis(x: NestedScale, frames: Sequence[str] | str | None,
           cols: Sequence[str] | None = None) -> tuple[str, list[str]]:
     _check_scale(x)
     fr = frames if isinstance(frames, str) or frames is None else frames[0]
-    cand = scale_key(x) if fr is None else fr
-    if cols is not None and cand not in cols and scale_key(x) in cols:
-        cand = scale_key(x)
-    return cand, scale_units(x) if fr is None else scale_units(x, fr)
+    cand = scale_leaf_column(x) if fr is None else fr
+    if cols is not None and cand not in cols and scale_leaf_column(x) in cols:
+        cand = scale_leaf_column(x)
+    return cand, scale_members(x) if fr is None else scale_members(x, fr)
 
 
 def as_scale_array(data: Any, x: NestedScale, value: str | None = None,
                    frames: Sequence[str] | str | None = None, fill: float = np.nan,
                    limit: float = 1e7) -> np.ndarray:
-    """A dense numpy array over the units of one frame (default: atoms)."""
+    """A dense numpy array over the members of one frame (default: leaves)."""
     bk = backend_of(data, "data")
     schema = schema_of(data, bk)
-    key, units = _axis(x, frames, schema.names)
-    n = len(units)
+    key, members = _axis(x, frames, schema.names)
+    n = len(members)
     if n > limit:
         _stop("a dense array of this shape needs %s cells (%s), above `limit`. The "
               "long table is the form that stays workable at this size.",
@@ -53,11 +53,11 @@ def as_scale_array(data: Any, x: NestedScale, value: str | None = None,
         value = cand[0]
     if value not in d.column_names:
         _stop("`value` column `%s` is not in the data", value)
-    pos = {u: i for i, u in enumerate(units)}
+    pos = {u: i for i, u in enumerate(members)}
     codes = d[key].cast(pa.string()).to_pylist()
     bad = list(dict.fromkeys(c for c in codes if c not in pos))
     if bad:
-        _stop("column `%s` holds code(s) that are not units of axis `%s`: %s",
+        _stop("column `%s` holds code(s) that are not members of axis `%s`: %s",
               key, key, _preview(bad))
     a = np.full(n, fill, dtype=float)
     vals = d[value].to_pylist()
@@ -69,13 +69,13 @@ def as_scale_array(data: Any, x: NestedScale, value: str | None = None,
 def as_scale_table(a: Any, x: NestedScale, value: str = "value",
                    frames: Sequence[str] | str | None = None,
                    drop_na: bool = True) -> pa.Table:
-    """The long table of a dense array over one frame's units."""
-    key, units = _axis(x, frames)
+    """The long table of a dense array over one frame's members."""
+    key, members = _axis(x, frames)
     a = np.asarray(a, dtype=float)
-    if a.ndim != 1 or a.shape[0] != len(units):
+    if a.ndim != 1 or a.shape[0] != len(members):
         _stop("the array is %s but this scale describes %d",
-              " x ".join(str(s) for s in a.shape), len(units))
-    t = pa.table({key: pa.array(units, pa.string()), value: pa.array(a)})
+              " x ".join(str(s) for s in a.shape), len(members))
+    t = pa.table({key: pa.array(members, pa.string()), value: pa.array(a)})
     if drop_na:
         t = t.filter(pc.invert(pc.is_nan(t[value])))
     return t

@@ -30,7 +30,7 @@ from ._backend import backend_of, scan
 from ._utils import _as_str_tuple, _preview, _stop, _warn
 from .definition import _scale_from_header, _scale_header, _table_ref_inline
 from .product import ScaleProduct, scale_product
-from .scale_class import NestedScale, _check_scale, _scale_name
+from .scale_class import NestedScale, _check_scale, _leaf_frame, _scale_name
 
 INLINE_MAX_ROWS = 1000
 
@@ -87,19 +87,22 @@ def _scale_from_legacy_manifest(entry: Mapping[str, Any],
                for f, c in (entry.get("members") or {}).items()}
     return NestedScale(leaftable=leaftable,
                        frames=[str(z) for z in _flatten(entry.get("frames"))],
-                       members=members, key=entry.get("key") or "unit", meta=meta)
+                       members=members, leaf=entry.get("key") or "unit", meta=meta)
 
 
 def _axis_header(s: NestedScale, axis: str, sdir: Path, codec: str | None) -> dict:
     """The definition header of one axis, its leaftable as an Arrow file and
-    the attribute and alias tables inline when small."""
+    the attribute, alias and label tables inline when small."""
     opts = ipc.IpcWriteOptions(compression=codec)
     with ipc.new_file(sdir / ("%s-leaftable.arrow" % axis), s.leaftable.schema,
                       options=opts) as w:
         w.write_table(s.leaftable)
     refs: dict[str, Any] = {"leaftable": {"file": "%s-leaftable.arrow" % axis,
                                           "format": "arrow"}}
-    for what in ("attributes", "aliases"):
+    member_tables = ["attributes", "aliases"]
+    if s.labels.num_rows > 0:
+        member_tables.append("labels")
+    for what in member_tables:
         t = getattr(s, what)
         if t.num_rows <= INLINE_MAX_ROWS:
             refs[what] = _table_ref_inline(t)
@@ -126,7 +129,7 @@ def write_scale_dataset(data: Any, x: NestedScale | ScaleProduct, path: str | Pa
         axes, keys = dict(x.axes), dict(x.keys)
     else:
         nm = _scale_name(x, require=False) or "scale"
-        axes, keys = {nm: x}, {nm: x.key}
+        axes, keys = {nm: x}, {nm: x.leaf}
     missing = [k for k in keys.values() if k not in d.column_names]
     if missing:
         _stop("the data has no column(s) %s (one key column per axis)",
@@ -154,6 +157,9 @@ def write_scale_dataset(data: Any, x: NestedScale | ScaleProduct, path: str | Pa
     manifest = {"nestedscales": __version__,
                 "kind": "product" if is_prod else "scale",
                 "keys": keys,
+                # which axis and frame each key column is on
+                "link": [{"column": keys[a], "axis": a, "frame": _leaf_frame(s)}
+                         for a, s in axes.items()],
                 "axes": {a: _axis_header(s, a, sdir, codec) for a, s in axes.items()}}
     (sdir / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False, allow_nan=False) + "\n",

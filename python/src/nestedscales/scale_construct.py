@@ -38,7 +38,7 @@ def _nests_in(lt: pa.Table, fine: str, coarse: str) -> bool:
 def scale_from_leaftable(
     leaftable: Any,
     frames: str | Sequence[str],
-    key: str | None = None,
+    leaf: str | None = None,
     weights: str | Sequence[str] | None = None,
     default_weight: str | None = None,
     members: Mapping[str, Sequence[str]] | None = None,
@@ -46,19 +46,27 @@ def scale_from_leaftable(
     desc: str = "",
     attributes: Any = None,
     aliases: Any = None,
+    labels: Any = None,
     **meta: Any,
 ) -> NestedScale:
-    """Build a NestedScale from a flat table of atoms.
+    """Build a NestedScale from a flat table of leaves.
 
-    `leaftable` has one row per atom, one column per name in `frames`
+    `leaftable` has one row per leaf, one column per name in `frames`
     (coarsest first) and optionally numeric weight columns. Blank strings in
-    frame columns become null: that atom has no code at that frame.
+    frame columns become null: that leaf has no code at that frame.
 
-    `key` defaults to `"unit"` when that column exists, else the finest frame.
-    `weights` defaults to every numeric column that is neither a frame, the
-    key, nor a reserved name. `members` defaults to first-appearance order.
-    Extra keyword arguments are merged into `meta` (e.g. `source`, `labels`).
+    `leaf` names the leaf column, the column that identifies the leaves; it
+    defaults to a column called `"leaf"` when there is one, else to the
+    finest frame. `weights` defaults to every numeric column that is neither
+    a frame, the leaf column, nor a reserved name; naming a subset leaves the
+    other numeric columns in the leaftable as plain columns. `members`
+    defaults to first-appearance order. `attributes`, `aliases` and `labels`
+    are the member tables (see `attach_attributes_scale()`,
+    `attach_aliases_scale()`, `attach_labels_scale()`). Extra keyword
+    arguments are merged into `meta` (e.g. `source`).
     """
+    from .labels import _as_labels
+
     lt = as_table(leaftable, "leaftable")
     frames = _as_str_tuple(frames)
     if len(frames) == 0 or not all(isinstance(f, str) for f in frames):
@@ -71,23 +79,23 @@ def scale_from_leaftable(
     for f in frames:
         lt = lt.set_column(lt.column_names.index(f), f, _blank_to_na(lt[f]))
 
-    # Atom key
-    if key is None:
-        key = "unit" if "unit" in lt.column_names else frames[-1]
-    if not isinstance(key, str) or key == "":
-        _stop("`key` must be a single non-empty string")
-    if key not in lt.column_names:
-        _stop('`key` column "%s" not found in `leaftable`', key)
-    if key not in frames:
-        lt = lt.set_column(lt.column_names.index(key), key,
-                           pc.cast(lt[key], pa.string()))
-    if any(u is None or u == "" for u in lt[key].to_pylist()):
-        _stop('the atom key column "%s" has missing or empty values; every atom '
-              "needs an identifier", key)
+    # Leaf column
+    if leaf is None:
+        leaf = "leaf" if "leaf" in lt.column_names else frames[-1]
+    if not isinstance(leaf, str) or leaf == "":
+        _stop("`leaf` must be a single non-empty string")
+    if leaf not in lt.column_names:
+        _stop('`leaf` column "%s" not found in `leaftable`', leaf)
+    if leaf not in frames:
+        lt = lt.set_column(lt.column_names.index(leaf), leaf,
+                           pc.cast(lt[leaf], pa.string()))
+    if any(u is None or u == "" for u in lt[leaf].to_pylist()):
+        _stop('the leaf column "%s" has missing or empty values; every leaf '
+              "needs an identifier", leaf)
 
     # Weights
     if weights is None:
-        skip = {*frames, *RESERVED_COLS, key}
+        skip = {*frames, *RESERVED_COLS, leaf}
         weights = [c for c in lt.column_names
                    if c not in skip and _is_numeric(lt, c)]
     weights = list(_as_str_tuple(weights))
@@ -116,32 +124,32 @@ def scale_from_leaftable(
               _preview(inverted))
 
     return NestedScale(
-        leaftable=lt, frames=frames, members=dict(members), key=key,
+        leaftable=lt, frames=frames, members=dict(members), leaf=leaf,
         meta={"name": name, "desc": desc, "weights": weights,
               "default_weight": default_weight, **meta},
-        attributes=attributes, aliases=aliases)
+        attributes=attributes, aliases=aliases, labels=_as_labels(labels))
 
 
 def scale_example() -> NestedScale:
     """A small example scale with three awkward real-world features.
 
     * a code ("G1") reused at two frames, so lookups must name the frame;
-    * a non-nesting pair -- group "GB" draws units from two classes;
-    * a unit ("OTH") with no code at any coarser frame.
+    * a non-nesting pair -- group "GB" draws members from two classes;
+    * a member ("OTH") with no code at any coarser frame.
     """
     df = {
         "sector": ["P", "P", "P", "P", "S", "S", None],
         "class": ["G1", "G1", "G2", "G2", "S1", "S1", None],
         "group": ["G1", "G1", "GB", "GB", "GB", "GC", None],
-        "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+        "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
         "size": [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 1000.0],
         "count": [10.0, 90.0, 30.0, 70.0, 50.0, 50.0, 0.0],
     }
     return scale_from_leaftable(
-        pa.table(df), frames=["sector", "class", "group", "unit"],
+        pa.table(df), frames=["sector", "class", "group", "item"],
         name="example",
         desc="Synthetic example: reused code, non-nesting frame pair, and an "
-             "unassigned atom")
+             "unassigned leaf")
 
 
 def scale_example2() -> NestedScale:

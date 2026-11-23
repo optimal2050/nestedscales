@@ -1,0 +1,7 @@
+"frame","member","variant","label"
+"carrier","Coal","name","Hard and brown coal"
+"carrier","Oil","name","Crude and products"
+"carrier",,"name","Energy carrier"
+"fuel","Diesel","name","Diesel oil"
+"group","Bio","name","Biogenic"
+"carrier","Coal","short","coal"

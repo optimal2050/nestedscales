@@ -19,7 +19,7 @@ class Calendar(ns.NestedScale):
 @ns.scale_vocab.register(Calendar)
 def _(x):
     return {"object": "Calendar", "frame": "timeframe", "frames": "timeframes",
-            "unit": "timeslice", "units": "timeslices", "atoms": "timebase",
+            "member": "timeslice", "members": "timeslices", "leaves": "timebase",
             "register_rule": "register_calendar_rule()",
             "register_map": "register_calendar_map_between()"}
 
@@ -29,18 +29,18 @@ def tiny_calendar():
     t = pa.table({"YDAY": [d for d, _ in hours], "HOUR": [h for _, h in hours],
                   "weight": [1.0] * 4,
                   "timeslice": ["%s_%s" % dh for dh in hours]})
-    s = ns.scale_from_leaftable(t, frames=["YDAY", "HOUR"], key="timeslice",
+    s = ns.scale_from_leaftable(t, frames=["YDAY", "HOUR"], leaf="timeslice",
                                 name="d2_h2")
     return Calendar(leaftable=s.leaftable, frames=s.frames, members=s.members,
-                    key=s.key, meta=s.meta)
+                    leaf=s.leaf, meta=s.meta)
 
 
 def test_subclass_speaks_its_vocabulary():
     cal = tiny_calendar()
     assert cal.timeframes == ("YDAY", "HOUR")
-    assert ns.scale_atom_level(cal) == "timeslice"
+    assert ns.scale_leaf_frame(cal) == "timeslice"
     with pytest.raises(NestedScalesError, match="is not a timeframe of this Calendar"):
-        ns.scale_units(cal, "MONTH")
+        ns.scale_members(cal, "MONTH")
     with pytest.raises(NestedScalesError, match="register_calendar_rule"):
         ns.recast_scale(pa.table({"timeslice": ["d001_h00"], "v": [1.0]}), cal,
                         source="timeslice", target="YDAY")
@@ -58,7 +58,7 @@ def test_subclass_rules_resolve_in_its_scope():
 def test_subclass_validation_names_its_class():
     s = tiny_calendar()
     with pytest.raises(NestedScalesError, match=r"^<timescales::Calendar> object"):
-        Calendar(leaftable=s.leaftable, frames=s.frames, members={}, key=s.key,
+        Calendar(leaftable=s.leaftable, frames=s.frames, members={}, leaf=s.leaf,
                  meta=s.meta)
 
 
@@ -70,13 +70,13 @@ def test_filter_preserves_subclass():
 
 def test_product_container():
     p = ns.scale_product(a=ns.scale_example(), b=ns.scale_example2())
-    assert ns.product_keys(p) == {"a": "unit", "b": "period"}
+    assert ns.product_keys(p) == {"a": "item", "b": "period"}
     assert ns.product_size(p) == {"axes": {"a": 7, "b": 4}, "total": 28.0}
     assert ns.scale_axes(p, "b") == ns.scale_example2()
     q = ns.scale_product(a=ns.scale_example(), b=ns.scale_example())
     with pytest.raises(NestedScalesError, match="axes resolve to the same key"):
         ns.scale_product(a=ns.scale_example(), b=ns.scale_example(),
-                         keys={"a": "unit", "b": "unit"})
+                         keys={"a": "item", "b": "item"})
     assert ns.product_keys(q) == {"a": "a", "b": "b"}
     with pytest.raises(NestedScalesError, match="is a ScaleProduct, not a single"):
         ns.scale_frames(p)
@@ -84,13 +84,13 @@ def test_product_container():
 
 def test_arrays_round_trip():
     s = ns.scale_example()
-    d = pa.table({"unit": ["U1", "U3"], "v": [5.0, 7.0]})
+    d = pa.table({"item": ["U1", "U3"], "v": [5.0, 7.0]})
     a = ns.as_scale_array(d, s)
     assert a.shape == (7,) and a[0] == 5.0 and np.isnan(a[1])
     back = ns.as_scale_table(a, s, value="v")
-    assert back.to_pylist() == [{"unit": "U1", "v": 5.0}, {"unit": "U3", "v": 7.0}]
-    with pytest.raises(NestedScalesError, match="not units of axis"):
-        ns.as_scale_array(pa.table({"unit": ["ZZ"], "v": [1.0]}), s)
+    assert back.to_pylist() == [{"item": "U1", "v": 5.0}, {"item": "U3", "v": 7.0}]
+    with pytest.raises(NestedScalesError, match="not members of axis"):
+        ns.as_scale_array(pa.table({"item": ["ZZ"], "v": [1.0]}), s)
     with pytest.raises(NestedScalesError, match="above `limit`"):
         ns.as_scale_array(d, s, limit=3)
 

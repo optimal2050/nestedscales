@@ -86,6 +86,11 @@ deprecation aliases (the R package is pre-1.0), matching Python:
 | `scale_payload_slice` | `x, i` | `x` with payload subset | ✓ | ✓ |
 | `scale_payload_collapse` | `x, map` | `x` with payload collapsed by `map` (old row → new row, missing = dropped); default identity | ✓ | ✓ |
 | `scale_alias_property` | `name` | alias property for subclasses | ✓ | ✓ |
+| `scale_id` | `x` | `"<name>@<hash>"`: the name and the first 8 hex digits of the MD5 of the canonical structure text (the same string in every binding) | ✓ | ✓ |
+| `scale_tree` | `x` | table `part, parent, kind, shape, mark, verb, note`; `mark` = `fixed`, `derived`, `mutable` | ✓ | ✓ |
+| `scale_payload_parts` | `x` | rows a subclass adds to `scale_tree()` (subclass hook; default none) | ✓ | ✓ |
+| `scale_set_props` | `x, check=FALSE, ...` | a copy of `x` with fields replaced, not validated unless asked; for subclass hooks | `S7::set_props(.check = FALSE)` | ✓ |
+| `scale_validate` | `x` | `x`, validated | `S7::validate()` | ✓ |
 | `scale_is` | `x` | logical | ✓ | ✓ |
 | `scale_class` | | the class | ✓ | ✓ |
 | `summary` / `scale_summary` | `x` | summary object | ✓ | ✓ |
@@ -156,7 +161,7 @@ target does not cover. The split share of `sum` disaggregation is
 | `filter_scale` | `x, frame, member, drop_empty_frames=FALSE` | scale (a sample) | ✓ | ✓ |
 | `prune_scale` | `x, frame` | scale | ✓ | ✓ |
 | `scale_share` | `x, frame, weight=NULL, within=NULL` | table | ✓ | ✓ |
-| `join_scale` | `data, x, key=NULL, frame=NULL, attach=NULL, meta=FALSE, weight=NULL, as_factor=TRUE, collect=NULL, diagnostics="auto"` | `data` plus attached columns | ✓ | ✓ |
+| `join_scale` | `data, x, key=NULL, frame=NULL, attach=NULL, meta=FALSE, weight=NULL, as_factor=TRUE, collect=NULL, diagnostics="auto", labels=NULL` | `data` plus attached columns; `labels` adds `<name>.label` | ✓ | ✓ |
 | `as_scale_array` | `data, x, value=NULL, frames=NULL, fill=NA, limit=1e7` | dense array | ✓ | one scale |
 | `as_scale_table` | `a, x, value="value", frames=NULL, drop_na=TRUE` | table | ✓ | one scale |
 
@@ -178,9 +183,9 @@ invertible ratio, `factor` is one-way.
 | `attach_aliases_scale` | `x, aliases, source=NULL` | `x` with rows appended | ✓ | ✓ |
 | `scale_aliases` | `x, frame=NULL, source=NULL` | alias rows | ✓ | ✓ |
 | `scale_match` | `x, labels, frame=NULL, source=NULL` | table `label, frame, member, method, candidates`; `method` = `exact`, `alias`, `ambiguous`, `none` | ✓ | ✓ |
-| `attach_labels_scale` | `x, labels, variant=NULL, default=NULL, overwrite=FALSE` | `x` with display names added; table columns `frame, member, variant, label`, `member` = NA names the frame | ✓ | |
-| `scale_labels` | `x, frame=NULL, variant=NULL` | label rows | ✓ | |
-| `scale_label` | `x, members, frame, variant=NULL` | one display name per code; the code where there is none | ✓ | |
+| `attach_labels_scale` | `x, labels, variant=NULL, default=NULL, overwrite=FALSE` | `x` with display names added; table columns `frame, member, variant, label`, `member` = NA names the frame | ✓ | ✓ |
+| `scale_labels` | `x, frame=NULL, variant=NULL` | label rows | ✓ | ✓ |
+| `scale_label` | `x, members, frame, variant=NULL` | one display name per code; the code where there is none | ✓ | ✓ |
 | `convert_scale` | `data, x, attribute, from_unit, to_unit, key=NULL, frame=NULL, values=NULL, source=NULL, na_action="error", collect=NULL` | `data` with value columns converted plus `<attribute>` and `<attribute>.origin_frame` | ✓ | ✓ |
 
 ### Backends
@@ -193,11 +198,11 @@ results in the caller's type.
 | `backend_of` | `data, arg="data"` | the backend (errors on an unsupported input) | ✓ | ✓ |
 | `backend_is_lazy` | `backend` | logical | ✓ | ✓ |
 | `backend_schema` | `data, backend=NULL` | column names and types, no scan | ✓ | ✓ |
-| `backend_scan` | `data, backend=NULL, columns=NULL, filter=NULL` | the needed columns and rows | ✓ | ✓ |
+| `backend_scan` | `data, backend=NULL, columns=NULL, filter=NULL` | the needed columns and rows | internal | ✓ |
 | `backend_pull` | `table` | an in-memory table | ✓ | ✓ |
 | `backend_restore` | `table, backend, collect=NULL` | the caller's type | ✓ | ✓ |
 | `backend_bind_rows` | `parts` | one table | ✓ | ✓ |
-| `backend_distinct` | `data, columns, backend=NULL` | distinct rows, first-appearance order | ✓ | ✓ |
+| `backend_distinct` | `data, columns, backend=NULL` | distinct rows, first-appearance order | internal | ✓ |
 | `backend_lazy` | `data, backend=NULL` | a dplyr carrier for a pipeline (R's lazy lift; Python has no need for it) | ✓ | — |
 
 ### Store
@@ -248,4 +253,6 @@ and both are read.
 ### R only for now
 
 `reconcile_scale`, `cluster_scale`, `cluster_medoids`, `cluster_contiguous`,
-`cluster_sweep`, `scale_distance` and its registry.
+`cluster_sweep`, `scale_distance` and its registry; the data link
+(`bind_scale`, `unbind_scale`, `scale_link`, `as_scale_member`,
+`is_scale_member`).

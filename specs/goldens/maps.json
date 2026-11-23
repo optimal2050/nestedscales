@@ -1,5 +1,5 @@
 {
-  "generated_by": "nestedscales 0.1.1.9000",
+  "generated_by": "nestedscales 0.3.0",
   "cases": {
     "within": {
       "example": {
@@ -7,7 +7,7 @@
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
-          "key": null,
+          "leaf": null,
           "name": null
         },
         "calls": [
@@ -235,13 +235,13 @@
           },
           {
             "source": "sector",
-            "target": "unit",
+            "target": "item",
             "weight": null,
             "error": false,
             "value": [
               {
                 "sector": "P",
-                "unit": "U1",
+                "item": "U1",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 100,
@@ -249,7 +249,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U2",
+                "item": "U2",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 200,
@@ -257,7 +257,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U3",
+                "item": "U3",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 300,
@@ -265,7 +265,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U4",
+                "item": "U4",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 400,
@@ -273,7 +273,7 @@
               },
               {
                 "sector": "S",
-                "unit": "U5",
+                "item": "U5",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 500,
@@ -281,7 +281,7 @@
               },
               {
                 "sector": "S",
-                "unit": "U6",
+                "item": "U6",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 600,
@@ -292,13 +292,13 @@
           },
           {
             "source": "sector",
-            "target": "unit",
+            "target": "item",
             "weight": "size",
             "error": false,
             "value": [
               {
                 "sector": "P",
-                "unit": "U1",
+                "item": "U1",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 100,
@@ -306,7 +306,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U2",
+                "item": "U2",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 200,
@@ -314,7 +314,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U3",
+                "item": "U3",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 300,
@@ -322,7 +322,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U4",
+                "item": "U4",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 400,
@@ -330,7 +330,7 @@
               },
               {
                 "sector": "S",
-                "unit": "U5",
+                "item": "U5",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 500,
@@ -338,7 +338,7 @@
               },
               {
                 "sector": "S",
-                "unit": "U6",
+                "item": "U6",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 600,
@@ -349,13 +349,13 @@
           },
           {
             "source": "sector",
-            "target": "unit",
+            "target": "item",
             "weight": "count",
             "error": false,
             "value": [
               {
                 "sector": "P",
-                "unit": "U1",
+                "item": "U1",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 10,
@@ -363,7 +363,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U2",
+                "item": "U2",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 90,
@@ -371,7 +371,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U3",
+                "item": "U3",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 30,
@@ -379,7 +379,7 @@
               },
               {
                 "sector": "P",
-                "unit": "U4",
+                "item": "U4",
                 "n_from": 4,
                 "n_overlap": 1,
                 "w": 70,
@@ -387,7 +387,7 @@
               },
               {
                 "sector": "S",
-                "unit": "U5",
+                "item": "U5",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 50,
@@ -395,7 +395,7 @@
               },
               {
                 "sector": "S",
-                "unit": "U6",
+                "item": "U6",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 50,
@@ -628,13 +628,13 @@
           },
           {
             "source": "class",
-            "target": "unit",
+            "target": "item",
             "weight": null,
             "error": false,
             "value": [
               {
                 "class": "G1",
-                "unit": "U1",
+                "item": "U1",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 100,
@@ -642,7 +642,7 @@
               },
               {
                 "class": "G1",
-                "unit": "U2",
+                "item": "U2",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 200,
@@ -650,7 +650,7 @@
               },
               {
                 "class": "G2",
-                "unit": "U3",
+                "item": "U3",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 300,
@@ -658,7 +658,7 @@
               },
               {
                 "class": "G2",
-                "unit": "U4",
+                "item": "U4",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 400,
@@ -666,7 +666,7 @@
               },
               {
                 "class": "S1",
-                "unit": "U5",
+                "item": "U5",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 500,
@@ -674,64 +674,7 @@
               },
               {
                 "class": "S1",
-                "unit": "U6",
-                "n_from": 2,
-                "n_overlap": 1,
-                "w": 600,
-                "w_from": 1100
-              }
-            ],
-            "warnings": []
-          },
-          {
-            "source": "class",
-            "target": "unit",
-            "weight": "size",
-            "error": false,
-            "value": [
-              {
-                "class": "G1",
-                "unit": "U1",
-                "n_from": 2,
-                "n_overlap": 1,
-                "w": 100,
-                "w_from": 300
-              },
-              {
-                "class": "G1",
-                "unit": "U2",
-                "n_from": 2,
-                "n_overlap": 1,
-                "w": 200,
-                "w_from": 300
-              },
-              {
-                "class": "G2",
-                "unit": "U3",
-                "n_from": 2,
-                "n_overlap": 1,
-                "w": 300,
-                "w_from": 700
-              },
-              {
-                "class": "G2",
-                "unit": "U4",
-                "n_from": 2,
-                "n_overlap": 1,
-                "w": 400,
-                "w_from": 700
-              },
-              {
-                "class": "S1",
-                "unit": "U5",
-                "n_from": 2,
-                "n_overlap": 1,
-                "w": 500,
-                "w_from": 1100
-              },
-              {
-                "class": "S1",
-                "unit": "U6",
+                "item": "U6",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 600,
@@ -742,13 +685,70 @@
           },
           {
             "source": "class",
-            "target": "unit",
+            "target": "item",
+            "weight": "size",
+            "error": false,
+            "value": [
+              {
+                "class": "G1",
+                "item": "U1",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 100,
+                "w_from": 300
+              },
+              {
+                "class": "G1",
+                "item": "U2",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 200,
+                "w_from": 300
+              },
+              {
+                "class": "G2",
+                "item": "U3",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 300,
+                "w_from": 700
+              },
+              {
+                "class": "G2",
+                "item": "U4",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 400,
+                "w_from": 700
+              },
+              {
+                "class": "S1",
+                "item": "U5",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 500,
+                "w_from": 1100
+              },
+              {
+                "class": "S1",
+                "item": "U6",
+                "n_from": 2,
+                "n_overlap": 1,
+                "w": 600,
+                "w_from": 1100
+              }
+            ],
+            "warnings": []
+          },
+          {
+            "source": "class",
+            "target": "item",
             "weight": "count",
             "error": false,
             "value": [
               {
                 "class": "G1",
-                "unit": "U1",
+                "item": "U1",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 10,
@@ -756,7 +756,7 @@
               },
               {
                 "class": "G1",
-                "unit": "U2",
+                "item": "U2",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 90,
@@ -764,7 +764,7 @@
               },
               {
                 "class": "G2",
-                "unit": "U3",
+                "item": "U3",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 30,
@@ -772,7 +772,7 @@
               },
               {
                 "class": "G2",
-                "unit": "U4",
+                "item": "U4",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 70,
@@ -780,7 +780,7 @@
               },
               {
                 "class": "S1",
-                "unit": "U5",
+                "item": "U5",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 50,
@@ -788,7 +788,7 @@
               },
               {
                 "class": "S1",
-                "unit": "U6",
+                "item": "U6",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 50,
@@ -1045,13 +1045,13 @@
           },
           {
             "source": "group",
-            "target": "unit",
+            "target": "item",
             "weight": null,
             "error": false,
             "value": [
               {
                 "group": "G1",
-                "unit": "U1",
+                "item": "U1",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 100,
@@ -1059,7 +1059,7 @@
               },
               {
                 "group": "G1",
-                "unit": "U2",
+                "item": "U2",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 200,
@@ -1067,7 +1067,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U3",
+                "item": "U3",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 300,
@@ -1075,7 +1075,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U4",
+                "item": "U4",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 400,
@@ -1083,7 +1083,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U5",
+                "item": "U5",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 500,
@@ -1091,7 +1091,7 @@
               },
               {
                 "group": "GC",
-                "unit": "U6",
+                "item": "U6",
                 "n_from": 1,
                 "n_overlap": 1,
                 "w": 600,
@@ -1102,13 +1102,13 @@
           },
           {
             "source": "group",
-            "target": "unit",
+            "target": "item",
             "weight": "size",
             "error": false,
             "value": [
               {
                 "group": "G1",
-                "unit": "U1",
+                "item": "U1",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 100,
@@ -1116,7 +1116,7 @@
               },
               {
                 "group": "G1",
-                "unit": "U2",
+                "item": "U2",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 200,
@@ -1124,7 +1124,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U3",
+                "item": "U3",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 300,
@@ -1132,7 +1132,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U4",
+                "item": "U4",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 400,
@@ -1140,7 +1140,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U5",
+                "item": "U5",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 500,
@@ -1148,7 +1148,7 @@
               },
               {
                 "group": "GC",
-                "unit": "U6",
+                "item": "U6",
                 "n_from": 1,
                 "n_overlap": 1,
                 "w": 600,
@@ -1159,13 +1159,13 @@
           },
           {
             "source": "group",
-            "target": "unit",
+            "target": "item",
             "weight": "count",
             "error": false,
             "value": [
               {
                 "group": "G1",
-                "unit": "U1",
+                "item": "U1",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 10,
@@ -1173,7 +1173,7 @@
               },
               {
                 "group": "G1",
-                "unit": "U2",
+                "item": "U2",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 90,
@@ -1181,7 +1181,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U3",
+                "item": "U3",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 30,
@@ -1189,7 +1189,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U4",
+                "item": "U4",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 70,
@@ -1197,7 +1197,7 @@
               },
               {
                 "group": "GB",
-                "unit": "U5",
+                "item": "U5",
                 "n_from": 3,
                 "n_overlap": 1,
                 "w": 50,
@@ -1205,7 +1205,7 @@
               },
               {
                 "group": "GC",
-                "unit": "U6",
+                "item": "U6",
                 "n_from": 1,
                 "n_overlap": 1,
                 "w": 50,
@@ -1215,13 +1215,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "sector",
             "weight": null,
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "sector": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1229,7 +1229,7 @@
                 "w_from": 1000
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1237,7 +1237,7 @@
                 "w_from": 100
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1245,7 +1245,7 @@
                 "w_from": 200
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1253,7 +1253,7 @@
                 "w_from": 300
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1261,7 +1261,7 @@
                 "w_from": 400
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "sector": "S",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1269,7 +1269,7 @@
                 "w_from": 500
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "sector": "S",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1280,13 +1280,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "sector",
             "weight": "size",
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "sector": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1294,7 +1294,7 @@
                 "w_from": 1000
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1302,7 +1302,7 @@
                 "w_from": 100
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1310,7 +1310,7 @@
                 "w_from": 200
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1318,7 +1318,7 @@
                 "w_from": 300
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1326,7 +1326,7 @@
                 "w_from": 400
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "sector": "S",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1334,7 +1334,7 @@
                 "w_from": 500
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "sector": "S",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1345,13 +1345,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "sector",
             "weight": "count",
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "sector": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1359,7 +1359,7 @@
                 "w_from": 0
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1367,7 +1367,7 @@
                 "w_from": 10
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1375,7 +1375,7 @@
                 "w_from": 90
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1383,7 +1383,7 @@
                 "w_from": 30
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "sector": "P",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1391,7 +1391,7 @@
                 "w_from": 70
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "sector": "S",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1399,7 +1399,7 @@
                 "w_from": 50
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "sector": "S",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1410,13 +1410,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "class",
             "weight": null,
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "class": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1424,7 +1424,7 @@
                 "w_from": 1000
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "class": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1432,7 +1432,7 @@
                 "w_from": 100
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "class": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1440,7 +1440,7 @@
                 "w_from": 200
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "class": "G2",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1448,7 +1448,7 @@
                 "w_from": 300
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "class": "G2",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1456,7 +1456,7 @@
                 "w_from": 400
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "class": "S1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1464,7 +1464,7 @@
                 "w_from": 500
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "class": "S1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1475,13 +1475,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "class",
             "weight": "size",
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "class": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1489,7 +1489,7 @@
                 "w_from": 1000
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "class": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1497,7 +1497,7 @@
                 "w_from": 100
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "class": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1505,7 +1505,7 @@
                 "w_from": 200
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "class": "G2",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1513,7 +1513,7 @@
                 "w_from": 300
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "class": "G2",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1521,7 +1521,7 @@
                 "w_from": 400
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "class": "S1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1529,7 +1529,7 @@
                 "w_from": 500
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "class": "S1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1540,13 +1540,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "class",
             "weight": "count",
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "class": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1554,7 +1554,7 @@
                 "w_from": 0
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "class": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1562,7 +1562,7 @@
                 "w_from": 10
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "class": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1570,7 +1570,7 @@
                 "w_from": 90
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "class": "G2",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1578,7 +1578,7 @@
                 "w_from": 30
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "class": "G2",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1586,7 +1586,7 @@
                 "w_from": 70
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "class": "S1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1594,7 +1594,7 @@
                 "w_from": 50
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "class": "S1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1605,13 +1605,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "group",
             "weight": null,
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "group": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1619,7 +1619,7 @@
                 "w_from": 1000
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "group": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1627,7 +1627,7 @@
                 "w_from": 100
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "group": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1635,7 +1635,7 @@
                 "w_from": 200
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1643,7 +1643,7 @@
                 "w_from": 300
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1651,7 +1651,7 @@
                 "w_from": 400
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1659,7 +1659,7 @@
                 "w_from": 500
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "group": "GC",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1670,13 +1670,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "group",
             "weight": "size",
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "group": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1684,7 +1684,7 @@
                 "w_from": 1000
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "group": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1692,7 +1692,7 @@
                 "w_from": 100
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "group": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1700,7 +1700,7 @@
                 "w_from": 200
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1708,7 +1708,7 @@
                 "w_from": 300
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1716,7 +1716,7 @@
                 "w_from": 400
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1724,7 +1724,7 @@
                 "w_from": 500
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "group": "GC",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1735,13 +1735,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "group",
             "weight": "count",
             "error": false,
             "value": [
               {
-                "unit": "OTH",
+                "item": "OTH",
                 "group": null,
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1749,7 +1749,7 @@
                 "w_from": 0
               },
               {
-                "unit": "U1",
+                "item": "U1",
                 "group": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1757,7 +1757,7 @@
                 "w_from": 10
               },
               {
-                "unit": "U2",
+                "item": "U2",
                 "group": "G1",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1765,7 +1765,7 @@
                 "w_from": 90
               },
               {
-                "unit": "U3",
+                "item": "U3",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1773,7 +1773,7 @@
                 "w_from": 30
               },
               {
-                "unit": "U4",
+                "item": "U4",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1781,7 +1781,7 @@
                 "w_from": 70
               },
               {
-                "unit": "U5",
+                "item": "U5",
                 "group": "GB",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1789,7 +1789,7 @@
                 "w_from": 50
               },
               {
-                "unit": "U6",
+                "item": "U6",
                 "group": "GC",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -1806,7 +1806,7 @@
           "build": "scale_example2",
           "leaftable": null,
           "frames": null,
-          "key": null,
+          "leaf": null,
           "name": null
         },
         "calls": [
@@ -1982,11 +1982,11 @@
           "leaftable": {
             "m": ["m1", "m2", "m1", "m2", "m1", "m2"],
             "h": ["h1", "h1", "h2", "h2", "h3", "h3"],
-            "unit": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"],
+            "item": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"],
             "hours": [31, 28, 31, 28, 31, 28]
           },
           "frames": ["m", "h"],
-          "key": "unit",
+          "leaf": "item",
           "name": "grid"
         },
         "calls": [
@@ -2225,22 +2225,22 @@
           "build": "scale_from_leaftable",
           "leaftable": {
             "grp": ["A", "A", "B"],
-            "unit": ["u1", "u2", "u3"]
+            "item": ["u1", "u2", "u3"]
           },
-          "frames": ["grp", "unit"],
-          "key": "unit",
+          "frames": ["grp", "item"],
+          "leaf": "item",
           "name": "noweights"
         },
         "calls": [
           {
             "source": "grp",
-            "target": "unit",
+            "target": "item",
             "weight": null,
             "error": false,
             "value": [
               {
                 "grp": "A",
-                "unit": "u1",
+                "item": "u1",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 1,
@@ -2248,7 +2248,7 @@
               },
               {
                 "grp": "A",
-                "unit": "u2",
+                "item": "u2",
                 "n_from": 2,
                 "n_overlap": 1,
                 "w": 1,
@@ -2256,7 +2256,7 @@
               },
               {
                 "grp": "B",
-                "unit": "u3",
+                "item": "u3",
                 "n_from": 1,
                 "n_overlap": 1,
                 "w": 1,
@@ -2266,13 +2266,13 @@
             "warnings": []
           },
           {
-            "source": "unit",
+            "source": "item",
             "target": "grp",
             "weight": null,
             "error": false,
             "value": [
               {
-                "unit": "u1",
+                "item": "u1",
                 "grp": "A",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -2280,7 +2280,7 @@
                 "w_from": 1
               },
               {
-                "unit": "u2",
+                "item": "u2",
                 "grp": "A",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -2288,7 +2288,7 @@
                 "w_from": 1
               },
               {
-                "unit": "u3",
+                "item": "u3",
                 "grp": "B",
                 "n_from": 1,
                 "n_overlap": 1,
@@ -2307,18 +2307,18 @@
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
-          "key": null,
+          "leaf": null,
           "name": null
         },
         "target": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
-            "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+            "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
             "size": [1, 2, 3, 4, 5, 6, 7]
           },
-          "frames": ["big", "unit"],
-          "key": "unit",
+          "frames": ["big", "item"],
+          "leaf": "item",
           "name": "other"
         },
         "weight": null,
@@ -2388,18 +2388,18 @@
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
-          "key": null,
+          "leaf": null,
           "name": null
         },
         "target": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
-            "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+            "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
             "size": [1, 2, 3, 4, 5, 6, 7]
           },
-          "frames": ["big", "unit"],
-          "key": "unit",
+          "frames": ["big", "item"],
+          "leaf": "item",
           "name": "other"
         },
         "weight": "count",
@@ -2469,18 +2469,18 @@
           "build": "scale_from_leaftable",
           "leaftable": {
             "big": ["X", "X", "Y", "Y", "Y", "Y", "Z"],
-            "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+            "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
             "size": [1, 2, 3, 4, 5, 6, 7]
           },
-          "frames": ["big", "unit"],
-          "key": "unit",
+          "frames": ["big", "item"],
+          "leaf": "item",
           "name": "other"
         },
         "target": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
-          "key": null,
+          "leaf": null,
           "name": null
         },
         "weight": null,
@@ -2550,17 +2550,17 @@
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
-          "key": null,
+          "leaf": null,
           "name": null
         },
         "target": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "top": ["T1", "T1", "T2"],
-            "unit": ["U1", "U3", "U9"]
+            "item": ["U1", "U3", "U9"]
           },
-          "frames": ["top", "unit"],
-          "key": "unit",
+          "frames": ["top", "item"],
+          "leaf": "item",
           "name": "partial"
         },
         "weight": null,
@@ -2623,24 +2623,24 @@
             "w_from": 600
           }
         ],
-        "warnings": ["5 atom(s) of \"example\" have no counterpart in \"partial\"; their share is uncovered (NA target)"]
+        "warnings": ["5 leaf row(s) of \"example\" have no counterpart in \"partial\"; their share is uncovered (NA target)"]
       },
       {
         "source": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "top": ["T1", "T1", "T2"],
-            "unit": ["U1", "U3", "U9"]
+            "item": ["U1", "U3", "U9"]
           },
-          "frames": ["top", "unit"],
-          "key": "unit",
+          "frames": ["top", "item"],
+          "leaf": "item",
           "name": "partial"
         },
         "target": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
-          "key": null,
+          "leaf": null,
           "name": null
         },
         "weight": null,
@@ -2671,29 +2671,29 @@
             "w_from": 1
           }
         ],
-        "warnings": ["1 atom(s) of \"partial\" have no counterpart in \"example\"; their share is uncovered (NA target)"]
+        "warnings": ["1 leaf row(s) of \"partial\" have no counterpart in \"example\"; their share is uncovered (NA target)"]
       },
       {
         "source": {
           "build": "scale_example",
           "leaftable": null,
           "frames": null,
-          "key": null,
+          "leaf": null,
           "name": null
         },
         "target": {
           "build": "scale_from_leaftable",
           "leaftable": {
             "grp": ["A", "B"],
-            "unit": ["z1", "z2"]
+            "item": ["z1", "z2"]
           },
-          "frames": ["grp", "unit"],
-          "key": "unit",
+          "frames": ["grp", "item"],
+          "leaf": "item",
           "name": "disjoint"
         },
         "weight": null,
         "error": true,
-        "message": "the atom layers of \"example\" and \"disjoint\" share no `unit` keys; register an explicit crosswalk with register_scale_map_between()",
+        "message": "the leaf layers of \"example\" and \"disjoint\" share no `item` codes; register an explicit crosswalk with register_scale_map_between()",
         "warnings": []
       }
     ]

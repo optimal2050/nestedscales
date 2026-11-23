@@ -18,10 +18,13 @@ def load_golden(name):
 def build_scale(k):
     """Rebuild a scale from a golden's `construct` entry."""
     if k["build"] == "scale_from_leaftable":
-        tables = {t: golden_table(k[t]) for t in ("attributes", "aliases") if k.get(t)}
+        extra = {t: golden_table(k[t]) for t in ("attributes", "aliases", "labels")
+                 if k.get(t)}
+        # an entry of `meta` only when the golden has one, as in R
+        if k.get("residuals") is not None:
+            extra["residuals"] = k["residuals"]
         return ns.scale_from_leaftable(pa.table(k["leaftable"]), frames=k["frames"],
-                                       key=k["key"], name=k["name"],
-                                       residuals=k.get("residuals"), **tables)
+                                       leaf=k["leaf"], name=k["name"], **extra)
     return getattr(ns, k["build"])()
 
 
@@ -42,6 +45,12 @@ def norm(v):
     if isinstance(v, (list, tuple)):
         return [norm(z) for z in v]
     return v
+
+
+def printed(x):
+    """The printed form as lines; trailing blanks are not part of the contract
+    (R's `cat()` leaves one after some fields)."""
+    return [ln.rstrip() for ln in (x if isinstance(x, list) else str(x).splitlines())]
 
 
 def rows(t):

@@ -222,7 +222,7 @@ test_that("a schema 1 definition is read into the current form", {
 })
 
 test_that("the schema 1 goldens are still read", {
-  dir <- test_path("..", "..", "specs", "goldens", "definitions")
+  dir <- test_path("..", "..", "specs", "goldens", "definitions_v1")
   skip_if_not(dir.exists(dir), "the goldens are not in a built package")
   ex <- read_scale(file.path(dir, "example.json"))
   expect_identical(scale_leaf_column(ex), "unit")

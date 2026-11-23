@@ -18,7 +18,7 @@ from .scale_class import (
     _check_scale,
     _nav_levels,
     _strings,
-    scale_units,
+    scale_members,
     scale_vocab,
     scale_weights,
 )
@@ -34,7 +34,7 @@ class Verdict:
     Truthy as `ok`, and equal to a bool of the same value, so
     `if scale_nests(...)` and `scale_nests(...) == True` both read naturally.
     `offenders` names the codes that broke the test; `sizes` carries the
-    per-unit totals of `scale_is_uniform()`.
+    per-member totals of `scale_is_uniform()`.
     """
 
     ok: bool
@@ -75,7 +75,7 @@ def scale_family(x: NestedScale, parent: str | None = None,
     """Immediate parent-child table between two frames.
 
     Defaults to every adjacent pair. Columns `parent_frame`, `parent`,
-    `child_frame`, `child`; atoms unassigned at either frame are omitted.
+    `child_frame`, `child`; leaves unassigned at either frame are omitted.
     """
     _check_scale(x)
     fr = x.frames
@@ -108,10 +108,10 @@ def scale_nests(x: NestedScale, parent: str, child: str) -> Verdict:
 
 
 def scale_crosses(x: NestedScale, a: str, b: str) -> Verdict:
-    """Does every unit of `a` combine with the same set of units of `b`?
+    """Does every member of `a` combine with the same set of members of `b`?
 
     True for overlaying frames such as MONTH x HOUR. When not, `offenders`
-    names the units of `a` whose set differs from the first one's.
+    names the members of `a` whose set differs from the first one's.
     """
     _check_scale(x)
     _check_frame(x, a, "parent")
@@ -128,10 +128,10 @@ def scale_crosses(x: NestedScale, a: str, b: str) -> Verdict:
 
 def scale_is_uniform(x: NestedScale, frame: str, weight: str | None = None,
                      tolerance: float = 1e-9) -> Verdict:
-    """Do all units of `frame` hold the same number of atoms (or weight total)?
+    """Do all members of `frame` hold the same number of leaves (or weight total)?
 
-    Atoms with no code at `frame` are ignored. When not, `sizes` holds the
-    per-unit counts or totals.
+    Leaves with no code at `frame` are ignored. When not, `sizes` holds the
+    per-member counts or totals.
     """
     _check_scale(x)
     _check_frame(x, frame, "frame")
@@ -157,9 +157,9 @@ def scale_is_uniform(x: NestedScale, frame: str, weight: str | None = None,
 
 
 def scale_ancestry(x: NestedScale) -> pa.Table:
-    """Every (coarser, finer) code pair sharing at least one atom, all frame pairs.
+    """Every (coarser, finer) code pair sharing at least one leaf, all frame pairs.
 
-    Atom-mediated, not a transitive closure of `scale_family()`: closing a
+    Leaf-mediated, not a transitive closure of `scale_family()`: closing a
     cross-cutting hierarchy manufactures false relationships.
     """
     _check_scale(x)
@@ -178,9 +178,9 @@ def _level_index(x: NestedScale, frame: str) -> tuple[list[str], int]:
     return fr, fr.index(frame)
 
 
-def scale_children(x: NestedScale, frame: str, unit: str | Sequence[str],
+def scale_children(x: NestedScale, frame: str, member: str | Sequence[str],
                    target: str | None = None) -> list[str]:
-    """Codes one frame down (or at `target`) sharing an atom with `unit`."""
+    """Codes one frame down (or at `target`) sharing a leaf with `member`."""
     _check_scale(x)
     _check_frame(x, frame)
     fr, i = _level_index(x, frame)
@@ -190,12 +190,12 @@ def scale_children(x: NestedScale, frame: str, unit: str | Sequence[str],
                   scale_vocab(x)["frame"])
         target = fr[i + 1]
     _check_frame(x, target, "target")
-    return _related(x, frame, unit, target)
+    return _related(x, frame, member, target)
 
 
-def scale_parents(x: NestedScale, frame: str, unit: str | Sequence[str],
+def scale_parents(x: NestedScale, frame: str, member: str | Sequence[str],
                   target: str | None = None) -> list[str]:
-    """Codes one frame up (or at `target`) sharing an atom with `unit`."""
+    """Codes one frame up (or at `target`) sharing a leaf with `member`."""
     _check_scale(x)
     _check_frame(x, frame)
     fr, i = _level_index(x, frame)
@@ -205,12 +205,12 @@ def scale_parents(x: NestedScale, frame: str, unit: str | Sequence[str],
                   scale_vocab(x)["frame"])
         target = fr[i - 1]
     _check_frame(x, target, "target")
-    return _related(x, frame, unit, target)
+    return _related(x, frame, member, target)
 
 
-def scale_descendants(x: NestedScale, frame: str, unit: str | Sequence[str],
+def scale_descendants(x: NestedScale, frame: str, member: str | Sequence[str],
                       target: str | None = None) -> pa.Table:
-    """Related codes at every finer frame (or `target`): columns `frame`, `unit`."""
+    """Related codes at every finer frame (or `target`): columns `frame`, `member`."""
     _check_scale(x)
     _check_frame(x, frame)
     fr, i = _level_index(x, frame)
@@ -219,12 +219,12 @@ def scale_descendants(x: NestedScale, frame: str, unit: str | Sequence[str],
     else:
         _check_frame(x, target, "target")
         targets = [target]
-    return _related_table(x, frame, unit, targets)
+    return _related_table(x, frame, member, targets)
 
 
-def scale_ancestors(x: NestedScale, frame: str, unit: str | Sequence[str],
+def scale_ancestors(x: NestedScale, frame: str, member: str | Sequence[str],
                     target: str | None = None) -> pa.Table:
-    """Related codes at every coarser frame (or `target`): columns `frame`, `unit`."""
+    """Related codes at every coarser frame (or `target`): columns `frame`, `member`."""
     _check_scale(x)
     _check_frame(x, frame)
     fr, i = _level_index(x, frame)
@@ -233,35 +233,35 @@ def scale_ancestors(x: NestedScale, frame: str, unit: str | Sequence[str],
     else:
         _check_frame(x, target, "target")
         targets = [target]
-    return _related_table(x, frame, unit, targets)
+    return _related_table(x, frame, member, targets)
 
 
-def _related_table(x: NestedScale, frame: str, unit: str | Sequence[str],
+def _related_table(x: NestedScale, frame: str, member: str | Sequence[str],
                    targets: Sequence[str]) -> pa.Table:
     fs: list[str] = []
     us: list[str] = []
     for t in targets:
-        codes = _related(x, frame, unit, t)
+        codes = _related(x, frame, member, t)
         fs += [t] * len(codes)
         us += codes
     return pa.table({"frame": pa.array(fs, pa.string()),
-                     "unit": pa.array(us, pa.string())})
+                     "member": pa.array(us, pa.string())})
 
 
-def _related(x: NestedScale, frame: str, unit: str | Sequence[str],
+def _related(x: NestedScale, frame: str, member: str | Sequence[str],
              target: str) -> list[str]:
-    """Codes at `target` that share at least one atom with `unit` at `frame`."""
-    asked = _as_str_tuple(unit)
-    known = set(scale_units(x, frame))
+    """Codes at `target` that share at least one leaf with `member` at `frame`."""
+    asked = _as_str_tuple(member)
+    known = set(scale_members(x, frame))
     unknown = [u for u in dict.fromkeys(asked) if u not in known]
-    unit = set(asked)
+    member = set(asked)
     if unknown:
         _stop("code(s) not found at %s `%s`: %s", scale_vocab(x)["frame"],
               frame, _preview(unknown))
     hit = {t for f, t in zip(_strings(x.leaftable, frame),
                              _strings(x.leaftable, target), strict=True)
-           if f in unit and t is not None}
-    return [c for c in scale_units(x, target) if c in hit]
+           if f in member and t is not None}
+    return [c for c in scale_members(x, target) if c in hit]
 
 
 def scale_coverage(x: NestedScale, weight: str | None = None

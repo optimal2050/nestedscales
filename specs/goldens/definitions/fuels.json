@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
-  "nestedscales": "0.1.1.9000",
+  "schema_version": 2,
+  "nestedscales": "0.3.0",
   "class": "nestedscales::NestedScale",
   "name": "fuels",
-  "key": "fuel",
+  "leaf": "fuel",
   "frames": ["group", "phase", "carrier", "fuel"],
   "members": {
     "group": ["Fossil", "Bio", "Power"],
@@ -38,7 +38,7 @@
       "inline": {
         "columns": {
           "frame": ["fuel", "fuel", "carrier", "group", "fuel", "carrier"],
-          "unit": ["Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"],
+          "member": ["Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"],
           "attribute": ["lhv", "lhv", "lhv", "lhv", "ef_co2", "ef_co2"],
           "kind": ["property", "property", "property", "property", "factor", "factor"],
           "value": [26.7, 11.9, 42.5, 15, 98300, 56100],
@@ -50,7 +50,7 @@
         },
         "types": {
           "frame": "string",
-          "unit": "string",
+          "member": "string",
           "attribute": "string",
           "kind": "string",
           "value": "double",
@@ -66,13 +66,13 @@
       "inline": {
         "columns": {
           "frame": ["fuel", "carrier", "fuel", "carrier", "carrier"],
-          "unit": ["Anthracite", "Coal", "Electricity", "Electricity", "Electricity"],
+          "member": ["Anthracite", "Coal", "Electricity", "Electricity", "Electricity"],
           "alias": ["hard coal", "coal", "elc", "elc", "power"],
           "source": ["example", "example", "example", "example", "example"]
         },
         "types": {
           "frame": "string",
-          "unit": "string",
+          "member": "string",
           "alias": "string",
           "source": "string"
         }

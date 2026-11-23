@@ -1,0 +1,100 @@
+{
+  "schema_version": 2,
+  "nestedscales": "0.3.0",
+  "class": "nestedscales::NestedScale",
+  "name": "fuels",
+  "leaf": "fuel",
+  "frames": ["group", "phase", "carrier", "fuel"],
+  "members": {
+    "group": ["Fossil", "Bio", "Power"],
+    "phase": ["solid", "liquid", "gas"],
+    "carrier": ["Coal", "Oil", "Gas", "Biomass", "Electricity"],
+    "fuel": ["Anthracite", "Lignite", "Diesel", "Gasoline", "NaturalGas", "Wood", "Biodiesel", "Biogas", "Electricity"]
+  },
+  "meta": {
+    "name": "fuels",
+    "desc": "",
+    "weights": [],
+    "default_weight": null,
+    "default_label": "short"
+  },
+  "tables": {
+    "leaftable": {
+      "inline": {
+        "columns": {
+          "group": ["Fossil", "Fossil", "Fossil", "Fossil", "Fossil", "Bio", "Bio", "Bio", "Power"],
+          "phase": ["solid", "solid", "liquid", "liquid", "gas", "solid", "liquid", "gas", null],
+          "carrier": ["Coal", "Coal", "Oil", "Oil", "Gas", "Biomass", "Biomass", "Biomass", "Electricity"],
+          "fuel": ["Anthracite", "Lignite", "Diesel", "Gasoline", "NaturalGas", "Wood", "Biodiesel", "Biogas", "Electricity"]
+        },
+        "types": {
+          "group": "string",
+          "phase": "string",
+          "carrier": "string",
+          "fuel": "string"
+        }
+      }
+    },
+    "attributes": {
+      "inline": {
+        "columns": {
+          "frame": ["fuel", "fuel", "carrier", "group", "fuel", "carrier"],
+          "member": ["Anthracite", "Lignite", "Oil", "Bio", "Anthracite", "Gas"],
+          "attribute": ["lhv", "lhv", "lhv", "lhv", "ef_co2", "ef_co2"],
+          "kind": ["property", "property", "property", "property", "factor", "factor"],
+          "value": [26.7, 11.9, 42.5, 15, 98300, 56100],
+          "lower": [21.6, 5.5, 40, 7.9, 94600, 54300],
+          "upper": [32.2, 21.6, 45, 31, 101000, 58300],
+          "unit_of_measure": ["GJ/t", "GJ/t", "GJ/t", "GJ/t", "kg/TJ", "kg/TJ"],
+          "source": ["example", "example", "example", "example", "example", "example"],
+          "note": [null, null, null, null, null, null]
+        },
+        "types": {
+          "frame": "string",
+          "member": "string",
+          "attribute": "string",
+          "kind": "string",
+          "value": "double",
+          "lower": "double",
+          "upper": "double",
+          "unit_of_measure": "string",
+          "source": "string",
+          "note": "string"
+        }
+      }
+    },
+    "aliases": {
+      "inline": {
+        "columns": {
+          "frame": ["fuel", "carrier", "fuel", "carrier", "carrier"],
+          "member": ["Anthracite", "Coal", "Electricity", "Electricity", "Electricity"],
+          "alias": ["hard coal", "coal", "elc", "elc", "power"],
+          "source": ["example", "example", "example", "example", "example"]
+        },
+        "types": {
+          "frame": "string",
+          "member": "string",
+          "alias": "string",
+          "source": "string"
+        }
+      }
+    },
+    "labels": {
+      "inline": {
+        "columns": {
+          "frame": ["carrier", "carrier", "carrier", "fuel", "group", "carrier", "phase", "phase", "phase"],
+          "member": ["Coal", "Oil", null, "Diesel", "Bio", "Coal", "solid", "gas", null],
+          "variant": ["name", "name", "name", "name", "name", "short", "short", "short", "short"],
+          "label": ["Hard and brown coal", "Crude and products", "Energy carrier", "Diesel oil", "Biogenic", "coal", "Solid", "Gaseous", "Phase"]
+        },
+        "types": {
+          "frame": "string",
+          "member": "string",
+          "variant": "string",
+          "label": "string"
+        }
+      }
+    }
+  },
+  "payload": {}
+}

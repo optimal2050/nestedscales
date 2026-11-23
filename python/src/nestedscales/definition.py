@@ -1,14 +1,17 @@
 """Scale definition files (port of R/definition.R) and the catalogue.
 
 A definition is a HEADER plus TABLES. The header (JSON; YAML accepted on the
-way in) says what the scale is -- class, key, frames, members, meta -- and
-where each table lives: INLINE (column-wise, with a type per column) or in a
-FILE next to it (Arrow IPC, or CSV with the types recorded).
+way in) says what the scale is -- class, leaf column, frames, members, meta --
+and where each table lives: INLINE (column-wise, with a type per column) or in
+a FILE next to it (Arrow IPC, or CSV with the types recorded).
 
     <name>.json          one file, every table inline
     <name>.scale/        a bundle: scale.json + leaftable.arrow + ...
 
-R and Python write and read the same bytes.
+R and Python write and read the same bytes. Schema version 2 names the leaf
+column `leaf` in the header and the code column of the attribute, alias and
+label tables `member`; version 1 named them `key` and `unit`. Version 2 is
+written, both are read.
 """
 from __future__ import annotations
 
@@ -25,13 +28,16 @@ import pyarrow.csv as pcsv
 import pyarrow.ipc as ipc
 
 from ._utils import _preview, _stop
+from .labels import _as_labels
+from .link import scale_id
 from .scale_class import (
     NestedScale,
     _check_scale,
+    _legacy_member_col,
     _scale_name,
 )
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 INLINE_MAX_ROWS = 1000
 _SCALAR = (str, int, float, bool)
 
@@ -143,7 +149,8 @@ def _table_from_ref(ref: Mapping[str, Any], dir: Path | None, what: str) -> pa.T
 
 def _meta_encode(meta: Mapping[str, Any], nm: str = "") -> tuple[dict, list[str]]:
     """Encode `meta`: scalars, lists, dicts, tables. A dict of scalars at the
-    top level is listed in `vectors` so R reads it back as a named vector."""
+    top level is listed in `vectors` so R reads it back as a named vector. A
+    scale becomes `{"_scale": {"name", "id"}}`: a reference, not the object."""
     vectors: list[str] = []
 
     def enc(z: Any, path: list) -> Any:
@@ -151,6 +158,9 @@ def _meta_encode(meta: Mapping[str, Any], nm: str = "") -> tuple[dict, list[str]
             return None
         if isinstance(z, pa.Table):
             return {"_table": _table_inline(z)}
+        if isinstance(z, NestedScale):
+            return {"_scale": {"name": _scale_name(z, require=False),
+                               "id": scale_id(z)}}
         if isinstance(z, bool) or isinstance(z, (int, float, str)):
             return _json_value(z)
         if isinstance(z, Mapping):
@@ -203,7 +213,7 @@ def _scale_header(x: NestedScale, tables: Mapping[str, Any]) -> dict:
         "nestedscales": __version__,
         "class": _class_name(x),
         "name": nm or None,
-        "key": x.key,
+        "leaf": x.leaf,
         "frames": list(x.frames),
         "members": {f: list(c) for f, c in x.members.items()},
         "meta": values,
@@ -215,6 +225,15 @@ def _scale_header(x: NestedScale, tables: Mapping[str, Any]) -> dict:
     return hdr
 
 
+def _header_leaf(hdr: Mapping[str, Any]) -> str:
+    """The name of the leaf column recorded in a header of either schema
+    version."""
+    sv = hdr.get("schema_version")
+    if isinstance(sv, (int, float)) and sv < 2:
+        return hdr.get("key") or "unit"
+    return hdr.get("leaf") or "leaf"
+
+
 def _scale_from_header(hdr: Mapping[str, Any], dir: Path | None) -> NestedScale:
     sv = hdr.get("schema_version")
     if not isinstance(sv, (int, float)) or sv > SCHEMA_VERSION:
@@ -224,18 +243,25 @@ def _scale_from_header(hdr: Mapping[str, Any], dir: Path | None) -> NestedScale:
     if tables.get("leaftable") is None:
         _stop("the definition has no `leaftable`")
     leaftable = _table_from_ref(tables["leaftable"], dir, "leaftable")
-    at = (_table_from_ref(tables["attributes"], dir, "attributes")
-          if tables.get("attributes") is not None else None)
-    al = (_table_from_ref(tables["aliases"], dir, "aliases")
-          if tables.get("aliases") is not None else None)
+
+    def member_table(what: str) -> pa.Table | None:
+        if tables.get(what) is None:
+            return None
+        t = _table_from_ref(tables[what], dir, what)
+        # a schema 1 member table has its codes in a `unit` column
+        return _legacy_member_col(t) if sv < 2 else t
+
+    at, al = member_table("attributes"), member_table("aliases")
+    lb = member_table("labels")
     meta = _meta_decode(hdr.get("meta"), hdr.get("meta_vectors") or ())
     if hdr.get("name") is not None and meta.get("name") is None:
         meta["name"] = hdr["name"]
     return NestedScale(leaftable=leaftable, frames=list(hdr.get("frames") or []),
                        members={f: list(c)
                                 for f, c in (hdr.get("members") or {}).items()},
-                       key=hdr.get("key") or "unit", meta=meta,
-                       attributes=at, aliases=al)
+                       leaf=_header_leaf(hdr), meta=meta,
+                       attributes=at, aliases=al,
+                       labels=None if lb is None else _as_labels(lb))
 
 
 def _write_header(hdr: Mapping[str, Any], file: Path, fmt: str) -> None:
@@ -265,14 +291,31 @@ def _read_header(file: Path) -> dict:
 
 @functools.singledispatch
 def scale_write_payload(x: NestedScale, dir: Path | None, header: dict) -> dict:
-    """Write a subclass's payload next to the header; returns the header."""
+    """Write a subclass's payload in a definition; returns the header.
+
+    Called by `write_scale()` after the core tables are written, with the
+    subclass object, the bundle directory (None for a single-file
+    definition, which can hold inline data only) and the header so far. The
+    method writes its files and returns the header with its entries added
+    under `"payload"`; it may also adjust `"meta"` and `"meta_vectors"` (the
+    top-level meta entries the other binding reads as named vectors). The
+    `NestedScale` default returns the header unchanged.
+    """
     return header
 
 
 @functools.singledispatch
 def scale_read_payload(x: NestedScale, dir: Path | None,
                        header: Mapping) -> NestedScale:
-    """Rebuild a subclass from the core scale and its payload files."""
+    """Rebuild a subclass from the core scale and its payload files.
+
+    Called by `read_scale()` with the CORE scale rebuilt from the header, the
+    directory the files are in and the header; dispatched on the class
+    registered under the header's `class` (see `register_scale_class()`),
+    so the method is registered for the subclass and receives a plain
+    `NestedScale`. It returns the subclass object. A scale held in `meta`
+    arrives as its reference, `{"_scale": {"name", "id"}}`.
+    """
     return x
 
 
@@ -305,7 +348,11 @@ _HEADERS = ("scale.json", "scale.yaml", "scale.yml")
 def write_scale(x: NestedScale, path: str | os.PathLike, format: str = "json",
                 tables: str = "auto", overwrite: bool = False) -> Path:
     """Write a scale as a definition: one file (`.json`/`.yaml`) with inline
-    tables, or a bundle directory with `scale.json` and table files."""
+    tables, or a bundle directory with `scale.json` and table files.
+
+    Schema version 2 is written. The label table is written when the scale
+    has labels. A scale held in `meta` is written as a reference, its name
+    and `scale_id()`."""
     _check_scale(x, "x")
     if tables not in ("auto", "inline", "arrow", "csv"):
         _stop('`tables` must be one of "auto", "inline", "arrow", "csv"')
@@ -325,6 +372,10 @@ def write_scale(x: NestedScale, path: str | os.PathLike, format: str = "json",
         tables = "inline"
 
     core = {"leaftable": x.leaftable, "attributes": x.attributes, "aliases": x.aliases}
+    # written only when present, so a definition without labels stays
+    # readable by a version that does not know the table
+    if x.labels.num_rows > 0:
+        core["labels"] = x.labels
     if tables == "auto":
         n = sum(t.num_rows for t in core.values())
         tables = "inline" if n <= INLINE_MAX_ROWS else "arrow"
@@ -381,7 +432,11 @@ def _remove_bundle(dir: Path, old: Sequence[str]) -> None:
 
 def read_scale(path: str | os.PathLike, package: str | None = None,
                cls: str = "stored") -> NestedScale:
-    """Read a definition file, a bundle directory or a catalogue id."""
+    """Read a definition file, a bundle directory or a catalogue id.
+
+    Schema versions 1 and 2 are read. The scale comes back as the class it
+    was written from when that class is registered; `cls="core"` gives the
+    plain `NestedScale`."""
     if cls not in ("stored", "core"):
         _stop('`class` must be "stored" or "core"')
     p = Path(path)
@@ -471,9 +526,9 @@ def scale_catalog() -> list[dict]:
             cls = hdr.get("class") or "nestedscales::NestedScale"
             rows.append({"id": id_, "name": hdr.get("name"),
                          "kind": cls.split("::")[-1],
-                         "key": hdr.get("key") or "unit",
+                         "leaf": _header_leaf(hdr),
                          "frames": "/".join(hdr.get("frames") or []),
-                         "n_atoms": n, "package": d["package"], "path": str(file)})
+                         "n_leaves": n, "package": d["package"], "path": str(file)})
     return sorted(rows, key=lambda r: (r["id"], r["package"] or ""))
 
 

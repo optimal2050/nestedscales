@@ -1,19 +1,19 @@
 {
-  "schema_version": 1,
-  "nestedscales": "0.1.1.9000",
+  "schema_version": 2,
+  "nestedscales": "0.3.0",
   "class": "nestedscales::NestedScale",
   "name": "example",
-  "key": "unit",
-  "frames": ["sector", "class", "group", "unit"],
+  "leaf": "item",
+  "frames": ["sector", "class", "group", "item"],
   "members": {
     "sector": ["P", "S"],
     "class": ["G1", "G2", "S1"],
     "group": ["G1", "GB", "GC"],
-    "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+    "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
   },
   "meta": {
     "name": "example",
-    "desc": "Synthetic example: reused code, non-nesting frame pair, and an unassigned atom",
+    "desc": "Synthetic example: reused code, non-nesting frame pair, and an unassigned leaf",
     "weights": ["size", "count"],
     "default_weight": "size"
   },
@@ -24,7 +24,7 @@
           "sector": ["P", "P", "P", "P", "S", "S", null],
           "class": ["G1", "G1", "G2", "G2", "S1", "S1", null],
           "group": ["G1", "G1", "GB", "GB", "GB", "GC", null],
-          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+          "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
           "size": [100, 200, 300, 400, 500, 600, 1000],
           "count": [10, 90, 30, 70, 50, 50, 0]
         },
@@ -32,7 +32,7 @@
           "sector": "string",
           "class": "string",
           "group": "string",
-          "unit": "string",
+          "item": "string",
           "size": "double",
           "count": "double"
         }
@@ -42,7 +42,7 @@
       "inline": {
         "columns": {
           "frame": [],
-          "unit": [],
+          "member": [],
           "attribute": [],
           "kind": [],
           "value": [],
@@ -54,7 +54,7 @@
         },
         "types": {
           "frame": "string",
-          "unit": "string",
+          "member": "string",
           "attribute": "string",
           "kind": "string",
           "value": "double",
@@ -70,13 +70,13 @@
       "inline": {
         "columns": {
           "frame": [],
-          "unit": [],
+          "member": [],
           "alias": [],
           "source": []
         },
         "types": {
           "frame": "string",
-          "unit": "string",
+          "member": "string",
           "alias": "string",
           "source": "string"
         }

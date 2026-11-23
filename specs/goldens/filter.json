@@ -1,5 +1,5 @@
 {
-  "generated_by": "nestedscales 0.1.1.9000",
+  "generated_by": "nestedscales 0.3.0",
   "cases": [
     {
       "kind": "scale",
@@ -7,7 +7,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -21,13 +21,13 @@
       ],
       "error": false,
       "value": {
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "members": {
           "sector": ["P"],
           "class": ["G1", "G2"],
           "group": ["G1", "GB"],
-          "unit": ["U1", "U2", "U3", "U4"]
+          "item": ["U1", "U2", "U3", "U4"]
         },
         "name": "example[sector:P]",
         "parent_name": "example",
@@ -46,7 +46,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U1",
+            "item": "U1",
             "size": 100,
             "count": 10
           },
@@ -54,7 +54,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U2",
+            "item": "U2",
             "size": 200,
             "count": 90
           },
@@ -62,7 +62,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U3",
+            "item": "U3",
             "size": 300,
             "count": 30
           },
@@ -70,7 +70,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U4",
+            "item": "U4",
             "size": 400,
             "count": 70
           }
@@ -83,7 +83,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -97,13 +97,13 @@
       ],
       "error": false,
       "value": {
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "members": {
           "sector": ["P", "S"],
           "class": ["G1", "S1"],
           "group": ["G1", "GB", "GC"],
-          "unit": ["U1", "U2", "U5", "U6"]
+          "item": ["U1", "U2", "U5", "U6"]
         },
         "name": "example[class:G1+S1]",
         "parent_name": "example",
@@ -122,7 +122,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U1",
+            "item": "U1",
             "size": 100,
             "count": 10
           },
@@ -130,7 +130,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U2",
+            "item": "U2",
             "size": 200,
             "count": 90
           },
@@ -138,7 +138,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GB",
-            "unit": "U5",
+            "item": "U5",
             "size": 500,
             "count": 50
           },
@@ -146,7 +146,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GC",
-            "unit": "U6",
+            "item": "U6",
             "size": 600,
             "count": 50
           }
@@ -159,7 +159,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -173,13 +173,13 @@
       ],
       "error": false,
       "value": {
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "members": {
           "sector": ["P", "S"],
           "class": ["G2", "S1"],
           "group": ["GB"],
-          "unit": ["U3", "U4", "U5"]
+          "item": ["U3", "U4", "U5"]
         },
         "name": "example[group:GB]",
         "parent_name": "example",
@@ -198,7 +198,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U3",
+            "item": "U3",
             "size": 300,
             "count": 30
           },
@@ -206,7 +206,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U4",
+            "item": "U4",
             "size": 400,
             "count": 70
           },
@@ -214,7 +214,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GB",
-            "unit": "U5",
+            "item": "U5",
             "size": 500,
             "count": 50
           }
@@ -227,27 +227,27 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
         {
           "fn": "filter_scale",
           "args": [
-            "unit",
+            "item",
             ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
           ]
         }
       ],
       "error": false,
       "value": {
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "members": {
           "sector": ["P", "S"],
           "class": ["G1", "G2", "S1"],
           "group": ["G1", "GB", "GC"],
-          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+          "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
         },
         "name": "example",
         "parent_name": null,
@@ -260,7 +260,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U1",
+            "item": "U1",
             "size": 100,
             "count": 10
           },
@@ -268,7 +268,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U2",
+            "item": "U2",
             "size": 200,
             "count": 90
           },
@@ -276,7 +276,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U3",
+            "item": "U3",
             "size": 300,
             "count": 30
           },
@@ -284,7 +284,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U4",
+            "item": "U4",
             "size": 400,
             "count": 70
           },
@@ -292,7 +292,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GB",
-            "unit": "U5",
+            "item": "U5",
             "size": 500,
             "count": 50
           },
@@ -300,7 +300,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GC",
-            "unit": "U6",
+            "item": "U6",
             "size": 600,
             "count": 50
           },
@@ -308,7 +308,7 @@
             "sector": null,
             "class": null,
             "group": null,
-            "unit": "OTH",
+            "item": "OTH",
             "size": 1000,
             "count": 0
           }
@@ -321,7 +321,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -342,13 +342,13 @@
       ],
       "error": false,
       "value": {
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "members": {
           "sector": ["P"],
           "class": ["G1"],
           "group": ["G1"],
-          "unit": ["U1", "U2"]
+          "item": ["U1", "U2"]
         },
         "name": "example[class:G1]",
         "parent_name": "example",
@@ -367,7 +367,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U1",
+            "item": "U1",
             "size": 100,
             "count": 10
           },
@@ -375,7 +375,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U2",
+            "item": "U2",
             "size": 200,
             "count": 90
           }
@@ -388,14 +388,14 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
         {
           "fn": "filter_scale",
           "args": [
-            "unit",
+            "item",
             "OTH"
           ]
         }
@@ -409,14 +409,14 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
         {
           "fn": "filter_scale",
           "args": {
-            "1": "unit",
+            "1": "item",
             "2": "OTH",
             "drop_empty_frames": true
           }
@@ -431,7 +431,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -452,29 +452,29 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
         {
           "fn": "filter_scale",
           "args": [
-            "unit",
+            "item",
             ["U1", "U2", "U3", "U4", "U5", "U6"]
           ]
         }
       ],
       "error": false,
       "value": {
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "members": {
           "sector": ["P", "S"],
           "class": ["G1", "G2", "S1"],
           "group": ["G1", "GB", "GC"],
-          "unit": ["U1", "U2", "U3", "U4", "U5", "U6"]
+          "item": ["U1", "U2", "U3", "U4", "U5", "U6"]
         },
-        "name": "example[unit:U1+U2+U3+U4+U5+U6]",
+        "name": "example[item:U1+U2+U3+U4+U5+U6]",
         "parent_name": "example",
         "coverage": {
           "size": 0.67741935483871,
@@ -491,7 +491,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U1",
+            "item": "U1",
             "size": 100,
             "count": 10
           },
@@ -499,7 +499,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U2",
+            "item": "U2",
             "size": 200,
             "count": 90
           },
@@ -507,7 +507,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U3",
+            "item": "U3",
             "size": 300,
             "count": 30
           },
@@ -515,7 +515,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U4",
+            "item": "U4",
             "size": 400,
             "count": 70
           },
@@ -523,7 +523,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GB",
-            "unit": "U5",
+            "item": "U5",
             "size": 500,
             "count": 50
           },
@@ -531,7 +531,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GC",
-            "unit": "U6",
+            "item": "U6",
             "size": 600,
             "count": 50
           }
@@ -544,7 +544,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -558,7 +558,7 @@
       "error": false,
       "value": {
         "frames": ["sector"],
-        "key": "unit",
+        "leaf": "item",
         "members": {
           "sector": ["P", "S"]
         },
@@ -579,13 +579,13 @@
             "sector": "P",
             "size": 1000,
             "count": 200,
-            "unit": "P"
+            "item": "P"
           },
           {
             "sector": "S",
             "size": 1100,
             "count": 100,
-            "unit": "S"
+            "item": "S"
           }
         ]
       }
@@ -596,7 +596,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -610,7 +610,7 @@
       "error": false,
       "value": {
         "frames": ["sector", "class"],
-        "key": "unit",
+        "leaf": "item",
         "members": {
           "sector": ["P", "S"],
           "class": ["G1", "G2", "S1"]
@@ -633,21 +633,21 @@
             "class": "G1",
             "size": 300,
             "count": 100,
-            "unit": "G1"
+            "item": "G1"
           },
           {
             "sector": "P",
             "class": "G2",
             "size": 700,
             "count": 100,
-            "unit": "G2"
+            "item": "G2"
           },
           {
             "sector": "S",
             "class": "S1",
             "size": 1100,
             "count": 100,
-            "unit": "S1"
+            "item": "S1"
           }
         ]
       }
@@ -658,7 +658,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -670,7 +670,7 @@
         }
       ],
       "error": true,
-      "message": "<nestedscales::NestedScale> object is invalid:\n- `leaftable$unit` must be unique; duplicated: GB. Parallel dimensions belong in separate NestedScale objects."
+      "message": "<nestedscales::NestedScale> object is invalid:\n- `leaftable$item` must be unique; duplicated: GB. Parallel dimensions belong in separate NestedScale objects."
     },
     {
       "kind": "scale",
@@ -678,28 +678,28 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
         {
           "fn": "prune_scale",
           "args": [
-            "unit"
+            "item"
           ]
         }
       ],
       "error": false,
       "value": {
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "members": {
           "sector": ["P", "S"],
           "class": ["G1", "G2", "S1"],
           "group": ["G1", "GB", "GC"],
-          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+          "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
         },
-        "name": "example@unit",
+        "name": "example@item",
         "parent_name": "example",
         "coverage": null,
         "parent_totals": null,
@@ -710,7 +710,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U1",
+            "item": "U1",
             "size": 100,
             "count": 10
           },
@@ -718,7 +718,7 @@
             "sector": "P",
             "class": "G1",
             "group": "G1",
-            "unit": "U2",
+            "item": "U2",
             "size": 200,
             "count": 90
           },
@@ -726,7 +726,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U3",
+            "item": "U3",
             "size": 300,
             "count": 30
           },
@@ -734,7 +734,7 @@
             "sector": "P",
             "class": "G2",
             "group": "GB",
-            "unit": "U4",
+            "item": "U4",
             "size": 400,
             "count": 70
           },
@@ -742,7 +742,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GB",
-            "unit": "U5",
+            "item": "U5",
             "size": 500,
             "count": 50
           },
@@ -750,7 +750,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GC",
-            "unit": "U6",
+            "item": "U6",
             "size": 600,
             "count": 50
           },
@@ -758,7 +758,7 @@
             "sector": null,
             "class": null,
             "group": null,
-            "unit": "OTH",
+            "item": "OTH",
             "size": 1000,
             "count": 0
           }
@@ -771,7 +771,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "steps": [
@@ -792,7 +792,7 @@
       "error": false,
       "value": {
         "frames": ["sector", "class"],
-        "key": "unit",
+        "leaf": "item",
         "members": {
           "sector": ["S"],
           "class": ["S1"]
@@ -815,7 +815,7 @@
             "class": "S1",
             "size": 1100,
             "count": 100,
-            "unit": "S1"
+            "item": "S1"
           }
         ]
       }
@@ -826,10 +826,10 @@
         "build": "scale_from_leaftable",
         "leaftable": {
           "grp": ["A", "A", "B"],
-          "unit": ["u1", "u2", "u3"]
+          "item": ["u1", "u2", "u3"]
         },
-        "frames": ["grp", "unit"],
-        "key": "unit",
+        "frames": ["grp", "item"],
+        "leaf": "item",
         "name": "noweights"
       },
       "steps": [
@@ -843,7 +843,7 @@
       "error": false,
       "value": {
         "frames": ["grp"],
-        "key": "unit",
+        "leaf": "item",
         "members": {
           "grp": ["A", "B"]
         },
@@ -856,11 +856,11 @@
         "leaftable": [
           {
             "grp": "A",
-            "unit": "A"
+            "item": "A"
           },
           {
             "grp": "B",
-            "unit": "B"
+            "item": "B"
           }
         ]
       }
@@ -873,15 +873,15 @@
           "sector": ["P", "P", "P", "P", "S", "S", null],
           "class": ["G1", "G1", "G2", "G2", "S1", "S1", null],
           "group": ["G1", "G1", "GB", "GB", "GB", "GC", null],
-          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+          "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
           "size": [100, 200, 300, 400, 500, 600, 1000],
           "count": [10, 90, 30, 70, 50, 50, 0]
         },
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "name": "example",
         "residuals": {
-          "unit": ["U6"]
+          "item": ["U6"]
         }
       },
       "steps": [
@@ -895,13 +895,13 @@
       ],
       "error": false,
       "value": {
-        "frames": ["sector", "class", "group", "unit"],
-        "key": "unit",
+        "frames": ["sector", "class", "group", "item"],
+        "leaf": "item",
         "members": {
           "sector": ["S"],
           "class": ["S1"],
           "group": ["GB", "GC"],
-          "unit": ["U5", "U6"]
+          "item": ["U5", "U6"]
         },
         "name": "example[class:S1]",
         "parent_name": "example",
@@ -920,7 +920,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GB",
-            "unit": "U5",
+            "item": "U5",
             "size": 500,
             "count": 50
           },
@@ -928,7 +928,7 @@
             "sector": "S",
             "class": "S1",
             "group": "GC",
-            "unit": "U6",
+            "item": "U6",
             "size": 600,
             "count": 50
           }
@@ -942,7 +942,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
@@ -977,7 +977,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
@@ -1016,7 +1016,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
@@ -1051,7 +1051,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
@@ -1090,7 +1090,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
@@ -1125,7 +1125,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
@@ -1170,7 +1170,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
@@ -1205,7 +1205,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
@@ -1250,48 +1250,48 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
       "args": {
-        "frame": "unit",
+        "frame": "item",
         "weight": null
       },
       "error": false,
       "value": [
         {
-          "unit": "U1",
+          "item": "U1",
           "size": 100,
           "share": 0.032258064516129
         },
         {
-          "unit": "U2",
+          "item": "U2",
           "size": 200,
           "share": 0.0645161290322581
         },
         {
-          "unit": "U3",
+          "item": "U3",
           "size": 300,
           "share": 0.0967741935483871
         },
         {
-          "unit": "U4",
+          "item": "U4",
           "size": 400,
           "share": 0.129032258064516
         },
         {
-          "unit": "U5",
+          "item": "U5",
           "size": 500,
           "share": 0.161290322580645
         },
         {
-          "unit": "U6",
+          "item": "U6",
           "size": 600,
           "share": 0.193548387096774
         },
         {
-          "unit": "OTH",
+          "item": "OTH",
           "size": 1000,
           "share": 0.32258064516129
         }
@@ -1305,49 +1305,49 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
       "args": {
-        "frame": "unit",
+        "frame": "item",
         "weight": null,
         "within": "sector"
       },
       "error": false,
       "value": [
         {
-          "unit": "U1",
+          "item": "U1",
           "sector": "P",
           "size": 100,
           "share": 0.1
         },
         {
-          "unit": "U2",
+          "item": "U2",
           "sector": "P",
           "size": 200,
           "share": 0.2
         },
         {
-          "unit": "U3",
+          "item": "U3",
           "sector": "P",
           "size": 300,
           "share": 0.3
         },
         {
-          "unit": "U4",
+          "item": "U4",
           "sector": "P",
           "size": 400,
           "share": 0.4
         },
         {
-          "unit": "U5",
+          "item": "U5",
           "sector": "S",
           "size": 500,
           "share": 0.454545454545455
         },
         {
-          "unit": "U6",
+          "item": "U6",
           "sector": "S",
           "size": 600,
           "share": 0.545454545454545
@@ -1362,48 +1362,48 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
       "args": {
-        "frame": "unit",
+        "frame": "item",
         "weight": "count"
       },
       "error": false,
       "value": [
         {
-          "unit": "U1",
+          "item": "U1",
           "count": 10,
           "share": 0.0333333333333333
         },
         {
-          "unit": "U2",
+          "item": "U2",
           "count": 90,
           "share": 0.3
         },
         {
-          "unit": "U3",
+          "item": "U3",
           "count": 30,
           "share": 0.1
         },
         {
-          "unit": "U4",
+          "item": "U4",
           "count": 70,
           "share": 0.233333333333333
         },
         {
-          "unit": "U5",
+          "item": "U5",
           "count": 50,
           "share": 0.166666666666667
         },
         {
-          "unit": "U6",
+          "item": "U6",
           "count": 50,
           "share": 0.166666666666667
         },
         {
-          "unit": "OTH",
+          "item": "OTH",
           "count": 0,
           "share": 0
         }
@@ -1417,49 +1417,49 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
       "args": {
-        "frame": "unit",
+        "frame": "item",
         "weight": "count",
         "within": "sector"
       },
       "error": false,
       "value": [
         {
-          "unit": "U1",
+          "item": "U1",
           "sector": "P",
           "count": 10,
           "share": 0.05
         },
         {
-          "unit": "U2",
+          "item": "U2",
           "sector": "P",
           "count": 90,
           "share": 0.45
         },
         {
-          "unit": "U3",
+          "item": "U3",
           "sector": "P",
           "count": 30,
           "share": 0.15
         },
         {
-          "unit": "U4",
+          "item": "U4",
           "sector": "P",
           "count": 70,
           "share": 0.35
         },
         {
-          "unit": "U5",
+          "item": "U5",
           "sector": "S",
           "count": 50,
           "share": 0.5
         },
         {
-          "unit": "U6",
+          "item": "U6",
           "sector": "S",
           "count": 50,
           "share": 0.5
@@ -1474,48 +1474,48 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": null,
       "args": {
-        "frame": "unit",
+        "frame": "item",
         "within": "group"
       },
       "error": false,
       "value": [
         {
-          "unit": "U1",
+          "item": "U1",
           "group": "G1",
           "size": 100,
           "share": 0.333333333333333
         },
         {
-          "unit": "U2",
+          "item": "U2",
           "group": "G1",
           "size": 200,
           "share": 0.666666666666667
         },
         {
-          "unit": "U3",
+          "item": "U3",
           "group": "GB",
           "size": 300,
           "share": 0.25
         },
         {
-          "unit": "U4",
+          "item": "U4",
           "group": "GB",
           "size": 400,
           "share": 0.333333333333333
         },
         {
-          "unit": "U5",
+          "item": "U5",
           "group": "GB",
           "size": 500,
           "share": 0.416666666666667
         },
         {
-          "unit": "U6",
+          "item": "U6",
           "group": "GC",
           "size": 600,
           "share": 1
@@ -1530,7 +1530,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1576,7 +1576,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1628,7 +1628,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1681,7 +1681,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1737,7 +1737,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1799,7 +1799,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1853,7 +1853,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1895,7 +1895,7 @@
           "example": null
         }
       ],
-      "warnings": ["1 code(s) in the `class` column are not units at frame 'class': ZZ"]
+      "warnings": ["1 code(s) in the `class` column are not members at frame 'class': ZZ"]
     },
     {
       "kind": "table",
@@ -1904,7 +1904,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1919,7 +1919,7 @@
       },
       "args": [],
       "error": true,
-      "message": "no rows of the `class` column match units at frame 'class'",
+      "message": "no rows of the `class` column match members at frame 'class'",
       "warnings": []
     },
     {
@@ -1929,7 +1929,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1946,7 +1946,7 @@
         "attach": "sector"
       },
       "error": true,
-      "message": "no rows of the `example` column match units at frame 'class'",
+      "message": "no rows of the `example` column match members at frame 'class'",
       "warnings": []
     },
     {
@@ -1956,7 +1956,7 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
@@ -1995,17 +1995,17 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
         "columns": {
-          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+          "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
           "cap": [1, 2, 3, 4, 5, 6, 7],
           "eff": [0.5, 0.6, 0.7, 0.8, 0.9, 1, 0.4]
         },
         "types": {
-          "unit": "string",
+          "item": "string",
           "cap": "double",
           "eff": "double"
         }
@@ -2016,49 +2016,49 @@
       "error": false,
       "value": [
         {
-          "unit": "U1",
+          "item": "U1",
           "cap": 1,
           "eff": 0.5,
           "example.group": "G1",
           "example": "U1"
         },
         {
-          "unit": "U2",
+          "item": "U2",
           "cap": 2,
           "eff": 0.6,
           "example.group": "G1",
           "example": "U2"
         },
         {
-          "unit": "U3",
+          "item": "U3",
           "cap": 3,
           "eff": 0.7,
           "example.group": "GB",
           "example": "U3"
         },
         {
-          "unit": "U4",
+          "item": "U4",
           "cap": 4,
           "eff": 0.8,
           "example.group": "GB",
           "example": "U4"
         },
         {
-          "unit": "U5",
+          "item": "U5",
           "cap": 5,
           "eff": 0.9,
           "example.group": "GB",
           "example": "U5"
         },
         {
-          "unit": "U6",
+          "item": "U6",
           "cap": 6,
           "eff": 1,
           "example.group": "GC",
           "example": "U6"
         },
         {
-          "unit": "OTH",
+          "item": "OTH",
           "cap": 7,
           "eff": 0.4,
           "example.group": null,
@@ -2074,27 +2074,27 @@
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "data": {
         "columns": {
-          "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
+          "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"],
           "cap": [1, 2, 3, 4, 5, 6, 7],
           "eff": [0.5, 0.6, 0.7, 0.8, 0.9, 1, 0.4]
         },
         "types": {
-          "unit": "string",
+          "item": "string",
           "cap": "double",
           "eff": "double"
         }
       },
       "args": {
-        "frame": "unit",
+        "frame": "item",
         "attach": "nope"
       },
       "error": true,
-      "message": "`attach` must be coarser than 'unit'; not: nope",
+      "message": "`attach` must be coarser than 'item'; not: nope",
       "warnings": []
     },
     {
@@ -2104,10 +2104,10 @@
         "build": "scale_from_leaftable",
         "leaftable": {
           "grp": ["A", "A", "B"],
-          "unit": ["u1", "u2", "u3"]
+          "item": ["u1", "u2", "u3"]
         },
-        "frames": ["grp", "unit"],
-        "key": "unit",
+        "frames": ["grp", "item"],
+        "leaf": "item",
         "name": "noweights"
       },
       "data": {

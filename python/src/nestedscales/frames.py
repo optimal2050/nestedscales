@@ -20,8 +20,8 @@ _R_RESERVED = frozenset({
     "NA_character_", "NA_complex_",
 })
 
-#: Column names with a fixed meaning that cannot be frame names. The atom key
-#: is reserved too, except as the name of the finest frame.
+#: Column names with a fixed meaning that cannot be frame names. The name
+#: of the leaf column is reserved too, except as the name of the finest frame.
 RESERVED_COLS = ("share", ".weight", ".order")
 
 

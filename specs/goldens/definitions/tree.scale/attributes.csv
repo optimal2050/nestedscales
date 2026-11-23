@@ -1,4 +1,4 @@
-"frame","unit","attribute","kind","value","lower","upper","unit_of_measure","source","note"
+"frame","member","attribute","kind","value","lower","upper","unit_of_measure","source","note"
 "fuel","Anthracite","lhv","property",26.7,21.6,32.2,"GJ/t","example",
 "fuel","Lignite","lhv","property",11.9,5.5,21.6,"GJ/t","example",
 "carrier","Oil","lhv","property",42.5,40,45,"GJ/t","example",

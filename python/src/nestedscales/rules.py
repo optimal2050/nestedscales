@@ -24,7 +24,7 @@ from ._utils import _preview, _stop
 #: * `weighted_mean` -- up: weighted mean; down: copy (intensive quantities)
 #: * `mean` -- up: unweighted mean; down: copy
 #: * `copy` -- up: the common value, error if not constant; down: copy
-#: * `sd` -- up: standard deviation over the atoms (aggregation only)
+#: * `sd` -- up: standard deviation over the leaves (aggregation only)
 #: * `share` -- value / total over its parent group; stays keyed at the
 #:   SOURCE frame, so it cannot be mixed with other rules in one call
 #: * `logshare` -- the same computation as `share`, drawn on a log scale

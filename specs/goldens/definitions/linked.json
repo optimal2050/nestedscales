@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "nestedscales": "0.3.0",
+  "class": "nestedscales::NestedScale",
+  "name": "linked",
+  "leaf": "period",
+  "frames": ["era", "period"],
+  "members": {
+    "era": ["E1", "E2"],
+    "period": ["p1", "p2", "p3", "p4"]
+  },
+  "meta": {
+    "name": "linked",
+    "desc": "",
+    "weights": "span",
+    "default_weight": "span",
+    "based_on": {
+      "_scale": {
+        "name": "example",
+        "id": "example@c24a3e23"
+      }
+    }
+  },
+  "tables": {
+    "leaftable": {
+      "inline": {
+        "columns": {
+          "era": ["E1", "E1", "E2", "E2"],
+          "period": ["p1", "p2", "p3", "p4"],
+          "span": [1, 3, 2, 4]
+        },
+        "types": {
+          "era": "string",
+          "period": "string",
+          "span": "double"
+        }
+      }
+    },
+    "attributes": {
+      "inline": {
+        "columns": {
+          "frame": [],
+          "member": [],
+          "attribute": [],
+          "kind": [],
+          "value": [],
+          "lower": [],
+          "upper": [],
+          "unit_of_measure": [],
+          "source": [],
+          "note": []
+        },
+        "types": {
+          "frame": "string",
+          "member": "string",
+          "attribute": "string",
+          "kind": "string",
+          "value": "double",
+          "lower": "double",
+          "upper": "double",
+          "unit_of_measure": "string",
+          "source": "string",
+          "note": "string"
+        }
+      }
+    },
+    "aliases": {
+      "inline": {
+        "columns": {
+          "frame": [],
+          "member": [],
+          "alias": [],
+          "source": []
+        },
+        "types": {
+          "frame": "string",
+          "member": "string",
+          "alias": "string",
+          "source": "string"
+        }
+      }
+    }
+  },
+  "payload": {}
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 2,
+  "nestedscales": "0.3.0",
+  "class": "nestedscales::NestedScale",
+  "name": "tree",
+  "leaf": "fuel",
+  "frames": ["group", "carrier", "fuel"],
+  "members": {
+    "group": ["Fossil", "Bio", "Power"],
+    "carrier": ["Coal", "Oil", "Gas", "Biomass", "Electricity"],
+    "fuel": ["Anthracite", "Lignite", "Diesel", "Gasoline", "NaturalGas", "Wood", "Biodiesel", "Biogas", "Electricity"]
+  },
+  "meta": {
+    "name": "tree",
+    "desc": "",
+    "weights": [],
+    "default_weight": null
+  },
+  "tables": {
+    "leaftable": {
+      "file": "leaftable.csv",
+      "format": "csv",
+      "types": {
+        "group": "string",
+        "carrier": "string",
+        "fuel": "string"
+      }
+    },
+    "attributes": {
+      "file": "attributes.csv",
+      "format": "csv",
+      "types": {
+        "frame": "string",
+        "member": "string",
+        "attribute": "string",
+        "kind": "string",
+        "value": "double",
+        "lower": "double",
+        "upper": "double",
+        "unit_of_measure": "string",
+        "source": "string",
+        "note": "string"
+      }
+    },
+    "aliases": {
+      "file": "aliases.csv",
+      "format": "csv",
+      "types": {
+        "frame": "string",
+        "member": "string",
+        "alias": "string",
+        "source": "string"
+      }
+    },
+    "labels": {
+      "file": "labels.csv",
+      "format": "csv",
+      "types": {
+        "frame": "string",
+        "member": "string",
+        "variant": "string",
+        "label": "string"
+      }
+    }
+  },
+  "payload": {}
+}

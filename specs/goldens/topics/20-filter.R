@@ -6,7 +6,7 @@
 scale_desc <- function(s) {
   m <- S7::prop(s, "meta")
   list(
-    frames = vec(scale_frames(s)), key = scale_key(s),
+    frames = vec(scale_frames(s)), leaf = scale_leaf_column(s),
     members = lapply(S7::prop(s, "members"), vec),
     name = m[["name"]], parent_name = m[["parent_name"]],
     coverage = num(m[["coverage"]]), parent_totals = num(m[["parent_totals"]]),
@@ -48,15 +48,15 @@ table_case <- function(fn, base, data = NULL, ...) {
 steps_case(ex, list(step("filter_scale", "sector", "P")))
 steps_case(ex, list(step("filter_scale", "class", c("G1", "S1"))))
 steps_case(ex, list(step("filter_scale", "group", "GB")))
-steps_case(ex, list(step("filter_scale", "unit", U)))
+steps_case(ex, list(step("filter_scale", "item", U)))
 steps_case(ex, list(step("filter_scale", "sector", "P"),
                     step("filter_scale", "class", "G1")))
-steps_case(ex, list(step("filter_scale", "unit", "OTH")))
-steps_case(ex, list(step("filter_scale", "unit", "OTH", drop_empty_frames = TRUE)))
+steps_case(ex, list(step("filter_scale", "item", "OTH")))
+steps_case(ex, list(step("filter_scale", "item", "OTH", drop_empty_frames = TRUE)))
 steps_case(ex, list(step("filter_scale", "sector", "Q")))
-steps_case(ex, list(step("filter_scale", "unit",
+steps_case(ex, list(step("filter_scale", "item",
                          c("U1", "U2", "U3", "U4", "U5", "U6"))))
-for (f in c("sector", "class", "group", "unit")) {
+for (f in c("sector", "class", "group", "item")) {
   steps_case(ex, list(step("prune_scale", f)))
 }
 steps_case(ex, list(step("filter_scale", "sector", "S"),
@@ -66,13 +66,13 @@ steps_case(ex_res, list(step("filter_scale", "class", "S1")))
 
 # share / join / array ---------------------------------------------------------
 
-for (f in c("class", "group", "unit")) {
+for (f in c("class", "group", "item")) {
   for (w in list(NULL, "count")) {
     table_case("scale_share", ex, frame = f, weight = w)
     table_case("scale_share", ex, frame = f, weight = w, within = "sector")
   }
 }
-table_case("scale_share", ex, frame = "unit", within = "group")
+table_case("scale_share", ex, frame = "item", within = "group")
 
 d_join <- data.frame(class = c("G1", "G2", "S1", "G1"), v = c(1, 2, 3, 4))
 table_case("join_scale", ex, d_join)
@@ -88,7 +88,7 @@ table_case("join_scale", ex, data.frame(class = "G1", example = "x"),
 table_case("join_scale", ex, data.frame(example = c("G1", "S1"), v = 1:2),
            frame = "class", attach = TRUE)
 table_case("join_scale", ex, d_unit, attach = "group")
-table_case("join_scale", ex, d_unit, frame = "unit", attach = "nope")
+table_case("join_scale", ex, d_unit, frame = "item", attach = "nope")
 table_case("join_scale", noweights, d_nw, meta = TRUE)
 
 write_golden(fcalls, "filter.json")

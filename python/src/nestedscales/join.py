@@ -14,16 +14,18 @@ import pyarrow.compute as pc
 
 from ._backend import backend_of, restore, scan, schema_of
 from ._utils import _as_str_tuple, _preview, _stop, _warn
+from .labels import scale_label
 from .recast import Diagnostics, _match_choice, _want_diagnostics
 from .scale_class import (
     NestedScale,
-    _atom_level,
     _check_frame,
     _check_scale,
+    _label_variant,
+    _leaf_frame,
     _resolve_weight,
     _scale_name,
     _strings,
-    scale_key,
+    scale_leaf_column,
     scale_rank,
     scale_vocab,
 )
@@ -34,14 +36,19 @@ def join_scale(data: Any, x: NestedScale, key: str | None = None,
                attach: bool | str | Sequence[str] | None = None,
                meta: bool = False, weight: str | None = None,
                as_factor: bool = True, collect: bool | None = None,
-               diagnostics: Diagnostics = "auto") -> Any:
-    """Attach a label column named after the scale, optionally the codes of
-    coarser frames (`"<name>.<frame>"`) and the unit's share and weight
-    (`"<name>.share"`, `"<name>.weight"`). Existing columns are never
-    overwritten. With `as_factor`, memberships are dictionary columns over the
-    frame's full vocabulary."""
+               diagnostics: Diagnostics = "auto",
+               labels: bool | str | None = None) -> Any:
+    """Attach a code column named after the scale, optionally the codes of
+    coarser frames (`"<name>.<frame>"`), the display names of the keyed
+    members (`"<name>.label"`; `labels=True` for the default variant or the
+    name of one) and the member's share and weight (`"<name>.share"`,
+    `"<name>.weight"`). Existing columns are never overwritten. With
+    `as_factor`, memberships are dictionary columns over the frame's full
+    vocabulary."""
     diagnostics = _match_choice(diagnostics, ("auto", "on", "off"), "diagnostics")
     _check_scale(x, "x")
+    label_variant = (None if labels is None or labels is False
+                     else _label_variant(x, None if labels is True else labels))
     bk = backend_of(data, "data")
     nm = _scale_name(x)
     schema = schema_of(data, bk)
@@ -52,20 +59,20 @@ def join_scale(data: Any, x: NestedScale, key: str | None = None,
     if frame is None:
         hit = [f for f in fr_all if f in schema.names]
         if not hit:
-            hit = [f for f in [_atom_level(x)] if f in schema.names]
+            hit = [f for f in [_leaf_frame(x)] if f in schema.names]
         if len(hit) != 1:
             _stop("cannot infer the code %s from the data's columns (found: %s); "
                   "pass `frame=`", v["frame"], "none" if not hit else _preview(hit))
         frame = hit[0]
     _check_frame(x, frame, "frame")
     if key is None:
-        for cand in (nm, frame, scale_key(x)):
+        for cand in (nm, frame, scale_leaf_column(x)):
             if cand in schema.names:
                 key = cand
                 break
         else:
             _stop("the data has no `%s`, `%s`, or `%s` column; pass `key=`",
-                  nm, frame, scale_key(x))
+                  nm, frame, scale_leaf_column(x))
     if key not in schema.names:
         _stop("the data has no column named `%s`; pass `key=`", key)
 
@@ -81,6 +88,7 @@ def join_scale(data: Any, x: NestedScale, key: str | None = None,
     else:
         attach = []
     new_cols = ([nm] if key != nm else []) + ["%s.%s" % (nm, a) for a in attach] \
+        + (["%s.label" % nm] if label_variant is not None else []) \
         + (["%s.share" % nm, "%s.weight" % nm] if meta else [])
     clash = [c for c in new_cols if c in schema.names]
     if clash:
@@ -97,14 +105,14 @@ def join_scale(data: Any, x: NestedScale, key: str | None = None,
     if _want_diagnostics(diagnostics, bk):
         known_arr = pa.array(known, pa.string())
         if not pc.any(pc.is_in(kcol, value_set=known_arr)).as_py():
-            _stop("no rows of the `%s` column match units at %s '%s'", key,
+            _stop("no rows of the `%s` column match members at %s '%s'", key,
                   v["frame"], frame)
         bad = pc.and_(pc.is_valid(kcol),
                       pc.invert(pc.is_in(kcol, value_set=known_arr)))
         unknown = pc.unique(kcol.filter(bad)).to_pylist()
         if unknown:
             _warn("%d code(s) in the `%s` column are not %s at %s '%s': %s",
-                  len(unknown), key, v["units"], v["frame"], frame,
+                  len(unknown), key, v["members"], v["frame"], frame,
                   _preview(unknown))
 
     # the small attach table, one row per known code
@@ -134,6 +142,9 @@ def join_scale(data: Any, x: NestedScale, key: str | None = None,
         else:
             arr = pa.array(val, pa.string())
         attach_cols["%s.%s" % (nm, cl)] = arr
+    if label_variant is not None:
+        attach_cols["%s.label" % nm] = pa.array(
+            scale_label(x, known, frame, label_variant), pa.string())
     if meta:
         try:
             wcol = _resolve_weight(x, weight)

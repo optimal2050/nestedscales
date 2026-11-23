@@ -2,7 +2,7 @@
 class and accessors in R/product-class.R; `recast_product()` is R-only for
 now).
 
-A product HOLDS scales; its atoms are never materialised. Data on a product
+A product HOLDS scales; its leaves are never materialised. Data on a product
 carries one key column per axis, never a pasted composite.
 """
 from __future__ import annotations
@@ -88,11 +88,12 @@ def scale_product(name: str = "", desc: str = "",
                   **axes: NestedScale) -> ScaleProduct:
     """Combine named scales into a product: `scale_product(time=cal, space=gs)`.
 
-    Keys default to each axis's own key; when two collide, the axis names.
+    Keys default to each axis's own leaf column; when two collide, the axis
+    names.
     """
     if not axes:
         _stop("pass the axes as named arguments, e.g. scale_product(time = cal)")
-    own = {a: (s.key if isinstance(s, NestedScale) else None)
+    own = {a: (s.leaf if isinstance(s, NestedScale) else None)
            for a, s in axes.items()}
     if keys is None:
         vals = [v for v in own.values() if v is not None]
@@ -141,7 +142,7 @@ def product_weights(x: ScaleProduct) -> dict[str, list[str]]:
 
 
 def product_size(x: ScaleProduct) -> dict[str, Any]:
-    """Atoms per axis and the size of the (never materialised) product."""
+    """Leaves per axis and the size of the (never materialised) product."""
     _check_product(x)
     n = {a: s.leaftable.num_rows for a, s in x.axes.items()}
     return {"axes": n, "total": float(math.prod(n.values()))}

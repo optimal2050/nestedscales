@@ -33,7 +33,7 @@ try_call <- function(expr) {
 build <- function(spec) {
   if (spec$build == "scale_from_leaftable") {
     scale_from_leaftable(spec$leaftable, frames = spec$frames,
-                         key = spec$key, name = spec$name)
+                         leaf = spec$leaf, name = spec$name)
   } else {
     get(spec$build)()
   }
@@ -42,25 +42,25 @@ construct <- function(spec) list(
   build = spec$build,
   leaftable = if (!is.null(spec$leaftable)) as.list(spec$leaftable),
   frames = if (!is.null(spec$frames)) vec(spec$frames),
-  key = spec$key, name = spec$name
+  leaf = spec$leaf, name = spec$name
 )
 
 grid <- expand.grid(m = c("m1", "m2"), h = c("h1", "h2", "h3"),
                     stringsAsFactors = FALSE)
-grid$unit <- paste(grid$m, grid$h, sep = "_")
+grid$item <- paste(grid$m, grid$h, sep = "_")
 grid$hours <- c(31, 28, 31, 28, 31, 28)
 
 cases <- list(
   example = list(build = "scale_example"),
   example2 = list(build = "scale_example2"),
   grid = list(build = "scale_from_leaftable", leaftable = grid,
-              frames = c("m", "h"), key = "unit", name = "grid")
+              frames = c("m", "h"), leaf = "item", name = "grid")
 )
 
 one_case <- function(spec) {
   s <- build(spec)
   fr <- scale_frames(s)
-  nav <- unique(c(fr, scale_atom_level(s)))
+  nav <- unique(c(fr, scale_leaf_frame(s)))
   pairs <- expand.grid(a = fr, b = fr, stringsAsFactors = FALSE)
   pairs <- pairs[pairs$a != pairs$b, ]
 
@@ -68,12 +68,12 @@ one_case <- function(spec) {
   for (fn in c("scale_children", "scale_parents",
                "scale_descendants", "scale_ancestors")) {
     for (f in nav) {
-      for (u in scale_units(s, f)) {
+      for (u in scale_members(s, f)) {
         r <- try_call(get(fn)(s, f, u))
         if (!r$error && is.data.frame(r$value)) r$value <- rows(r$value)
         if (!r$error && is.character(r$value)) r$value <- vec(r$value)
         nav_calls[[length(nav_calls) + 1L]] <- c(
-          list(fn = fn, frame = f, unit = u), r
+          list(fn = fn, frame = f, member = u), r
         )
       }
     }
@@ -92,13 +92,19 @@ one_case <- function(spec) {
   list(
     construct = construct(spec),
     frames = vec(fr),
-    key = scale_key(s),
-    atom_level = scale_atom_level(s),
+    leaf = scale_leaf_column(s),
+    leaf_frame = scale_leaf_frame(s),
+    id = scale_id(s),
+    format = format(s),
+    print = vec(utils::capture.output(print(s))),
+    summary = vec(utils::capture.output(print(summary(s)))),
+    tree = rows(as.data.frame(unclass(scale_tree(s)))),
+    tree_lines = vec(utils::capture.output(print(scale_tree(s), ascii = TRUE))),
     weights = vec(scale_weights(s)),
     coverage = num(scale_coverage(s)),
-    rank = lapply(stats::setNames(nm = unique(c(fr, scale_key(s), "nope"))),
+    rank = lapply(stats::setNames(nm = unique(c(fr, scale_leaf_column(s), "nope"))),
                   function(f) scale_rank(s, f)),
-    units = lapply(stats::setNames(nm = nav), function(f) vec(scale_units(s, f))),
+    members = lapply(stats::setNames(nm = nav), function(f) vec(scale_members(s, f))),
     family = rows(scale_family(s)),
     ancestry = rows(scale_ancestry(s)),
     nests = lapply(seq_len(nrow(pairs)), function(i) c(
@@ -137,15 +143,17 @@ with_warnings <- function(expr) {
       invokeRestart("muffleWarning")
     }
   )
-  if (!r$error) r$value <- rows(r$value)
+  if (!r$error) {
+    r$value <- if (is.data.frame(r$value)) rows(r$value) else vec(r$value)
+  }
   c(r, list(warnings = vec(w)))
 }
 
 map_cases <- c(cases, list(
   noweights = list(
     build = "scale_from_leaftable",
-    leaftable = data.frame(grp = c("A", "A", "B"), unit = c("u1", "u2", "u3")),
-    frames = c("grp", "unit"), key = "unit", name = "noweights"
+    leaftable = data.frame(grp = c("A", "A", "B"), item = c("u1", "u2", "u3")),
+    frames = c("grp", "item"), leaf = "item", name = "noweights"
   )
 ))
 within <- lapply(map_cases, function(spec) {
@@ -167,19 +175,19 @@ within <- lapply(map_cases, function(spec) {
 other <- list(
   build = "scale_from_leaftable",
   leaftable = data.frame(big = c("X", "X", "Y", "Y", "Y", "Y", "Z"),
-                         unit = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH"),
+                         item = c("U1", "U2", "U3", "U4", "U5", "U6", "OTH"),
                          size = c(1, 2, 3, 4, 5, 6, 7)),
-  frames = c("big", "unit"), key = "unit", name = "other"
+  frames = c("big", "item"), leaf = "item", name = "other"
 )
 partial <- list(
   build = "scale_from_leaftable",
-  leaftable = data.frame(top = c("T1", "T1", "T2"), unit = c("U1", "U3", "U9")),
-  frames = c("top", "unit"), key = "unit", name = "partial"
+  leaftable = data.frame(top = c("T1", "T1", "T2"), item = c("U1", "U3", "U9")),
+  frames = c("top", "item"), leaf = "item", name = "partial"
 )
 disjoint <- list(
   build = "scale_from_leaftable",
-  leaftable = data.frame(grp = c("A", "B"), unit = c("z1", "z2")),
-  frames = c("grp", "unit"), key = "unit", name = "disjoint"
+  leaftable = data.frame(grp = c("A", "B"), item = c("z1", "z2")),
+  frames = c("grp", "item"), leaf = "item", name = "disjoint"
 )
 specs <- list(example = list(build = "scale_example"), other = other,
               partial = partial, disjoint = disjoint)

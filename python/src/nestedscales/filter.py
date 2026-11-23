@@ -22,12 +22,12 @@ from .scale_class import (
     _resolve_weight,
     _slice_member_tables,
     _strings,
-    scale_key,
+    scale_payload_collapse,
     scale_payload_slice,
+    scale_validate,
     scale_vocab,
     scale_weights,
 )
-from .scale_construct import scale_from_leaftable
 
 
 def _sample_meta(x: NestedScale, meta: dict, kept: pa.Table, tag: str) -> dict:
@@ -50,7 +50,7 @@ def _rebuild(x: NestedScale, keep: Sequence[int], fr: Sequence[str],
     """A copy of `x` restricted to leaftable rows `keep`.
 
     Copying `x` itself keeps the concrete class and any subclass fields; the
-    payload hook slices per-atom payloads before the single validation.
+    payload hook slices per-leaf payloads before the single validation.
     """
     lt = x.leaftable.take(pa.array(list(keep), pa.int64()))
     members = {}
@@ -72,13 +72,38 @@ def _rebuild(x: NestedScale, keep: Sequence[int], fr: Sequence[str],
     for k, v in (("leaftable", lt), ("frames", tuple(fr)), ("members", members),
                  ("meta", dict(x.meta if meta is None else meta))):
         object.__setattr__(out, k, v)
-    # the core's own tables are keyed by (frame, unit): a membership test
-    at, al = _slice_member_tables(out)
+    _set_member_tables(out)
+    out = scale_payload_slice(out, list(keep))
+    return scale_validate(out)
+
+
+def _set_member_tables(out: NestedScale) -> None:
+    """Cut the core's own tables to the members that remain. They are keyed
+    by (frame, member), so this is a membership test, never a positional one."""
+    at, al, lb = _slice_member_tables(out)
     object.__setattr__(out, "attributes", at)
     object.__setattr__(out, "aliases", al)
-    out = scale_payload_slice(out, list(keep))
-    out.__post_init__()
-    return out
+    object.__setattr__(out, "labels", lb)
+
+
+def _reconstruct(x: NestedScale, leaftable: pa.Table, frames: Sequence[str],
+                 members: dict, meta: dict,
+                 map: Sequence[int | None] | None = None) -> NestedScale:
+    """A copy of `x` on a NEW leaftable, keeping the concrete class.
+
+    The companion of `_rebuild()` for operations that write a fresh table
+    rather than keep a row subset. A subclass's positional payload goes
+    through `scale_payload_collapse()` when rows merged (`map`: the new row
+    of each former row, None = dropped). Validated once at the end.
+    """
+    out = copy.copy(x)
+    for k, v in (("leaftable", leaftable), ("frames", tuple(frames)),
+                 ("members", members), ("meta", dict(meta))):
+        object.__setattr__(out, k, v)
+    _set_member_tables(out)
+    if map is not None:
+        out = scale_payload_collapse(out, list(map))
+    return scale_validate(out)
 
 
 def _sample_id(codes: Sequence[str]) -> str:
@@ -93,27 +118,28 @@ def _sample_id(codes: Sequence[str]) -> str:
     return "%d~%s" % (len(codes), h.hexdigest())
 
 
-def filter_scale(x: NestedScale, frame: str, unit: str | Sequence[str],
+def filter_scale(x: NestedScale, frame: str, member: str | Sequence[str],
                  drop_empty_frames: bool = False) -> NestedScale:
-    """Keep only the atoms belonging to `unit` at `frame`.
+    """Keep only the leaves belonging to `member` at `frame`.
 
     A real subset records `coverage` (per weight, of the root parent),
     `parent_totals`, `parent_name`, and is renamed `"parent[frame:codes]"`.
-    A filter that keeps every atom is a no-op.
+    A filter that keeps every leaf is a no-op. The attribute, alias and label
+    rows of the members that remain are kept.
     """
     _check_scale(x)
     _check_frame(x, frame)
-    unit = _as_str_tuple(unit)
+    member = _as_str_tuple(member)
     known = set(x.members.get(frame, ()))
-    unknown = [u for u in dict.fromkeys(unit) if u not in known]
+    unknown = [u for u in dict.fromkeys(member) if u not in known]
     if unknown:
         _stop("code(s) not found at %s `%s`: %s", scale_vocab(x)["frame"], frame,
               _preview(unknown))
     col = _strings(x.leaftable, frame)
-    want = set(unit)
+    want = set(member)
     keep = [i for i, v in enumerate(col) if v in want]
     if not keep:
-        _stop("no atoms remain after filtering")
+        _stop("no leaves remain after filtering")
     meta = dict(x.meta)
     if len(keep) < x.leaftable.num_rows:
         codes = list(dict.fromkeys(col[i] for i in keep))
@@ -123,11 +149,14 @@ def filter_scale(x: NestedScale, frame: str, unit: str | Sequence[str],
 
 
 def prune_scale(x: NestedScale, frame: str) -> NestedScale:
-    """Collapse to a coarser frame: `frame` becomes the atom layer.
+    """Collapse to a coarser frame: `frame` becomes the leaf layer.
 
-    Weights are summed over the collapsed atoms; the result is renamed
-    `"name@frame"`. Atoms with no code at `frame` are dropped, and the loss
-    shows in `coverage`.
+    Weights are summed over the collapsed leaves and the other columns of the
+    leaftable are dropped; the result is renamed `"name@frame"` with the
+    parent in `meta["parent_name"]`, every other meta field kept. Leaves with
+    no code at `frame` are dropped, and the loss shows in `coverage`. The
+    concrete class is kept; a subclass merges its payload through
+    `scale_payload_collapse()`.
     """
     _check_scale(x)
     _check_frame(x, frame)
@@ -139,7 +168,7 @@ def prune_scale(x: NestedScale, frame: str) -> NestedScale:
     covered = pc.is_valid(lt0[frame])
     lt = lt0.filter(covered)
     if lt.num_rows == 0:
-        _stop("no atoms have a code at %s `%s`", scale_vocab(x)["frame"], frame)
+        _stop("no leaves have a code at %s `%s`", scale_vocab(x)["frame"], frame)
 
     wts = scale_weights(x)
     rows = list(zip(*(_strings(lt, f) for f in keep_fr), strict=True))
@@ -153,7 +182,7 @@ def prune_scale(x: NestedScale, frame: str) -> NestedScale:
             ok = z is not None and z == z
             totals[w][r] = totals[w].get(r, 0.0) + (float(z) if ok else 0.0)
     groups = list(first)
-    akey = scale_key(x)
+    akey = x.leaf
     cols: dict[str, Any] = {f: pa.array([g[j] for g in groups], pa.string())
                             for j, f in enumerate(keep_fr)}
     for w in wts:
@@ -167,36 +196,27 @@ def prune_scale(x: NestedScale, frame: str) -> NestedScale:
         new_meta = _sample_meta(x, new_meta, lt, "")
     new_meta["parent_name"] = meta.get("name") or ""
     new_meta["name"] = "%s@%s" % (meta.get("name") or "", frame)
-    s = scale_from_leaftable(out, frames=keep_fr, key=akey, weights=wts,
-                             default_weight=meta.get("default_weight"),
-                             name=new_meta["name"], desc=meta.get("desc") or "")
-    # R's modifyList(): a NULL entry removes the field
-    for k in ("weights", "default_weight"):
-        if s.meta.get(k) is None:
-            new_meta.pop(k, None)
-        else:
-            new_meta[k] = s.meta[k]
-    # rows at the dropped finer frames go; the concrete class is kept
-    out_s = copy.copy(x)
-    for k, v in (("leaftable", s.leaftable), ("frames", s.frames),
-                 ("members", s.members), ("meta", new_meta)):
-        object.__setattr__(out_s, k, v)
-    at, al = _slice_member_tables(out_s)
-    object.__setattr__(out_s, "attributes", at)
-    object.__setattr__(out_s, "aliases", al)
-    out_s.__post_init__()
-    return out_s
+    # members keep their canonical order; the frames below `frame` are gone
+    members = {}
+    for j, f in enumerate(keep_fr):
+        seen = {g[j] for g in groups if g[j] is not None}
+        members[f] = tuple(c for c in x.members[f] if c in seen)
+    # the new row of every FORMER leaf (None = dropped), for the payload hook
+    index = {g: i for i, g in enumerate(groups)}
+    it = iter(rows)
+    row_map = [index[next(it)] if ok else None for ok in covered.to_pylist()]
+    return _reconstruct(x, out, keep_fr, members, new_meta, map=row_map)
 
 
 def scale_share(x: NestedScale, frame: str, weight: str | None = None,
                 within: str | None = None) -> pa.Table:
-    """Weight shares of the units of `frame`, over the whole scale or within
-    each unit of the coarser frame `within`."""
+    """Weight shares of the members of `frame`, over the whole scale or within
+    each member of the coarser frame `within`."""
     _check_scale(x)
     _check_frame(x, frame)
     weight = _resolve_weight(x, weight)
     lt = x.leaftable
-    units = _strings(lt, frame)
+    codes = _strings(lt, frame)
     w = [0.0 if z is None or z != z else float(z) for z in lt[weight].to_pylist()]
     if within is None:
         grp = [""] * lt.num_rows
@@ -204,7 +224,7 @@ def scale_share(x: NestedScale, frame: str, weight: str | None = None,
         _check_frame(x, within, "within")
         grp = _strings(lt, within)
     agg: dict = {}
-    for u, g, z in zip(units, grp, w, strict=True):
+    for u, g, z in zip(codes, grp, w, strict=True):
         if u is None or g is None:  # R's aggregate() drops NA groups
             continue
         agg[(u, g)] = agg.get((u, g), 0.0) + z

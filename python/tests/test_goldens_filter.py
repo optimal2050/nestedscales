@@ -20,7 +20,7 @@ CASES = load_golden("filter.json")
 def describe(s):
     m = s.meta
     return {
-        "frames": list(s.frames), "key": s.key,
+        "frames": list(s.frames), "leaf": s.leaf,
         "members": {k: list(v) for k, v in s.members.items()},
         "name": m.get("name"), "parent_name": m.get("parent_name"),
         "coverage": m.get("coverage"), "parent_totals": m.get("parent_totals"),

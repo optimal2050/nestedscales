@@ -1,7 +1,7 @@
 """Member attributes (port of R/attributes.R).
 
-One long table on the scale, keyed by (frame, unit): a physical attribute (a
-calorific value, a density) may sit on an atom or on any coarser member.
+One long table on the scale, keyed by (frame, member): a physical attribute (a
+calorific value, a density) may sit on a leaf or on any coarser member.
 `scale_attributes()` resolves a value for every member of a frame by taking
 the member's own entry first and otherwise walking to the nearest coarser
 frame that holds one. Attributes are not weights and are never recast;
@@ -26,12 +26,12 @@ from .scale_class import (
     _check_scale,
     _nav_levels,
     _strings,
-    scale_units,
+    scale_members,
     scale_vocab,
 )
 
 RESOLVED_SCHEMA = pa.schema([*ATTR_SCHEMA, ("origin_frame", pa.string()),
-                             ("origin_unit", pa.string())])
+                             ("origin_member", pa.string())])
 
 
 def _is_string(x: object) -> bool:
@@ -90,14 +90,14 @@ def _keys(t: pa.Table, cols: Sequence[str]) -> list[tuple]:
 
 def attach_attributes_scale(x: NestedScale, attributes: Any, source: str | None = None,
                             kind: str | None = None) -> NestedScale:
-    """Append attribute rows. An existing (frame, unit, attribute, source) row
+    """Append attribute rows. An existing (frame, member, attribute, source) row
     is never overwritten: attach a competing value under another `source`."""
     _check_scale(x)
     new = _with_column(attributes, "attributes", "source", source)
     new = _with_column(new, "attributes", "kind", kind)
     new = _normalised(x, attributes=new).attributes  # columns and types only
     old = x.attributes
-    cols = ("frame", "unit", "attribute", "source")
+    cols = ("frame", "member", "attribute", "source")
     k_old = set(_keys(old, cols))
     hit = [k for k in _keys(new, cols) if k in k_old]
     if hit:
@@ -113,7 +113,7 @@ def scale_attributes(x: NestedScale, attribute: str | Sequence[str] | None = Non
                      inherit: bool = True) -> pa.Table:
     """The stored attribute rows, or with `frame=` one row per member of that
     frame and attribute, resolved along the hierarchy (`origin_frame` and
-    `origin_unit` say where each value was found)."""
+    `origin_member` say where each value was found)."""
     _check_scale(x)
     at = x.attributes
     v = scale_vocab(x)
@@ -168,7 +168,7 @@ def _ancestry_to(x: NestedScale, frame: str) -> dict[tuple, list]:
 def _resolve_attributes(x: NestedScale, at: pa.Table, frame: str,
                         inherit: bool) -> pa.Table:
     frames = list(x.frames)
-    units = list(scale_units(x, frame))
+    members = list(scale_members(x, frame))
     v = scale_vocab(x)
     rows = at.to_pylist()
     attrs = _unique(r["attribute"] for r in rows)
@@ -177,7 +177,7 @@ def _resolve_attributes(x: NestedScale, at: pa.Table, frame: str,
     parents_of = _ancestry_to(x, frame) if (inherit and coarser) else {}
     by_key: dict[tuple, list] = {}
     for r in rows:
-        by_key.setdefault((r["frame"], r["unit"], r["attribute"]), []).append(r)
+        by_key.setdefault((r["frame"], r["member"], r["attribute"]), []).append(r)
 
     def pick(a: str, u: str) -> dict:
         hit = by_key.get((frame, u, a), [])
@@ -188,7 +188,7 @@ def _resolve_attributes(x: NestedScale, at: pa.Table, frame: str,
                 if not parents:
                     continue
                 cand = [r for r in rows if r["attribute"] == a and r["frame"] == cf
-                        and r["unit"] in parents]
+                        and r["member"] in parents]
                 if not cand:
                     continue
                 if len(parents) > 1:
@@ -206,14 +206,14 @@ def _resolve_attributes(x: NestedScale, at: pa.Table, frame: str,
                   ", ".join(_unique(r["source"] for r in hit)))
         if not hit:
             out = dict.fromkeys(ATTR_SCHEMA.names)
-            out.update(frame=frame, unit=u, attribute=a)
+            out.update(frame=frame, member=u, attribute=a)
             origin = (None, None)
         else:
-            out = dict(hit[0], frame=frame, unit=u)
-        out["origin_frame"], out["origin_unit"] = origin
+            out = dict(hit[0], frame=frame, member=u)
+        out["origin_frame"], out["origin_member"] = origin
         return out
 
-    return pa.Table.from_pylist([pick(a, u) for a in attrs for u in units],
+    return pa.Table.from_pylist([pick(a, u) for a in attrs for u in members],
                                 schema=RESOLVED_SCHEMA)
 
 

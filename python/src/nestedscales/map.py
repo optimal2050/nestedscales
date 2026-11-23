@@ -1,12 +1,12 @@
-"""The crosswalk through the atom layer (port of R/map.R).
+"""The crosswalk through the leaf layer (port of R/map.R).
 
-Every conversion is `source -> ATOMS -> target`, collapsed into one table: one row
-per pair of overlapping units, carrying the counts and weights each rule
+Every conversion is `source -> LEAVES -> target`, collapsed into one table: one row
+per pair of overlapping members, carrying the counts and weights each rule
 needs. Recast is a join against this table plus one grouped aggregation.
 
-The adapter seam is `scale_atom_pairs()`: a dimension supplies the atom-level
+The adapter seam is `scale_leaf_pairs()`: a dimension supplies the leaf-level
 (from, to, w) correspondence, and everything downstream is shared. A
-dimension whose atoms are generated rather than enumerated (time) overrides
+dimension whose leaves are generated rather than enumerated (time) overrides
 it and may carry extra identifier columns through `by=`.
 
 `source` is a reserved word in Python, so the argument is spelled `source`.
@@ -28,7 +28,7 @@ from .scale_class import (
     _resolve_weight,
     _scale_name,
     _strings,
-    scale_key,
+    scale_leaf_column,
     scale_vocab,
     scale_weights,
 )
@@ -38,12 +38,12 @@ _MAP_STATS = ["n_from", "n_overlap", "w", "w_from"]
 
 
 @functools.singledispatch
-def scale_atom_pairs(x: NestedScale, source: str, target: str,
+def scale_leaf_pairs(x: NestedScale, source: str, target: str,
                      weight: str | None = None, **kwargs: object) -> pa.Table:
-    """Atom-level correspondence between two frames: columns `source`, `target`, `w`.
+    """Leaf-level correspondence between two frames: columns `source`, `target`, `w`.
 
-    The seam a dimension package overrides (`scale_atom_pairs.register`) when
-    its atom layer is generated; extra identifier columns must be named in the
+    The seam a dimension package overrides (`scale_leaf_pairs.register`) when
+    its leaf layer is generated; extra identifier columns must be named in the
     caller's `by`.
     """
     _check_scale(x)
@@ -60,11 +60,11 @@ def scale_map(x: NestedScale, source: str, target: str, weight: str | None = Non
               by: Sequence[str] = (), **kwargs: object) -> pa.Table:
     """Crosswalk between two frames of a scale.
 
-    One row per pair of overlapping units with `n_from` (atoms in the `source`
-    unit), `n_overlap` (atoms shared), `w` (weight of the overlap) and
-    `w_from` (full weight of the `source` unit); `w / w_from` is the split share
+    One row per pair of overlapping members with `n_from` (leaves in the `source`
+    member), `n_overlap` (leaves shared), `w` (weight of the overlap) and
+    `w_from` (full weight of the `source` member); `w / w_from` is the split share
     of `sum` disaggregation. The label columns are named by the frames; a
-    null target marks atoms `target` does not cover. A registered map is returned
+    null target marks leaves `target` does not cover. A registered map is returned
     as-is.
     """
     if isinstance(source, NestedScale) or isinstance(target, NestedScale):
@@ -80,15 +80,15 @@ def scale_map(x: NestedScale, source: str, target: str, weight: str | None = Non
     reg = _get_scale_map(source, target, _scale_name(x, require=False))
     if reg is not None:
         return reg
-    d = scale_atom_pairs(x, source, target, weight=weight, **kwargs)
+    d = scale_leaf_pairs(x, source, target, weight=weight, **kwargs)
     return _finish_map(d, source, target, by=list(_as_str_tuple(by)))
 
 
 def scale_map_between(source: NestedScale, target: NestedScale,
                       weight: str | None = None) -> pa.Table:
-    """Crosswalk between two scales through their shared atom keys.
+    """Crosswalk between two scales through their shared leaf codes.
 
-    Label columns are named after the scales. Atoms of `source` absent from
+    Label columns are named after the scales. Leaves of `source` absent from
     `target` get a null target (with a warning).
     """
     _check_scale(source, "source")
@@ -102,18 +102,18 @@ def scale_map_between(source: NestedScale, target: NestedScale,
     if reg is not None:
         return reg
 
-    kf, kt = scale_key(source), scale_key(target)
+    kf, kt = scale_leaf_column(source), scale_leaf_column(target)
     keys_f = _strings(source.leaftable, kf)
     keys_t = set(_strings(target.leaftable, kt))
     shared = [k for k in keys_f if k in keys_t]
     if not shared:
-        keys = "`%s` keys" % kf if kf == kt else "keys"
+        what = "`%s` codes" % kf if kf == kt else "leaf codes"
         hint = scale_vocab(source).get("register_map", "register_scale_map_between()")
-        _stop('the atom layers of "%s" and "%s" share no %s; register an explicit '
-              "crosswalk with %s", source_nm, target_nm, keys, hint)
+        _stop('the leaf layers of "%s" and "%s" share no %s; register an explicit '
+              "crosswalk with %s", source_nm, target_nm, what, hint)
     n_miss = len(keys_f) - len(shared)
     if n_miss > 0:
-        _warn('%d atom(s) of "%s" have no counterpart in "%s"; their share is '
+        _warn('%d leaf row(s) of "%s" have no counterpart in "%s"; their share is '
               "uncovered (NA target)", n_miss, source_nm, target_nm)
     wcol = _map_weight(source, weight)
     lf = source.leaftable
@@ -135,14 +135,14 @@ def _map_weight(x: NestedScale, weight: str | None) -> str | None:
 
 def _finish_map(d: pa.Table, source_lab: str, target_lab: str,
                 by: Sequence[str] = ()) -> pa.Table:
-    """Aggregate an atom table of source/target/w (+ `by`) into the map schema."""
+    """Aggregate a leaf table of source/target/w (+ `by`) into the map schema."""
     by = list(by)
     miss = [c for c in ["source", "target", "w", *by] if c not in d.column_names]
     if miss:
-        _stop("the atom correspondence is missing column(s): %s", _preview(miss))
+        _stop("the leaf correspondence is missing column(s): %s", _preview(miss))
     d = d.filter(pc.is_valid(d["source"]))
     if d.num_rows == 0:
-        _stop("no atoms carry a code at `source`; the map would be empty")
+        _stop("no leaves carry a code at `source`; the map would be empty")
     d = d.select([*by, "source", "target", "w"])
     d = d.set_column(d.column_names.index("w"), "w",
                      pc.fill_null(pc.cast(d["w"], pa.float64()), 0.0))

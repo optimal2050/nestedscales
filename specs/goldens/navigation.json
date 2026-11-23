@@ -1,17 +1,150 @@
 {
-  "generated_by": "nestedscales 0.1.1.9000",
+  "generated_by": "nestedscales 0.3.0",
   "cases": {
     "example": {
       "construct": {
         "build": "scale_example",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
-      "frames": ["sector", "class", "group", "unit"],
-      "key": "unit",
-      "atom_level": "unit",
+      "frames": ["sector", "class", "group", "item"],
+      "leaf": "item",
+      "leaf_frame": "item",
+      "id": "example@c24a3e23",
+      "format": "<NestedScale[sector/class/group/item] leaves=7>",
+      "print": ["NestedScale: example", "Description: Synthetic example: reused code, non-nesting frame pair, and an unassigned leaf ", "Frames (4, coarsest first):", "  - sector (2)  [1 member unassigned]", "    - class (3)  [1 member unassigned]", "      - group (3)  [1 member unassigned]", "        - item (7)", "Leaves: 7", "Weights: size, count (default: size)"],
+      "summary": ["<summary of NestedScale 'example'>", "  desc:          Synthetic example: reused code, non-nesting frame pair, and an unassigned leaf", "  frames:         sector (2) / class (3) / group (3) / item (7)", "  leaves:         7", "  unassigned:     sector (1), class (1), group (1)", "  weight totals:  size = 3,100, count =   300  (default: size)", "  nesting:        sector > class: nested", "  nesting:        class > group: CROSS-CUTTING (1 offender(s))", "  nesting:        group > item: nested"],
+      "tree": [
+        {
+          "part": "leaftable",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [7 x 6]",
+          "mark": "",
+          "verb": "",
+          "note": "one row per leaf"
+        },
+        {
+          "part": "item",
+          "parent": "leaftable",
+          "kind": "leaf column",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "sector",
+          "parent": "leaftable",
+          "kind": "frame",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "class",
+          "parent": "leaftable",
+          "kind": "frame",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "group",
+          "parent": "leaftable",
+          "kind": "frame",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "size",
+          "parent": "leaftable",
+          "kind": "weight",
+          "shape": "",
+          "mark": "mutable",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "count",
+          "parent": "leaftable",
+          "kind": "weight",
+          "shape": "",
+          "mark": "mutable",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "frames",
+          "parent": "",
+          "kind": "property",
+          "shape": "chr [4]",
+          "mark": "fixed",
+          "verb": "",
+          "note": "sector, class, group, item"
+        },
+        {
+          "part": "members",
+          "parent": "",
+          "kind": "property",
+          "shape": "list [4]",
+          "mark": "derived",
+          "verb": "",
+          "note": "from leaftable: sector 2, class 3, group 3, item 7"
+        },
+        {
+          "part": "leaf",
+          "parent": "",
+          "kind": "property",
+          "shape": "chr [1]",
+          "mark": "fixed",
+          "verb": "",
+          "note": "item"
+        },
+        {
+          "part": "meta",
+          "parent": "",
+          "kind": "property",
+          "shape": "list [4]",
+          "mark": "mutable",
+          "verb": "",
+          "note": "name, desc, weights, default_weight"
+        },
+        {
+          "part": "attributes",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 10]",
+          "mark": "mutable",
+          "verb": "attach_attributes_scale()",
+          "note": "member values, by (frame, member)"
+        },
+        {
+          "part": "aliases",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 4]",
+          "mark": "mutable",
+          "verb": "attach_aliases_scale()",
+          "note": "alternative spellings, by (frame, member)"
+        },
+        {
+          "part": "labels",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 4]",
+          "mark": "mutable",
+          "verb": "attach_labels_scale()",
+          "note": "display names, by (frame, member, variant)"
+        }
+      ],
+      "tree_lines": ["<NestedScale> example@c24a3e23", "+- leaftable   data.frame [7 x 6]            one row per leaf", "|  +- item     leaf column          fixed", "|  +- sector   frame                fixed", "|  +- class    frame                fixed", "|  +- group    frame                fixed", "|  +- size     weight               mutable", "|  +- count    weight               mutable", "+- frames      chr [4]              fixed    sector, class, group, item", "+- members     list [4]             derived  from leaftable: sector 2, class 3, group 3, item 7", "+- leaf        chr [1]              fixed    item", "+- meta        list [4]             mutable  name, desc, weights, default_weight", "+- attributes  data.frame [0 x 10]  mutable  attach_attributes_scale()", "+- aliases     data.frame [0 x 4]   mutable  attach_aliases_scale()", "+- labels      data.frame [0 x 4]   mutable  attach_labels_scale()"],
       "weights": ["size", "count"],
       "coverage": {
         "size": 1,
@@ -21,14 +154,14 @@
         "sector": 1,
         "class": 2,
         "group": 3,
-        "unit": 4,
+        "item": 4,
         "nope": null
       },
-      "units": {
+      "members": {
         "sector": ["P", "S"],
         "class": ["G1", "G2", "S1"],
         "group": ["G1", "GB", "GC"],
-        "unit": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
+        "item": ["U1", "U2", "U3", "U4", "U5", "U6", "OTH"]
       },
       "family": [
         {
@@ -76,37 +209,37 @@
         {
           "parent_frame": "group",
           "parent": "G1",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U1"
         },
         {
           "parent_frame": "group",
           "parent": "G1",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U2"
         },
         {
           "parent_frame": "group",
           "parent": "GB",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U3"
         },
         {
           "parent_frame": "group",
           "parent": "GB",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U4"
         },
         {
           "parent_frame": "group",
           "parent": "GB",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U5"
         },
         {
           "parent_frame": "group",
           "parent": "GC",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U6"
         }
       ],
@@ -138,25 +271,25 @@
         {
           "parent_frame": "sector",
           "parent": "P",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U1"
         },
         {
           "parent_frame": "sector",
           "parent": "P",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U2"
         },
         {
           "parent_frame": "sector",
           "parent": "P",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U3"
         },
         {
           "parent_frame": "sector",
           "parent": "P",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U4"
         },
         {
@@ -180,13 +313,13 @@
         {
           "parent_frame": "sector",
           "parent": "S",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U5"
         },
         {
           "parent_frame": "sector",
           "parent": "S",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U6"
         },
         {
@@ -198,13 +331,13 @@
         {
           "parent_frame": "class",
           "parent": "G1",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U1"
         },
         {
           "parent_frame": "class",
           "parent": "G1",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U2"
         },
         {
@@ -216,13 +349,13 @@
         {
           "parent_frame": "class",
           "parent": "G2",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U3"
         },
         {
           "parent_frame": "class",
           "parent": "G2",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U4"
         },
         {
@@ -240,49 +373,49 @@
         {
           "parent_frame": "class",
           "parent": "S1",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U5"
         },
         {
           "parent_frame": "class",
           "parent": "S1",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U6"
         },
         {
           "parent_frame": "group",
           "parent": "G1",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U1"
         },
         {
           "parent_frame": "group",
           "parent": "G1",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U2"
         },
         {
           "parent_frame": "group",
           "parent": "GB",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U3"
         },
         {
           "parent_frame": "group",
           "parent": "GB",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U4"
         },
         {
           "parent_frame": "group",
           "parent": "GB",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U5"
         },
         {
           "parent_frame": "group",
           "parent": "GC",
-          "child_frame": "unit",
+          "child_frame": "item",
           "child": "U6"
         }
       ],
@@ -302,7 +435,7 @@
           "sizes": null
         },
         {
-          "parent": "unit",
+          "parent": "item",
           "child": "sector",
           "ok": false,
           "offenders": ["P", "S"],
@@ -323,7 +456,7 @@
           "sizes": null
         },
         {
-          "parent": "unit",
+          "parent": "item",
           "child": "class",
           "ok": false,
           "offenders": ["G1", "G2", "S1"],
@@ -344,7 +477,7 @@
           "sizes": null
         },
         {
-          "parent": "unit",
+          "parent": "item",
           "child": "group",
           "ok": false,
           "offenders": ["G1", "GB"],
@@ -352,21 +485,21 @@
         },
         {
           "parent": "sector",
-          "child": "unit",
+          "child": "item",
           "ok": true,
           "offenders": [],
           "sizes": null
         },
         {
           "parent": "class",
-          "child": "unit",
+          "child": "item",
           "ok": true,
           "offenders": [],
           "sizes": null
         },
         {
           "parent": "group",
-          "child": "unit",
+          "child": "item",
           "ok": true,
           "offenders": [],
           "sizes": null
@@ -388,7 +521,7 @@
           "sizes": null
         },
         {
-          "a": "unit",
+          "a": "item",
           "b": "sector",
           "ok": false,
           "offenders": ["U5", "U6"],
@@ -409,7 +542,7 @@
           "sizes": null
         },
         {
-          "a": "unit",
+          "a": "item",
           "b": "class",
           "ok": false,
           "offenders": ["U3", "U4", "U5", "U6"],
@@ -430,7 +563,7 @@
           "sizes": null
         },
         {
-          "a": "unit",
+          "a": "item",
           "b": "group",
           "ok": false,
           "offenders": ["U3", "U4", "U5", "U6"],
@@ -438,21 +571,21 @@
         },
         {
           "a": "sector",
-          "b": "unit",
+          "b": "item",
           "ok": false,
           "offenders": ["S"],
           "sizes": null
         },
         {
           "a": "class",
-          "b": "unit",
+          "b": "item",
           "ok": false,
           "offenders": ["G2", "S1"],
           "sizes": null
         },
         {
           "a": "group",
-          "b": "unit",
+          "b": "item",
           "ok": false,
           "offenders": ["GB", "GC"],
           "sizes": null
@@ -548,14 +681,14 @@
           }
         },
         {
-          "frame": "unit",
+          "frame": "item",
           "weight": null,
           "ok": true,
           "offenders": null,
           "sizes": null
         },
         {
-          "frame": "unit",
+          "frame": "item",
           "weight": "size",
           "ok": false,
           "offenders": null,
@@ -570,7 +703,7 @@
           }
         },
         {
-          "frame": "unit",
+          "frame": "item",
           "weight": "count",
           "ok": false,
           "offenders": null,
@@ -589,672 +722,672 @@
         {
           "fn": "scale_children",
           "frame": "sector",
-          "unit": "P",
+          "member": "P",
           "error": false,
           "value": ["G1", "G2"]
         },
         {
           "fn": "scale_children",
           "frame": "sector",
-          "unit": "S",
+          "member": "S",
           "error": false,
           "value": ["S1"]
         },
         {
           "fn": "scale_children",
           "frame": "class",
-          "unit": "G1",
+          "member": "G1",
           "error": false,
           "value": ["G1"]
         },
         {
           "fn": "scale_children",
           "frame": "class",
-          "unit": "G2",
+          "member": "G2",
           "error": false,
           "value": ["GB"]
         },
         {
           "fn": "scale_children",
           "frame": "class",
-          "unit": "S1",
+          "member": "S1",
           "error": false,
           "value": ["GB", "GC"]
         },
         {
           "fn": "scale_children",
           "frame": "group",
-          "unit": "G1",
+          "member": "G1",
           "error": false,
           "value": ["U1", "U2"]
         },
         {
           "fn": "scale_children",
           "frame": "group",
-          "unit": "GB",
+          "member": "GB",
           "error": false,
           "value": ["U3", "U4", "U5"]
         },
         {
           "fn": "scale_children",
           "frame": "group",
-          "unit": "GC",
+          "member": "GC",
           "error": false,
           "value": ["U6"]
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "U1",
+          "frame": "item",
+          "member": "U1",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "U2",
+          "frame": "item",
+          "member": "U2",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "U3",
+          "frame": "item",
+          "member": "U3",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "U4",
+          "frame": "item",
+          "member": "U4",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "U5",
+          "frame": "item",
+          "member": "U5",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "U6",
+          "frame": "item",
+          "member": "U6",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "OTH",
+          "frame": "item",
+          "member": "OTH",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_parents",
           "frame": "sector",
-          "unit": "P",
+          "member": "P",
           "error": true,
           "message": "`sector` is the coarsest frame; it has no parents"
         },
         {
           "fn": "scale_parents",
           "frame": "sector",
-          "unit": "S",
+          "member": "S",
           "error": true,
           "message": "`sector` is the coarsest frame; it has no parents"
         },
         {
           "fn": "scale_parents",
           "frame": "class",
-          "unit": "G1",
+          "member": "G1",
           "error": false,
           "value": ["P"]
         },
         {
           "fn": "scale_parents",
           "frame": "class",
-          "unit": "G2",
+          "member": "G2",
           "error": false,
           "value": ["P"]
         },
         {
           "fn": "scale_parents",
           "frame": "class",
-          "unit": "S1",
+          "member": "S1",
           "error": false,
           "value": ["S"]
         },
         {
           "fn": "scale_parents",
           "frame": "group",
-          "unit": "G1",
+          "member": "G1",
           "error": false,
           "value": ["G1"]
         },
         {
           "fn": "scale_parents",
           "frame": "group",
-          "unit": "GB",
+          "member": "GB",
           "error": false,
           "value": ["G2", "S1"]
         },
         {
           "fn": "scale_parents",
           "frame": "group",
-          "unit": "GC",
+          "member": "GC",
           "error": false,
           "value": ["S1"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "U1",
+          "frame": "item",
+          "member": "U1",
           "error": false,
           "value": ["G1"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "U2",
+          "frame": "item",
+          "member": "U2",
           "error": false,
           "value": ["G1"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "U3",
+          "frame": "item",
+          "member": "U3",
           "error": false,
           "value": ["GB"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "U4",
+          "frame": "item",
+          "member": "U4",
           "error": false,
           "value": ["GB"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "U5",
+          "frame": "item",
+          "member": "U5",
           "error": false,
           "value": ["GB"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "U6",
+          "frame": "item",
+          "member": "U6",
           "error": false,
           "value": ["GC"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "OTH",
+          "frame": "item",
+          "member": "OTH",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
           "frame": "sector",
-          "unit": "P",
+          "member": "P",
           "error": false,
           "value": [
             {
               "frame": "class",
-              "unit": "G1"
+              "member": "G1"
             },
             {
               "frame": "class",
-              "unit": "G2"
+              "member": "G2"
             },
             {
               "frame": "group",
-              "unit": "G1"
+              "member": "G1"
             },
             {
               "frame": "group",
-              "unit": "GB"
+              "member": "GB"
             },
             {
-              "frame": "unit",
-              "unit": "U1"
+              "frame": "item",
+              "member": "U1"
             },
             {
-              "frame": "unit",
-              "unit": "U2"
+              "frame": "item",
+              "member": "U2"
             },
             {
-              "frame": "unit",
-              "unit": "U3"
+              "frame": "item",
+              "member": "U3"
             },
             {
-              "frame": "unit",
-              "unit": "U4"
+              "frame": "item",
+              "member": "U4"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "sector",
-          "unit": "S",
+          "member": "S",
           "error": false,
           "value": [
             {
               "frame": "class",
-              "unit": "S1"
+              "member": "S1"
             },
             {
               "frame": "group",
-              "unit": "GB"
+              "member": "GB"
             },
             {
               "frame": "group",
-              "unit": "GC"
+              "member": "GC"
             },
             {
-              "frame": "unit",
-              "unit": "U5"
+              "frame": "item",
+              "member": "U5"
             },
             {
-              "frame": "unit",
-              "unit": "U6"
+              "frame": "item",
+              "member": "U6"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "class",
-          "unit": "G1",
+          "member": "G1",
           "error": false,
           "value": [
             {
               "frame": "group",
-              "unit": "G1"
+              "member": "G1"
             },
             {
-              "frame": "unit",
-              "unit": "U1"
+              "frame": "item",
+              "member": "U1"
             },
             {
-              "frame": "unit",
-              "unit": "U2"
+              "frame": "item",
+              "member": "U2"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "class",
-          "unit": "G2",
+          "member": "G2",
           "error": false,
           "value": [
             {
               "frame": "group",
-              "unit": "GB"
+              "member": "GB"
             },
             {
-              "frame": "unit",
-              "unit": "U3"
+              "frame": "item",
+              "member": "U3"
             },
             {
-              "frame": "unit",
-              "unit": "U4"
+              "frame": "item",
+              "member": "U4"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "class",
-          "unit": "S1",
+          "member": "S1",
           "error": false,
           "value": [
             {
               "frame": "group",
-              "unit": "GB"
+              "member": "GB"
             },
             {
               "frame": "group",
-              "unit": "GC"
+              "member": "GC"
             },
             {
-              "frame": "unit",
-              "unit": "U5"
+              "frame": "item",
+              "member": "U5"
             },
             {
-              "frame": "unit",
-              "unit": "U6"
+              "frame": "item",
+              "member": "U6"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "group",
-          "unit": "G1",
+          "member": "G1",
           "error": false,
           "value": [
             {
-              "frame": "unit",
-              "unit": "U1"
+              "frame": "item",
+              "member": "U1"
             },
             {
-              "frame": "unit",
-              "unit": "U2"
+              "frame": "item",
+              "member": "U2"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "group",
-          "unit": "GB",
+          "member": "GB",
           "error": false,
           "value": [
             {
-              "frame": "unit",
-              "unit": "U3"
+              "frame": "item",
+              "member": "U3"
             },
             {
-              "frame": "unit",
-              "unit": "U4"
+              "frame": "item",
+              "member": "U4"
             },
             {
-              "frame": "unit",
-              "unit": "U5"
+              "frame": "item",
+              "member": "U5"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "group",
-          "unit": "GC",
+          "member": "GC",
           "error": false,
           "value": [
             {
-              "frame": "unit",
-              "unit": "U6"
+              "frame": "item",
+              "member": "U6"
             }
           ]
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "U1",
+          "frame": "item",
+          "member": "U1",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "U2",
+          "frame": "item",
+          "member": "U2",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "U3",
+          "frame": "item",
+          "member": "U3",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "U4",
+          "frame": "item",
+          "member": "U4",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "U5",
+          "frame": "item",
+          "member": "U5",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "U6",
+          "frame": "item",
+          "member": "U6",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "OTH",
+          "frame": "item",
+          "member": "OTH",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "sector",
-          "unit": "P",
+          "member": "P",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "sector",
-          "unit": "S",
+          "member": "S",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "class",
-          "unit": "G1",
+          "member": "G1",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "P"
+              "member": "P"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "class",
-          "unit": "G2",
+          "member": "G2",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "P"
+              "member": "P"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "class",
-          "unit": "S1",
+          "member": "S1",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "S"
+              "member": "S"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "group",
-          "unit": "G1",
+          "member": "G1",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "P"
+              "member": "P"
             },
             {
               "frame": "class",
-              "unit": "G1"
+              "member": "G1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "group",
-          "unit": "GB",
+          "member": "GB",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "P"
+              "member": "P"
             },
             {
               "frame": "sector",
-              "unit": "S"
+              "member": "S"
             },
             {
               "frame": "class",
-              "unit": "G2"
+              "member": "G2"
             },
             {
               "frame": "class",
-              "unit": "S1"
+              "member": "S1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "group",
-          "unit": "GC",
+          "member": "GC",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "S"
+              "member": "S"
             },
             {
               "frame": "class",
-              "unit": "S1"
+              "member": "S1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "U1",
+          "frame": "item",
+          "member": "U1",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "P"
+              "member": "P"
             },
             {
               "frame": "class",
-              "unit": "G1"
+              "member": "G1"
             },
             {
               "frame": "group",
-              "unit": "G1"
+              "member": "G1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "U2",
+          "frame": "item",
+          "member": "U2",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "P"
+              "member": "P"
             },
             {
               "frame": "class",
-              "unit": "G1"
+              "member": "G1"
             },
             {
               "frame": "group",
-              "unit": "G1"
+              "member": "G1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "U3",
+          "frame": "item",
+          "member": "U3",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "P"
+              "member": "P"
             },
             {
               "frame": "class",
-              "unit": "G2"
+              "member": "G2"
             },
             {
               "frame": "group",
-              "unit": "GB"
+              "member": "GB"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "U4",
+          "frame": "item",
+          "member": "U4",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "P"
+              "member": "P"
             },
             {
               "frame": "class",
-              "unit": "G2"
+              "member": "G2"
             },
             {
               "frame": "group",
-              "unit": "GB"
+              "member": "GB"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "U5",
+          "frame": "item",
+          "member": "U5",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "S"
+              "member": "S"
             },
             {
               "frame": "class",
-              "unit": "S1"
+              "member": "S1"
             },
             {
               "frame": "group",
-              "unit": "GB"
+              "member": "GB"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "U6",
+          "frame": "item",
+          "member": "U6",
           "error": false,
           "value": [
             {
               "frame": "sector",
-              "unit": "S"
+              "member": "S"
             },
             {
               "frame": "class",
-              "unit": "S1"
+              "member": "S1"
             },
             {
               "frame": "group",
-              "unit": "GC"
+              "member": "GC"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "OTH",
+          "frame": "item",
+          "member": "OTH",
           "error": false,
           "value": []
         }
@@ -1265,12 +1398,118 @@
         "build": "scale_example2",
         "leaftable": null,
         "frames": null,
-        "key": null,
+        "leaf": null,
         "name": null
       },
       "frames": ["era", "period"],
-      "key": "period",
-      "atom_level": "period",
+      "leaf": "period",
+      "leaf_frame": "period",
+      "id": "example2@f6854959",
+      "format": "<NestedScale[era/period] leaves=4>",
+      "print": ["NestedScale: example2", "Description: Synthetic second dimension, for product examples ", "Frames (2, coarsest first):", "  - era (2)", "    - period (4)", "Leaves: 4", "Weights: span (default: span)"],
+      "summary": ["<summary of NestedScale 'example2'>", "  desc:          Synthetic second dimension, for product examples", "  frames:         era (2) / period (4)", "  leaves:         4", "  weight totals:  span = 10  (default: span)", "  nesting:        era > period: nested"],
+      "tree": [
+        {
+          "part": "leaftable",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [4 x 3]",
+          "mark": "",
+          "verb": "",
+          "note": "one row per leaf"
+        },
+        {
+          "part": "period",
+          "parent": "leaftable",
+          "kind": "leaf column",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "era",
+          "parent": "leaftable",
+          "kind": "frame",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "span",
+          "parent": "leaftable",
+          "kind": "weight",
+          "shape": "",
+          "mark": "mutable",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "frames",
+          "parent": "",
+          "kind": "property",
+          "shape": "chr [2]",
+          "mark": "fixed",
+          "verb": "",
+          "note": "era, period"
+        },
+        {
+          "part": "members",
+          "parent": "",
+          "kind": "property",
+          "shape": "list [2]",
+          "mark": "derived",
+          "verb": "",
+          "note": "from leaftable: era 2, period 4"
+        },
+        {
+          "part": "leaf",
+          "parent": "",
+          "kind": "property",
+          "shape": "chr [1]",
+          "mark": "fixed",
+          "verb": "",
+          "note": "period"
+        },
+        {
+          "part": "meta",
+          "parent": "",
+          "kind": "property",
+          "shape": "list [4]",
+          "mark": "mutable",
+          "verb": "",
+          "note": "name, desc, weights, default_weight"
+        },
+        {
+          "part": "attributes",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 10]",
+          "mark": "mutable",
+          "verb": "attach_attributes_scale()",
+          "note": "member values, by (frame, member)"
+        },
+        {
+          "part": "aliases",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 4]",
+          "mark": "mutable",
+          "verb": "attach_aliases_scale()",
+          "note": "alternative spellings, by (frame, member)"
+        },
+        {
+          "part": "labels",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 4]",
+          "mark": "mutable",
+          "verb": "attach_labels_scale()",
+          "note": "display names, by (frame, member, variant)"
+        }
+      ],
+      "tree_lines": ["<NestedScale> example2@f6854959", "+- leaftable   data.frame [4 x 3]            one row per leaf", "|  +- period   leaf column          fixed", "|  +- era      frame                fixed", "|  +- span     weight               mutable", "+- frames      chr [2]              fixed    era, period", "+- members     list [2]             derived  from leaftable: era 2, period 4", "+- leaf        chr [1]              fixed    period", "+- meta        list [4]             mutable  name, desc, weights, default_weight", "+- attributes  data.frame [0 x 10]  mutable  attach_attributes_scale()", "+- aliases     data.frame [0 x 4]   mutable  attach_aliases_scale()", "+- labels      data.frame [0 x 4]   mutable  attach_labels_scale()"],
       "weights": ["span"],
       "coverage": {
         "span": 1
@@ -1280,7 +1519,7 @@
         "period": 2,
         "nope": null
       },
-      "units": {
+      "members": {
         "era": ["E1", "E2"],
         "period": ["p1", "p2", "p3", "p4"]
       },
@@ -1410,206 +1649,206 @@
         {
           "fn": "scale_children",
           "frame": "era",
-          "unit": "E1",
+          "member": "E1",
           "error": false,
           "value": ["p1", "p2"]
         },
         {
           "fn": "scale_children",
           "frame": "era",
-          "unit": "E2",
+          "member": "E2",
           "error": false,
           "value": ["p3", "p4"]
         },
         {
           "fn": "scale_children",
           "frame": "period",
-          "unit": "p1",
+          "member": "p1",
           "error": true,
           "message": "`period` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
           "frame": "period",
-          "unit": "p2",
+          "member": "p2",
           "error": true,
           "message": "`period` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
           "frame": "period",
-          "unit": "p3",
+          "member": "p3",
           "error": true,
           "message": "`period` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
           "frame": "period",
-          "unit": "p4",
+          "member": "p4",
           "error": true,
           "message": "`period` is the finest frame; it has no children"
         },
         {
           "fn": "scale_parents",
           "frame": "era",
-          "unit": "E1",
+          "member": "E1",
           "error": true,
           "message": "`era` is the coarsest frame; it has no parents"
         },
         {
           "fn": "scale_parents",
           "frame": "era",
-          "unit": "E2",
+          "member": "E2",
           "error": true,
           "message": "`era` is the coarsest frame; it has no parents"
         },
         {
           "fn": "scale_parents",
           "frame": "period",
-          "unit": "p1",
+          "member": "p1",
           "error": false,
           "value": ["E1"]
         },
         {
           "fn": "scale_parents",
           "frame": "period",
-          "unit": "p2",
+          "member": "p2",
           "error": false,
           "value": ["E1"]
         },
         {
           "fn": "scale_parents",
           "frame": "period",
-          "unit": "p3",
+          "member": "p3",
           "error": false,
           "value": ["E2"]
         },
         {
           "fn": "scale_parents",
           "frame": "period",
-          "unit": "p4",
+          "member": "p4",
           "error": false,
           "value": ["E2"]
         },
         {
           "fn": "scale_descendants",
           "frame": "era",
-          "unit": "E1",
+          "member": "E1",
           "error": false,
           "value": [
             {
               "frame": "period",
-              "unit": "p1"
+              "member": "p1"
             },
             {
               "frame": "period",
-              "unit": "p2"
+              "member": "p2"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "era",
-          "unit": "E2",
+          "member": "E2",
           "error": false,
           "value": [
             {
               "frame": "period",
-              "unit": "p3"
+              "member": "p3"
             },
             {
               "frame": "period",
-              "unit": "p4"
+              "member": "p4"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "period",
-          "unit": "p1",
+          "member": "p1",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
           "frame": "period",
-          "unit": "p2",
+          "member": "p2",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
           "frame": "period",
-          "unit": "p3",
+          "member": "p3",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
           "frame": "period",
-          "unit": "p4",
+          "member": "p4",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "era",
-          "unit": "E1",
+          "member": "E1",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "era",
-          "unit": "E2",
+          "member": "E2",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "period",
-          "unit": "p1",
+          "member": "p1",
           "error": false,
           "value": [
             {
               "frame": "era",
-              "unit": "E1"
+              "member": "E1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "period",
-          "unit": "p2",
+          "member": "p2",
           "error": false,
           "value": [
             {
               "frame": "era",
-              "unit": "E1"
+              "member": "E1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "period",
-          "unit": "p3",
+          "member": "p3",
           "error": false,
           "value": [
             {
               "frame": "era",
-              "unit": "E2"
+              "member": "E2"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "period",
-          "unit": "p4",
+          "member": "p4",
           "error": false,
           "value": [
             {
               "frame": "era",
-              "unit": "E2"
+              "member": "E2"
             }
           ]
         }
@@ -1621,16 +1860,131 @@
         "leaftable": {
           "m": ["m1", "m2", "m1", "m2", "m1", "m2"],
           "h": ["h1", "h1", "h2", "h2", "h3", "h3"],
-          "unit": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"],
+          "item": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"],
           "hours": [31, 28, 31, 28, 31, 28]
         },
         "frames": ["m", "h"],
-        "key": "unit",
+        "leaf": "item",
         "name": "grid"
       },
       "frames": ["m", "h"],
-      "key": "unit",
-      "atom_level": "unit",
+      "leaf": "item",
+      "leaf_frame": "item",
+      "id": "grid@3d839238",
+      "format": "<NestedScale[m/h] leaves=6>",
+      "print": ["NestedScale: grid", "Frames (2, coarsest first):", "  - m (2)", "    - h (3)", "Leaves: 6", "Weights: hours (default: hours)"],
+      "summary": ["<summary of NestedScale 'grid'>", "  frames:         m (2) / h (3)", "  leaves:         6", "  weight totals:  hours = 177  (default: hours)", "  nesting:        m > h: CROSS-CUTTING (3 offender(s))"],
+      "tree": [
+        {
+          "part": "leaftable",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [6 x 4]",
+          "mark": "",
+          "verb": "",
+          "note": "one row per leaf"
+        },
+        {
+          "part": "item",
+          "parent": "leaftable",
+          "kind": "leaf column",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "m",
+          "parent": "leaftable",
+          "kind": "frame",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "h",
+          "parent": "leaftable",
+          "kind": "frame",
+          "shape": "",
+          "mark": "fixed",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "hours",
+          "parent": "leaftable",
+          "kind": "weight",
+          "shape": "",
+          "mark": "mutable",
+          "verb": "",
+          "note": ""
+        },
+        {
+          "part": "frames",
+          "parent": "",
+          "kind": "property",
+          "shape": "chr [2]",
+          "mark": "fixed",
+          "verb": "",
+          "note": "m, h"
+        },
+        {
+          "part": "members",
+          "parent": "",
+          "kind": "property",
+          "shape": "list [2]",
+          "mark": "derived",
+          "verb": "",
+          "note": "from leaftable: m 2, h 3"
+        },
+        {
+          "part": "leaf",
+          "parent": "",
+          "kind": "property",
+          "shape": "chr [1]",
+          "mark": "fixed",
+          "verb": "",
+          "note": "item"
+        },
+        {
+          "part": "meta",
+          "parent": "",
+          "kind": "property",
+          "shape": "list [4]",
+          "mark": "mutable",
+          "verb": "",
+          "note": "name, desc, weights, default_weight"
+        },
+        {
+          "part": "attributes",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 10]",
+          "mark": "mutable",
+          "verb": "attach_attributes_scale()",
+          "note": "member values, by (frame, member)"
+        },
+        {
+          "part": "aliases",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 4]",
+          "mark": "mutable",
+          "verb": "attach_aliases_scale()",
+          "note": "alternative spellings, by (frame, member)"
+        },
+        {
+          "part": "labels",
+          "parent": "",
+          "kind": "property",
+          "shape": "data.frame [0 x 4]",
+          "mark": "mutable",
+          "verb": "attach_labels_scale()",
+          "note": "display names, by (frame, member, variant)"
+        }
+      ],
+      "tree_lines": ["<NestedScale> grid@3d839238", "+- leaftable   data.frame [6 x 4]            one row per leaf", "|  +- item     leaf column          fixed", "|  +- m        frame                fixed", "|  +- h        frame                fixed", "|  +- hours    weight               mutable", "+- frames      chr [2]              fixed    m, h", "+- members     list [2]             derived  from leaftable: m 2, h 3", "+- leaf        chr [1]              fixed    item", "+- meta        list [4]             mutable  name, desc, weights, default_weight", "+- attributes  data.frame [0 x 10]  mutable  attach_attributes_scale()", "+- aliases     data.frame [0 x 4]   mutable  attach_aliases_scale()", "+- labels      data.frame [0 x 4]   mutable  attach_labels_scale()"],
       "weights": ["hours"],
       "coverage": {
         "hours": 1
@@ -1638,13 +1992,13 @@
       "rank": {
         "m": 1,
         "h": 2,
-        "unit": 3,
+        "item": 3,
         "nope": null
       },
-      "units": {
+      "members": {
         "m": ["m1", "m2"],
         "h": ["h1", "h2", "h3"],
-        "unit": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"]
+        "item": ["m1_h1", "m2_h1", "m1_h2", "m2_h2", "m1_h3", "m2_h3"]
       },
       "family": [
         {
@@ -1791,466 +2145,466 @@
         {
           "fn": "scale_children",
           "frame": "m",
-          "unit": "m1",
+          "member": "m1",
           "error": false,
           "value": ["h1", "h2", "h3"]
         },
         {
           "fn": "scale_children",
           "frame": "m",
-          "unit": "m2",
+          "member": "m2",
           "error": false,
           "value": ["h1", "h2", "h3"]
         },
         {
           "fn": "scale_children",
           "frame": "h",
-          "unit": "h1",
+          "member": "h1",
           "error": false,
           "value": ["m1_h1", "m2_h1"]
         },
         {
           "fn": "scale_children",
           "frame": "h",
-          "unit": "h2",
+          "member": "h2",
           "error": false,
           "value": ["m1_h2", "m2_h2"]
         },
         {
           "fn": "scale_children",
           "frame": "h",
-          "unit": "h3",
+          "member": "h3",
           "error": false,
           "value": ["m1_h3", "m2_h3"]
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "m1_h1",
+          "frame": "item",
+          "member": "m1_h1",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "m2_h1",
+          "frame": "item",
+          "member": "m2_h1",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "m1_h2",
+          "frame": "item",
+          "member": "m1_h2",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "m2_h2",
+          "frame": "item",
+          "member": "m2_h2",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "m1_h3",
+          "frame": "item",
+          "member": "m1_h3",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_children",
-          "frame": "unit",
-          "unit": "m2_h3",
+          "frame": "item",
+          "member": "m2_h3",
           "error": true,
-          "message": "`unit` is the finest frame; it has no children"
+          "message": "`item` is the finest frame; it has no children"
         },
         {
           "fn": "scale_parents",
           "frame": "m",
-          "unit": "m1",
+          "member": "m1",
           "error": true,
           "message": "`m` is the coarsest frame; it has no parents"
         },
         {
           "fn": "scale_parents",
           "frame": "m",
-          "unit": "m2",
+          "member": "m2",
           "error": true,
           "message": "`m` is the coarsest frame; it has no parents"
         },
         {
           "fn": "scale_parents",
           "frame": "h",
-          "unit": "h1",
+          "member": "h1",
           "error": false,
           "value": ["m1", "m2"]
         },
         {
           "fn": "scale_parents",
           "frame": "h",
-          "unit": "h2",
+          "member": "h2",
           "error": false,
           "value": ["m1", "m2"]
         },
         {
           "fn": "scale_parents",
           "frame": "h",
-          "unit": "h3",
+          "member": "h3",
           "error": false,
           "value": ["m1", "m2"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "m1_h1",
+          "frame": "item",
+          "member": "m1_h1",
           "error": false,
           "value": ["h1"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "m2_h1",
+          "frame": "item",
+          "member": "m2_h1",
           "error": false,
           "value": ["h1"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "m1_h2",
+          "frame": "item",
+          "member": "m1_h2",
           "error": false,
           "value": ["h2"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "m2_h2",
+          "frame": "item",
+          "member": "m2_h2",
           "error": false,
           "value": ["h2"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "m1_h3",
+          "frame": "item",
+          "member": "m1_h3",
           "error": false,
           "value": ["h3"]
         },
         {
           "fn": "scale_parents",
-          "frame": "unit",
-          "unit": "m2_h3",
+          "frame": "item",
+          "member": "m2_h3",
           "error": false,
           "value": ["h3"]
         },
         {
           "fn": "scale_descendants",
           "frame": "m",
-          "unit": "m1",
+          "member": "m1",
           "error": false,
           "value": [
             {
               "frame": "h",
-              "unit": "h1"
+              "member": "h1"
             },
             {
               "frame": "h",
-              "unit": "h2"
+              "member": "h2"
             },
             {
               "frame": "h",
-              "unit": "h3"
+              "member": "h3"
             },
             {
-              "frame": "unit",
-              "unit": "m1_h1"
+              "frame": "item",
+              "member": "m1_h1"
             },
             {
-              "frame": "unit",
-              "unit": "m1_h2"
+              "frame": "item",
+              "member": "m1_h2"
             },
             {
-              "frame": "unit",
-              "unit": "m1_h3"
+              "frame": "item",
+              "member": "m1_h3"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "m",
-          "unit": "m2",
+          "member": "m2",
           "error": false,
           "value": [
             {
               "frame": "h",
-              "unit": "h1"
+              "member": "h1"
             },
             {
               "frame": "h",
-              "unit": "h2"
+              "member": "h2"
             },
             {
               "frame": "h",
-              "unit": "h3"
+              "member": "h3"
             },
             {
-              "frame": "unit",
-              "unit": "m2_h1"
+              "frame": "item",
+              "member": "m2_h1"
             },
             {
-              "frame": "unit",
-              "unit": "m2_h2"
+              "frame": "item",
+              "member": "m2_h2"
             },
             {
-              "frame": "unit",
-              "unit": "m2_h3"
+              "frame": "item",
+              "member": "m2_h3"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "h",
-          "unit": "h1",
+          "member": "h1",
           "error": false,
           "value": [
             {
-              "frame": "unit",
-              "unit": "m1_h1"
+              "frame": "item",
+              "member": "m1_h1"
             },
             {
-              "frame": "unit",
-              "unit": "m2_h1"
+              "frame": "item",
+              "member": "m2_h1"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "h",
-          "unit": "h2",
+          "member": "h2",
           "error": false,
           "value": [
             {
-              "frame": "unit",
-              "unit": "m1_h2"
+              "frame": "item",
+              "member": "m1_h2"
             },
             {
-              "frame": "unit",
-              "unit": "m2_h2"
+              "frame": "item",
+              "member": "m2_h2"
             }
           ]
         },
         {
           "fn": "scale_descendants",
           "frame": "h",
-          "unit": "h3",
+          "member": "h3",
           "error": false,
           "value": [
             {
-              "frame": "unit",
-              "unit": "m1_h3"
+              "frame": "item",
+              "member": "m1_h3"
             },
             {
-              "frame": "unit",
-              "unit": "m2_h3"
+              "frame": "item",
+              "member": "m2_h3"
             }
           ]
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "m1_h1",
+          "frame": "item",
+          "member": "m1_h1",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "m2_h1",
+          "frame": "item",
+          "member": "m2_h1",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "m1_h2",
+          "frame": "item",
+          "member": "m1_h2",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "m2_h2",
+          "frame": "item",
+          "member": "m2_h2",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "m1_h3",
+          "frame": "item",
+          "member": "m1_h3",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_descendants",
-          "frame": "unit",
-          "unit": "m2_h3",
+          "frame": "item",
+          "member": "m2_h3",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "m",
-          "unit": "m1",
+          "member": "m1",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "m",
-          "unit": "m2",
+          "member": "m2",
           "error": false,
           "value": []
         },
         {
           "fn": "scale_ancestors",
           "frame": "h",
-          "unit": "h1",
+          "member": "h1",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m1"
+              "member": "m1"
             },
             {
               "frame": "m",
-              "unit": "m2"
+              "member": "m2"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "h",
-          "unit": "h2",
+          "member": "h2",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m1"
+              "member": "m1"
             },
             {
               "frame": "m",
-              "unit": "m2"
+              "member": "m2"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
           "frame": "h",
-          "unit": "h3",
+          "member": "h3",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m1"
+              "member": "m1"
             },
             {
               "frame": "m",
-              "unit": "m2"
+              "member": "m2"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "m1_h1",
+          "frame": "item",
+          "member": "m1_h1",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m1"
+              "member": "m1"
             },
             {
               "frame": "h",
-              "unit": "h1"
+              "member": "h1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "m2_h1",
+          "frame": "item",
+          "member": "m2_h1",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m2"
+              "member": "m2"
             },
             {
               "frame": "h",
-              "unit": "h1"
+              "member": "h1"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "m1_h2",
+          "frame": "item",
+          "member": "m1_h2",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m1"
+              "member": "m1"
             },
             {
               "frame": "h",
-              "unit": "h2"
+              "member": "h2"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "m2_h2",
+          "frame": "item",
+          "member": "m2_h2",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m2"
+              "member": "m2"
             },
             {
               "frame": "h",
-              "unit": "h2"
+              "member": "h2"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "m1_h3",
+          "frame": "item",
+          "member": "m1_h3",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m1"
+              "member": "m1"
             },
             {
               "frame": "h",
-              "unit": "h3"
+              "member": "h3"
             }
           ]
         },
         {
           "fn": "scale_ancestors",
-          "frame": "unit",
-          "unit": "m2_h3",
+          "frame": "item",
+          "member": "m2_h3",
           "error": false,
           "value": [
             {
               "frame": "m",
-              "unit": "m2"
+              "member": "m2"
             },
             {
               "frame": "h",
-              "unit": "h3"
+              "member": "h3"
             }
           ]
         }
