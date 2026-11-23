@@ -9,6 +9,17 @@ description = "Nested scales and multi-dimensional indexes for modeling"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
+keywords = ["nested scales", "hierarchy", "aggregation", "classification", "modeling"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering",
+]
 authors = [{ name = "Oleg Lugovoy", email = "olugovoy@optimalsolution.dev" }]
 dependencies = [
   "pyarrow>=14",
@@ -24,6 +35,9 @@ docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.5", "mkdocstrings[python]>=0.26", 
 
 [project.urls]
 Homepage = "https://github.com/optimal2050/nestedscales"
+Documentation = "https://optimal2050.github.io/nestedscales/python/"
+Repository = "https://github.com/optimal2050/nestedscales"
+Issues = "https://github.com/optimal2050/nestedscales/issues"
 
 [tool.hatch.version]
 path = "src/nestedscales/__init__.py"
