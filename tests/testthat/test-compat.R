@@ -2,6 +2,28 @@
 # them as NULL. They must still validate and flow through every verb, and
 # come out of a rebuild carrying real tables.
 
+test_that("other packages can subclass the scale classes", {
+  child_scale <- S7::new_class(
+    "ChildScale", parent = scale_class(), package = "scale_extension"
+  )
+  child_product <- S7::new_class(
+    "ChildProduct", parent = scale_product_class(), package = "scale_extension"
+  )
+  scale <- scale_example()
+  scale_child <- child_scale(
+    leaftable = scale_leaftable(scale),
+    frames = scale_frames(scale),
+    members = S7::prop(scale, "members"),
+    leaf = scale_leaf_column(scale)
+  )
+  product_child <- child_product(
+    axes = list(a = scale, b = scale_example2()),
+    keys = c(a = "a", b = "b")
+  )
+  expect_s3_class(scale_child, "scale_extension::ChildScale")
+  expect_s3_class(product_child, "scale_extension::ChildProduct")
+})
+
 .old_scale <- function() {
   s <- scale_example()
   attr(s, "attributes") <- NULL
@@ -45,6 +67,8 @@ test_that("the 0.1.1 fixture still loads and behaves", {
   s <- readRDS(path)
   expect_true(scale_is(s))
   expect_false("attributes" %in% names(S7::S7_class(s)@properties))
+  expect_false(S7::prop_exists(s, "attributes"))
+  expect_false(S7::prop_exists(s, "aliases"))
   # no message pattern: the wording is S7's and differs between its versions
   expect_error(S7::prop(s, "attributes"))
   expect_no_error(S7::validate(s))
